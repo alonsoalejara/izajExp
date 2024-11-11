@@ -14,22 +14,52 @@ const maniobraSchema = new Schema(
             enum: ['Eslinga', 'Estrobo'],
         },
 
-        diametroCable: {
-            cantidad: {
-                type: Number,
-                required: true,
-            },
+        radioInicial: {
+            type: Number,
+            required: true,
+        },
 
-            unidad: {
-                type: String,
-                required: true,
-                enum: ['mm', 'pulgadas'],
-            },
+        radioFinal: {
+            type: Number,
+            required: true,
+        },
+
+        longitudPluma: {
+            type: Number,
+            required: true,
+        },
+
+        angulo: {
+            type: Number,
+            required: true,
+        },
+
+        datosCarga: {
+            pesoGancho: { type: Number, required: true }, 
+            pesoHerramientas: { type: Number, required: true }, 
+            pesoCarga: { type: Number, required: true },
+            otrosPesos: { type: Number, required: true },
+            cargaBruta: { type: Number, required: false },
+        },
+
+        capacidades: {
+            capacidadInicial: { type: Number, required: true },
+            capacidadFinal: { type: Number, required: true },
         },
 
         capacidadCarga: {
             type: Number,
             required: false
+        },
+
+        porcentajeCapacidad: {
+            type: Number,
+            required: false
+        },
+
+        observaciones: {
+            type: String,
+            required: false,
         }
     },
     {

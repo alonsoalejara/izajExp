@@ -1,31 +1,39 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, Button } from 'react-native';
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import icon from './assets/EI-Montajes.png';
+import HomeScreen from './src/screens/Home'; 
+import LoginScreen from './src/screens/Login';
+import PlanIzajeScreen from './src/screens/PlanIzaje';
+import SetupIzajeScreen from './src/screens/SetupIzaje';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Image source={icon} style={{
-        width: 200, 
-        height: 100,
-        resizeMode: 'contain',
-        }} />
-      <Text style={{color: 'white'}}>App de Plan de Izaje.</Text>
-      <StatusBar style="light" />
-      <Button 
-        title="Pulsa aquí" 
-        onPress = {() => alert('Hola amigos!')} 
-      />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen 
+          name="Home" 
+          component={HomeScreen} 
+          options={{ headerShown: false }}  // Oculta el encabezado
+        />
+        <Stack.Screen 
+          name="Login" 
+          component={LoginScreen} 
+          options={{ title: 'Iniciar Sesión' }}
+        />
+        <Stack.Screen 
+          name="SetupIzaje" 
+          component={SetupIzajeScreen} 
+          options={{ title: 'Configuración de Izaje' }}
+        />
+        <Stack.Screen 
+          name="PlanIzaje" 
+          component={PlanIzajeScreen} 
+          options={{ title: 'Plan de Izaje' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

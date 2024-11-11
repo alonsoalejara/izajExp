@@ -1,28 +1,48 @@
 import Maniobra from '../../models/maniobra.model.js';
 
-const calcularCapacidadCarga = (diametro, unidad, cantidad) => {
-    let capacidadPorCable;
-    if (unidad === 'pulgadas') {
-        capacidadPorCable = diametro * 2.5; 
-    } else if (unidad === 'mm') {
-        capacidadPorCable = diametro * 0.1;
-    } else {
-        throw new Error('Unidad no válida');
-    }
-    return capacidadPorCable * cantidad;
+const calcularCargaBruta = ({ pesoGancho, pesoHerramientas, pesoCarga, otrosPesos }) => {
+    return pesoGancho + pesoHerramientas + pesoCarga + otrosPesos;
+};
+
+const calcularPorcentajeCapacidad = (cargaBruta, capacidadMenor) => {
+    return (cargaBruta / capacidadMenor) * 100;
 };
 
 export const crearManiobra = async (req, res) => {
     try {
-        const { cantidad, tipo, diametroCable } = req.body;
+        const { cantidad, tipo, radioInicial, radioFinal, longitudPluma, angulo, datosCarga, capacidades } = req.body;
 
-        const capacidadCarga = calcularCapacidadCarga(diametroCable.cantidad, diametroCable.unidad, cantidad);
+        // Calcular carga bruta
+        const cargaBruta = calcularCargaBruta(datosCarga);
 
+        // Determinar la capacidad menor
+        const capacidadMenor = Math.min(capacidades.capacidadInicial, capacidades.capacidadFinal);
+
+        // Calcular porcentaje de capacidad
+        const porcentajeCapacidad = calcularPorcentajeCapacidad(cargaBruta, capacidadMenor);
+
+        // Definir observaciones
+        let observaciones = 'Se puede realizar el izaje sin restricciones.';
+        if (porcentajeCapacidad >= 80) {
+            observaciones = 'Requiere precaución, el porcentaje de capacidad es alto.';
+        }
+
+        // Crear nueva maniobra
         const nuevaManiobra = new Maniobra({
             cantidad,
             tipo,
-            diametroCable,
-            capacidadCarga,
+            radioInicial,
+            radioFinal,
+            longitudPluma,
+            angulo,
+            datosCarga: {
+                ...datosCarga,
+                cargaBruta,
+            },
+            capacidades,
+            capacidadCarga: capacidadMenor,
+            porcentajeCapacidad,
+            observaciones
         });
 
         const maniobraGuardada = await nuevaManiobra.save();
