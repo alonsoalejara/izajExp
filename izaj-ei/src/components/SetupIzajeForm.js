@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
-import SelectFiguraModal from './SelectFiguraModal';
-import SelectGruaModal from './SelectGruaModal';
-import SelectManiobraModal from './SelectManiobraModal';
+import SelectFiguraModal from './ModalFigura';
+import SelectGruaModal from './ModalGrua';
+import SelectManiobraModal from './ModalManiobra';
 import InputUnidad from './InputUnidad';
 import { useIzaje } from '../hooks/useIzajeForm';
 

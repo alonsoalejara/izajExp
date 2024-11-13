@@ -6,6 +6,7 @@ import HomeScreen from './src/screens/Home';
 import LoginScreen from './src/screens/Login';
 import PlanIzajeScreen from './src/screens/PlanIzaje';
 import SetupIzajeScreen from './src/screens/SetupIzaje';
+import GruaIzajeScreen from './src/screens/GruaIzaje';
 
 const Stack = createStackNavigator();
 
@@ -32,6 +33,11 @@ export default function App() {
           name="PlanIzaje" 
           component={PlanIzajeScreen} 
           options={{ title: 'Plan de Izaje' }}
+        />
+        <Stack.Screen 
+          name="GruaIzaje" 
+          component={GruaIzajeScreen} 
+          options={{ title: 'Grua de Izaje' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
