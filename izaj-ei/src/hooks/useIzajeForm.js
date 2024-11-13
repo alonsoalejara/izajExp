@@ -16,25 +16,11 @@ export const useIzaje = () => {
   const figuras = getFiguras();
   const unidades = getUnidades();
 
-  const handleGruaSelect = (grua) => {
-    setSelectedGrua(grua);
-  };
-
-  const handleManiobraSelect = (maneuver) => {
-    setSelectedManeuverType(maneuver);
-  };
-
-  const handleManiobraQuantitySelect = (quantity) => {
-    setSelectedManeuverQuantity(quantity);
-  };
-
-  const handleFiguraSelect = (figura) => {
-    setSelectedFigura(figura);
-  };
-
-  const handleUnidadSelect = (unidad) => {
-    setSelectedUnidad(unidad);
-  };
+  const handleGruaSelect = (grua) => setSelectedGrua(grua);
+  const handleManiobraSelect = (maneuver) => setSelectedManeuverType(maneuver);
+  const handleManiobraQuantitySelect = (quantity) => setSelectedManeuverQuantity(quantity);
+  const handleFiguraSelect = (figura) => setSelectedFigura(figura);
+  const handleUnidadSelect = (unidad) => setSelectedUnidad(unidad);
 
   const validateGrua = () => validateGruaSelection(selectedGrua);
   const validateManiobra = () => validateManiobraSelection(selectedManeuverType, selectedManeuverQuantity);
