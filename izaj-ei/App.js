@@ -27,7 +27,7 @@ export default function App() {
         <Stack.Screen 
           name="SetupIzaje" 
           component={SetupIzajeScreen} 
-          options={{ title: 'Configuración de Izaje' }}
+          options={{ title: 'Cálculo Maniobras Menores' }}
         />
         <Stack.Screen 
           name="PlanIzaje" 

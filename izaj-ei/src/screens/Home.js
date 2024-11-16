@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
-import styles from '../styles/HomeStyles';  // Ajusta la ruta según tu estructura de carpetas
+import styles from '../styles/HomeStyles';
 
 export default function Home({ navigation }) {
   return (
@@ -22,9 +22,9 @@ export default function Home({ navigation }) {
 
         {/* Logotipo centrado */}
         <Image
-          source={require('../../assets/EI-Montajes.png')} // Reemplaza con la ruta de tu logotipo
+          source={require('../../assets/EI-Montajes.png')}
           style={styles.logo}
-          resizeMode="contain" // Esto asegura que la imagen se ajuste completamente sin recortarse
+          resizeMode="contain"
         />
 
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>

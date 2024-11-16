@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import SelectFiguraModal from './ModalFigura';
+import SelectFormaModal from './ModalForma';
 import SelectGruaModal from './ModalGrua';
 import SelectManiobraModal from './ModalManiobra';
 import InputUnidad from './InputUnidad';
@@ -10,28 +10,28 @@ const SetupIzajeForm = () => {
   const {
     gruas,
     maniobras,
-    figuras,
+    formas,
     unidades,
     selectedGrua,
     selectedManeuverType,
     selectedManeuverQuantity,
-    selectedFigura,
+    selectedForma,
     selectedUnidad,
     handleGruaSelect,
     handleManiobraSelect,
     handleManiobraQuantitySelect,
-    handleFiguraSelect,
+    handleFormaSelect,
     handleUnidadSelect,
     validateGrua,
     validateManiobra,
-    calculateFiguraArea,
+    calculateFormaArea,
     convertToUnidad,
   } = useIzaje();
 
   return (
     <View>
       <SelectGruaModal visible={true} onClose={handleGruaSelect} />
-      <SelectFiguraModal visible={true} onClose={handleFiguraSelect} />
+      <SelectFormaModal visible={true} onClose={handleFormaSelect} />
       <SelectManiobraModal visible={true} tipo="Numero" onClose={handleManiobraQuantitySelect} />
       <SelectManiobraModal visible={true} tipo="Eslinga" onClose={handleManiobraSelect} />
       <InputUnidad 

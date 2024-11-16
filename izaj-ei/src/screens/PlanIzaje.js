@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, ScrollView, Button } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Importar el hook de navegación
+import { useNavigation } from '@react-navigation/native'; 
 
 import styles from '../styles/PlanIzajeStyles';
 
 export default function Main() {
-  const navigation = useNavigation(); // Hook para acceder a la navegación
+  const navigation = useNavigation();
 
   const [radioInicial, setRadioInicial] = useState('');
   const [longitudInicial, setLongitudInicial] = useState('');
