@@ -1,71 +1,123 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Svg, Circle, Line, Rect } from 'react-native-svg'; // Para dibujar gráficos
-import styles from '../styles/GruaIzajeStyles';  // Importa los estilos
+import React, { useState, useRef } from 'react';
+import { View, TouchableOpacity, Text, PanResponder } from 'react-native';
+import GruaIllustration from '../components/GruaIllustration';
+import PlanoCartesiano from '../components/PlanoCartesiano';
 
-export default function GruaIzajeScreen({ navigation }) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>GRÚA DE IZAJE</Text>
-  
-        {/* Ilustración de la grúa en un plano cartesiano */}
-        <Svg height="300" width="400" viewBox="0 0 400 300">
-          {/* Cuadrícula: Líneas horizontales */}
-          {[...Array(10)].map((_, index) => (
-            <Line
-              key={`h-line-${index}`}
-              x1="50"
-              y1={50 + (index * 20)}
-              x2="350"
-              y2={50 + (index * 20)}
-              stroke="lightgray"
-              strokeWidth="1"
-              strokeDasharray="5,5"
-            />
-          ))}
-  
-          {/* Cuadrícula: Líneas verticales */}
-          {[...Array(8)].map((_, index) => (
-            <Line
-              key={`v-line-${index}`}
-              x1={50 + (index * 40)}
-              y1="50"
-              x2={50 + (index * 40)}
-              y2="250"
-              stroke="lightgray"
-              strokeWidth="1"
-              strokeDasharray="5,5"
-            />
-          ))}
-  
-          {/* Ejes X y Y */}
-          <Line x1="50" y1="50" x2="50" y2="250" stroke="black" strokeWidth="2" />
-          <Line x1="50" y1="250" x2="350" y2="250" stroke="black" strokeWidth="2" />
-  
-          {/* Grúa: Representación con un rectángulo (base de la grúa) */}
+export default function GruaIzaje() {
+  const [brazoAngle, setBrazoAngle] = useState(25);
+  const [intervalId, setIntervalId] = useState(null);
 
-          {/* Ahora la base de la grúa está pegada al eje Y (coordenada X = 50) */}
-          <Rect x="60" y="220" width="60" height="20" fill="gray" />
-          
-          {/* Brazo de la grúa (línea diagonal) */}
-          <Line x1="90" y1="220" x2="160" y2="120" stroke="blue" strokeWidth="6" />
-  
-          {/* Carga (representada por un círculo) */}
-          <Circle cx="160" cy="120" r="10" fill="red" />
-  
-          {/* Ruedas de la grúa (círculos pequeños) */}
-          {/* Las ruedas ahora están pegadas al eje X en el punto (0, 0) */}
-          <Circle cx="60" cy="240" r="10" fill="black" />
-          <Circle cx="120" cy="240" r="10" fill="black" />
-        </Svg>
-  
-        {/* Botón para navegar a otra pantalla */}
+  // Función para redondear el ángulo a dos decimales
+  const roundToTwoDecimals = (angle) => {
+    if (isNaN(angle)) return 0; // Si el valor no es un número, devolver 0
+    return parseFloat(angle.toFixed(2)); // Redondear a dos decimales
+  };
+
+  // PanResponder para detectar el arrastre del brazo
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: (evt, gestureState) => {
+      const deltaX = gestureState.dx; // Desplazamiento horizontal
+      let newAngle = brazoAngle + deltaX * 0.1; // Ajusta la sensibilidad del arrastre
+      newAngle = Math.min(Math.max(newAngle, 25), 65); // Limitar entre 25° y 65°
+      setBrazoAngle(roundToTwoDecimals(newAngle)); // Redondear antes de actualizar el estado
+    },
+    onPanResponderRelease: () => {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    },
+  });
+
+  const rotateBrazoForward = () => {
+    setBrazoAngle((prevAngle) => {
+      const newAngle = prevAngle < 65 ? prevAngle + 1 : prevAngle;
+      return roundToTwoDecimals(newAngle); // Redondear antes de actualizar el estado
+    });
+  };
+
+  const rotateBrazoBackward = () => {
+    setBrazoAngle((prevAngle) => {
+      const newAngle = prevAngle > 25 ? prevAngle - 1 : prevAngle;
+      return roundToTwoDecimals(newAngle); // Redondear antes de actualizar el estado
+    });
+  };
+
+  const handleLongPress = (direction) => {
+    const newIntervalId = setInterval(() => {
+      setBrazoAngle((prevAngle) => {
+        let newAngle = prevAngle;
+
+        if (direction === 'forward' && prevAngle < 65) {
+          newAngle = prevAngle + 1;
+        } else if (direction === 'backward' && prevAngle > 25) {
+          newAngle = prevAngle - 1;
+        }
+
+        return Math.min(Math.max(roundToTwoDecimals(newAngle), 25), 65);
+      });
+    }, 100);
+
+    setIntervalId(newIntervalId);
+  };
+
+  const handlePressOut = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+    setIntervalId(null);
+  };
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      {/* Plano Cartesiano */}
+      <PlanoCartesiano />
+
+      {/* Ilustración de la grúa */}
+      <View
+        style={{ position: 'absolute', left: 20, alignItems: 'flex-start' }}
+        {...panResponder.panHandlers} // Conectar el PanResponder
+      >
+        <GruaIllustration brazoAngle={brazoAngle} gruaPosX={0} gruaPosY={0} />
+      </View>
+
+      <View style={{ position: 'absolute', bottom: 80 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+          Ángulo del Brazo: {brazoAngle}°
+        </Text>
+      </View>
+
+      <View style={{ flexDirection: 'row', position: 'absolute', bottom: 20 }}>
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('PlanIzaje')}
+          onPress={rotateBrazoBackward}
+          onLongPress={() => handleLongPress('backward')}
+          onPressOut={handlePressOut}
+          style={{
+            padding: 10,
+            backgroundColor: brazoAngle === 25 ? 'gray' : '#007bff',
+            borderRadius: 5,
+            marginHorizontal: 5,
+          }}
+          disabled={brazoAngle === 25}
         >
-          <Text style={styles.buttonText}>Ir a Plan de Izaje</Text>
+          <Text style={{ color: 'white' }}>Retroceder Brazo</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={rotateBrazoForward}
+          onLongPress={() => handleLongPress('forward')}
+          onPressOut={handlePressOut}
+          style={{
+            padding: 10,
+            backgroundColor: brazoAngle === 65 ? 'gray' : '#007bff',
+            borderRadius: 5,
+            marginHorizontal: 5,
+          }}
+          disabled={brazoAngle === 65}
+        >
+          <Text style={{ color: 'white' }}>Avanzar Brazo</Text>
         </TouchableOpacity>
       </View>
-    );
-  }
+    </View>
+  );
+}

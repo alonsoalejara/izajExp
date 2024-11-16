@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
       borderRadius: 30,
     },
     buttonText: {
-      fontFamily: 'Nunito_700Bold',  
+      fontFamily: 'Arial',  
       color: 'white',
       fontSize: 18,
       fontWeight: 'bold',

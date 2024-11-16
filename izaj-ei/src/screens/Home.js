@@ -1,21 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
-import { useFonts } from 'expo-font';
-import { Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import styles from '../styles/HomeStyles';  // Ajusta la ruta según tu estructura de carpetas
 
 export default function Home({ navigation }) {
-
-  const [fontsLoaded] = useFonts({
-    Nunito_400Regular,
-    Nunito_700Bold,
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -46,4 +34,3 @@ export default function Home({ navigation }) {
     </View>
   );
 }
-

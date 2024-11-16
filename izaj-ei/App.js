@@ -37,8 +37,8 @@ export default function App() {
         <Stack.Screen 
           name="GruaIzaje" 
           component={GruaIzajeScreen} 
-          options={{ title: 'Grua de Izaje' }}
-        />
+          options={{ headerShown: false }}  // Oculta el encabezado
+        /> 
       </Stack.Navigator>
     </NavigationContainer>
   );
