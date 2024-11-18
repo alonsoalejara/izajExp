@@ -22,17 +22,17 @@ export default function App() {
         <Stack.Screen 
           name="Login" 
           component={LoginScreen} 
-          options={{ title: 'Iniciar Sesión' }}
+          options={{ headerShown: false }}  // Oculta el encabezado
         />
         <Stack.Screen 
           name="SetupIzaje" 
           component={SetupIzajeScreen} 
-          options={{ title: 'Cálculo Maniobras Menores' }}
+          options={{ headerShown: false }}  // Oculta el encabezado
         />
         <Stack.Screen 
           name="PlanIzaje" 
           component={PlanIzajeScreen} 
-          options={{ title: 'Plan de Izaje' }}
+          options={{ headerShown: false }}  // Oculta el encabezado
         />
         <Stack.Screen 
           name="GruaIzaje" 

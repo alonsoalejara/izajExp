@@ -1,23 +1,52 @@
-import React from 'react';
-import { View, Modal, TouchableOpacity, Text } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, View, Text, TouchableOpacity } from 'react-native';
 import styles from '../styles/SetupIzajeStyles';
 
-const ModalForma = ({ isVisible, onClose, onSelect }) => (
-  <Modal transparent={true} visible={isVisible} animationType="fade" onRequestClose={onClose}>
-    <View style={styles.modalContainer}>
-      <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Seleccionar Forma</Text>
-        {['Cuadrado', 'Rectángulo', 'Círculo'].map((forma) => (
-          <TouchableOpacity key={forma} style={styles.option} onPress={() => onSelect(forma)}>
-            <Text style={styles.optionText}>{forma}</Text>
-          </TouchableOpacity>
-        ))}
-        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <Text style={styles.closeButtonText}>Cerrar</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </Modal>
-);
+const ModalForma = ({ isVisible, onClose, onSelect }) => {
+  const [selected, setSelected] = useState(null);
+
+    return (
+      <Modal transparent={true} visible={isVisible} animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Seleccionar Forma</Text>
+            {['Cuadrado', 'Rectángulo', 'Círculo'].map((forma) => (
+              <TouchableOpacity
+                key={forma}
+                style={[
+                  styles.optionButton,
+                  selected === forma ? styles.selectedOption : null,
+                ]}
+                onPress={() => setSelected(forma)}
+              >
+                <Text
+                style={[
+                  styles.optionText,
+                  selected === forma ? styles.selectedOptionText : null, // Cambiar color del texto
+                ]}
+                >
+                {forma}
+              </Text>
+              </TouchableOpacity>
+            ))}
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <Text style={styles.closeButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={() => {
+                  if (selected) onSelect(selected);
+                  onClose();
+                }}
+              >
+                <Text style={styles.buttonText}>Seleccionar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
+};
 
 export default ModalForma;

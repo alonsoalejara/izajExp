@@ -16,7 +16,7 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bienvenido/a</Text>
+      <Text style={styles.title}>Bienvenido</Text>
       
       {/* Campo de usuario */}
       <TextInput
@@ -53,7 +53,7 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#f4f4f4', // Fondo claro
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -61,20 +61,22 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#333', // Texto oscuro para el título
     marginBottom: 40,
   },
   input: {
     width: '100%',
     padding: 15,
-    backgroundColor: '#333',
+    backgroundColor: '#fff', // Fondo blanco para los inputs
     marginBottom: 15,
     borderRadius: 5,
-    color: 'white',
+    color: '#333', // Texto oscuro en los inputs
     fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#ddd', // Borde suave en los inputs
   },
   button: {
-    backgroundColor: 'red',
+    backgroundColor: 'red', // Botón rojo
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
@@ -87,7 +89,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   registerText: {
-    color: 'white',
+    color: '#333', // Texto en color oscuro
     marginTop: 20,
     textAlign: 'center',
     fontSize: 16,

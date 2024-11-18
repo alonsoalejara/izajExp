@@ -3,250 +3,134 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingVertical: 36,
+    marginBottom: 0,
   },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
+  formSection: {
+    marginBottom: 30,
+    padding: 10,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+  },
+  formTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  label: {
+    fontSize: 18,
+    color: '#666',
+    marginBottom: 10,
+  },
+  input: {
+    backgroundColor: '#e0e0e0',
+    padding: 8,
+    borderRadius: 5,
+    fontSize: 16,
+    color: '#333',
+    width: 220,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    borderWidth: 0,
+    borderColor: '#ccc',
+    borderRadius: 0,
+    paddingHorizontal: 5,
+    marginVertical: 5,
+  },
+  placeholderText: {
+    color: '#aaa',
+  },
+  unitText: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 5,
+  },
+  button: {
+    backgroundColor: '#ee0000',
+    padding: 15,
+    borderRadius: 5,
+    marginVertical: 10,
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '300',
+    marginTop: -10,
+    marginBottom: 5,
     color: '#333',
-    marginVertical: 10,
-  },
-  shapeSelectionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  shapeOption: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-    borderWidth: 2,
-    borderRadius: 5,
-    width: 80,
-    height: 80,
-    marginHorizontal: 10,
-  },
-  selectedShape: {
-    backgroundColor: '#4CAF50', // Color cuando está seleccionado
-    borderColor: '#388E3C',
-  },
-  unselectedShape: {
-    backgroundColor: '#FFF',
-    borderColor: '#BDBDBD',
-  },
-  shapeText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  selectedShapeText: {
-    color: '#fff',
-  },
-  unselectedShapeText: {
-    color: '#000',
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15, // Reducido margen
-  },
-  input: {
-    width: '80%', // Reducido para permitir espacio para las unidades
-    padding: 8,   // Reducido padding
-    borderWidth: 1,
-    borderRadius: 5,
-    marginRight: 10,
-    borderColor: '#ccc',
-  },
-  unitContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  unitButton: {
-    backgroundColor: '#E0E0E0',
-    padding: 5,   // Reducido padding
-    borderRadius: 5,
-    marginLeft: 10,
-  },
-  unitText: {
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#6200EE',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#FFF',
-    fontSize: 16,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
   },
   modalContent: {
-    width: '80%',
+    backgroundColor: '#f5f5f5',
     padding: 20,
-    backgroundColor: 'white',
     borderRadius: 10,
-    alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 30,
+    color: '#333',
   },
-  option: {
-    padding: 15,
+  optionButton: {
+    padding: 20,
+    backgroundColor: '#e0e0e0',
     marginBottom: 10,
-    width: '100%',
+    borderRadius: 8,
     alignItems: 'center',
-    borderColor: '#BDBDBD',
-    borderWidth: 1,
-    borderRadius: 5,
   },
   optionText: {
-    fontSize: 16,
-  },
-  label: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: 'bold',
-    marginTop: 10,
+    color: '#333',
   },
-  confirmButton: {
-    padding: 10,
-    backgroundColor: '#4CAF50',
-    borderRadius: 5,
-    marginTop: 10,
+  maniobrasContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 20,
   },
-  confirmButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+  selectedOption: {
+    backgroundColor: '#aa0000',
+  },
+  selectedOptionText: {
+    color: '#fff',
   },
   closeButton: {
-    marginTop: 10,
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+    borderRadius: 5,
   },
   closeButtonText: {
-    color: '#888',
-  },
-  pulgText: {
+    color: '#ee0000',
     fontSize: 16,
-    color: '#000',
   },
-
-  // Estilos adicionales
-  shapeSelectionButton: {
-    backgroundColor: '#6200EE',
+  saveButton: {
+    backgroundColor: '#ee0000',
     padding: 10,
-    marginBottom: 20,
-    borderRadius: 8,
+    borderRadius: 5,
   },
-  disabledButton: {
-    backgroundColor: '#ccc', // Color gris cuando el botón está deshabilitado
-  },
-  enabledButton: {
-    backgroundColor: '#4CAF50',  // Color verde cuando el botón está habilitado
-  },
-
-  // Nueva sección de unidades
-  inputContainer: {
+  modalButtons: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-
-  input: {
-    width: '70%',  // Reducido aún más el ancho
-    padding: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginRight: 10,
-  },
-
-  unitContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',  // Alinea verticalmente los inputs y las unidades
-  },
-
-  unitButton: {
-    marginLeft: 10,
-    backgroundColor: '#f0f0f0',
-    padding: 5,
-    borderRadius: 5,
-  },
-
-  unitText: {
-    fontSize: 16,
-  },
-
-  // Modal para Maniobras
-  maniobraModalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  maniobraModalContent: {
-    width: '80%',
-    padding: 20,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  maniobraModalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  maniobraOption: {
-    padding: 15,
-    marginBottom: 10,
-    width: '100%',
-    alignItems: 'center',
-    borderColor: '#BDBDBD',
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  maniobraOptionText: {
-    fontSize: 16,
-  },
-  maniobraConfirmButton: {
-    padding: 10,
-    backgroundColor: '#4CAF50',
-    borderRadius: 5,
+    justifyContent: 'space-between',
     marginTop: 10,
   },
-  maniobraConfirmButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  maniobraCloseButton: {
-    marginTop: 10,
-  },
-  maniobraCloseButtonText: {
-    color: '#888',
-  },
-
-  // Botón para abrir el modal de maniobras
-  openManiobraModalButton: {
-    backgroundColor: '#6200EE',
-    padding: 10,
-    borderRadius: 5,
+  formMarginTop: {
     marginTop: 20,
-  },
-  openManiobraModalButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

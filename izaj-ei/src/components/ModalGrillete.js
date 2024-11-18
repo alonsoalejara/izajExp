@@ -1,46 +1,54 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity } from 'react-native';
-import styles from '../styles/ModalStyles';
+import styles from '../styles/SetupIzajeStyles';
 
 const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) => {
   const [cantidad, setCantidad] = useState('');
   const [tipo, setTipo] = useState('');
 
   const handleGuardar = () => {
-    onSelectCantidad(cantidad);
-    onSelectTipo(tipo);
-    onClose();
+    if (cantidad && tipo) {
+      // Llamamos a las funciones pasadas como props para actualizar los estados
+      onSelectCantidad(cantidad);
+      onSelectTipo(tipo);
+      onClose(); // Cerramos el modal
+    } else {
+      alert("Por favor, complete todos los campos.");
+    }
   };
 
   return (
     <Modal visible={isVisible} transparent={true} animationType="slide">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Configurar Grillete</Text>
-
-          <Text style={styles.label}>Cantidad de grilletes:</Text>
+          <Text style={styles.modalTitle}>Configuración Grillete</Text>
+          
+          {/* Usamos la clase label para los textos de instrucciones */}
+          <Text style={styles.label}>Ingrese la cantidad de grilletes</Text>
           <TextInput
-            style={styles.input}
+            style={styles.optionButton}
+            placeholder="Cantidad de Grilletes"
+            placeholderTextColor={styles.placeholderText.color}
             keyboardType="numeric"
-            placeholder="Ingrese la cantidad"
             value={cantidad}
-            onChangeText={(text) => setCantidad(text.replace(/[^0-9]/g, ''))} // Solo permite números
+            onChangeText={setCantidad}
           />
-
-          <Text style={styles.label}>Tipo de grillete (en pulgadas):</Text>
+          
+          <Text style={styles.label}>Ingrese el tipo de grillete (pulg.)</Text>
           <TextInput
-            style={styles.input}
-            placeholder="Ejemplo: 1 pulgada, 2 pulgadas"
+            style={styles.optionButton}
+            placeholder="Tipo (en pulgadas)"
+            placeholderTextColor={styles.placeholderText.color}
             value={tipo}
             onChangeText={setTipo}
           />
-
+          
           <View style={styles.modalButtons}>
-            <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
-              <Text style={styles.buttonText}>Cancelar</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <Text style={styles.closeButtonText}>Cancelar</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleGuardar} style={styles.saveButton}>
-              <Text style={styles.buttonText}>Guardar</Text>
+            <TouchableOpacity style={styles.saveButton} onPress={handleGuardar}>
+              <Text style={styles.buttonText}>Seleccionar</Text>
             </TouchableOpacity>
           </View>
         </View>

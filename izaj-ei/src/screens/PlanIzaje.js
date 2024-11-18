@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, Button } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; 
 
 import styles from '../styles/PlanIzajeStyles';
@@ -79,8 +79,10 @@ export default function Main() {
       </View>
 
       {/* Botón para navegar a GruaIzaje */}
-      <View style={styles.section}>
-        <Button title="Ir a Grua de Izaje" onPress={() => navigation.navigate('GruaIzaje')} />
+      <View>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('GruaIzaje')}>
+          <Text style={styles.buttonText}>Ir a Grua de Izaje</Text>
+        </TouchableOpacity>
       </View>
 
     </ScrollView>

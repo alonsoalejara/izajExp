@@ -19,9 +19,9 @@ const SetupIzaje = () => {
   const [forma, setForma] = useState('');
   const [grua, setGrua] = useState('');
   const [eslingaOEstrobo, setEslingaOEstrobo] = useState('');
-  const [cantidad, setCantidad] = useState('');
+  const [cantidadManiobra, setCantidadManiobra] = useState('');
   const [manipulaciones, setManipulaciones] = useState('');
-  const [elemento, setElemento] = useState(''); // Nuevo estado para el campo "Elemento"
+  const [elemento, setElemento] = useState('');
 
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState('');
@@ -29,62 +29,75 @@ const SetupIzaje = () => {
   const [radioIzaje, setRadioIzaje] = useState('');
   const [radioMontaje, setRadioMontaje] = useState('');
 
+  const openModal = (setModalVisible) => {
+    setModalVisible(true);
+  };
+
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-      {/* Campo Elemento */}
+      
+      <View style={styles.formSection}>
+        <Text style={styles.formTitle}>Cálculo Maniobras Menores</Text>
+      </View>
+      
       <View style={styles.formSection}>
         <Text style={styles.formTitle}>Identificación del Elemento</Text>
-        <Text>Por favor, escribe el identificador o marca del elemento:</Text>
+        <Text style={styles.label}>Por favor, escriba el identificador o marca del elemento:</Text>
         <TextInput
           style={styles.input}
           placeholder="Ej: BC1, AKL001"
+          placeholderTextColor="#5a5a5a"
           value={elemento}
           onChangeText={setElemento}
         />
       </View>
 
-      {/* Sección de Configurar Forma */}
-      <TouchableOpacity onPress={() => setFormaModalVisible(true)} style={styles.button}>
+      <Text style={styles.formTitle}>Configuraciones:</Text>
+
+      {/* Configurar Forma */}
+      <TouchableOpacity onPress={() => openModal(setFormaModalVisible)} style={styles.button}>
         <Text style={styles.buttonText}>Configurar Forma</Text>
       </TouchableOpacity>
-      <Text>Forma seleccionada: {forma}</Text>
+      <Text style={styles.title}>Forma seleccionada: {forma}</Text>
       <ModalForma
         isVisible={isFormaModalVisible}
         onClose={() => setFormaModalVisible(false)}
         onSelect={setForma}
       />
 
-      {/* Sección de Configurar Grúa */}
-      <TouchableOpacity onPress={() => setGruaModalVisible(true)} style={styles.button}>
+      {/* Configurar Grúa */}
+      <TouchableOpacity onPress={() => openModal(setGruaModalVisible)} style={styles.button}>
         <Text style={styles.buttonText}>Configurar Grúa</Text>
       </TouchableOpacity>
-      <Text>Grúa seleccionada: {grua}</Text>
+      <Text style={styles.title}>Grúa seleccionada: {grua}</Text>
       <ModalGrua
         isVisible={isGruaModalVisible}
         onClose={() => setGruaModalVisible(false)}
         onSelect={setGrua}
       />
 
-      {/* Sección de Configurar Maniobra */}
-      <TouchableOpacity onPress={() => setManiobraModalVisible(true)} style={styles.button}>
+      {/* Configurar Maniobra */}
+      <TouchableOpacity onPress={() => openModal(setManiobraModalVisible)} style={styles.button}>
         <Text style={styles.buttonText}>Configurar Maniobra</Text>
       </TouchableOpacity>
-      <Text>Maniobra seleccionada: {eslingaOEstrobo}</Text>
-      <Text>Cantidad: {cantidad}</Text>
+      <Text style={styles.title}>Maniobra seleccionada: {eslingaOEstrobo}</Text>
+      <Text style={styles.title}>Cantidad: {cantidadManiobra}</Text>
       <ModalManiobra
         isVisible={isManiobraModalVisible}
         onClose={() => setManiobraModalVisible(false)}
-        onSelectEslinga={setEslingaOEstrobo}
-        onSelectCantidad={setCantidad}
-        onSelect={() => setManipulaciones(`${eslingaOEstrobo} x ${cantidad}`)}
+        onSelect={({ tipo, cantidad }) => {
+          setEslingaOEstrobo(tipo);
+          setCantidadManiobra(cantidad);
+          setManipulaciones(`${tipo} x ${cantidad}`);
+        }}
       />
 
-      {/* Sección de Configurar Grillete */}
-      <TouchableOpacity onPress={() => setGrilleteModalVisible(true)} style={styles.button}>
+      {/* Configurar Grillete */}
+      <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.button}>
         <Text style={styles.buttonText}>Configurar Grillete</Text>
       </TouchableOpacity>
-      <Text>Cantidad de grilletes: {cantidadGrilletes}</Text>
-      <Text>Tipo de grillete: {tipoGrillete} pulg.</Text>
+      <Text style={styles.title}>Cantidad de grilletes: {cantidadGrilletes}</Text>
+      <Text style={styles.title}>Tipo de grillete: {tipoGrillete} pulg.</Text>
       <ModalGrillete
         isVisible={isGrilleteModalVisible}
         onClose={() => setGrilleteModalVisible(false)}
@@ -92,7 +105,7 @@ const SetupIzaje = () => {
         onSelectTipo={setTipoGrillete}
       />
 
-      {/* Formulario de Datos de Izaje */}
+      {/* Formulario Datos Izaje */}
       <FormularioDatosIzaje
         radioIzaje={radioIzaje}
         radioMontaje={radioMontaje}
