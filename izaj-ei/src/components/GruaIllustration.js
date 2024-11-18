@@ -1,82 +1,80 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
-export default function GruaIllustration({ brazoAngle }) {
+import {
+  RuedasGrua,
+  GanchoGrua,
+  CabinaGrua,
+  BrazoGrua,
+  BaseGrua,
+} from './GruaParts/RT555';
+
+export default function GruaIllustration() {
   return (
-    <View
-      style={{
-        position: 'absolute',
-        top: -117,
-        left: -15,
-      }}
-    >
-      {/* Ilustración del brazo de la grúa */}
-      <View
-        style={{
-          width: 10,
-          height: 130,
-          backgroundColor: '#ceb737',
-          position: 'absolute',
-          top: 150, // Ajuste vertical
-          left: 93, // Ajuste horizontal
-          transform: [
-            { rotate: `${brazoAngle}deg` }, // Usar brazoAngle aquí
-            { scaleX: 1.0 },
-            { scaleY: 1.9 },
-            { translateY: -55 },
-          ],
-          transformOrigin: 'left center', // Define el origen de transformación
-        }}
-      />
-      
-      {/* Ilustración de la base del brazo de la grúa */}
-      <View
-        style={{
-          width: 25,
-          height: 25,
-          backgroundColor: '#af9c31',
-          borderRadius: 50,
-          position: 'absolute',
-          top: 213,
-          left: 78,
-        }}
-      />
-      
-      {/* Ilustración de la base de la grúa */}
-      <View
-        style={{
-          width: 83,
-          height: 43,
-          backgroundColor: '#ddc43a',
-          position: 'absolute',
-          top: 228,
-          left: 21,
-        }}
-      />
-      
-      {/* Ilustración de las ruedas de la grúa */}
-      <View
-        style={{
-          width: 20,
-          height: 20,
-          borderRadius: 50,
-          backgroundColor: 'black',
-          position: 'absolute',
-          top: 261,
-          left: 25,
-        }}
-      />
-      <View
-        style={{
-          width: 20,
-          height: 20,
-          borderRadius: 50,
-          backgroundColor: 'black',
-          position: 'absolute',
-          top: 261,
-          left: 78,
-        }}
-      />
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <View
+          style={[
+            styles.box,
+            {
+              transform: [{ scale: 0.6 }],
+              top: 550, // Ajusta la posición vertical aquí
+              left: 11, // Ajusta la posición horizontal aquí
+            },
+          ]}
+        >
+          <View style={styles.gruaContainer}>
+            <BaseGrua />
+            <RuedasGrua />
+            <CablesGrua />
+            <BrazoGrua />
+            <CabinaGrua />
+            <GanchoGrua />
+          </View>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+}
+
+// Componente de los cables de la grúa
+function CablesGrua() {
+  return (
+    <View style={styles.cablesContainer}>
+      <View style={styles.cable} />
+      <View style={[styles.cable, { left: -376 }]} />
     </View>
   );
 }
+
+// Estilos
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  box: {
+    height: 200,
+    width: 200,
+    position: 'absolute', // Necesario para que top y left funcionen
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gruaContainer: {
+    position: 'relative',
+  },
+  cablesContainer: {
+    position: 'absolute',
+    left: 16,
+  },
+  cable: {
+    width: 1.5,
+    height: 200,
+    backgroundColor: '#0000aa',
+    position: 'absolute',
+    left: -364,
+    bottom: 630,
+  },
+});
