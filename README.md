@@ -1,22 +1,32 @@
 # izajExp
 
-Izapp es una aplicación diseñada para diseñar y simular levantamientos de carga y planes de izajes.
+izajExp es una aplicación diseñada para diseñar y simular levantamientos de carga y planes de izajes.
 Ayuda al supervisor, capataz y maestros mayores para calcular factores
 que influyan en los parámetros de seguridad para concretar si los levantamientos son optimos.
 
 ## Tabla de Contenidos
 
+- [Entorno](#entorno)
 - [Requisitos](#requisitos)
-- [Instalación](#instalación)
+
+
+## Entorno utilizado
+
+- **Git:** Control de versiones. 
+- **Visual Studio Code:** IDE recomendado para el desarrollo del proyecto
+- **Node.js** Entorno de ejecución de Javascript
+- **React** Biblioteca para interfaces de usuario
+- **React Native** Framework para desarrollo móvil
+- **Expo** Herramienta para desarrollo y prueba de aplicaciones React Native
+- **MongoDB** Base de datos no relacional
+- **Express.js** Framework web para Node.js
 
 ## Requisitos
 
-- **MongoDB** (motor de base de datos)
-- **Express** (version 4.21.1 o superior)
-- **Node.js** (versión 20.17.0 o superior)
-- **React.js** (version 18.2.0 o superior)
-- **React Native** (version 0.74.5 o superior)
-- **Expo CLI** (version 0.18.30 o superior)
+Asegurate de tener instalados los siguientes programas:
 
-## Instalación
+- **Node.js:** v18.20.4 LTS (Recomendado para el entorno de desarrollo)
+- **npm:** Gestor de paquetes de Node.js 
+- **Git:** Clonación de repositorio.
+
 
