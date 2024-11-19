@@ -1,4 +1,4 @@
-# izapp
+# izajExp
 
 Izapp es una aplicación diseñada para diseñar y simular levantamientos de carga y planes de izajes.
 Ayuda al supervisor, capataz y maestros mayores para calcular factores
