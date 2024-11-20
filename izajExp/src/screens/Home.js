@@ -12,7 +12,7 @@ export default function Home({ navigation }) {
         imageStyle={styles.image}
       >
         {/* Degradado de fondo */}
-        <Svg height="100%" width="100%" style={styles.gradient}>
+        <Svg style={styles.gradient}>
           <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
             <Stop offset="30%" stopColor="black" stopOpacity="0.9" />
             <Stop offset="90%" stopColor="red" stopOpacity="0.5" />

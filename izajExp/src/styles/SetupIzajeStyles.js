@@ -1,12 +1,10 @@
 import { StyleSheet } from 'react-native';
+import CommonStyles from './CommonStyles';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
-    paddingVertical: 36,
-    marginBottom: 0,
+    ...CommonStyles.container,
+    marginBottom: 0, // Específico para este diseño
   },
   formSection: {
     marginBottom: 30,
@@ -15,31 +13,26 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   formTitle: {
+    ...CommonStyles.textBold,
     fontSize: 20,
-    fontWeight: 'bold',
     marginBottom: 10,
     color: '#333',
   },
   label: {
+    ...CommonStyles.text,
     fontSize: 18,
-    color: '#666',
+    color: '#666', // Específico para este diseño
     marginBottom: 10,
   },
   input: {
-    backgroundColor: '#e0e0e0',
-    padding: 8,
-    borderRadius: 5,
-    fontSize: 16,
-    color: '#333',
+    ...CommonStyles.input,
+    padding: 8, // Ajuste específico
     width: 220,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    borderWidth: 0,
-    borderColor: '#ccc',
-    borderRadius: 0,
     paddingHorizontal: 5,
     marginVertical: 5,
   },
@@ -47,44 +40,26 @@ const styles = StyleSheet.create({
     color: '#aaa',
   },
   unitText: {
+    ...CommonStyles.text,
     fontSize: 14,
     color: '#666',
     marginLeft: 5,
   },
   button: {
-    backgroundColor: '#ee0000',
-    padding: 15,
-    borderRadius: 5,
+    ...CommonStyles.button,
+    backgroundColor: '#ee0000', // Color rojo específico
     marginVertical: 10,
-    alignItems: 'center',
     marginBottom: 40,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
+    ...CommonStyles.buttonText,
   },
   title: {
+    ...CommonStyles.text,
     fontSize: 18,
     fontWeight: '300',
     marginTop: -10,
     marginBottom: 5,
-    color: '#333',
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-  },
-  modalContent: {
-    backgroundColor: '#f5f5f5',
-    padding: 20,
-    borderRadius: 10,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 30,
     color: '#333',
   },
   optionButton: {
@@ -95,8 +70,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   optionText: {
+    ...CommonStyles.textBold,
     fontSize: 15,
-    fontWeight: 'bold',
     color: '#333',
   },
   maniobrasContainer: {
@@ -108,26 +83,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#aa0000',
   },
   selectedOptionText: {
+    ...CommonStyles.text,
     color: '#fff',
-  },
-  closeButton: {
-    backgroundColor: '#f5f5f5',
-    padding: 10,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: '#ee0000',
-    fontSize: 16,
-  },
-  saveButton: {
-    backgroundColor: '#ee0000',
-    padding: 10,
-    borderRadius: 5,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
   },
   formMarginTop: {
     marginTop: 20,

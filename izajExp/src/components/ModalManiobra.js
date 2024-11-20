@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
-import styles from '../styles/SetupIzajeStyles';
+import styles from '../styles/ModalStyles';
 
 const ModalManiobra = ({ isVisible, onClose, onSelect }) => {
   const [cantidad, setCantidad] = useState(null); // Estado para la cantidad de maniobras seleccionada

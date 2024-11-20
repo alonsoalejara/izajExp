@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity } from 'react-native';
-import styles from '../styles/SetupIzajeStyles';
+import styles from '../styles/ModalStyles';
 
 const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) => {
   const [cantidad, setCantidad] = useState('');

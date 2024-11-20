@@ -1,65 +1,54 @@
 import { StyleSheet } from 'react-native';
+import CommonStyles from './CommonStyles';
 
 const ModalStyles = StyleSheet.create({
   modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semitransparente
+    ...CommonStyles.modalContainer,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Opacidad específica para este modal
   },
   modalContent: {
-    width: '90%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
+    backgroundColor: '#f5f5f5',
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    borderRadius: 10,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
+    ...CommonStyles.textBold,
+    fontSize: 18,
+    marginBottom: 30,
+    color: '#333',
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  input: {
+  optionButton: {
+    backgroundColor: '#e0e0e0',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
+    borderRadius: 8,
     padding: 10,
-    marginBottom: 15,
     fontSize: 16,
+    marginBottom: 10,
+    color: '#333',
+  },
+  placeholderText: {
+    color: '#aaa', // Define aquí el color del placeholder
+  },
+  closeButton: {
+    ...CommonStyles.button,
+    backgroundColor: '#f5f5f5', // Fondo claro
+    padding: 10,
+  },
+  closeButtonText: {
+    ...CommonStyles.text,
+    color: '#ee0000', // Texto rojo
+    fontSize: 16,
+  },
+  saveButton: {
+    ...CommonStyles.button,
+    backgroundColor: '#ee0000', // Fondo rojo específico
+    padding: 10,
   },
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: '#f44336',
-    padding: 10,
-    marginRight: 5,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  saveButton: {
-    flex: 1,
-    backgroundColor: '#4CAF50',
-    padding: 10,
-    marginLeft: 5,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+    marginTop: 10,
   },
 });
 

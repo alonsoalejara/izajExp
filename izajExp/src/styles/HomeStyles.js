@@ -1,51 +1,51 @@
 import { StyleSheet } from 'react-native';
+import CommonStyles from './CommonStyles';
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    background: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    image: {
-      width: '100%',
-      height: '100%',
-      resizeMode: 'cover',
-      position: 'absolute',
-      left: 0,
-    },
-    gradient: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-    },
-    logo: {
-      position: 'absolute',
-      top: '40%',  // Centra verticalmente
-      left: '34%', // Centra horizontalmente
-      transform: [{ translateX: -100 }, { translateY: -200 }], // Ajuste para que esté perfectamente centrado
-      width: '80%',
-      height: '20%',
-    },
-    button: {
-      position: 'absolute',
-      bottom: 55,
-      backgroundColor: 'red',
-      paddingVertical: 15,
-      paddingHorizontal: 100,
-      borderRadius: 30,
-    },
-    buttonText: {
-      fontFamily: 'Arial',  
-      color: 'white',
-      fontSize: 18,
-      fontWeight: 'bold',
-      textAlign: 'center',
-    },
+const HomeStyles = StyleSheet.create({
+  container: {
+    ...CommonStyles.container,
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  image: {
+    width: '115%', 
+    height: '115%', 
+    resizeMode: 'cover', 
+    position: 'absolute',
+    top: -50,
+    left: -19,
+  },
+  gradient: {
+    position: 'absolute',
+    top: -50,
+    left: -20,
+    width: '120%',
+    height: '120%',
+  },
+  logo: {
+    position: 'absolute',
+    top: '20%',
+    left: '-24%',
+    alignSelf: 'center',
+    width: 500,
+    height: 140,
+  },
+  button: {
+    ...CommonStyles.button,
+    ...CommonStyles.buttonDanger,
+    position: 'absolute',
+    bottom: 55,
+    paddingHorizontal: 100,
+    borderRadius: 30,
+  },
+  buttonText: {
+    ...CommonStyles.buttonText,
+  },
 });
 
-export default styles;
+export default HomeStyles;

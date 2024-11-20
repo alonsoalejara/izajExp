@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
-import styles from '../styles/SetupIzajeStyles';
+import styles from '../styles/ModalStyles';
 
 const ModalGrua = ({ isVisible, onClose, onSelect }) => {
   const [selected, setSelected] = useState(null);
