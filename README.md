@@ -12,22 +12,22 @@ que influyan en los parámetros de seguridad para concretar si los levantamiento
 
 ## Entorno utilizado
 
-- **Git:** Control de versiones. 
-- **Visual Studio Code:** IDE recomendado para el desarrollo del proyecto
-- **Node.js** Entorno de ejecución de Javascript
-- **React** Biblioteca para interfaces de usuario
-- **React Native** Framework para desarrollo móvil
-- **Expo** Herramienta para desarrollo y prueba de aplicaciones React Native
+- **Git v2.38.1.** Control de versiones. 
+- **Visual Studio Code v1.95.3.**  IDE recomendado para el desarrollo del proyecto
+- **Node.js v18.20.4.**  Entorno de ejecución de Javascript
+- **React v.18.3.1.**  Biblioteca para interfaces de usuario
+- **React Native v.0.76.2.**  Framework para desarrollo móvil
+- **Expo v.52.0.7.**  Herramienta para desarrollo y prueba de aplicaciones React Native
+- **Express.js v.4.21.1.**  Framework web para Node.js
 - **MongoDB** Base de datos no relacional
-- **Express.js** Framework web para Node.js
 
 ## Requisitos
 
 Asegurate de tener instalados los siguientes programas:
 
-- **Node.js:** v18.20.4 LTS (Recomendado para el entorno de desarrollo)
-- **npm:** Gestor de paquetes de Node.js 
-- **Git:** Clonación de repositorio.
+- **Node.js: v18.20.4 LTS**  (Recomendado para el entorno de desarrollo)
+- **npm: v10.7.0** Gestor de paquetes de Node.js 
+- **Git: v2.38.1** Clonación de repositorio.
 
 ## Instalación
 
