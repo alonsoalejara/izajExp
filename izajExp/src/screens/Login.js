@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
+import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg'; 
+import LoginStyles from '../styles/LoginStyles';
 
 export default function Login({ navigation }) {
   const [username, setUsername] = useState('');
@@ -15,83 +17,54 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Bienvenido</Text>
-      
-      {/* Campo de usuario */}
-      <TextInput
-        style={styles.input}
-        placeholder="Usuario"
-        placeholderTextColor="#aaa"
-        value={username}
-        onChangeText={setUsername}
-      />
+    <View style={LoginStyles.container}>
+      <View style={LoginStyles.circleContainer}>
+        {/* Imagen recortada por el círculo */}
+        <ImageBackground
+          source={require('../../assets/grua-home.png')}
+          style={LoginStyles.background}
+          imageStyle={LoginStyles.image}
+        >
+          {/* El degradado dentro del círculo */}
+          <Svg style={LoginStyles.gradient}>
+            <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+              <Stop offset="10%" stopColor="white" stopOpacity="0.6" />
+              <Stop offset="90%" stopColor="red" stopOpacity="0.8" />
+            </LinearGradient>
+            <Rect width="100%" height="100%" fill="url(#grad1)" />
+          </Svg>
 
-      {/* Campo de contraseña */}
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        placeholderTextColor="#aaa"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+          {/* Logotipo dentro del círculo */}
+          <Image
+            source={require('../../assets/EI-Montajes.png')}
+            style={LoginStyles.logo}
+            resizeMode="contain"
+          />
+        </ImageBackground>
+      </View>
 
-      {/* Botón de inicio de sesión */}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Iniciar sesión</Text>
-      </TouchableOpacity>
-
-      {/* Enlace para registrarse */}
-      <TouchableOpacity onPress={() => alert('Redirigir a la pantalla de registro')}>
-        <Text style={styles.registerText}>¿No tienes cuenta? Regístrate</Text>
-      </TouchableOpacity>
+      {/* Formulario de login (ahora estará encima de la imagen y círculo recortado) */}
+      <View style={LoginStyles.formContainer}>
+        <Text style={LoginStyles.title}>¡Bienvenido a Izajexp!</Text>
+        <TextInput
+          style={LoginStyles.input}
+          placeholder="Usuario"
+          placeholderTextColor="#aaa"
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput
+          style={LoginStyles.input}
+          placeholder="Contraseña"
+          placeholderTextColor="#aaa"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TouchableOpacity style={LoginStyles.button} onPress={handleLogin}>
+          <Text style={LoginStyles.buttonText}>Iniciar sesión</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f4f4f4', // Fondo claro
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#333', // Texto oscuro para el título
-    marginBottom: 40,
-  },
-  input: {
-    width: '100%',
-    padding: 15,
-    backgroundColor: '#fff', // Fondo blanco para los inputs
-    marginBottom: 15,
-    borderRadius: 5,
-    color: '#333', // Texto oscuro en los inputs
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#ddd', // Borde suave en los inputs
-  },
-  button: {
-    backgroundColor: 'red', // Botón rojo
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 30,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  registerText: {
-    color: '#333', // Texto en color oscuro
-    marginTop: 20,
-    textAlign: 'center',
-    fontSize: 16,
-  },
-});

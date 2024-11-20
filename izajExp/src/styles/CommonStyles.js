@@ -5,7 +5,7 @@ const CommonStyles = StyleSheet.create({
   text: {
     fontFamily: 'Arial',
     fontSize: 16,
-    color: '#333', // Texto oscuro por defecto
+    color: '#333',
   },
   textBold: {
     fontWeight: 'bold',
@@ -22,10 +22,10 @@ const CommonStyles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonPrimary: {
-    backgroundColor: '#007bff', // Azul
+    backgroundColor: '#007bff',
   },
   buttonDanger: {
-    backgroundColor: '#f44336', // Rojo
+    backgroundColor: '#f44336',
   },
   buttonText: {
     color: '#fff',
@@ -36,7 +36,7 @@ const CommonStyles = StyleSheet.create({
   // Contenedores básicos
   container: {
     flex: 1,
-    backgroundColor: '#fff', // Fondo blanco común
+    backgroundColor: '#d5d5d5',
     paddingHorizontal: 20,
     paddingVertical: 36,
   },
@@ -44,7 +44,7 @@ const CommonStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semitransparente para modales
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 
   // Inputs comunes
