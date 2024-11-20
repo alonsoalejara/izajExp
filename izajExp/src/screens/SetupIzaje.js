@@ -7,6 +7,7 @@ import ModalManiobra from '../components/ModalManiobra';
 import ModalGrillete from '../components/ModalGrillete';
 import FormularioDatosIzaje from '../components/FormularioDatosIzaje';
 import { useNavigation } from '@react-navigation/native';
+import Header from '../components/common/header';
 
 const SetupIzaje = () => {
   const navigation = useNavigation();
@@ -34,93 +35,98 @@ const SetupIzaje = () => {
   };
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-      
-      <View style={styles.formSection}>
-        <Text style={styles.formTitle}>Cálculo Maniobras Menores</Text>
-      </View>
-      
-      <View style={styles.formSection}>
-        <Text style={styles.formTitle}>Identificación del Elemento</Text>
-        <Text style={styles.label}>Por favor, escriba el identificador o marca del elemento:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Ej: BC1, AKL001"
-          placeholderTextColor="#5a5a5a"
-          value={elemento}
-          onChangeText={setElemento}
+    <View style={{ flex: 1 }}>
+      {/* Header */}
+      <Header />
+
+      {/* Contenido principal */}
+      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+        <View style={styles.formSection}>
+          <Text style={styles.formTitle}>Cálculo Maniobras Menores</Text>
+        </View>
+        
+        <View style={styles.formSection}>
+          <Text style={styles.formTitle}>Identificación del Elemento</Text>
+          <Text style={styles.label}>Por favor, escriba el identificador o marca del elemento:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ej: BC1, AKL001"
+            placeholderTextColor="#5a5a5a"
+            value={elemento}
+            onChangeText={setElemento}
+          />
+        </View>
+
+        <Text style={styles.formTitle}>Configuraciones:</Text>
+
+        {/* Configurar Forma */}
+        <TouchableOpacity onPress={() => openModal(setFormaModalVisible)} style={styles.button}>
+          <Text style={styles.buttonText}>Configurar Forma</Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>Forma seleccionada: {forma}</Text>
+        <ModalForma
+          isVisible={isFormaModalVisible}
+          onClose={() => setFormaModalVisible(false)}
+          onSelect={setForma}
         />
-      </View>
 
-      <Text style={styles.formTitle}>Configuraciones:</Text>
+        {/* Configurar Grúa */}
+        <TouchableOpacity onPress={() => openModal(setGruaModalVisible)} style={styles.button}>
+          <Text style={styles.buttonText}>Configurar Grúa</Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>Grúa seleccionada: {grua}</Text>
+        <ModalGrua
+          isVisible={isGruaModalVisible}
+          onClose={() => setGruaModalVisible(false)}
+          onSelect={setGrua}
+        />
 
-      {/* Configurar Forma */}
-      <TouchableOpacity onPress={() => openModal(setFormaModalVisible)} style={styles.button}>
-        <Text style={styles.buttonText}>Configurar Forma</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Forma seleccionada: {forma}</Text>
-      <ModalForma
-        isVisible={isFormaModalVisible}
-        onClose={() => setFormaModalVisible(false)}
-        onSelect={setForma}
-      />
+        {/* Configurar Maniobra */}
+        <TouchableOpacity onPress={() => openModal(setManiobraModalVisible)} style={styles.button}>
+          <Text style={styles.buttonText}>Configurar Maniobra</Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>Maniobra seleccionada: {eslingaOEstrobo}</Text>
+        <Text style={styles.title}>Cantidad: {cantidadManiobra}</Text>
+        <ModalManiobra
+          isVisible={isManiobraModalVisible}
+          onClose={() => setManiobraModalVisible(false)}
+          onSelect={({ tipo, cantidad }) => {
+            setEslingaOEstrobo(tipo);
+            setCantidadManiobra(cantidad);
+            setManipulaciones(`${tipo} x ${cantidad}`);
+          }}
+        />
 
-      {/* Configurar Grúa */}
-      <TouchableOpacity onPress={() => openModal(setGruaModalVisible)} style={styles.button}>
-        <Text style={styles.buttonText}>Configurar Grúa</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Grúa seleccionada: {grua}</Text>
-      <ModalGrua
-        isVisible={isGruaModalVisible}
-        onClose={() => setGruaModalVisible(false)}
-        onSelect={setGrua}
-      />
+        {/* Configurar Grillete */}
+        <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.button}>
+          <Text style={styles.buttonText}>Configurar Grillete</Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>Cantidad de grilletes: {cantidadGrilletes}</Text>
+        <Text style={styles.title}>Tipo de grillete: {tipoGrillete} pulg.</Text>
+        <ModalGrillete
+          isVisible={isGrilleteModalVisible}
+          onClose={() => setGrilleteModalVisible(false)}
+          onSelectCantidad={setCantidadGrilletes}
+          onSelectTipo={setTipoGrillete}
+        />
 
-      {/* Configurar Maniobra */}
-      <TouchableOpacity onPress={() => openModal(setManiobraModalVisible)} style={styles.button}>
-        <Text style={styles.buttonText}>Configurar Maniobra</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Maniobra seleccionada: {eslingaOEstrobo}</Text>
-      <Text style={styles.title}>Cantidad: {cantidadManiobra}</Text>
-      <ModalManiobra
-        isVisible={isManiobraModalVisible}
-        onClose={() => setManiobraModalVisible(false)}
-        onSelect={({ tipo, cantidad }) => {
-          setEslingaOEstrobo(tipo);
-          setCantidadManiobra(cantidad);
-          setManipulaciones(`${tipo} x ${cantidad}`);
-        }}
-      />
+        {/* Formulario Datos Izaje */}
+        <FormularioDatosIzaje
+          radioIzaje={radioIzaje}
+          radioMontaje={radioMontaje}
+          setRadioIzaje={setRadioIzaje}
+          setRadioMontaje={setRadioMontaje}
+        />
 
-      {/* Configurar Grillete */}
-      <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.button}>
-        <Text style={styles.buttonText}>Configurar Grillete</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Cantidad de grilletes: {cantidadGrilletes}</Text>
-      <Text style={styles.title}>Tipo de grillete: {tipoGrillete} pulg.</Text>
-      <ModalGrillete
-        isVisible={isGrilleteModalVisible}
-        onClose={() => setGrilleteModalVisible(false)}
-        onSelectCantidad={setCantidadGrilletes}
-        onSelectTipo={setTipoGrillete}
-      />
-
-      {/* Formulario Datos Izaje */}
-      <FormularioDatosIzaje
-        radioIzaje={radioIzaje}
-        radioMontaje={radioMontaje}
-        setRadioIzaje={setRadioIzaje}
-        setRadioMontaje={setRadioMontaje}
-      />
-
-      {/* Botón para navegar a PlanIzaje */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('PlanIzaje')}
-      >
-        <Text style={styles.buttonText}>Ir a Plan de Izaje</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        {/* Botón para navegar a PlanIzaje */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('PlanIzaje')}
+        >
+          <Text style={styles.buttonText}>Ir a Plan de Izaje</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
   );
 };
 

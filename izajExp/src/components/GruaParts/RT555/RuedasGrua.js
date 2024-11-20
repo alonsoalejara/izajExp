@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import WheelLayer from '../../Common/WheelLayer';
+import WheelLayer from '../../common/WheelLayer';
 
 export default function RuedasGrua() {
   return (
