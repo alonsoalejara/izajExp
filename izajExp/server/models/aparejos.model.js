@@ -1,26 +1,27 @@
 import { Schema, model } from 'mongoose';
 
-const datosCargaSchema = new Schema(
+const aparejosSchema = new Schema(
     {
-        pesoGancho: {
-            type: Number,
-            required: true
-        }, 
-        pesoHerramientas: {
-            type: Number,
-            required: true
-        }, 
-        pesoCarga: {
+        item: {
             type: Number,
             required: true
         },
-        otrosPesos: {
+        descripcion: {
+            type: String,
+            required: true
+        },
+        cantidad: {
             type: Number,
             required: true
         },
-        cargaBruta: {
-            type: Number
+        pesoUnitario: {
+            type: Number,
+            required: true
         },
+        pesoTotal: {
+            type: Number,
+            required: true
+        }
     },
     {
         timestamps: true,
@@ -28,4 +29,4 @@ const datosCargaSchema = new Schema(
     }
 );
 
-export default model('DatosCarga', datosCargaSchema);
+export default model('Aparejos', aparejosSchema);

@@ -7,36 +7,25 @@ const setupIzajeSchema = new Schema(
             ref: 'Usuario',
             required: true
         },
-        grua: {
+        aparejos: {
             type: Schema.Types.ObjectId,
-            ref: 'Grua',
+            ref: 'Aparejos',
             required: true
         },
-        maniobra: {
+        datos: {
             type: Schema.Types.ObjectId,
-            ref: 'Maniobra',
+            ref: 'Datos',
             required: true
         },
-        carga: {
+        cargas: {
             type: Schema.Types.ObjectId,
-            ref: 'Carga',
+            ref: 'Cargas',
             required: true
         },
-        capacidad: {
+        forma: {
             type: Schema.Types.ObjectId,
-            ref: 'Capacidad',
+            ref: 'Forma',
             required: true
-        },
-        grilletes: {
-            type: Schema.Types.ObjectId,
-            ref: 'Grilletes',
-            required: true
-        },
-        porcentajeCapacidad: {
-            type: Number
-        },
-        observaciones: {
-            type:String
         },
     },
     {
