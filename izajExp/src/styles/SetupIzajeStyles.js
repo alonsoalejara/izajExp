@@ -4,50 +4,73 @@ import CommonStyles from './CommonStyles';
 const styles = StyleSheet.create({
   container: {
     ...CommonStyles.container,
-    marginBottom: 0, // Específico para este diseño
+    marginBottom: 0,
+  },
+  grilleteInfo: {
+    marginBottom: -60,
+  },
+  maniobraInfo: {
+    marginBottom: -60,
   },
   formSection: {
     marginBottom: 30,
-    padding: 10,
+    padding: 20,
     backgroundColor: '#f5f5f5',
-    borderRadius: 10,
+    borderRadius: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 15 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+    elevation: 10,
   },
   formTitle: {
     ...CommonStyles.textBold,
-    fontSize: 20,
-    marginBottom: 10,
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom: 5,
+    marginTop: 10,
     color: '#333',
+  },
+  formTitleNoContainer: {
+    ...CommonStyles.textBold,
+    fontSize: 26,
+    fontWeight: '600',
+    marginBottom: 20,
+    marginTop: -10,
+    color: '#000',
+    textAlign: 'center',
   },
   label: {
     ...CommonStyles.text,
-    fontSize: 18,
-    color: '#666', // Específico para este diseño
+    fontSize: 20,
+    color: '#666',
     marginBottom: 10,
   },
   input: {
     ...CommonStyles.input,
-    padding: 8, // Ajuste específico
+    padding: 8,
     width: 220,
+    marginBottom: 10,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingHorizontal: 5,
-    marginVertical: 5,
+    marginVertical: 10,
   },
   placeholderText: {
     color: '#aaa',
   },
   unitText: {
     ...CommonStyles.text,
-    fontSize: 14,
+    fontSize: 18,
     color: '#666',
-    marginLeft: 5,
+    marginLeft: 6,
   },
   button: {
     ...CommonStyles.button,
-    backgroundColor: '#ee0000', // Color rojo específico
+    backgroundColor: '#ee0000',
     marginVertical: 10,
     marginBottom: 40,
   },
@@ -57,9 +80,9 @@ const styles = StyleSheet.create({
   title: {
     ...CommonStyles.text,
     fontSize: 18,
-    fontWeight: '300',
-    marginTop: -10,
-    marginBottom: 5,
+    fontWeight: '500',
+    marginTop: -20,
+    marginBottom: 30,
     color: '#333',
   },
   optionButton: {
@@ -77,7 +100,7 @@ const styles = StyleSheet.create({
   maniobrasContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginVertical: 20,
+    marginVertical: 25,
   },
   selectedOption: {
     backgroundColor: '#aa0000',

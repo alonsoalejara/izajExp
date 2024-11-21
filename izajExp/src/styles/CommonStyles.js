@@ -18,7 +18,7 @@ const CommonStyles = StyleSheet.create({
   button: {
     paddingVertical: 15,
     paddingHorizontal: 20,
-    borderRadius: 8,
+    borderRadius: 30,
     alignItems: 'center',
   },
   buttonPrimary: {
@@ -28,7 +28,7 @@ const CommonStyles = StyleSheet.create({
     backgroundColor: '#f44336',
   },
   buttonText: {
-    color: '#fff',
+    color: '#f5f5f5',
     fontWeight: '600',
     fontSize: 16,
   },
@@ -49,13 +49,14 @@ const CommonStyles = StyleSheet.create({
 
   // Inputs comunes
   input: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#f5f5f5',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
     color: '#333',
+    marginLeft: -3,
   },
 
   // Placeholder de inputs

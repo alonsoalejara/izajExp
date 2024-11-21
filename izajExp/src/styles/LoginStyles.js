@@ -71,7 +71,7 @@ export default StyleSheet.create({
     },
     title: {
       fontSize: 24,
-      fontWeight: '500',
+      fontWeight: '600',
       color: '#000',
       marginBottom: 30,
       marginTop: 50,

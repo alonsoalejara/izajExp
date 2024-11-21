@@ -41,8 +41,8 @@ const SetupIzaje = () => {
 
       {/* Contenido principal */}
       <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-        <View style={styles.formSection}>
-          <Text style={styles.formTitle}>Cálculo Maniobras Menores</Text>
+        <View style={styles.formTitle}>
+          <Text style={styles.formTitleNoContainer}>Cálculo Maniobras Menores</Text>
         </View>
         
         <View style={styles.formSection}>
@@ -81,7 +81,20 @@ const SetupIzaje = () => {
           onSelect={setGrua}
         />
 
-        {/* Configurar Maniobra */}
+        {/* Eliminar el contenedor envolvente de Configurar Grillete */}
+        <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.button}>
+          <Text style={styles.buttonText}>Configurar Grillete</Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>Cantidad de grilletes: {cantidadGrilletes}</Text>
+        <Text style={styles.title}>Tipo de grillete: {tipoGrillete} pulg.</Text>
+        <ModalGrillete
+          isVisible={isGrilleteModalVisible}
+          onClose={() => setGrilleteModalVisible(false)}
+          onSelectCantidad={setCantidadGrilletes}
+          onSelectTipo={setTipoGrillete}
+        />
+
+        {/* Eliminar el contenedor envolvente de Configurar Maniobra */}
         <TouchableOpacity onPress={() => openModal(setManiobraModalVisible)} style={styles.button}>
           <Text style={styles.buttonText}>Configurar Maniobra</Text>
         </TouchableOpacity>
@@ -95,19 +108,6 @@ const SetupIzaje = () => {
             setCantidadManiobra(cantidad);
             setManipulaciones(`${tipo} x ${cantidad}`);
           }}
-        />
-
-        {/* Configurar Grillete */}
-        <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.button}>
-          <Text style={styles.buttonText}>Configurar Grillete</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Cantidad de grilletes: {cantidadGrilletes}</Text>
-        <Text style={styles.title}>Tipo de grillete: {tipoGrillete} pulg.</Text>
-        <ModalGrillete
-          isVisible={isGrilleteModalVisible}
-          onClose={() => setGrilleteModalVisible(false)}
-          onSelectCantidad={setCantidadGrilletes}
-          onSelectTipo={setTipoGrillete}
         />
 
         {/* Formulario Datos Izaje */}
