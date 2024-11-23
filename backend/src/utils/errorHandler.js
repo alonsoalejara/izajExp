@@ -2,7 +2,7 @@
 
 /**
  * Manejador de errores fatales
- * @param {Object} error Objecto con las especificaciones del error
+ * @param {Object} error Objeto con las especificaciones del error
  * @param {String} msg Mensaje para dar contexto al error
  */
 function handleFatalError(error, msg) {
@@ -13,11 +13,11 @@ function handleFatalError(error, msg) {
 
 /**
  * Manejador de errores
- * @param {Object} error Objecto con las especificaciones del error
+ * @param {Object} error Objeto con las especificaciones del error
  * @param {String} msg Mensaje para dar contexto al error
  */
 function handleError(error, msg) {
-  console.log("❌ [ERROR] A ocurrido un error en: \n📁", msg);
+  console.log("❌ [ERROR] Ha ocurrido un error en: \n📁", msg);
   console.error("🗯  " + error.message);
 }
 
