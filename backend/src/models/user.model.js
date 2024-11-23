@@ -42,16 +42,16 @@ userSchema.statics.encryptPassword = async (password) => {
 /** Compara la contraseña del usuario */
 userSchema.statics.comparePassword = async (password, receivedPassword) => {
   try {
-    console.log('Contraseña proporcionada:', password, 'Longitud:', password.length);
-    console.log('Contraseña almacenada:', receivedPassword, 'Longitud:', receivedPassword.length);
-  
+
     const result = await compare(password, receivedPassword);
-  
     console.log('Resultado de la comparación:', result);
     return result;
+
   } catch (error) {
+
     console.error("Error en comparación de contraseñas", error);
     throw new Error("Error al comparar las contraseñas");
+    
   }
 };
 
