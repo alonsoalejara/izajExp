@@ -6,7 +6,7 @@ import { ACCESS_JWT_SECRET, REFRESH_JWT_SECRET } from "../config/env.config.js";
 
 async function login({ email, password }) {
   try {
-    const user = await User.findOne({ email }).exec();
+    const user = await User.findOne({ email }).populate("roles", "name").exec();
     if (!user) {
       return [null, null, "El usuario o contraseña son incorrectos"];
     }

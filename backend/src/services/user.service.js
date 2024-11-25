@@ -1,18 +1,13 @@
 "use strict";
 
 import User from "../models/user.model.js";
-import Role from "../models/role.model.js";
 import { handleError } from "../utils/errorHandler.js";
-
+import { ROLES }  from "../constants/roles.constants.js";
 
 async function getUsers() {
   try {
-    const users = await User.find()
-      .select("-password")
-      .populate("roles")
-      .exec();
+    const users = await User.find().select("-password").exec();
     if (!users) return [null, "No hay usuarios"];
-
     return [users, null];
   } catch (error) {
     handleError(error, "user.service -> getUsers");
@@ -23,18 +18,18 @@ async function createUser(user) {
   try {
     const { username, email, password, roles } = user;
 
-    const userFound = await User.findOne({ email: user.email });
+    const userFound = await User.findOne({ email });
     if (userFound) return [null, "El usuario ya existe"];
 
-    const rolesFound = await Role.find({ name: { $in: roles } });
-    if (rolesFound.length === 0) return [null, "El rol no existe"];
-    const myRole = rolesFound.map((role) => role._id);
+    // Validar roles ingresados
+    const validRoles = roles.filter(role => Object.values(ROLES).includes(role));
+    if (validRoles.length === 0) return [null, "El rol no existe"];
 
     const newUser = new User({
       username,
       email,
       password: await User.encryptPassword(password),
-      roles: myRole,
+      roles: validRoles, // Asignar roles directamente como cadenas de texto
     });
     await newUser.save();
 
@@ -46,19 +41,13 @@ async function createUser(user) {
 
 async function getUserById(id) {
   try {
-    const user = await User.findById({ _id: id })
-      .select("-password")
-      .populate("roles")
-      .exec();
-
+    const user = await User.findById(id).select("-password").exec();
     if (!user) return [null, "El usuario no existe"];
-
     return [user, null];
   } catch (error) {
     handleError(error, "user.service -> getUserById");
   }
 }
-
 
 async function updateUser(id, user) {
   try {
@@ -67,19 +56,14 @@ async function updateUser(id, user) {
 
     const { username, email, password, newPassword, roles } = user;
 
-    const matchPassword = await User.comparePassword(
-      password,
-      userFound.password,
-    );
-
+    const matchPassword = await User.comparePassword(password, userFound.password);
     if (!matchPassword) {
       return [null, "La contraseña no coincide"];
     }
 
-    const rolesFound = await Role.find({ name: { $in: roles } });
-    if (rolesFound.length === 0) return [null, "El rol no existe"];
-
-    const myRole = rolesFound.map((role) => role._id);
+    // Validar roles ingresados
+    const validRoles = roles.filter(role => Object.values(ROLES).includes(role));
+    if (validRoles.length === 0) return [null, "El rol no existe"];
 
     const userUpdated = await User.findByIdAndUpdate(
       id,
@@ -87,9 +71,9 @@ async function updateUser(id, user) {
         username,
         email,
         password: await User.encryptPassword(newPassword || password),
-        roles: myRole,
+        roles: validRoles, // Actualizar roles directamente como cadenas de texto
       },
-      { new: true },
+      { new: true }
     );
 
     return [userUpdated, null];
@@ -97,7 +81,6 @@ async function updateUser(id, user) {
     handleError(error, "user.service -> updateUser");
   }
 }
-
 
 async function deleteUser(id) {
   try {

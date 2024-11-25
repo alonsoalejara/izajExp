@@ -1,7 +1,10 @@
 "use strict";
 
 import Joi from "joi";
-import ROLES from "../constants/roles.constants.js";
+import { ROLES } from "../constants/roles.constants.js";
+
+// Verifica si ROLES es un array antes de usarlo
+const validRoles = Array.isArray(ROLES) ? ROLES : [];
 
 const userBodySchema = Joi.object({
   username: Joi.string().required().messages({
@@ -22,7 +25,7 @@ const userBodySchema = Joi.object({
     "string.email": "El email debe tener un formato válido.",
   }),
   roles: Joi.array()
-    .items(Joi.string().valid(...ROLES))
+    .items(Joi.string().valid(...validRoles))
     .required()
     .messages({
       "array.base": "El rol debe ser de tipo array.",

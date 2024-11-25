@@ -1,8 +1,7 @@
-"use strict";
-
 import mongoose from "mongoose";
 import bcryptjs from "bcryptjs";
 const { genSalt, hash, compare } = bcryptjs;
+import { ROLES } from "../constants/roles.constants.js";
 
 const { Schema } = mongoose;
 
@@ -23,8 +22,9 @@ const userSchema = new Schema(
     },
     roles: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Role",
+        type: String,
+        enum: [ROLES.USER, ROLES.ADMIN], // Roles predefinidos usando las constantes
+        required: true,
       },
     ],
   },
@@ -33,25 +33,19 @@ const userSchema = new Schema(
   }
 );
 
-/** Encripta la contraseña del usuario */
+// Métodos para encriptar y comparar contraseñas
 userSchema.statics.encryptPassword = async (password) => {
   const salt = await genSalt(10);
   return await hash(password, salt);
 };
 
-/** Compara la contraseña del usuario */
 userSchema.statics.comparePassword = async (password, receivedPassword) => {
   try {
-
     const result = await compare(password, receivedPassword);
-    console.log('Resultado de la comparación:', result);
     return result;
-
   } catch (error) {
-
     console.error("Error en comparación de contraseñas", error);
     throw new Error("Error al comparar las contraseñas");
-    
   }
 };
 
