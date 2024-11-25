@@ -19,23 +19,25 @@ async function login({ email, password }) {
 
     // Genera los tokens
     const accessToken = jwt.sign(
-      { id: user._id, email: user.email, roles: user.roles },
+      { id: user._id, email: user.email, roles: user.roles }, // Incluye los roles en el payload
       ACCESS_JWT_SECRET,
       { expiresIn: "1d" }
     );
 
     const refreshToken = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, email: user.email, roles: user.roles }, // También incluye los roles en el refreshToken
       REFRESH_JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    return [accessToken, refreshToken, null];
+    // Devolver los tokens y el usuario
+    return [accessToken, refreshToken, null, user]; // Aquí devolvemos el usuario completo
   } catch (error) {
     console.error("Error en el servicio de login:", error);
     return [null, null, "Error al iniciar sesión"];
   }
 }
+
 
 async function refresh(token) {
   try {

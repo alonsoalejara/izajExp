@@ -13,7 +13,7 @@ async function login(req, res) {
     if (bodyError) return respondError(req, res, 400, bodyError.message);
 
     // Llama al servicio de login
-    const [accessToken, refreshToken, errorToken] = await authServices.login(body);
+    const [accessToken, refreshToken, errorToken, user] = await authServices.login(body);
 
     // Maneja posibles errores del servicio de login
     if (errorToken) return respondError(req, res, 400, errorToken);
@@ -25,10 +25,11 @@ async function login(req, res) {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
     });
 
-    // Responde con éxito, incluyendo el accessToken
+    // Responde con éxito, incluyendo el accessToken y los roles del usuario
     respondSuccess(req, res, 200, {
       message: "Inicio de sesión exitoso",
       accessToken,
+      roles: user.roles, // Aquí estamos enviando los roles del usuario
     });
   } catch (error) {
     handleError(error, "auth.controller -> login");

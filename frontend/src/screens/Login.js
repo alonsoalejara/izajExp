@@ -21,17 +21,39 @@ export default function Login({ navigation }) {
 
         const data = await response.json();
 
-        if (response.ok) {
-          const { accessToken, refreshToken } = data.data;
+        console.log(data); // Log para ver la respuesta completa del servidor
 
-          if (accessToken) {
-            await AsyncStorage.setItem("accessToken", accessToken);
-            if (refreshToken) {
-              await AsyncStorage.setItem("refreshToken", refreshToken);
+        if (response.ok) {
+          // Verificar que 'data' y 'data.data' existen
+          if (data && data.data) {
+            const { accessToken, refreshToken, roles } = data.data;
+
+            if (accessToken) {
+              await AsyncStorage.setItem("accessToken", accessToken);
+              if (refreshToken) {
+                await AsyncStorage.setItem("refreshToken", refreshToken);
+              }
+
+              // Verificar que roles es un array y que tiene al menos un valor
+              if (Array.isArray(roles) && roles.length > 0) {
+                const role = roles[0]; // roles es un array con un único valor
+
+                // Redirigir según el rol del usuario
+                if (role === "user") {
+                  navigation.navigate("SetupIzaje");
+                } else if (role === "admin") {
+                  navigation.navigate("PlanIzaje");
+                } else {
+                  alert("Rol de usuario no reconocido");
+                }
+              } else {
+                alert("Rol de usuario no disponible o mal formateado");
+              }
+            } else {
+              alert("Tokens de autenticación no recibidos correctamente");
             }
-            navigation.navigate("SetupIzaje");
           } else {
-            alert("Tokens de autenticación no recibidos correctamente");
+            alert("Error en la respuesta del servidor: datos no disponibles");
           }
         } else {
           alert(data.message || "Error al iniciar sesión");
