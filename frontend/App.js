@@ -8,6 +8,7 @@ import Login from './src/screens/Login';
 import SetupIzaje from './src/screens/SetupIzaje';
 import PlanIzaje from './src/screens/PlanIzaje';
 import GruaIzaje from './src/screens/GruaIzaje';
+import AdminOptions from './src/screens/AdminOptions';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,11 @@ export default function App() {
             name="Login" 
             component={Login} 
             options={{ headerShown: false }}  
+          />
+          <Stack.Screen 
+            name="AdminOptions" 
+            component={AdminOptions}
+            options={{ headerShown: false }} 
           />
           <Stack.Screen 
             name="SetupIzaje" 

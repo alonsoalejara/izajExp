@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image, Platform } from "react-native";
 import Svg, { LinearGradient, Stop, Rect } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginStyles from "../styles/LoginStyles";
@@ -8,10 +8,23 @@ export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Función para obtener la URL del API dependiendo del dispositivo
+  const getApiUrl = () => {
+    if (Platform.OS === "android") {
+      // En Android, si estamos en el emulador, usamos la IP especial
+      return "http://10.0.2.2:3000/api/auth/login"; // Emulador de Android
+    } else {
+      // En dispositivos físicos (iOS o Android), usamos la IP local de la computadora
+      return "http://192.168.1.84:3000/api/auth/login"; // Cambia "192.168.x.x" a la IP local de tu computadora
+    }
+  };
+
+  // Función para manejar el inicio de sesión
   const handleLogin = async () => {
     if (email && password) {
       try {
-        const response = await fetch("http://10.0.2.2:3000/api/auth/login", {
+        const apiUrl = getApiUrl();  // Llamamos a la función para obtener la URL correcta
+        const response = await fetch(apiUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -20,8 +33,6 @@ export default function Login({ navigation }) {
         });
 
         const data = await response.json();
-
-        console.log(data); // Log para ver la respuesta completa del servidor
 
         if (response.ok) {
           // Verificar que 'data' y 'data.data' existen
@@ -42,7 +53,7 @@ export default function Login({ navigation }) {
                 if (role === "user") {
                   navigation.navigate("SetupIzaje");
                 } else if (role === "admin") {
-                  navigation.navigate("PlanIzaje");
+                  navigation.navigate("AdminOptions");
                 } else {
                   alert("Rol de usuario no reconocido");
                 }
