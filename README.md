@@ -28,12 +28,13 @@ Asegurate de tener instalados los siguientes programas:
 - **Node.js: v18.20.4 LTS**  (Recomendado para el entorno de desarrollo)
 - **npm: v10.7.0** Gestor de paquetes de Node.js 
 - **Git: v2.38.1** Clonación de repositorio.
+- **MongoDB Atlas** o conexión a MongoDB.
 
 ## Instalación
 
 Sigue los pasos a continuación para instalar y configurar el entorno:
 
-### 1.  Actualizar sistema :
+## 1.  Actualizar sistema :
 ~~~
 sudo apt update && sudo apt upgrade -y
 ~~~
@@ -67,49 +68,35 @@ nvm install 18.20.4
 nvm use 18.20.4 
 ~~~
 
-## 4. Instalar Visual Studio Code
-
-- #### Descargar el paquete .deb
-~~~
-sudo apt install wget -y
-wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
-sudo apt update
-sudo apt install code
-~~~
-
-- #### Abrir Visual Studio Code
-~~~
-code
-~~~
-
-## 5. Clonar repositorio
+## 4. Clonar repositorio
 ~~~
 git clone https://github.com/alonsoalejara/izajExp.git
-cd izajExp
 ~~~
 
-## 6. Instalar dependencias:
+## 5. Instalar dependencias:
 
-- #### Dentro de la carpeta izajExp:
+- #### Dentro de la carpeta backend:
 ~~~
+cd backend
 npm install
 ~~~
 
-## 7. Instalar Simulador de Android:
-
-- #### Actualizar el sistema:
+- #### Dentro de la carpeta frontend:
 ~~~
-sudo apt update
-~~~
-
-- #### Instalar Android Studio con Snap
-~~~
-sudo snap install android-studio --clasic
+cd frontend
+npm install
 ~~~
 
-- #### Abrir Android Studio
+## 6. Despliegue de proyecto:
+
+- #### En el backend:
 ~~~
-android-studio
+cd backend
+npm run start
+~~~
+
+- #### En el frontend:
+~~~
+cd frontend
+npx expo start
 ~~~
