@@ -28,8 +28,8 @@ fix/correccion-error
 ## Estándares de estilo y formato de código
 
 #### Para mantener la consistencia del proyecto:
-1. Sigue la pauta de estilos de **JavaScript Standard Style.**
-2. Nombra las variables, funciones y métodos en inglés y utiliza camelCase **(NO utilizar en rutas de una API).**
+1. Sigue la pauta de estilos de **JavaScript Standard Style** o **Airbnb JavaScript Style Guide.**
+2. Utilizar las convenciones de escritura **Kebab-case** para los archivos en el backend y **PascalCase** para los archivos en el frontend. 
 3. Documenta el código con comentarios claros y concisos.
 4. Utiliza herramientas como **ESLint** para verificar que el código cumple con los estándares establecidos.
 
