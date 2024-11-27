@@ -20,6 +20,7 @@ que influyan en los parámetros de seguridad para concretar si los levantamiento
 - **Expo v.52.0.7.**  Herramienta para desarrollo y prueba de aplicaciones React Native
 - **Express.js v.4.21.1.**  Framework web para Node.js
 - **MongoDB** Base de datos no relacional
+- **Android Studio Koala Feature Drop 2024.1.2** Simulador de dispostivios Android.
 
 ## Requisitos
 
