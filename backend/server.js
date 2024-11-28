@@ -25,7 +25,7 @@ async function setupServer() {
     // Agrega el middleware para el manejo de datos en formato JSON
     server.use(json());
     // Agregamos los cors
-    server.use(cors({ origin: "http://10.0.2.2:3000", credentials: true }));
+    server.use(cors({ origin: "http://localhost:3000", credentials: true }));
     // Agregamos el middleware para el manejo de cookies
     server.use(cookieParser());
     // Agregamos morgan para ver las peticiones que se hacen al servidor

@@ -26,6 +26,11 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "host": "tunnel",
+    "packagerOpts": {
+      "dev": true,
+      "minify": false
+    }
   }
 }
