@@ -48,7 +48,7 @@ Estos son las tecnologias utilizadas en el desarrollo del proyecto:
 - **React Native v0.76.2.** Framework para desarrollo móvil.
 - **Expo v52.0.7.** Herramienta para desarrollo y prueba de aplicaciones React Native.
 - **Express.js v4.21.1.** Framework web para el backend.
-- **Docker.** Para contenerización de backend y frontend.
+- **Docker v4.36.0** Para contenerización de backend y frontend.
 - **Android Studio Koala Feature Drop 2024.1.2.** Simulador de dispositivos Android.
 
 ### Configuración:
@@ -70,7 +70,7 @@ cd izajexp
   npm install
   ```
 #### 3. **Configura las variables de entorno en un archivo .env:** 
-*Consulta el archivo **.env.example** para los valores requeridos.*
+*Consulta el archivo **.env.example** ubicado en **/backend/src/config/** para los valores requeridos.*
 
 #### 4. **Ejecuta el servidor:**
 - Backend

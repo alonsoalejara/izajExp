@@ -1,4 +1,4 @@
-# - - - - - - - - - - - - - - - - izajexp - - - - - - - - - - - - - - - - 
+# izajexp
 
 "izajexp" es una aplicación diseñada para diseñar y simular levantamientos de carga y planes de izajes.
 Ayuda al supervisor, capataz y maestros mayores para calcular factores
@@ -18,8 +18,18 @@ que influyan en los parámetros de seguridad para concretar si los levantamiento
 Para ejecutar el proyecto en tu sistema necesitas lo siguiente:
 
 * **Docker**
-* **Acceso a internet.**
-* **Expo Go**. App para visualizar el proyecto en tu dispositivo móvil.
+* **Acceso a internet desde tu ordenar**
+
+Para utilizar la aplicación móvil necesitas lo siguiente:
+* **Expo Go**. Aplicación disponible en Google Play Store y Apple Store.
+* **Acceso a internet desde tu dispositivo móvil**
+
+
+
+### Tecnologías utilizadas en el entorno de desarrollo
+
+Consultar [CONTRIBUTING.md](./CONTRIBUTING.md). para conocer detalles adicionales sobre el entorno de desarrollo y las configuraciones empleadas.
+
 
 ### Instalación de Docker en tu sistema.
 
@@ -28,9 +38,9 @@ Sigue los pasos a continuación para instalar Docker en tu sistema operativo:
 #### 1.  Descargar Docker Desktop :
 -   Descarga la versión de **Docker Desktop** que corresponda a tu sistema operativo.
 
-    - Docker Desktop para Windows
-    - Docker Desktop para Linux
-    - Docker Desktop para Mac
+    - Docker Desktop para Windows: https://docs.docker.com/desktop/setup/install/windows-install/
+    - Docker Desktop para Linux: https://docs.docker.com/desktop/setup/install/linux/
+    - Docker Desktop para Mac: https://docs.docker.com/desktop/setup/install/mac-install/
 
 #### 2. Instalar Docker Desktop :
 -   Sigue los pasos que correspondan para tu sistema operativo.
