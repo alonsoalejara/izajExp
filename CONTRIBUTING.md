@@ -35,12 +35,20 @@ fix/correccion-error
 
 ## Configuración del entorno de desarrollo
 
-### Requisitos previos:
+### Tecnologias utilizadas en entorno de desarrollo:
 
-- **Git v2.38.1.** Control de versiones. 
+Estos son las tecnologias utilizadas en el desarrollo del proyecto:
+
+- **Git v2.38.1.** Control de versiones.
 - **Visual Studio Code v1.95.3.** IDE recomendado para el desarrollo del proyecto.
-- **Node.js v18.20.4.** Entorno de ejecución de Javascript.
-- **MongoDB.** Base de datos no relacional.
+- **Node.js v18.20.4.** Entorno de ejecución de JavaScript.
+- **npm v10.7.0.** Gestor de paquetes de Node.js.
+- **MongoDB o MongoDB Atlas.** Base de datos no relacional.
+- **React v18.3.1.** Biblioteca para el desarrollo de interfaces de usuario.
+- **React Native v0.76.2.** Framework para desarrollo móvil.
+- **Expo v52.0.7.** Herramienta para desarrollo y prueba de aplicaciones React Native.
+- **Express.js v4.21.1.** Framework web para el backend.
+- **Docker.** Para contenerización de backend y frontend.
 - **Android Studio Koala Feature Drop 2024.1.2.** Simulador de dispositivos Android.
 
 ### Configuración:

@@ -1,103 +1,225 @@
-# izajExp
+# - - - - - - - - - - - - - - - - izajexp - - - - - - - - - - - - - - - - 
 
-izajExp es una aplicación diseñada para diseñar y simular levantamientos de carga y planes de izajes.
+"izajexp" es una aplicación diseñada para diseñar y simular levantamientos de carga y planes de izajes.
 Ayuda al supervisor, capataz y maestros mayores para calcular factores
 que influyan en los parámetros de seguridad para concretar si los levantamientos son optimos.
 
 ## Tabla de Contenidos
 
-- [Entorno](#entorno)
 - [Requisitos](#requisitos)
 - [Instalación](#instalación)
-
-## Entorno utilizado
-
-- **Git v2.38.1.** Control de versiones. 
-- **Visual Studio Code v1.95.3.**  IDE recomendado para el desarrollo del proyecto
-- **Node.js v18.20.4.**  Entorno de ejecución de Javascript
-- **React v.18.3.1.**  Biblioteca para interfaces de usuario
-- **React Native v.0.76.2.**  Framework para desarrollo móvil
-- **Expo v.52.0.7.**  Herramienta para desarrollo y prueba de aplicaciones React Native
-- **Express.js v.4.21.1.**  Framework web para Node.js
-- **MongoDB** Base de datos no relacional
-- **Android Studio Koala Feature Drop 2024.1.2** Simulador de dispostivios Android.
+- [Preparación](#preparación)
+- [Construcción](#construcción)
+- [Ejecución](#ejecución)
+- [Finalización](#finalización)
 
 ## Requisitos
 
-Asegurate de tener instalados los siguientes programas:
+Para ejecutar el proyecto en tu sistema necesitas lo siguiente:
 
-- **Node.js: v18.20.4 LTS**  (Recomendado para el entorno de desarrollo)
-- **npm: v10.7.0** Gestor de paquetes de Node.js 
-- **Git: v2.38.1** Clonación de repositorio.
-- **MongoDB Atlas** o conexión a MongoDB.
+* **Docker**
+* **Acceso a internet.**
+* **Expo Go**. App para visualizar el proyecto en tu dispositivo móvil.
+
+### Instalación de Docker en tu sistema.
+
+Sigue los pasos a continuación para instalar Docker en tu sistema operativo:
+
+#### 1.  Descargar Docker Desktop :
+-   Descarga la versión de **Docker Desktop** que corresponda a tu sistema operativo.
+
+    - Docker Desktop para Windows
+    - Docker Desktop para Linux
+    - Docker Desktop para Mac
+
+#### 2. Instalar Docker Desktop :
+-   Sigue los pasos que correspondan para tu sistema operativo.
+
+#### 3. Verifica la instalación :
+-   Para confirmar la instalación en tu sistema abre una terminal y ejecuta el siguiente comando:
+~~~
+docker --version
+~~~
 
 ## Instalación
 
-Sigue los pasos a continuación para instalar y configurar el entorno:
+#### 1. Instalar Git en tu sistema (si ya lo tienes puedes ignorar este paso)
 
-## 1.  Actualizar sistema :
-~~~
-sudo apt update && sudo apt upgrade -y
-~~~
+- #### Linux:
+    - #### Actualiza la lista de paquetes, instala Git y verifica la instalación.
+        ~~~
+        sudo apt update
+        sudo apt install git -y
+        git --version
+        ~~~
 
-## 2. Instalar Git : 
-~~~
-sudo apt install git -y
-~~~
-- #### Verificar instalación :
-~~~
-git --version
-~~~
-- #### Configurar tu nombre y correo para Git
-~~~
-git config --global user.name nombre
-git config --global user.email correo
-~~~
+- #### macOS:
+    - #### Usando Homebrew
 
-## 3. Instalar Node.js y npm
+    1.  Asegurate de tener Homebrew instalado. Si no lo tienes, instálalo siguiendo las instrucciones que se encuentran en este sitio: https://brew.sh/
 
-- #### Instalar curl
-~~~
-sudo apt install curl -y
-~~~ 
+    2.  Instala Git y verficia la instalación:
+    
+        ~~~
+        brew install git
+        git --version
+        ~~~ 
+    - #### Sin Homebrew
 
-- #### Descargar e instalar Node.js con nvm (Node Version Manager)
-~~~
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-source ~/.bashrc
-nvm install 18.20.4
-nvm use 18.20.4 
-~~~
+    1.  Descarga el instalador de Git desde el sitio oficial: https://git-scm.com/
+    2.  Sigue las instrucciones del instalador.
 
-## 4. Clonar repositorio
-~~~
-git clone https://github.com/alonsoalejara/izajExp.git
-~~~
+- #### Windows:
+    - #### Descarga el instalador de Git desde el sitio oficiaL: https://git-scm.com/
+    - #### Ejecuta el instalador (ajusta las opciones según tu preferencia)
+    - #### Verifica la instalación:
+    
+    Abre **Git Bash** o **PowerShell** y ejecuta:
 
-## 5. Instalar dependencias:
+    ~~~
+    git --version
+    ~~~
 
-- #### Dentro de la carpeta backend:
-~~~
-cd backend
-npm install
-~~~
 
-- #### Dentro de la carpeta frontend:
-~~~
-cd frontend
-npm install
-~~~
+## Preparación
 
-## 6. Despliegue de proyecto:
+#### 1. Clonar el repositorio:
 
-- #### En el backend:
-~~~
-cd backend
-npm run start
-~~~
+-  Abre una terminal y navega el directorio donde deseas clonar el proyecto:
+-  Clona el repositorio usando el siguiente comando :   
+    ~~~
+    git clone <URL_REPOSITORIO>
+    ~~~
 
-- #### En el frontend:
-~~~
-cd frontend
-npx expo start
-~~~
+- Ingresa al directorio del proyecto usando el siguiente comando:
+    ~~~
+    cd <NOMBRE_DIRECTORIO>
+    ~~~
+
+#### 2. Verificar el Dockerfile en las carpetas backend y frontend:
+
+- Asegurate que el archivo **Dockerfile** está tanto en la carpeta backend como en la carpeta frontend. Este archivo contiene todas las instrucciones necesarias para construir la imagen Docker de cada área.
+
+
+## Construcción
+
+#### 1. Construir la imagen Docker:
+
+- #### Imagen Backend
+    - En la carpeta raíz del proyecto, acceder a la carpeta backend con el siguiente comando:
+
+        ~~~
+        cd backend
+        ~~~
+    - Ejectuar el siguiente comando:
+
+        ~~~
+        docker build -t imagen_backend .
+        ~~~
+    - Esto construirá la imagen a partir del Dockerfile de la carpeta backend ya incluido en el repositorio.
+    - La opción **-t** etiqueta la imagen como **imagen_backend**
+
+- #### Imagen Frontend
+    - En la carpeta raíz del proyecto, acceder a la carpeta frontend con el siguiente comando:
+
+        ~~~
+        cd frontend
+        ~~~
+    - Ejectuar el siguiente comando:
+
+        ~~~
+        docker build -t imagen_frontend .
+        ~~~
+    - Esto construirá la imagen a partir del Dockerfile de la carpeta frontend ya incluido en el repositorio.
+    - La opción **-t** etiqueta la imagen como **imagen_frontend**
+
+
+## Ejecución
+
+- #### Ejecutar el contenedor
+    #### 1. Ejecutar contenedor del backend:
+
+    - Traslado a carpeta correspondiente:
+    - #### Si me encuentro en la carpeta raiz:
+        ~~~
+        cd backend
+        ~~~
+    - #### Si me encuentro en la carpeta frontend:
+        ~~~
+        cd ..
+        cd backend
+        ~~~
+    - #### Una vez en la carpeta backend:
+        ~~~
+        docker run -d -p 3000:3000 --name contenedor_backend imagen_backend
+        ~~~
+    - #### Para verificar su funcionamiento ejecutar:
+        ~~~
+        docker ps
+        ~~~
+    
+    #### 2. Ejecutar contenedor del frontend:
+
+    - Traslado a carpeta correspondiente:
+    - #### Si me encuentro en la carpeta backend:
+        ~~~
+        cd ..
+        cd frontend
+        ~~~
+    - #### Si me encuentro en la carpeta raiz:
+        ~~~
+        cd frontend
+        ~~~
+    - #### Una vez en la carpeta frontend:
+        ~~~
+        docker run -it --name contenedor_frontend -p 19000:19000 -p 19001:19001 -p 19002:19002 imagen-frontend
+        ~~~
+        **OJO:** Para visualizar el proyecto debes escanear el codigo QR con tu dispositivo móvil en **la misma conexión Wi-Fi de tu sistema operativo.**
+
+## Finalización
+
+Para detener y eliminar el contenedor, usa los siguientes comandos.
+
+- ### Frontend
+
+    #### Detener el servidor:
+    - **Windows y Linux:**  Presionar Ctrl+C.
+    - **macOS**: Presionar Ctrl + C o Cmd + C.
+
+    #### Detener el contenedor:
+
+    ~~~
+    docker stop contenedor_frontend
+    ~~~
+
+    #### Eliminar el contenedor:
+
+    ~~~
+    docker rm contenedor_frontend
+    ~~~
+
+    #### Eliminar la imagen:
+
+    ~~~
+    docker rmi imagen_frontend
+    ~~~
+
+- ### Backend
+
+    #### Detener el contenedor:
+
+    ~~~
+    docker stop contenedor_backend
+    ~~~
+
+    #### Eliminar el contenedor:
+
+    ~~~
+    docker rm contenedor_backend
+    ~~~
+
+    #### Eliminar la imagen:
+
+    ~~~
+    docker rmi imagen_backend
+    ~~~   
