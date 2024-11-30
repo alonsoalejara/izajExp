@@ -22,11 +22,11 @@ RUN node -v
 # Copiar los archivos de dependencias (package.json y package-lock.json)
 COPY package.json package-lock.json ./ 
 
-# Instalar las dependencias utilizando npm
-RUN npm install
-
 # Copiar todo el contenido del proyecto al contenedor
 COPY . .
+
+# Instalar las dependencias utilizando npm
+RUN npm install
 
 # Instalar expo-cli globalmente
 RUN npm install -g expo-cli
