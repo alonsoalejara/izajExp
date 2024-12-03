@@ -9,18 +9,22 @@ RUN apt-get update && apt-get install -y \
     curl \
     && apt-get clean
 
-# Instalar Node.js 18
+# Instalar Node.js 18 (npm viene con Node.js)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
-# Verificar la instalación de Node.js
+# Verificar la instalación de Node.js y npm
 RUN node -v
+RUN npm -v
 
 # Copiar los archivos de dependencias (package.json y package-lock.json)
 COPY package.json package-lock.json ./ 
 
 # Copiar todo el contenido del proyecto al contenedor
 COPY . .
+
+# Copiar el archivo .env al contenedor
+COPY ./src/config/.env ./src/config/.env
 
 # Instalar las dependencias utilizando npm
 RUN npm install

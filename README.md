@@ -124,7 +124,7 @@ docker --version
     - Ejectuar el siguiente comando:
 
         ~~~
-        docker build -t imagen_backend .
+        sudo docker build -t imagen_backend .
         ~~~
     - Esto construirá la imagen a partir del Dockerfile de la carpeta backend ya incluido en el repositorio.
     - La opción **-t** etiqueta la imagen como **imagen_backend**
@@ -138,7 +138,7 @@ docker --version
     - Ejectuar el siguiente comando:
 
         ~~~
-        docker build -t imagen_frontend .
+        sudo docker build -t imagen_frontend .
         ~~~
     - Esto construirá la imagen a partir del Dockerfile de la carpeta frontend ya incluido en el repositorio.
     - La opción **-t** etiqueta la imagen como **imagen_frontend**
@@ -161,11 +161,11 @@ docker --version
         ~~~
     - #### Una vez en la carpeta backend:
         ~~~
-        docker run -d -p 3000:3000 --name contenedor_backend imagen_backend
+        sudo docker run -d -p 3000:3000 --name contenedor_backend imagen_backend
         ~~~
     - #### Para verificar su funcionamiento ejecutar:
         ~~~
-        docker ps
+        sudo docker ps
         ~~~
     
     #### 2. Ejecutar contenedor del frontend:
@@ -182,7 +182,7 @@ docker --version
         ~~~
     - #### Una vez en la carpeta frontend:
         ~~~
-        docker run -it --name contenedor_frontend -p 19000:19000 -p 19001:19001 -p 19002:19002 imagen-frontend
+        sudo docker run -it --name contenedor_frontend -p 19000:19000 -p 19001:19001 -p 19002:19002 imagen_frontend
         ~~~
         **OJO:** Para visualizar el proyecto debes escanear el codigo QR con tu dispositivo móvil en **la misma conexión Wi-Fi de tu sistema operativo.**
 
@@ -199,19 +199,19 @@ Para detener y eliminar el contenedor, usa los siguientes comandos.
     #### Detener el contenedor:
 
     ~~~
-    docker stop contenedor_frontend
+    sudo docker stop contenedor_frontend
     ~~~
 
     #### Eliminar el contenedor:
 
     ~~~
-    docker rm contenedor_frontend
+    sudo docker rm contenedor_frontend
     ~~~
 
     #### Eliminar la imagen:
 
     ~~~
-    docker rmi imagen_frontend
+    sudo docker rmi imagen_frontend
     ~~~
 
 - ### Backend
@@ -219,17 +219,17 @@ Para detener y eliminar el contenedor, usa los siguientes comandos.
     #### Detener el contenedor:
 
     ~~~
-    docker stop contenedor_backend
+    sudo docker stop contenedor_backend
     ~~~
 
     #### Eliminar el contenedor:
 
     ~~~
-    docker rm contenedor_backend
+    sudo docker rm contenedor_backend
     ~~~
 
     #### Eliminar la imagen:
 
     ~~~
-    docker rmi imagen_backend
+    sudo docker rmi imagen_backend
     ~~~   
