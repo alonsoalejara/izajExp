@@ -31,9 +31,8 @@ Para utilizar la aplicación móvil necesitas lo siguiente:
 Consultar [CONTRIBUTING.md](./CONTRIBUTING.md). para conocer detalles adicionales sobre el entorno de desarrollo y las configuraciones empleadas.
 
 
-### Instalación de Docker en tu sistema.
 
-#### 1. Entorno de trabajo:
+#### Entorno de trabajo:
 -   Este proyecto en el siguiente entorno de desarrollo a describir, por eso se recomienda utilizar el mismo entorno para evitar problemas de compatibilidad.
 
     - Oracle VirtualBox 7.1.4
@@ -48,7 +47,7 @@ Consultar [CONTRIBUTING.md](./CONTRIBUTING.md). para conocer detalles adicionale
     - Primero, crear las maquinas virtuales en VirtualBox, en este caso se utilizó Ubuntu 22.04
     - Segundo, ir a configuración de cada una de ellas y en la sección de red debe estar seleccionada la opción de red NAT.
     - Tercero, en opciones avanzadas de la sección de red, en la opción "reenvio de puertos" hay que agregar una regla de redireccionamiento de puertos, en este caso se crearon reglas para los puertos:
-        - 3000 (Puerto para andar el backen desarrolado en Node.js)
+        - 3000 (Puerto para desplegar el backend desarrollado en Node.js)
         - 19000 (Puerto para comunicación principal con Expo Go)
     - La regla deberia quedar mas o menos asi:
 
@@ -70,20 +69,51 @@ Consultar [CONTRIBUTING.md](./CONTRIBUTING.md). para conocer detalles adicionale
         IP invitado: (La IP de tu maquina virtual)
         Puerto invitado: 19000
         ~~~
+### Instalación de Docker en tu sistema.
 
+#### 1. Actualizar el sistema:
+~~~
+sudo apt-get update && sudo apt-get upgrade -y
+~~~
 
-#### 1.  Descargar Docker Desktop :
--   Descarga la versión de **Docker Desktop** que corresponda:
+#### 2. Eliminar versiones anteriores de Docker (si existen):
+~~~
+sudo apt-get remove docker docker-engine docker.io containerd runc
+~~~
 
-    - Docker Desktop para Linux: https://docs.docker.com/desktop/setup/install/linux/
+#### 3. Instalar paquetes necesarios:
+~~~
+sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+~~~
 
-#### 2. Instalar Docker Desktop :
--   Sigue los pasos que correspondan para tu sistema operativo.
+#### 4. Agregar la clave GPG oficial de Docker:
+~~~
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+~~~
 
-#### 3. Verifica la instalación :
--   Para confirmar la instalación en tu sistema abre una terminal y ejecuta el siguiente comando:
+#### 5. Agregar el repositorio de Docker:
+~~~
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+~~~
+
+#### 6. Actualizar la lista de paquetes:
+~~~
+sudo apt-get update
+~~~
+
+#### 7. Instalar Docker Engine versión 27.3.1 :
+~~~
+sudo apt-get install docker-ce=5:27.3.1-1~ubuntu.22.04~jammy docker-ce-cli=5:27.3.1-1~ubuntu.22.04~jammy containerd.io
+~~~
+
+#### 8. Verificar versión:
 ~~~
 docker --version
+~~~
+
+#### 9. Para verificar que la instalación puede ejecutar este comando:
+~~~
+sudo docker run hello-world
 ~~~
 
 ## Instalación
