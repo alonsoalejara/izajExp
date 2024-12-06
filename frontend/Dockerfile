@@ -35,7 +35,7 @@ RUN npm install -g expo-cli
 RUN npm install -g @expo/ngrok
 
 # Exponer puertos necesarios para Expo
-EXPOSE 8081 8082 19000 19001 19002
+EXPOSE 8081 19000
 
 # Comando para iniciar Expo con túnel
 CMD ["npx", "expo", "start", "--tunnel"]

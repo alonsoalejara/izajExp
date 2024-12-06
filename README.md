@@ -193,7 +193,7 @@ docker --version
         ~~~
     - #### Una vez en la carpeta frontend:
         ~~~
-        sudo docker run -it --name contenedor_frontend -p 19000:19000 -p 19001:19001 -p 19002:19002 imagen_frontend
+        sudo docker run -it --name contenedor_frontend -p 19000:19000 imagen_frontend
         ~~~
     - **-it:** Combina las opciones **-i** (mantiene la entrada estándar abierta) y **-t** (asigna una terminal), permitiendo la interacción directa con el contenedor a través de la línea de comandos.
     - **-p 19000:19000:** Mapea el puerto 19000 del host al mismo puerto dentro del contenedor, permitiendo el acceso a servicios que el contenedor pueda estar ejecutando en ese puerto. 
