@@ -1,20 +1,10 @@
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import styles from '../styles/SetupIzajeStyles';
-import ModalForma from '../components/ModalForma';
-import ModalGrua from '../components/ModalGrua';
-import ModalManiobra from '../components/ModalManiobra';
-import ModalGrillete from '../components/ModalGrillete';
-
-const modals = {
-  forma: ModalForma,
-  grua: ModalGrua,
-  maniobra: ModalManiobra,
-  grillete: ModalGrillete,
-};
+import Modals from '../components/Modal.index';  // Importa modals desde el index
 
 const ConfigModal = ({ type, isVisible, onClose, onSelect, buttonText, selectedValue }) => {
-  const ModalComponent = modals[type];
+  const ModalComponent = Modals[type];
 
   if (!ModalComponent) {
     console.warn(`Modal of type "${type}" not found.`);
