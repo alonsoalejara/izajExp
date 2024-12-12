@@ -3,56 +3,55 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View, StyleSheet } from 'react-native';
 
-import Home from './src/screens/Home'; 
-import Login from './src/screens/Login';
-import SetupIzaje from './src/screens/SetupIzaje';
-import PlanIzaje from './src/screens/PlanIzaje';
-import GruaIzaje from './src/screens/GruaIzaje';
-import AdminOptions from './src/screens/AdminOptions';
-import Tablas from './src/screens/Tablas';
+import Screens from './src/screens/Screens.index';
+import Header from './src/components/Header';  // Asegúrate de ajustar la ruta al Header
 
 const Stack = createStackNavigator();
 
 export default function App() {
-
   return (
     <NavigationContainer>
       <View style={styles.container}>
         <Stack.Navigator initialRouteName="Home">
+          {/* Pantalla Home sin Header */}
           <Stack.Screen 
             name="Home" 
-            component={Home} 
+            component={Screens.Home} 
             options={{ headerShown: false }} 
           />
+
+          {/* Pantalla Login sin Header */}
           <Stack.Screen 
             name="Login" 
-            component={Login} 
+            component={Screens.Login} 
             options={{ headerShown: false }}  
           />
+
+          {/* Otras pantallas con Header */}
           <Stack.Screen 
             name="AdminOptions" 
-            component={AdminOptions}
-            options={{ headerShown: false }} 
+            component={Screens.AdminOptions}
+            options={{ header: () => <Header /> }} 
           />
           <Stack.Screen 
             name="SetupIzaje" 
-            component={SetupIzaje}
-            options={{ headerShown: false }} 
+            component={Screens.SetupIzaje}
+            options={{ header: () => <Header /> }} 
           />
           <Stack.Screen 
             name="Tablas" 
-            component={Tablas}
-            options={{ headerShown: false }} 
+            component={Screens.Tablas}
+            options={{ header: () => <Header /> }} 
           />
           <Stack.Screen 
             name="PlanIzaje" 
-            component={PlanIzaje}
-            options={{ headerShown: false }} 
+            component={Screens.PlanIzaje}
+            options={{ header: () => <Header /> }} 
           />
           <Stack.Screen 
             name="GruaIzaje" 
-            component={GruaIzaje}
-            options={{ headerShown: false }} 
+            component={Screens.GruaIzaje}
+            options={{ header: () => <Header /> }} 
           />
         </Stack.Navigator>
       </View>

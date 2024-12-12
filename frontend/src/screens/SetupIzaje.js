@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { ScrollView, TouchableOpacity, Text, TextInput, View } from 'react-native';
-import styles from '../styles/SetupIzajeStyles';
-import ModalForma from '../components/ModalForma';
-import ModalGrua from '../components/ModalGrua';
-import ModalManiobra from '../components/ModalManiobra';
-import ModalGrillete from '../components/ModalGrillete';
-import FormularioDatosIzaje from '../components/FormularioDatosIzaje';
 import { useNavigation } from '@react-navigation/native';
+import styles from '../styles/SetupIzajeStyles';
+import Modals from '../components/Modal.index'; // Importamos el objeto con todos los modales
+import FormularioDatosIzaje from '../components/FormularioDatosIzaje';
 
 const SetupIzaje = () => {
   const navigation = useNavigation();
@@ -20,7 +17,6 @@ const SetupIzaje = () => {
   const [grua, setGrua] = useState('');
   const [eslingaOEstrobo, setEslingaOEstrobo] = useState('');
   const [cantidadManiobra, setCantidadManiobra] = useState('');
-  const [manipulaciones, setManipulaciones] = useState('');
   const [elemento, setElemento] = useState('');
 
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
@@ -61,7 +57,7 @@ const SetupIzaje = () => {
           <Text style={styles.buttonText}>Configurar Forma</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Forma seleccionada: {forma}</Text>
-        <ModalForma
+        <Modals.ModalForma
           isVisible={isFormaModalVisible}
           onClose={() => setFormaModalVisible(false)}
           onSelect={setForma}
@@ -72,32 +68,32 @@ const SetupIzaje = () => {
           <Text style={styles.buttonText}>Configurar Grúa</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Grúa seleccionada: {grua}</Text>
-        <ModalGrua
+        <Modals.ModalGrua
           isVisible={isGruaModalVisible}
           onClose={() => setGruaModalVisible(false)}
           onSelect={setGrua}
         />
 
-        {/* Eliminar el contenedor envolvente de Configurar Grillete */}
+        {/* Configurar Grillete */}
         <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.button}>
           <Text style={styles.buttonText}>Configurar Grillete</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Cantidad de grilletes: {cantidadGrilletes}</Text>
         <Text style={styles.title}>Tipo de grillete: {tipoGrillete} pulg.</Text>
-        <ModalGrillete
+        <Modals.ModalGrillete
           isVisible={isGrilleteModalVisible}
           onClose={() => setGrilleteModalVisible(false)}
           onSelectCantidad={setCantidadGrilletes}
           onSelectTipo={setTipoGrillete}
         />
 
-        {/* Eliminar el contenedor envolvente de Configurar Maniobra */}
+        {/* Configurar Maniobra */}
         <TouchableOpacity onPress={() => openModal(setManiobraModalVisible)} style={styles.button}>
           <Text style={styles.buttonText}>Configurar Maniobra</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Maniobra seleccionada: {eslingaOEstrobo}</Text>
         <Text style={styles.title}>Cantidad: {cantidadManiobra}</Text>
-        <ModalManiobra
+        <Modals.ModalManiobra
           isVisible={isManiobraModalVisible}
           onClose={() => setManiobraModalVisible(false)}
           onSelect={({ tipo, cantidad }) => {

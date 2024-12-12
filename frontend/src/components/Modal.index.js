@@ -1,19 +1,13 @@
-export const modalConfig = [
-    {
-      type: 'forma',
-      buttonText: 'Configurar Forma',
-    },
-    {
-      type: 'grua',
-      buttonText: 'Configurar Grúa',
-    },
-    {
-      type: 'maniobra',
-      buttonText: 'Configurar Maniobra',
-    },
-    {
-      type: 'grillete',
-      buttonText: 'Configurar Grillete',
-    },
-];
-  
+import ModalForma from '../components/ModalForma';
+import ModalGrua from '../components/ModalGrua';
+import ModalManiobra from '../components/ModalManiobra';
+import ModalGrillete from '../components/ModalGrillete';
+
+const Modals = {
+  ModalForma,
+  ModalGrua,
+  ModalManiobra,
+  ModalGrillete
+};
+
+export default Modals;
