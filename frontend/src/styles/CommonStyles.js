@@ -14,6 +14,16 @@ const CommonStyles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  // Título general
+  title: {
+    fontSize: 24, // Más destacado
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#000', // Asegúrate de que el color sea más visible
+  },
+
   // Botones comunes
   button: {
     paddingVertical: 15,

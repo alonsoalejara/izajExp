@@ -9,6 +9,7 @@ import SetupIzaje from './src/screens/SetupIzaje';
 import PlanIzaje from './src/screens/PlanIzaje';
 import GruaIzaje from './src/screens/GruaIzaje';
 import AdminOptions from './src/screens/AdminOptions';
+import Tablas from './src/screens/Tablas';
 
 const Stack = createStackNavigator();
 
@@ -36,6 +37,11 @@ export default function App() {
           <Stack.Screen 
             name="SetupIzaje" 
             component={SetupIzaje}
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="Tablas" 
+            component={Tablas}
             options={{ headerShown: false }} 
           />
           <Stack.Screen 

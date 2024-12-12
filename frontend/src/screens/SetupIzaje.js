@@ -7,7 +7,6 @@ import ModalManiobra from '../components/ModalManiobra';
 import ModalGrillete from '../components/ModalGrillete';
 import FormularioDatosIzaje from '../components/FormularioDatosIzaje';
 import { useNavigation } from '@react-navigation/native';
-import Header from '../components/common/header';
 
 const SetupIzaje = () => {
   const navigation = useNavigation();
@@ -36,8 +35,6 @@ const SetupIzaje = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Header */}
-      <Header />
 
       {/* Contenido principal */}
       <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
@@ -118,12 +115,12 @@ const SetupIzaje = () => {
           setRadioMontaje={setRadioMontaje}
         />
 
-        {/* Botón para navegar a PlanIzaje */}
+        {/* Botón para navegar a Tablas */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('PlanIzaje')}
+          onPress={() => navigation.navigate('Tablas')}
         >
-          <Text style={styles.buttonText}>Ir a Plan de Izaje</Text>
+          <Text style={styles.buttonText}>Ir a Tablas</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
