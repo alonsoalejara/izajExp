@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { ScrollView, TouchableOpacity, Text, TextInput, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
 import Modals from '../components/Modal.index'; // Importamos el objeto con todos los modales
 import FormularioDatosIzaje from '../components/FormularioDatosIzaje';
-import { useNavigation } from '@react-navigation/native';
-import Header from '../components/common/header';
 
 const SetupIzaje = () => {
   const navigation = useNavigation();
@@ -32,8 +31,6 @@ const SetupIzaje = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Header */}
-      <Header />
 
       {/* Contenido principal */}
       <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
