@@ -3,49 +3,44 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View, StyleSheet } from 'react-native';
 
-import Home from './src/screens/Home'; 
-import Login from './src/screens/Login';
-import SetupIzaje from './src/screens/SetupIzaje';
-import PlanIzaje from './src/screens/PlanIzaje';
-import GruaIzaje from './src/screens/GruaIzaje';
-import AdminOptions from './src/screens/AdminOptions';
+// Importa el objeto Screens
+import Screens from './src/screens/Screens.index';
 
 const Stack = createStackNavigator();
 
 export default function App() {
-
   return (
     <NavigationContainer>
       <View style={styles.container}>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen 
             name="Home" 
-            component={Home} 
+            component={Screens.Home} 
             options={{ headerShown: false }} 
           />
           <Stack.Screen 
             name="Login" 
-            component={Login} 
+            component={Screens.Login} 
             options={{ headerShown: false }}  
           />
           <Stack.Screen 
             name="AdminOptions" 
-            component={AdminOptions}
+            component={Screens.AdminOptions}
             options={{ headerShown: false }} 
           />
           <Stack.Screen 
             name="SetupIzaje" 
-            component={SetupIzaje}
+            component={Screens.SetupIzaje}
             options={{ headerShown: false }} 
           />
           <Stack.Screen 
             name="PlanIzaje" 
-            component={PlanIzaje}
+            component={Screens.PlanIzaje}
             options={{ headerShown: false }} 
           />
           <Stack.Screen 
             name="GruaIzaje" 
-            component={GruaIzaje}
+            component={Screens.GruaIzaje}
             options={{ headerShown: false }} 
           />
         </Stack.Navigator>
