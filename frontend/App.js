@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View, StyleSheet } from 'react-native';
 
-// Importa el objeto Screens
 import Screens from './src/screens/Screens.index';
 
 const Stack = createStackNavigator();
