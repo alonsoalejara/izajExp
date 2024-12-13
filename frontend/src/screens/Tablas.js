@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import TablasStyles from '../styles/TablasStyles'; // Asegúrate de tener la ruta correcta
 
 const Tablas = () => {
@@ -20,8 +20,14 @@ const Tablas = () => {
     { item: '7', descripcion: '% DE UTILIZACIÓN', valor: '' },
   ];
 
+  // Filas para la nueva tabla Cuadro Datos Grúa
+  const datosGrúaRows = [
+    { item: '1', descripcion: 'LARGO PLUMA', valor: '' },
+    { item: '2', descripcion: 'CONTRAPESO', valor: '' },
+  ];
+
   return (
-    <View style={TablasStyles.container}>
+    <ScrollView style={TablasStyles.container}>
       {/* Título de la página */}
       <View style={TablasStyles.header}>
         <Text style={TablasStyles.headerText}>Tablas</Text>
@@ -53,7 +59,7 @@ const Tablas = () => {
           </View>
         ))}
 
-        {/* Fila TOTAL que abarca las 4 primeras columnas */}
+        {/* Fila TOTAL */}
         <View style={TablasStyles.row}>
           <Text style={[TablasStyles.totalCell, { fontWeight: 'bold', marginTop: 8, marginLeft: 238, flex: 2.5 }]}>TOTAL</Text>
           <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoTotalColumn]}></Text>
@@ -85,7 +91,33 @@ const Tablas = () => {
           </View>
         ))}
       </View>
-    </View>
+
+      {/* Salto de línea entre las tablas */}
+      <View style={{ height: 20 }} />
+
+      {/* Tercera tabla: CUADRO DATOS GRÚA */}
+      <View style={TablasStyles.table}>
+        <View style={TablasStyles.fullRow}>
+          <Text style={TablasStyles.fullRowText}>CUADRO DATOS GRÚA #1</Text>
+        </View>
+
+        {/* Fila de encabezados */}
+        <View style={TablasStyles.row}>
+          <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.itemColumn, TablasStyles.headerCell]}>ITEM</Text>
+          <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.descripcionColumn, TablasStyles.headerCell]}>DESCRIPCIÓN</Text>
+          <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.valorColumn, TablasStyles.headerCell]}>VALOR</Text>
+        </View>
+
+        {/* Filas de datos */}
+        {datosGrúaRows.map((row, rowIndex) => (
+          <View key={rowIndex} style={TablasStyles.row}>
+            <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.itemColumn]}>{row.item}</Text>
+            <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.descripcionColumn]}>{row.descripcion}</Text>
+            <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.valorColumn]}>{row.valor}</Text>
+          </View>
+        ))}
+      </View>
+    </ScrollView>
   );
 };
 
