@@ -5,7 +5,7 @@ const CommonStyles = StyleSheet.create({
   text: {
     fontFamily: 'Arial',
     fontSize: 16,
-    color: '#333',
+    color: '#333', // Texto oscuro
   },
   textBold: {
     fontWeight: 'bold',
@@ -21,24 +21,24 @@ const CommonStyles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 20,
     textAlign: 'center',
-    color: '#000', // Asegúrate de que el color sea más visible
+    color: '#333', // Cambiado a texto oscuro
   },
 
   // Botones comunes
   button: {
     paddingVertical: 15,
     paddingHorizontal: 20,
-    borderRadius: 30,
+    borderRadius: 5, // Cambiado a 5 para bordes más suaves
     alignItems: 'center',
   },
   buttonPrimary: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#ee0000', // Rojo
   },
   buttonDanger: {
-    backgroundColor: '#f44336',
+    backgroundColor: '#f44336', // Rojo claro
   },
   buttonText: {
-    color: '#f5f5f5',
+    color: '#fff', // Texto blanco en el botón
     fontWeight: '600',
     fontSize: 16,
   },
@@ -46,7 +46,7 @@ const CommonStyles = StyleSheet.create({
   // Contenedores básicos
   container: {
     flex: 1,
-    backgroundColor: '#d5d5d5',
+    backgroundColor: '#fff', // Fondo blanco
     paddingHorizontal: 20,
     paddingVertical: 36,
   },
@@ -54,24 +54,53 @@ const CommonStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semi-transparente para modal
+  },
+
+  // Secciones
+  section: {
+    marginBottom: 30,
+    padding: 10,
+    backgroundColor: '#f5f5f5', // Fondo gris claro para las secciones
+    borderRadius: 10, // Bordes redondeados de 10
+  },
+  sectionTitle: {
+    fontSize: 20,
+    color: '#333', // Texto oscuro
+    marginBottom: 10,
+    fontWeight: 'bold',
   },
 
   // Inputs comunes
   input: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#e0e0e0', // Fondo gris claro
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
+    borderColor: '#ccc', // Borde gris claro
+    borderRadius: 5, // Bordes redondeados
     padding: 10,
     fontSize: 16,
-    color: '#333',
+    color: '#333', // Texto oscuro
     marginLeft: -3,
+    width: '100%', // Ajustado a todo el ancho
   },
 
   // Placeholder de inputs
   placeholderText: {
     color: '#aaa', // Placeholder gris claro
+  },
+
+  // Resultado
+  result: {
+    fontSize: 16,
+    color: 'red', // Color rojo para resultado
+    marginTop: 5,
+  },
+
+  // Fórmula
+  formula: {
+    fontSize: 12,
+    color: '#333', // Texto oscuro para la fórmula
+    marginTop: 10,
   },
 });
 

@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import CommonStyles from './CommonStyles'; // Asegúrate de tener la ruta correcta a CommonStyles
 
 // Funciones reutilizables para mejorar la claridad
 const cellStyle = (padding = 6.9, textAlign = 'center') => ({
@@ -100,9 +99,6 @@ const TablasStyles = StyleSheet.create({
     flex: 2.5, // Ajusta el ancho de la columna de PESO TOTAL
   },
 
-  // Estilos comunes para texto y botones
-  ...CommonStyles,
-
   // Estilo para la celda total
   totalCellStyle,
 
@@ -138,7 +134,6 @@ const TablasStyles = StyleSheet.create({
       flex: 2, // Ajuste del ancho de la columna de VALOR
     },
   },
-
 });
 
 export default TablasStyles;

@@ -5,8 +5,8 @@ import TablasStyles from '../styles/TablasStyles'; // Asegúrate de tener la rut
 const Tablas = () => {
   // Filas vacías para la primera tabla
   const rows = [
-    { item: '', descripcion: '', cantidad: '', pesoUnitario: '', pesoTotal: '' },
-    { item: '', descripcion: '', cantidad: '', pesoUnitario: '', pesoTotal: '' },
+    { item: '1', descripcion: '', cantidad: '', pesoUnitario: '', pesoTotal: '' },
+    { item: '2', descripcion: '', cantidad: '', pesoUnitario: '', pesoTotal: '' },
   ];
 
   // Filas para la segunda tabla
@@ -30,7 +30,7 @@ const Tablas = () => {
     <ScrollView style={TablasStyles.container}>
       {/* Título de la página */}
       <View style={TablasStyles.header}>
-        <Text style={TablasStyles.headerText}>Tablas</Text>
+        <Text style={TablasStyles.title}>Tablas</Text>
       </View>
 
       {/* Primera tabla: CUADRO APAREJOS GRÚA */}
@@ -61,13 +61,13 @@ const Tablas = () => {
 
         {/* Fila TOTAL */}
         <View style={TablasStyles.row}>
-          <Text style={[TablasStyles.totalCell, { fontWeight: 'bold', marginTop: 8, marginLeft: 238, flex: 2.5 }]}>TOTAL</Text>
+          <Text style={[TablasStyles.totalCell, { fontWeight: 'bold', marginTop: 8, marginLeft: 238, flex: 3.8 }]}>TOTAL</Text>
           <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoTotalColumn]}></Text>
         </View>
       </View>
 
       {/* Salto de línea entre las tablas */}
-      <View style={{ height: 20 }} />
+      <View style={{ height: 40 }} />
 
       {/* Segunda tabla: CUADRO DE CARGA GRÚA */}
       <View style={TablasStyles.table}>
@@ -93,7 +93,7 @@ const Tablas = () => {
       </View>
 
       {/* Salto de línea entre las tablas */}
-      <View style={{ height: 20 }} />
+      <View style={{ height: 40 }} />
 
       {/* Tercera tabla: CUADRO DATOS GRÚA */}
       <View style={TablasStyles.table}>
@@ -117,6 +117,9 @@ const Tablas = () => {
           </View>
         ))}
       </View>
+
+      {/* Salto de línea entre las tablas */}
+      <View style={{ height: 80 }} />
     </ScrollView>
   );
 };
