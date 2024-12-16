@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, TouchableOpacity, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
-import Modals from '../components/Modal.index'; // Importamos el objeto con todos los modales
+import Modals from '../components/Modal.index';
 import FormularioDatosIzaje from '../components/FormularioDatosIzaje';
 
 const SetupIzaje = () => {
@@ -21,6 +21,7 @@ const SetupIzaje = () => {
 
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState('');
+  const [manipulaciones, setManipulaciones] = useState('');
 
   const [radioIzaje, setRadioIzaje] = useState('');
   const [radioMontaje, setRadioMontaje] = useState('');
@@ -114,7 +115,14 @@ const SetupIzaje = () => {
         {/* Botón para navegar a Tablas */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Tablas')}
+          onPress={() => navigation.navigate('Tablas', {
+            forma: forma,
+            grua: grua,
+            eslingaOEstrobo: eslingaOEstrobo,
+            cantidadManiobra: cantidadManiobra,
+            cantidadGrilletes: cantidadGrilletes,
+            tipoGrillete: tipoGrillete,
+          })}
         >
           <Text style={styles.buttonText}>Ir a Tablas</Text>
         </TouchableOpacity>

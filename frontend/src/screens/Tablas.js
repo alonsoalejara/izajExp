@@ -2,11 +2,30 @@ import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import TablasStyles from '../styles/TablasStyles'; // Asegúrate de tener la ruta correcta
 
-const Tablas = () => {
-  // Filas vacías para la primera tabla
+const Tablas = ({ route }) => {
+  // Recibimos los datos enviados desde SetupIzaje.js
+  const {
+    eslingaOEstrobo,
+    cantidadManiobra,
+    cantidadGrilletes,
+    tipoGrillete,
+    grua,
+  } = route.params;
+
+  // Definir pesos unitarios de ejemplo
+  const pesoUnitarioEslinga = 5; // Peso unitario de eslinga (Ejemplo: 5 kg)
+  const pesoUnitarioGrillete = 2; // Peso unitario de grillete (Ejemplo: 2 kg)
+
+  // Filas para cuadro de aparejos con cálculo del peso total
   const rows = [
-    { item: '1', descripcion: '', cantidad: '', pesoUnitario: '', pesoTotal: '' },
-    { item: '2', descripcion: '', cantidad: '', pesoUnitario: '', pesoTotal: '' },
+    { item: '1', descripcion: `${eslingaOEstrobo}`, cantidad: cantidadManiobra, pesoUnitario: pesoUnitarioEslinga, pesoTotal: cantidadManiobra * pesoUnitarioEslinga },
+    { 
+      item: '2', 
+      descripcion: `Grillete ${tipoGrillete}"`,
+      cantidad: cantidadGrilletes, 
+      pesoUnitario: pesoUnitarioGrillete, 
+      pesoTotal: cantidadGrilletes * pesoUnitarioGrillete 
+    },
   ];
 
   // Filas para la segunda tabla
@@ -36,7 +55,9 @@ const Tablas = () => {
       {/* Primera tabla: CUADRO APAREJOS GRÚA */}
       <View style={TablasStyles.table}>
         <View style={TablasStyles.fullRow}>
-          <Text style={TablasStyles.fullRowText}>CUADRO APAREJOS GRÚA #1</Text>
+          <Text style={TablasStyles.fullRowText}>
+            CUADRO APAREJOS {grua ? grua.toUpperCase() : ''}
+          </Text>
         </View>
 
         {/* Fila de encabezados */}
@@ -54,15 +75,15 @@ const Tablas = () => {
             <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.itemColumn]}>{row.item}</Text>
             <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.descripcionColumn]}>{row.descripcion}</Text>
             <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.cantidadColumn]}>{row.cantidad}</Text>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoUnitarioColumn]}>{row.pesoUnitario}</Text>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoTotalColumn]}>{row.pesoTotal}</Text>
+            <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoUnitarioColumn]}>{row.pesoUnitario} kg</Text>
+            <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoTotalColumn]}>{row.pesoTotal} kg</Text>
           </View>
         ))}
 
         {/* Fila TOTAL */}
         <View style={TablasStyles.row}>
           <Text style={[TablasStyles.totalCell, { fontWeight: 'bold', marginTop: 8, marginLeft: 238, flex: 3.8 }]}>TOTAL</Text>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoTotalColumn]}></Text>
+          <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoTotalColumn]}>{rows.reduce((total, row) => total + row.pesoTotal, 0)} kg</Text>
         </View>
       </View>
 
@@ -72,7 +93,9 @@ const Tablas = () => {
       {/* Segunda tabla: CUADRO DE CARGA GRÚA */}
       <View style={TablasStyles.table}>
         <View style={TablasStyles.fullRow}>
-          <Text style={TablasStyles.fullRowText}>CUADRO DE CARGA GRÚA #2</Text>
+          <Text style={TablasStyles.fullRowText}>
+            CUADRO DE CARGA {grua ? grua.toUpperCase() : ''}
+          </Text>
         </View>
 
         {/* Fila de encabezados */}
@@ -98,7 +121,9 @@ const Tablas = () => {
       {/* Tercera tabla: CUADRO DATOS GRÚA */}
       <View style={TablasStyles.table}>
         <View style={TablasStyles.fullRow}>
-          <Text style={TablasStyles.fullRowText}>CUADRO DATOS GRÚA #1</Text>
+          <Text style={TablasStyles.fullRowText}>
+            CUADRO DATOS {grua ? grua.toUpperCase() : ''}
+          </Text>
         </View>
 
         {/* Fila de encabezados */}

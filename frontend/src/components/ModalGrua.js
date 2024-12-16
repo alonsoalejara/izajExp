@@ -10,7 +10,7 @@ const ModalGrua = ({ isVisible, onClose, onSelect }) => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Seleccionar Grúa</Text>
-            {['Grúa 1', 'Grúa 2', 'Grúa 3'].map((grua) => (
+            {['Terex RT555', 'Grúa 2', 'Grúa 3'].map((grua) => (
               <TouchableOpacity
                 key={grua}
                 style={[
