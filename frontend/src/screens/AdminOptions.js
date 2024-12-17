@@ -7,9 +7,9 @@ export default function AdminOptions({ navigation }) {
   const handleRoleSelection = (role) => {
     // Navegar a diferentes pantallas dependiendo del rol seleccionado
     if (role === "admin") {
-      navigation.navigate("AdminScreen"); // Navegar a la pantalla de administrador
+      navigation.navigate("SetupIzaje"); // Navegar a la pantalla de administrador
     } else if (role === "user") {
-      navigation.navigate("UserScreen"); // Navegar a la pantalla de usuario
+      navigation.navigate("SetupIzaje"); // Navegar a la pantalla de usuario
     }
   };
 
