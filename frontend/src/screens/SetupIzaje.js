@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, TouchableOpacity, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
@@ -29,6 +29,15 @@ const SetupIzaje = () => {
   const openModal = (setModalVisible) => {
     setModalVisible(true);
   };
+
+  // Effect to log the selected crane data when it changes
+  useEffect(() => {
+    if (grua) {
+      console.log(`Grúa seleccionada: ${grua}`);
+      // Example: You can fetch data for the selected crane (assuming data is available)
+      // fetchGrúaData(grua); // You would use your own function to get data for the crane
+    }
+  }, [grua]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -122,6 +131,8 @@ const SetupIzaje = () => {
             cantidadManiobra: cantidadManiobra,
             cantidadGrilletes: cantidadGrilletes,
             tipoGrillete: tipoGrillete,
+            radioIzaje: radioIzaje,
+            radioMontaje: radioMontaje,
           })}
         >
           <Text style={styles.buttonText}>Ir a Tablas</Text>

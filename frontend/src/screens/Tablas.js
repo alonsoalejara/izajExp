@@ -1,58 +1,112 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Button } from 'react-native';
 import TablasStyles from '../styles/TablasStyles'; // Asegúrate de tener la ruta correcta
 
 const Tablas = ({ route }) => {
-  // Recibimos los datos enviados desde SetupIzaje.js
   const {
     eslingaOEstrobo,
     cantidadManiobra,
     cantidadGrilletes,
     tipoGrillete,
     grua,
+    radioIzaje,
+    radioMontaje,
   } = route.params;
 
-  // Definir pesos unitarios de ejemplo
-  const pesoUnitarioEslinga = 5; // Peso unitario de eslinga (Ejemplo: 5 kg)
-  const pesoUnitarioGrillete = 2; // Peso unitario de grillete (Ejemplo: 2 kg)
+  const gruaData = {
+    'Terex RT555': {
+      pesoEquipo: 12000,
+      pesoGancho: 450,
+      capacidadLevante: 17800,
+      largoPluma: 19.8,
+      contrapeso: 6.4,
+    },
+    'Grúa 2': {
+      pesoEquipo: 10000,
+      pesoGancho: 400,
+      capacidadLevante: 16000,
+      largoPluma: 20,
+      contrapeso: 7,
+    },
+    'Grúa 3': {
+      pesoEquipo: 11000,
+      pesoGancho: 420,
+      capacidadLevante: 17000,
+      largoPluma: 21,
+      contrapeso: 8,
+    },
+  };
 
-  // Filas para cuadro de aparejos con cálculo del peso total
   const rows = [
-    { item: '1', descripcion: `${eslingaOEstrobo}`, cantidad: cantidadManiobra, pesoUnitario: pesoUnitarioEslinga, pesoTotal: cantidadManiobra * pesoUnitarioEslinga },
-    { 
-      item: '2', 
+    {
+      item: '1',
+      descripcion: `${eslingaOEstrobo}`,
+      cantidad: cantidadManiobra,
+      pesoUnitario: 5,
+      pesoTotal: cantidadManiobra * 5,
+    },
+    {
+      item: '2',
       descripcion: `Grillete ${tipoGrillete}"`,
-      cantidad: cantidadGrilletes, 
-      pesoUnitario: pesoUnitarioGrillete, 
-      pesoTotal: cantidadGrilletes * pesoUnitarioGrillete 
+      cantidad: cantidadGrilletes,
+      pesoUnitario: 2,
+      pesoTotal: cantidadGrilletes * 2,
     },
   ];
 
-  // Filas para la segunda tabla
+  const totalPesoAparejos = rows.reduce((total, row) => total + row.pesoTotal, 0);
+
+  const selectedGrua = gruaData[grua] || {};
+
   const cargaRows = [
-    { item: '1', descripcion: 'PESO DEL EQUIPO', valor: '' },
-    { item: '2', descripcion: 'PESO APAREJOS', valor: '' },
-    { item: '3', descripcion: 'PESO GANCHO', valor: '' },
-    { item: '4', descripcion: 'PESO TOTAL', valor: '' },
-    { item: '5', descripcion: 'RADIO DE TRABAJO MAXIMO', valor: '' },
-    { item: '6', descripcion: 'CAPACIDAD DE LEVANTE', valor: '' },
+    {
+      item: '1',
+      descripcion: 'PESO DEL EQUIPO',
+      valor: `${selectedGrua.pesoEquipo || '0'} kg`,
+    },
+    {
+      item: '2',
+      descripcion: 'PESO APAREJOS',
+      valor: `${totalPesoAparejos} kg`,
+    },
+    {
+      item: '3',
+      descripcion: 'PESO GANCHO',
+      valor: `${selectedGrua.pesoGancho || '0'} kg`,
+    },
+    {
+      item: '4',
+      descripcion: 'PESO TOTAL',
+      valor: `${(selectedGrua.pesoEquipo || 0) + totalPesoAparejos + (selectedGrua.pesoGancho || 0)} kg`,
+    },
+    {
+      item: '5',
+      descripcion: 'RADIO DE TRABAJO MAXIMO',
+      valor: `${Math.max(radioIzaje, radioMontaje)} mts`,
+    },
+    { item: '6', descripcion: 'CAPACIDAD DE LEVANTE', valor: `${selectedGrua.capacidadLevante || '0'} kg` },
     { item: '7', descripcion: '% DE UTILIZACIÓN', valor: '' },
   ];
 
-  // Filas para la nueva tabla Cuadro Datos Grúa
   const datosGrúaRows = [
-    { item: '1', descripcion: 'LARGO PLUMA', valor: '' },
-    { item: '2', descripcion: 'CONTRAPESO', valor: '' },
+    {
+      item: '1',
+      descripcion: 'LARGO PLUMA',
+      valor: `${selectedGrua.largoPluma || '0'} mts`,
+    },
+    {
+      item: '2',
+      descripcion: 'CONTRAPESO',
+      valor: `${selectedGrua.contrapeso || '0'} ton`,
+    },
   ];
 
   return (
     <ScrollView style={TablasStyles.container}>
-      {/* Título de la página */}
       <View style={TablasStyles.header}>
         <Text style={TablasStyles.title}>Tablas</Text>
       </View>
 
-      {/* Primera tabla: CUADRO APAREJOS GRÚA */}
       <View style={TablasStyles.table}>
         <View style={TablasStyles.fullRow}>
           <Text style={TablasStyles.fullRowText}>
@@ -60,91 +114,81 @@ const Tablas = ({ route }) => {
           </Text>
         </View>
 
-        {/* Fila de encabezados */}
         <View style={TablasStyles.row}>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.itemColumn, TablasStyles.headerCell]}>ITEM</Text>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.descripcionColumn, TablasStyles.headerCell]}>DESCRIPCIÓN</Text>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.cantidadColumn, TablasStyles.headerCell]}>CANT.</Text>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoUnitarioColumn, TablasStyles.headerCell]}>PESO UNIT (Kg.)</Text>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoTotalColumn, TablasStyles.headerCell]}>PESO TOTAL (Kg.)</Text>
+          <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center', fontWeight: 'bold' }]}>ITEM</Text>
+          <Text style={[TablasStyles.cell, { flex: 2, fontWeight: 'bold' }]}>DESCRIPCIÓN</Text>
+          <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center', fontWeight: 'bold' }]}>CANT.</Text>
+          <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center', fontWeight: 'bold' }]}>PESO UNIT (Kg.)</Text>
+          <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center', fontWeight: 'bold' }]}>PESO TOTAL (Kg.)</Text>
         </View>
 
-        {/* Filas de datos */}
         {rows.map((row, rowIndex) => (
           <View key={rowIndex} style={TablasStyles.row}>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.itemColumn]}>{row.item}</Text>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.descripcionColumn]}>{row.descripcion}</Text>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.cantidadColumn]}>{row.cantidad}</Text>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoUnitarioColumn]}>{row.pesoUnitario} kg</Text>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoTotalColumn]}>{row.pesoTotal} kg</Text>
+            <Text style={[TablasStyles.cell, { flex: 1 }]}>{row.item}</Text>
+            <Text style={[TablasStyles.cell, { flex: 2 }]}>{row.descripcion}</Text>
+            <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center' }]}>{row.cantidad}</Text>
+            <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center' }]}>{row.pesoUnitario} kg</Text>
+            <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center' }]}>{row.pesoTotal} kg</Text>
           </View>
         ))}
 
-        {/* Fila TOTAL */}
         <View style={TablasStyles.row}>
-          <Text style={[TablasStyles.totalCell, { fontWeight: 'bold', marginTop: 8, marginLeft: 238, flex: 3.8 }]}>TOTAL</Text>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroAparejosGrúa.pesoTotalColumn]}>{rows.reduce((total, row) => total + row.pesoTotal, 0)} kg</Text>
+          <Text style={[TablasStyles.cell, { flex: 3.8, fontWeight: 'bold', marginTop: 0, marginLeft: 0 }]}>TOTAL</Text>
+          <Text style={[TablasStyles.cell, { flex: 0.64, textAlign: 'center' }]}>{totalPesoAparejos} kg</Text>
         </View>
       </View>
 
-      {/* Salto de línea entre las tablas */}
       <View style={{ height: 40 }} />
 
-      {/* Segunda tabla: CUADRO DE CARGA GRÚA */}
       <View style={TablasStyles.table}>
         <View style={TablasStyles.fullRow}>
           <Text style={TablasStyles.fullRowText}>
-            CUADRO DE CARGA {grua ? grua.toUpperCase() : ''}
+            CUADRO DE CARGA GRUA {grua ? grua.toUpperCase() : ''}
           </Text>
         </View>
 
-        {/* Fila de encabezados */}
         <View style={TablasStyles.row}>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.itemColumn, TablasStyles.headerCell]}>ITEM</Text>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.descripcionColumn, TablasStyles.headerCell]}>DESCRIPCIÓN</Text>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.valorColumn, TablasStyles.headerCell]}>VALOR</Text>
+          <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center', fontWeight: 'bold' }]}>ITEM</Text>
+          <Text style={[TablasStyles.cell, { flex: 2, fontWeight: 'bold' }]}>DESCRIPCIÓN</Text>
+          <Text style={[TablasStyles.cell, { flex: 2, fontWeight: 'bold' }]}>VALOR</Text>
         </View>
 
-        {/* Filas de datos */}
         {cargaRows.map((row, rowIndex) => (
           <View key={rowIndex} style={TablasStyles.row}>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.itemColumn]}>{row.item}</Text>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.descripcionColumn]}>{row.descripcion}</Text>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.valorColumn]}>{row.valor}</Text>
+            <Text style={[TablasStyles.cell, { flex: 1 }]}>{row.item}</Text>
+            <Text style={[TablasStyles.cell, { flex: 2 }]}>{row.descripcion}</Text>
+            <Text style={[TablasStyles.cell, { flex: 2 }]}>{row.valor}</Text>
           </View>
         ))}
       </View>
 
-      {/* Salto de línea entre las tablas */}
       <View style={{ height: 40 }} />
 
-      {/* Tercera tabla: CUADRO DATOS GRÚA */}
       <View style={TablasStyles.table}>
         <View style={TablasStyles.fullRow}>
           <Text style={TablasStyles.fullRowText}>
-            CUADRO DATOS {grua ? grua.toUpperCase() : ''}
+            CUADRO DATOS GRÚA {grua ? grua.toUpperCase() : ''}
           </Text>
         </View>
 
-        {/* Fila de encabezados */}
-        <View style={TablasStyles.row}>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.itemColumn, TablasStyles.headerCell]}>ITEM</Text>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.descripcionColumn, TablasStyles.headerCell]}>DESCRIPCIÓN</Text>
-          <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.valorColumn, TablasStyles.headerCell]}>VALOR</Text>
-        </View>
-
-        {/* Filas de datos */}
         {datosGrúaRows.map((row, rowIndex) => (
           <View key={rowIndex} style={TablasStyles.row}>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.itemColumn]}>{row.item}</Text>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.descripcionColumn]}>{row.descripcion}</Text>
-            <Text style={[TablasStyles.cell, TablasStyles.cuadroCargaGrúa.valorColumn]}>{row.valor}</Text>
+            <Text style={[TablasStyles.cell, { flex: 1 }]}>{row.item}</Text>
+            <Text style={[TablasStyles.cell, { flex: 2 }]}>{row.descripcion}</Text>
+            <Text style={[TablasStyles.cell, { flex: 2 }]}>{row.valor}</Text>
           </View>
         ))}
       </View>
 
-      {/* Salto de línea entre las tablas */}
-      <View style={{ height: 80 }} />
+      <View style={{ height: 40 }} />
+
+      {/* Botón */}
+      <View style={TablasStyles.button}>
+        <Button title="Finalizar" onPress={() => {}} />
+      </View>
+
+      <View style={{ height: 40 }} />
+
     </ScrollView>
   );
 };

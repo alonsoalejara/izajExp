@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import CommonStyles from './CommonStyles'; // Asegúrate de ajustar la ruta según tu estructura de archivos
 
 // Funciones reutilizables para mejorar la claridad
 const cellStyle = (padding = 6.9, textAlign = 'center') => ({
@@ -84,55 +85,66 @@ const TablasStyles = StyleSheet.create({
     flex: 1.5,
   },
   itemColumn: {
-    flex: 2, // Ajusta el ancho de la columna de ITEM
+    flex: 2,
   },
   descripcionColumn: {
-    flex: 5, // Aumenta el ancho de la columna de DESCRIPCIÓN
+    flex: 5,
   },
   cantidadColumn: {
-    flex: 2.5, // Ajusta el ancho de la columna de CANTIDAD
+    flex: 2.5,
   },
   pesoUnitarioColumn: {
-    flex: 2, // Ajusta el ancho de la columna de PESO UNITARIO
+    flex: 2,
   },
   pesoTotalColumn: {
-    flex: 2.5, // Ajusta el ancho de la columna de PESO TOTAL
+    flex: 2.5,
   },
 
   // Estilo para la celda total
   totalCellStyle,
 
   // Configuraciones específicas para cada tabla
-  // Primera tabla: CUADRO APAREJOS GRÚA
   cuadroAparejosGrúa: {
     itemColumn: {
-      flex: 2, // Ajusta el ancho de la columna de ITEM
+      flex: 2,
     },
     descripcionColumn: {
-      flex: 5, // Aumenta el ancho de la columna de DESCRIPCIÓN
+      flex: 5,
     },
     cantidadColumn: {
-      flex: 2.5, // Ajusta el ancho de la columna de CANTIDAD
+      flex: 2.5,
     },
     pesoUnitarioColumn: {
-      flex: 2, // Ajusta el ancho de la columna de PESO UNITARIO
+      flex: 2,
     },
     pesoTotalColumn: {
-      flex: 2.5, // Ajusta el ancho de la columna de PESO TOTAL
+      flex: 2.5,
+    },
+  },
+  cuadroCargaGrúa: {
+    itemColumn: {
+      flex: 1.5,
+    },
+    descripcionColumn: {
+      flex: 6,
+    },
+    valorColumn: {
+      flex: 2,
     },
   },
 
-  // Segunda tabla: CUADRO DE CARGA GRÚA
-  cuadroCargaGrúa: {
-    itemColumn: {
-      flex: 1.5, // Cambiar el ancho de la columna ITEM si es necesario
-    },
-    descripcionColumn: {
-      flex: 6, // Modificar el ancho de la columna DESCRIPCIÓN
-    },
-    valorColumn: {
-      flex: 2, // Ajuste del ancho de la columna de VALOR
-    },
+  // Estilos para botones reutilizando CommonStyles
+  button: {
+    ...CommonStyles.button,
+  },
+  buttonPrimary: {
+    ...CommonStyles.buttonPrimary,
+  },
+  buttonDanger: {
+    ...CommonStyles.buttonDanger,
+  },
+  buttonText: {
+    ...CommonStyles.buttonText,
   },
 });
 
