@@ -1,14 +1,12 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createStackNavigator } from '@react-navigation/stack';
 import { View, StyleSheet } from 'react-native';
 
 import Screens from './src/screens/Screens.index';
 import Header from './src/components/Header';
 
 // Crear el Stack y Drawer Navigators
-const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const App = () => {
@@ -17,7 +15,7 @@ const App = () => {
       <View style={styles.container}>
         {/* Drawer Navigator */}
         <Drawer.Navigator
-          initialRouteName="Home"
+          initialRouteName="SetupIzaje"  // Define la pantalla inicial
           screenOptions={{
             drawerStyle: {
               backgroundColor: '#dd0000',
@@ -33,32 +31,7 @@ const App = () => {
             },
           }}
         >
-          {/* Pantalla Home */}
-          <Drawer.Screen 
-            name="Home" 
-            component={Screens.Home} 
-            options={{
-              headerShown: false,  // Home no tiene Header
-            }} 
-          />
-
-          {/* Pantalla Login */}
-          <Drawer.Screen 
-            name="Login" 
-            component={Screens.Login} 
-            options={{
-              headerShown: false,  // Login no tiene Header
-            }} 
-          />
-
-          {/* Otras pantallas con Header */}
-          <Drawer.Screen 
-            name="AdminOptions" 
-            component={Screens.AdminOptions}
-            options={{
-              header: () => <Header />  // Usa el Header con Drawer para AdminOptions
-            }} 
-          />
+          {/* Pantalla SetupIzaje */}
           <Drawer.Screen 
             name="SetupIzaje" 
             component={Screens.SetupIzaje}
@@ -66,13 +39,8 @@ const App = () => {
               header: () => <Header />  // Usa el Header con Drawer para SetupIzaje
             }} 
           />
-          <Drawer.Screen 
-            name="PlanIzaje" 
-            component={Screens.PlanIzaje}
-            options={{
-              header: () => <Header />  // Usa el Header con Drawer para PlanIzaje
-            }} 
-          />
+          
+          {/* Pantalla Tablas */}
           <Drawer.Screen 
             name="Tablas" 
             component={Screens.Tablas}
@@ -80,6 +48,8 @@ const App = () => {
               header: () => <Header />  // Usa el Header con Drawer para Tablas
             }} 
           />
+          
+          {/* Pantalla GruaIzaje */}
           <Drawer.Screen 
             name="GruaIzaje" 
             component={Screens.GruaIzaje}

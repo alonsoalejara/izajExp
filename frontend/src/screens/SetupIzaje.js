@@ -48,6 +48,8 @@ const SetupIzaje = () => {
           <Text style={styles.formTitleNoContainer}>Cálculo Maniobras Menores</Text>
         </View>
         
+        {/* Sección comentada: Identificación del Elemento */}
+        {/*
         <View style={styles.formSection}>
           <Text style={styles.formTitle}>Identificación del Elemento</Text>
           <Text style={styles.label}>Por favor, escriba el identificador o marca del elemento:</Text>
@@ -59,10 +61,12 @@ const SetupIzaje = () => {
             onChangeText={setElemento}
           />
         </View>
+        */}
 
         <Text style={styles.formTitle}>Configuraciones:</Text>
 
-        {/* Configurar Forma */}
+        {/* Sección comentada: Configurar Forma */}
+        {/*
         <TouchableOpacity onPress={() => openModal(setFormaModalVisible)} style={styles.button}>
           <Text style={styles.buttonText}>Configurar Forma</Text>
         </TouchableOpacity>
@@ -72,6 +76,7 @@ const SetupIzaje = () => {
           onClose={() => setFormaModalVisible(false)}
           onSelect={setForma}
         />
+        */}
 
         {/* Configurar Grúa */}
         <TouchableOpacity onPress={() => openModal(setGruaModalVisible)} style={styles.button}>
