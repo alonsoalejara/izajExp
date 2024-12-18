@@ -23,9 +23,6 @@ COPY package.json package-lock.json ./
 # Copiar todo el contenido del proyecto al contenedor
 COPY . .
 
-# Copiar el archivo .env al contenedor
-COPY ./src/config/.env ./src/config/.env
-
 # Instalar las dependencias utilizando npm
 RUN npm install
 

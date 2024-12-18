@@ -141,7 +141,7 @@ sudo docker run hello-world
 
 - Ingresa al directorio del proyecto usando el siguiente comando:
     ~~~
-    cd https://github.com/alonsoalejara/izajExp
+    cd izajExp
     ~~~
 
 #### 2. Verificar el Dockerfile en las carpetas backend y frontend:
