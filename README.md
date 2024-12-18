@@ -151,7 +151,7 @@ sudo docker run hello-world
 
 ## Construcción
 
-#### 1. Construir la imagen Docker:
+#### 1. Construir la imagen Docker del backend:
 
 - #### Imagen Backend
     - En la carpeta raíz del proyecto, acceder a la carpeta backend con el siguiente comando:
@@ -166,6 +166,30 @@ sudo docker run hello-world
         ~~~
     - Esto construirá la imagen a partir del Dockerfile de la carpeta backend ya incluido en el repositorio.
     - La opción **-t** etiqueta la imagen como **imagen_backend**
+
+#### 1.2. Configurar .env:
+
+- #### Navegar hasta este directorio (dentro de la carpeta backend):
+    ~~~
+    cd src/config
+    ~~~
+
+- #### Verificar que este el archivo .env.example con este comando:
+    ~~~
+    ls -a
+    ~~~
+
+- #### Renombrar a .env con el siguiente comando:
+    ~~~
+    mv .env.example .env
+    ~~~
+
+- #### Editar el contenido del archivo con las variables de entorno:
+    ~~~
+    nano .env
+    ~~~
+
+#### 2. Construir la imagen Docker del frontend:
 
 - #### Imagen Frontend
     - En la carpeta raíz del proyecto, acceder a la carpeta frontend con el siguiente comando:
@@ -208,7 +232,18 @@ sudo docker run hello-world
         ~~~
         sudo docker ps
         ~~~
+    - #### Utilizar el siguiente comando para verificar que todos los pasos en la carpeta backend de la imagene y contenedor:
+        ~~~
+        sudo docker logs contenedor_backend
+        ~~~
     
+    - #### Si todo esta en orden la consola debería mostrar el siguiente mensaje:
+        ~~~
+        => Conectado a la base de datos
+        => Servidor corriendo en 0.0.0.0:3000/api
+        => API Iniciada exitosamente
+        ~~~
+
     #### 2. Ejecutar contenedor del frontend:
 
     - Traslado a carpeta correspondiente:
