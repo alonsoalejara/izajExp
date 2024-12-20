@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, ScrollView, Button } from 'react-native';
-import TablasStyles from '../styles/TablasStyles'; // Asegúrate de tener la ruta correcta
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import TablasStyles from '../styles/TablasStyles';
 
 const Tablas = ({ route }) => {
   const {
@@ -40,14 +40,14 @@ const Tablas = ({ route }) => {
   const rows = [
     {
       item: '1',
-      descripcion: `${eslingaOEstrobo}`,
+      descripcion: `${eslingaOEstrobo}`.toUpperCase(),
       cantidad: cantidadManiobra,
       pesoUnitario: 5,
       pesoTotal: cantidadManiobra * 5,
     },
     {
       item: '2',
-      descripcion: `Grillete ${tipoGrillete}"`,
+      descripcion: `Grillete ${tipoGrillete}"`.toUpperCase(),
       cantidad: cantidadGrilletes,
       pesoUnitario: 2,
       pesoTotal: cantidadGrilletes * 2,
@@ -125,16 +125,16 @@ const Tablas = ({ route }) => {
         {rows.map((row, rowIndex) => (
           <View key={rowIndex} style={TablasStyles.row}>
             <Text style={[TablasStyles.cell, { flex: 1 }]}>{row.item}</Text>
-            <Text style={[TablasStyles.cell, { flex: 2 }]}>{row.descripcion}</Text>
+            <Text style={[TablasStyles.cell, TablasStyles.descripcionColumn]}>{row.descripcion}</Text>
             <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center' }]}>{row.cantidad}</Text>
-            <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center' }]}>{row.pesoUnitario} kg</Text>
-            <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center' }]}>{row.pesoTotal} kg</Text>
+            <Text style={[TablasStyles.cell, TablasStyles.pesoUnitarioColumn]}>{row.pesoUnitario} kg</Text>
+            <Text style={[TablasStyles.cell, TablasStyles.pesoTotalColumn]}>{row.pesoTotal} kg</Text>
           </View>
         ))}
 
         <View style={TablasStyles.row}>
           <Text style={[TablasStyles.cell, { flex: 3.8, fontWeight: 'bold', marginTop: 0, marginLeft: 0 }]}>TOTAL</Text>
-          <Text style={[TablasStyles.cell, { flex: 0.64, textAlign: 'center' }]}>{totalPesoAparejos} kg</Text>
+          <Text style={[TablasStyles.cell, TablasStyles.pesoTotalColumn, { flex: 0.63 }]}>{totalPesoAparejos} kg</Text>
         </View>
       </View>
 
@@ -156,8 +156,8 @@ const Tablas = ({ route }) => {
         {cargaRows.map((row, rowIndex) => (
           <View key={rowIndex} style={TablasStyles.row}>
             <Text style={[TablasStyles.cell, { flex: 1 }]}>{row.item}</Text>
-            <Text style={[TablasStyles.cell, { flex: 2 }]}>{row.descripcion}</Text>
-            <Text style={[TablasStyles.cell, { flex: 2 }]}>{row.valor}</Text>
+            <Text style={[TablasStyles.cell, TablasStyles.descripcionColumn]}>{row.descripcion}</Text>
+            <Text style={[TablasStyles.cell, TablasStyles.pesoTotalColumn, { flex: 2 }]}>{row.valor}</Text>
           </View>
         ))}
       </View>
@@ -171,11 +171,17 @@ const Tablas = ({ route }) => {
           </Text>
         </View>
 
+        <View style={TablasStyles.row}>
+          <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'center', fontWeight: 'bold' }]}>ITEM</Text>
+          <Text style={[TablasStyles.cell, { flex: 2, fontWeight: 'bold' }]}>DESCRIPCIÓN</Text>
+          <Text style={[TablasStyles.cell, { flex: 2, fontWeight: 'bold' }]}>VALOR</Text>
+        </View>
+
         {datosGrúaRows.map((row, rowIndex) => (
           <View key={rowIndex} style={TablasStyles.row}>
             <Text style={[TablasStyles.cell, { flex: 1 }]}>{row.item}</Text>
-            <Text style={[TablasStyles.cell, { flex: 2 }]}>{row.descripcion}</Text>
-            <Text style={[TablasStyles.cell, { flex: 2 }]}>{row.valor}</Text>
+            <Text style={[TablasStyles.cell, TablasStyles.descripcionColumn]}>{row.descripcion}</Text>
+            <Text style={[TablasStyles.cell, TablasStyles.pesoTotalColumn, { flex: 2 }]}>{row.valor}</Text>
           </View>
         ))}
       </View>
@@ -183,9 +189,13 @@ const Tablas = ({ route }) => {
       <View style={{ height: 40 }} />
 
       {/* Botón */}
-      <View style={TablasStyles.button}>
-        <Button title="Finalizar" onPress={() => {}} />
-      </View>
+      <TouchableOpacity
+          style={TablasStyles.button}
+          onPress={() => navigation.navigate('Tablas', {
+          })}
+        >
+          <Text style={TablasStyles.buttonText}>Generar PDF</Text>
+        </TouchableOpacity>
 
       <View style={{ height: 40 }} />
 

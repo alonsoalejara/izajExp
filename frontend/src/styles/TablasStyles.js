@@ -2,17 +2,19 @@ import { StyleSheet } from 'react-native';
 import CommonStyles from './CommonStyles'; // Asegúrate de ajustar la ruta según tu estructura de archivos
 
 // Funciones reutilizables para mejorar la claridad
-const cellStyle = (padding = 6.9, textAlign = 'center') => ({
+const cellStyle = (padding = 6.9, textAlign = 'center', fontSize = 14) => ({
   padding,
   borderWidth: 1,
   borderColor: '#ccc',
   textAlign,
   backgroundColor: '#ffffff',
+  fontSize,
 });
 
 const headerCellStyle = {
   backgroundColor: '#eaeaea',
   fontWeight: 'bold',
+  fontSize: 16, // Tamaño de fuente para los encabezados
 };
 
 const totalCellStyle = {
@@ -23,20 +25,22 @@ const totalCellStyle = {
   textAlign: 'center',
   paddingVertical: 10,
   flex: 4,
+  fontSize: 15, // Tamaño de fuente para la celda de total
 };
 
 const TablasStyles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 2,
+    padding: 25,
     backgroundColor: '#f8f8f8',
   },
   content: {
     flex: 1,
   },
   title: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
-    marginTop: 20,
+    marginTop: 0,
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -59,7 +63,7 @@ const TablasStyles = StyleSheet.create({
     alignItems: 'center',
   },
   fullRowText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#333',
   },
@@ -71,9 +75,9 @@ const TablasStyles = StyleSheet.create({
   },
 
   // Estilos para celdas
-  cell: cellStyle(),
+  cell: cellStyle(6.9, 'center', 9), // Tamaño de letra predeterminado para celdas normales
   headerCell: {
-    ...cellStyle(6.9),
+    ...cellStyle(6.9, 'center', 16), // Tamaño de letra para encabezados
     ...headerCellStyle,
   },
 
@@ -88,16 +92,20 @@ const TablasStyles = StyleSheet.create({
     flex: 2,
   },
   descripcionColumn: {
-    flex: 5,
+    flex: 2,
+    textAlign: 'left',
+    paddingLeft: 8,
   },
   cantidadColumn: {
     flex: 2.5,
   },
   pesoUnitarioColumn: {
-    flex: 2,
+    flex: 1,
+    textAlign: 'right',
   },
   pesoTotalColumn: {
-    flex: 2.5,
+    flex: 1,
+    textAlign: 'right',
   },
 
   // Estilo para la celda total
@@ -136,6 +144,8 @@ const TablasStyles = StyleSheet.create({
   // Estilos para botones reutilizando CommonStyles
   button: {
     ...CommonStyles.button,
+    backgroundColor: '#ee0000',
+    marginBottom: 20,
   },
   buttonPrimary: {
     ...CommonStyles.buttonPrimary,
