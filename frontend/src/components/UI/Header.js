@@ -16,7 +16,7 @@ const Header = () => {
 
       {/* Logo */}
       <Image
-        source={require('../../assets/EI-Montajes.png')}  // Cambia la ruta al logo si es necesario
+        source={require('../../../assets/EI-Montajes.png')}  // Cambia la ruta al logo si es necesario
         style={styles.logo}
         resizeMode="contain"
       />

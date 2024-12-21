@@ -1,10 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
-import SelectFormaModal from './ModalForma';
-import SelectGruaModal from './ModalGrua';
-import SelectManiobraModal from './ModalManiobra';
-import InputUnidad from './InputUnidad';
-import { useIzaje } from '../hooks/useIzajeForm';
+import SelectFormaModal from '../../ModalForma';
+import SelectGruaModal from '../../ModalGrua';
+import SelectManiobraModal from '../../ModalManiobra';
+import InputUnidad from '../InputUnidad';
+import { useIzaje } from '../../hooks/useIzajeForm';
 
 const SetupIzajeForm = () => {
   const {

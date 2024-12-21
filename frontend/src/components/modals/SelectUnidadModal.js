@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
-import { useIzaje } from '../hooks/useIzajeForm';
-import styles from '../styles/SetupIzajeStyles';
+import { useIzaje } from '../../hooks/useIzajeForm';
+import styles from '../../styles/SetupIzajeStyles';
 
 const SelectUnidadModal = ({ visible, onClose }) => {
   const { unidades, handleUnidadSelect } = useIzaje();

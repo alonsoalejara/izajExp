@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, TouchableOpacity, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
-import Modals from '../components/Modal.index';
-import FormularioDatosIzaje from '../components/FormularioDatosIzaje';
+import Modals from '../components/modals/Modal.index';
+import FormularioDatosIzaje from '../components/forms/FormularioDatosIzaje';
 
 const SetupIzaje = () => {
   const navigation = useNavigation();

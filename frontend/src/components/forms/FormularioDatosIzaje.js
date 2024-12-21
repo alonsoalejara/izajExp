@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput } from 'react-native';
-import styles from '../styles/SetupIzajeStyles';
+import styles from '../../styles/SetupIzajeStyles';
 
 const FormularioDatosIzaje = ({ radioIzaje, radioMontaje, setRadioIzaje, setRadioMontaje }) => (
   <View style={[styles.formSection, styles.formMarginTop]}>

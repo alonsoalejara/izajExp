@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { View, StyleSheet } from 'react-native';
 
 import Screens from './src/screens/Screens.index';
-import Header from './src/components/Header';
+import Header from './src/components/UI/Header';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();

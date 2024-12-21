@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
-import styles from '../styles/SetupIzajeStyles';
-import Modals from '../components/Modal.index';  // Importa modals desde el index
+import styles from '../../styles/SetupIzajeStyles';
+import Modals from '../../Modal.index';
 
 const ConfigModal = ({ type, isVisible, onClose, onSelect, buttonText, selectedValue }) => {
   const ModalComponent = Modals[type];

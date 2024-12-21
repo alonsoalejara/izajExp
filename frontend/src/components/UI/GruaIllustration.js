@@ -8,7 +8,7 @@ import {
   CabinaGrua,
   BrazoGrua,
   BaseGrua,
-} from './GruaParts/RT555';
+} from '../GruaParts/RT555';
 
 export default function GruaIllustration() {
   return (
