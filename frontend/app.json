@@ -25,8 +25,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font",
-      "react-native-share"
+      "expo-font"
     ],
     "host": "tunnel",
     "packagerOpts": {
