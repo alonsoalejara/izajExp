@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import CommonStyles from './CommonStyles';
 
 // Función reutilizable para estilos de celdas
-const cellStyle = (padding = 8, textAlign = 'center', fontSize = 14) => ({
+const cellStyle = (padding = 8, textAlign = 'center', fontSize = 12) => ({
   padding,
   borderWidth: 1,
   borderColor: '#ccc',
@@ -52,7 +52,7 @@ const TablasStyles = StyleSheet.create({
   },
   numberColumn: {
     backgroundColor: '#cccccc',
-    flex: 1,
+    flex: 1.1,
     textAlign: 'right',
     fontWeight: 'bold',
     fontSize: 15,

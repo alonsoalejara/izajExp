@@ -60,16 +60,8 @@ const Tablas = ({ route }) => {
       </View>
 
       <Tables.AparejosTable rows={rows} totalPesoAparejos={totalPesoAparejos} />
-
-      <View style={{ height: 30 }} />
-
       <Tables.CargaTable cargaRows={cargaRows} />
-
-      <View style={{ height: 30 }} />
-
       <Tables.GruaTable datosGrúaRows={datosGrúaRows} />
-
-      <View style={{ height: 30 }} />
       
       <TouchableOpacity onPress={generarPDF} style={TablasStyles.button}>
         <Text style={TablasStyles.buttonText}>Generar PDF</Text>
