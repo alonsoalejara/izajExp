@@ -10,7 +10,7 @@ const GrúaTable = ({ datosGrúaRows }) => (
     <View style={TablasStyles.row}>
       <Text style={[TablasStyles.cell, { flex: 0.72, fontWeight: 'bold' }]}>ITEM</Text>
       <Text style={[TablasStyles.cell, { flex: 4, fontWeight: 'bold' }]}>DESCRIPCIÓN</Text>
-      <Text style={[TablasStyles.cell, { flex: 1.42, fontWeight: 'bold' }]}>VALOR</Text>
+      <Text style={[TablasStyles.cell, { flex: 1.49, fontWeight: 'bold' }]}>VALOR</Text>
     </View>
     {datosGrúaRows.map((row, index) => (
       <View key={index} style={TablasStyles.row}>

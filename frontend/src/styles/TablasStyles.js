@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import CommonStyles from './CommonStyles';
 
 // Función reutilizable para estilos de celdas
-const cellStyle = (padding = 8, textAlign = 'center', fontSize = 12) => ({
+const cellStyle = (padding = 4.5, textAlign = 'center', fontSize = 14) => ({
   padding,
   borderWidth: 1,
   borderColor: '#ccc',
@@ -14,16 +14,18 @@ const cellStyle = (padding = 8, textAlign = 'center', fontSize = 12) => ({
 const TablasStyles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#fff',
+    paddingHorizontal: 26,
+    paddingTop: 10,
   },
   header: {
-    marginBottom: 20,
+    marginBottom: 15,
+    alignItems: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
+    color: '#333',
   },
   table: {
     marginBottom: 20,
@@ -38,31 +40,31 @@ const TablasStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   descripcionColumn: {
-    flex: 2,
-    paddingLeft: 8,
+    flex: 4.8,
+    paddingLeft: 7,
     textAlign: 'left',
   },
   totalColumn: {
-    flex: 5,
+    flex: 6.3,
     backgroundColor: '#eaeaea',
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 15,
     paddingVertical: 10,
   },
+  valueColumn: {
+    flex: 1.5,
+    textAlign: 'right',
+    fontSize: 14,
+    paddingVertical: 10,
+  },
   numberColumn: {
     backgroundColor: '#cccccc',
-    flex: 1.1,
+    flex: 1,
     textAlign: 'right',
     fontWeight: 'bold',
     fontSize: 15,
     paddingVertical: 10,
-    paddingRight: 4,
-  },
-  valueColumn: {
-    flex: 1.1,
-    textAlign: 'right',
-    paddingRight: 4,
   },
   fullRow: {
     backgroundColor: '#eaeaea',
@@ -78,11 +80,33 @@ const TablasStyles = StyleSheet.create({
   button: {
     ...CommonStyles.button,
     backgroundColor: '#ee0000',
-    marginVertical: 20,
+    marginTop: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 100,
+    borderRadius: 5,
+    alignItems: 'center',
   },
   buttonText: {
     ...CommonStyles.buttonText,
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
+  fixedButtonContainer: {
+    position: 'absolute',
+    top: 620,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -5 }, // Sombra hacia arriba
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5, // Para dispositivos Android
+    alignItems: 'center',
+  },
+
 });
 
 export default TablasStyles;

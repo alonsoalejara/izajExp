@@ -10,7 +10,7 @@ const Tablas = ({ route }) => {
   const gruaData = {
     'Terex RT555': { pesoEquipo: 12000, pesoGancho: 450, capacidadLevante: 17800, largoPluma: 19.8, contrapeso: 6.4 },
     'Grúa 2': { pesoEquipo: 10000, pesoGancho: 400, capacidadLevante: 16000, largoPluma: 20, contrapeso: 7 },
-    'Grúa 3': { pesoEquipo: 11000, pesoGancho: 420, capacidadLevante: 17000, largoPluma: 21, contrapeso: 8 }
+    'Grúa 3': { pesoEquipo: 11000, pesoGancho: 420, capacidadLevante: 17000, largoPluma: 21, contrapeso: 8 },
   };
 
   const selectedGrua = gruaData[grua] || {};
@@ -48,27 +48,28 @@ const Tablas = ({ route }) => {
     { item: '2', descripcion: 'CONTRAPESO', valor: `${selectedGrua.contrapeso || '0'} ton` },
   ];
 
-  // Función para generar PDF
   const generarPDF = async () => {
     // Código de generación del PDF (sin cambios)
   };
 
   return (
-    <ScrollView style={TablasStyles.container}>
-      <View style={TablasStyles.header}>
-        <Text style={TablasStyles.title}>Tablas</Text>
+    <View style={{ flex: 1 }}>
+      <ScrollView style={[TablasStyles.container, { flex: 1, marginBottom: 80 }]}>
+        <View style={TablasStyles.header}>
+          <Text style={TablasStyles.title}>Tablas</Text>
+        </View>
+
+        <Tables.AparejosTable rows={rows} totalPesoAparejos={totalPesoAparejos} />
+        <Tables.CargaTable cargaRows={cargaRows} />
+        <Tables.GruaTable datosGrúaRows={datosGrúaRows} />
+      </ScrollView>
+
+      <View style={TablasStyles.fixedButtonContainer}>
+        <TouchableOpacity onPress={generarPDF} style={TablasStyles.button}>
+          <Text style={TablasStyles.buttonText}>Generar PDF</Text>
+        </TouchableOpacity>
       </View>
-
-      <Tables.AparejosTable rows={rows} totalPesoAparejos={totalPesoAparejos} />
-      <Tables.CargaTable cargaRows={cargaRows} />
-      <Tables.GruaTable datosGrúaRows={datosGrúaRows} />
-      
-      <TouchableOpacity onPress={generarPDF} style={TablasStyles.button}>
-        <Text style={TablasStyles.buttonText}>Generar PDF</Text>
-      </TouchableOpacity>
-
-      <View style={{ height: 30 }} />
-    </ScrollView>
+    </View>
   );
 };
 

@@ -9,7 +9,7 @@ const CargaTable = ({ cargaRows }) => (
     <View style={TablasStyles.row}>
       <Text style={[TablasStyles.cell, { flex: 1, fontWeight: 'bold' }]}>ITEM</Text>
       <Text style={[TablasStyles.cell, { flex: 6, fontWeight: 'bold' }]}>DESCRIPCIÓN</Text>
-      <Text style={[TablasStyles.cell, { flex: 1.98, fontWeight: 'bold' }]}>VALOR</Text>
+      <Text style={[TablasStyles.cell, { flex: 2.1, fontWeight: 'bold' }]}>VALOR</Text>
     </View>
     {cargaRows.map((row, index) => (
       <View key={index} style={TablasStyles.row}>
