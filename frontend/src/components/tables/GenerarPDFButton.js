@@ -4,10 +4,9 @@ import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import TablasStyles from '../../styles/TablasStyles';
 
-// Función para generar el PDF
 const generarPDF = async (selectedGrua, totalPesoAparejos, cargaRows, datosGrúaRows) => {
-  // Aquí puedes usar una plantilla HTML para el contenido del PDF
   const htmlContent = `
+
     <html>
       <body style="font-family: Arial, sans-serif; font-size: 14px; margin: 20px;">
         <h1>Informe de Izaje</h1>
@@ -74,17 +73,13 @@ const generarPDF = async (selectedGrua, totalPesoAparejos, cargaRows, datosGrúa
   `;
 
   try {
-    // Generar el archivo PDF a partir del contenido HTML
     const { uri } = await printToFileAsync({ html: htmlContent });
-
-    // Compartir el PDF generado
     await shareAsync(uri);
   } catch (error) {
-    console.error('Error generando el PDF', error);
+    console.error('Error generando el PDF:', error);
   }
 };
 
-// Componente del botón para generar el PDF
 const GenerarPDFButton = ({ selectedGrua, totalPesoAparejos, cargaRows, datosGrúaRows }) => (
   <TouchableOpacity
     style={TablasStyles.button}

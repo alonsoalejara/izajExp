@@ -1,8 +1,8 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { printToFileAsync } from 'expo-print';
-import { shareAsync } from 'expo-sharing';
+import React from 'react';
+import { View, Text, ScrollView } from 'react-native';
 import TablasStyles from '../styles/TablasStyles';
 import Tables from '../components/tables/Table.index.js';
+import GenerarPDFButton from '../components/tables/GenerarPDFButton';
 
 const Tablas = ({ route }) => {
   const { eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete, grua, radioIzaje, radioMontaje } = route.params;
@@ -48,10 +48,6 @@ const Tablas = ({ route }) => {
     { item: '2', descripcion: 'CONTRAPESO', valor: `${selectedGrua.contrapeso || '0'} ton` },
   ];
 
-  const generarPDF = async () => {
-    // Código de generación del PDF (sin cambios)
-  };
-
   return (
     <View style={{ flex: 1 }}>
       <ScrollView style={[TablasStyles.container, { flex: 1, marginBottom: 80 }]}>
@@ -65,9 +61,12 @@ const Tablas = ({ route }) => {
       </ScrollView>
 
       <View style={TablasStyles.fixedButtonContainer}>
-        <TouchableOpacity onPress={generarPDF} style={TablasStyles.button}>
-          <Text style={TablasStyles.buttonText}>Generar PDF</Text>
-        </TouchableOpacity>
+        <GenerarPDFButton
+          selectedGrua={selectedGrua}
+          totalPesoAparejos={totalPesoAparejos}
+          cargaRows={cargaRows}
+          datosGrúaRows={datosGrúaRows}
+        />
       </View>
     </View>
   );
