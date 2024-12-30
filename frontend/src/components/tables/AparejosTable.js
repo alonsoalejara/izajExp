@@ -1,11 +1,13 @@
 import { View, Text } from 'react-native';
 import TablasStyles from '../../styles/TablasStyles';
 
-const AparejosTable = ({ rows, totalPesoAparejos }) => (
+const AparejosTable = ({ rows, totalPesoAparejos, grúaSeleccionada }) => (
   <View style={TablasStyles.table}>
-    {/* Encabezado de la tabla */}
+    {/* Título con el nombre de la grúa seleccionada */}
     <View style={TablasStyles.fullRow}>
-      <Text style={TablasStyles.fullRowText}>CUADRO APAREJOS</Text>
+      <Text style={[TablasStyles.fullRowText, TablasStyles.titleText]}>
+        {grúaSeleccionada ? `CUADRO APAREJOS GRÚA: ${grúaSeleccionada}` : 'CUADRO APAREJOS'}
+      </Text>
     </View>
 
     {/* Encabezados de las columnas */}

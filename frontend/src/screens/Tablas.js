@@ -55,9 +55,24 @@ const Tablas = ({ route }) => {
           <Text style={TablasStyles.title}>Tablas</Text>
         </View>
 
-        <Tables.AparejosTable rows={rows} totalPesoAparejos={totalPesoAparejos} />
-        <Tables.CargaTable cargaRows={cargaRows} />
-        <Tables.GruaTable datosGrúaRows={datosGrúaRows} />
+        {/* Tabla Aparejos con título dinámico */}
+        <Tables.AparejosTable 
+          rows={rows} 
+          totalPesoAparejos={totalPesoAparejos} 
+          grúaSeleccionada={grua}  // Pasamos la grúa seleccionada
+        />
+
+        {/* Tabla Carga con título dinámico */}
+        <Tables.CargaTable 
+          cargaRows={cargaRows} 
+          grúaSeleccionada={grua}  // Pasamos la grúa seleccionada
+        />
+
+        {/* Tabla Grúa con título dinámico */}
+        <Tables.GruaTable 
+          datosGrúaRows={datosGrúaRows} 
+          grúaSeleccionada={grua}  // Pasamos la grúa seleccionada
+        />
       </ScrollView>
 
       <View style={TablasStyles.fixedButtonContainer}>
