@@ -5,6 +5,7 @@ import PlanIzaje from './PlanIzaje';
 import GruaIzaje from './GruaIzaje';
 import AdminOptions from './AdminOptions';
 import Tablas from './Tablas';
+import AdminPanel from './AdminPanel';
 
 const Screens = {
   Home,
@@ -13,6 +14,7 @@ const Screens = {
   PlanIzaje,
   GruaIzaje,
   AdminOptions,
+  AdminPanel,
   Tablas,
 };
 

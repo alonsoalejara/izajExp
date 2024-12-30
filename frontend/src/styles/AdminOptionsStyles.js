@@ -5,6 +5,7 @@ export default StyleSheet.create({
     container: {
       ...CommonStyles.container,
       flex: 1,
+      marginTop: -120,
       backgroundColor: '#ddd',
     },
     circleContainer: {
@@ -38,7 +39,7 @@ export default StyleSheet.create({
     },
     gradient: {
       position: 'absolute',
-      top: 0,
+      top: 10,
       left: 0,
       width: '100%',
       height: '100%',
@@ -55,7 +56,7 @@ export default StyleSheet.create({
     },
     formContainer: {
       position: 'absolute',
-      top: '36%',
+      top: '40%',
       left: '10%',
       right: '10%',
       zIndex: 2,

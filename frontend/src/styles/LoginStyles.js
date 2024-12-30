@@ -5,6 +5,7 @@ export default StyleSheet.create({
     container: {
       ...CommonStyles.container,
       flex: 1,
+      marginTop: -11,
       backgroundColor: '#ddd',
     },
     circleContainer: {

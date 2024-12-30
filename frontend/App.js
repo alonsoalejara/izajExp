@@ -60,6 +60,13 @@ const App = () => {
             }} 
           />
           <Drawer.Screen 
+            name="AdminPanel" 
+            component={Screens.AdminPanel}
+            options={{
+              header: () => <Header />  // Usa el Header con Drawer para AdminOptions
+            }} 
+          />
+          <Drawer.Screen 
             name="SetupIzaje" 
             component={Screens.SetupIzaje}
             options={{
