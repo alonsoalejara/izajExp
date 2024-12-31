@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginHorizontal: 3,
+    marginBottom: 20,
   },
   buttonText: {
     color: '#fff',
@@ -77,7 +78,39 @@ const styles = StyleSheet.create({
     color: '#555',
     marginBottom: 4,
   },
-  
+  actionButton: {
+    width: 120,
+    backgroundColor: '#ff0000',
+    paddingVertical: 8,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  actionButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  buttonGroup: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    gap: 10,
+  },
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginVertical: 10,
+    marginLeft: 10,
+  },
+  actionButton: {
+    backgroundColor: '#aa0000',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },  
 });
 
 export default styles;
