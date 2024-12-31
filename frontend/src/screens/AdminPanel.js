@@ -1,50 +1,37 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
+import colaboradores from '../components/data/collabData';
 import styles from '../styles/AdminPanelStyles';
-
-const colaboradores = [
-  {
-    username: 'jose.morales',
-    email: 'jose.morales@gmail.com',
-    roles: ['USER'],
-    phone: '+56912345678',
-    especialidad: 'Estructura',
-  },
-  {
-    username: 'carolina.vera',
-    email: 'carolina.vera@gmail.com',
-    roles: ['USER'],
-    phone: '+56987654321',
-    especialidad: 'Obras Civiles (OOCC)',
-  },
-  {
-    username: 'pablo.nunez',
-    email: 'pablo.nunez@gmail.com',
-    roles: ['USER'],
-    phone: '+56923456789',
-    especialidad: 'Piping',
-  },
-  {
-    username: 'ana.ramirez',
-    email: 'ana.ramirez@gmail.com',
-    roles: ['USER'],
-    phone: '+56998765432',
-    especialidad: 'Mecánica',
-  },
-  {
-    username: 'felipe.soto',
-    email: 'felipe.soto@gmail.com',
-    roles: ['USER'],
-    phone: '+56945678901',
-    especialidad: 'Eléctrica',
-  },
-];
 
 export default function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
+
+  // Datos de las grúas
+  const gruasData = {
+    'Terex RT555': {
+      pesoEquipo: 12000,
+      pesoGancho: 450,
+      capacidadLevante: 17800,
+      largoPluma: 19.8,
+      contrapeso: 6.4,
+    },
+    'Grúa 2': {
+      pesoEquipo: 15000,
+      pesoGancho: 500,
+      capacidadLevante: 20000,
+      largoPluma: 21.5,
+      contrapeso: 7.2,
+    },
+    'Grúa 3': {
+      pesoEquipo: 10000,
+      pesoGancho: 400,
+      capacidadLevante: 15000,
+      largoPluma: 18.0,
+      contrapeso: 5.5,
+    },
+  };
 
   const handleButtonPress = (section) => {
     setActiveSection((prevSection) => (prevSection === section ? null : section));
@@ -106,7 +93,16 @@ export default function AdminPanel() {
       {activeSection === 'Gruas' && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Grúas</Text>
-          <Text>Contenido de las grúas.</Text>
+          {Object.keys(gruasData).map((grua, index) => (
+            <View key={index} style={styles.gruaCard}>
+              <Text style={styles.gruaName}>{grua}</Text>
+              <Text style={styles.gruaDetail}>Peso del equipo: {gruasData[grua].pesoEquipo} kg</Text>
+              <Text style={styles.gruaDetail}>Peso del gancho: {gruasData[grua].pesoGancho} kg</Text>
+              <Text style={styles.gruaDetail}>Capacidad de levante: {gruasData[grua].capacidadLevante} kg</Text>
+              <Text style={styles.gruaDetail}>Largo de la pluma: {gruasData[grua].largoPluma} m</Text>
+              <Text style={styles.gruaDetail}>Contrapeso: {gruasData[grua].contrapeso} t</Text>
+            </View>
+          ))}
         </View>
       )}
     </ScrollView>

@@ -56,6 +56,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
   },
+  gruaCard: {
+    backgroundColor: '#fff',
+    padding: 16,
+    marginVertical: 8,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  gruaName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ff0000',
+    marginBottom: 8,
+  },
+  gruaDetail: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 4,
+  },
+  
 });
 
 export default styles;
