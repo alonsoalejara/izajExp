@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import collabData from '../components/data/collabData';
-import craneData from '../components/data/craneData';
+import collabData from '../../data/collabData';
+import craneData from '../../data/craneData';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../styles/AdminPanelStyles';
 import ModalCrearColaborador from '../components/modals/ModalAddCollab';
