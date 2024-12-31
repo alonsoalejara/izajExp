@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import collabData from '../../data/collabData';
-import craneData from '../../data/craneData';
+import collabData from '../data/collabData';
+import craneData from '../data/craneData';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../styles/AdminPanelStyles';
 import ModalCrearColaborador from '../components/modals/ModalAddCollab';
+import ModalCrearGrua from '../components/modals/ModalAddCrane';
 
 export default function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
-  const [colaboradores, setColaboradores] = useState(collabData); // Estado para los colaboradores
+  const [colaboradores, setColaboradores] = useState(collabData);
+const [gruas, setGruas] = useState(Object.values(craneData));  // Convertir a array de valores
   const [selectedCollaborator, setSelectedCollaborator] = useState(null);
   const [selectedCrane, setSelectedCrane] = useState(null);
-  const [isModalCrearColaboradorVisible, setModalCrearColaboradorVisible] = useState(false); // Estado para el modal
-
+  const [isModalCrearColaboradorVisible, setModalCrearColaboradorVisible] = useState(false);
+  const [isModalCrearGruaVisible, setModalCrearGruaVisible] = useState(false);
 
   const handleButtonPress = (section) => {
     setActiveSection((prevSection) => (prevSection === section ? null : section));
@@ -28,86 +30,87 @@ export default function AdminPanel() {
     setSelectedCrane((prevIndex) => (prevIndex === index ? null : index));
   };
 
+  const handleAdd = (section) => {
+    if (section === 'Colaboradores') {
+      setModalCrearColaboradorVisible(true);
+    } else if (section === 'Gruas') {
+      setModalCrearGruaVisible(true);
+    }
+  };
+
   const handleModalCrearColaboradorClose = () => {
-    setModalCrearColaboradorVisible(false); // Cerrar el modal
+    setModalCrearColaboradorVisible(false);
   };
 
-  // Función para agregar un colaborador
-  const handleAddColaborador = (nuevoColaborador) => {
-    setColaboradores([...colaboradores, nuevoColaborador]); // Agrega el nuevo colaborador al estado
+  const handleModalCrearGruaClose = () => {
+    setModalCrearGruaVisible(false);
   };
 
-  
   const handleEdit = (item) => {
     console.log('Editar:', item);
-    // Navegar a una pantalla de edición o realizar la acción de edición
+    // Lógica para editar
   };
 
   const handleDelete = (item) => {
     console.log('Eliminar:', item);
-    // Mostrar una confirmación y realizar la acción de eliminación
+    // Lógica para eliminar
   };
 
-  const handleAdd = () => {
-    console.log('Añadir nuevo colaborador o grúa');
-    setModalCrearColaboradorVisible(true);
+  const handleSaveCollaborator = (newCollaborator) => {
+    setColaboradores((prevColaboradores) => [...prevColaboradores, newCollaborator]);
+    setModalCrearColaboradorVisible(false);
   };
-
-  const handleSearch = () => {
-    console.log('Buscar colaborador o grúa');
-    // Lógica para buscar un colaborador o grúa
+  
+  const handleSaveCrane = (newCrane) => {
+    setGruas((prevGruas) => [...prevGruas, newCrane]);;
+    setModalCrearGruaVisible(false);
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* Título */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>PANEL DE ADMINISTRADOR</Text>
       </View>
 
-      {/* Botones */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => handleButtonPress('Colaboradores')}
-        >
-          <Text style={styles.buttonText}>Colaboradores</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => handleButtonPress('PlanesDeIzaje')}
-        >
-          <Text style={styles.buttonText}>Planes de Izaje</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => handleButtonPress('Gruas')}
-        >
-          <Text style={styles.buttonText}>Grúas</Text>
-        </TouchableOpacity>
+        {['Colaboradores', 'PlanesDeIzaje', 'Gruas'].map((section) => (
+          <TouchableOpacity
+            key={section}
+            style={styles.button}
+            onPress={() => handleButtonPress(section)}
+          >
+            <Text style={styles.buttonText}>{section}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-      {/* Sección de Colaboradores */}
+      <ModalCrearColaborador
+        isVisible={isModalCrearColaboradorVisible}
+        onClose={handleModalCrearColaboradorClose}
+        onSave={handleSaveCollaborator}  // Pasa la función para guardar el colaborador
+      />
+
+      <ModalCrearGrua
+        isVisible={isModalCrearGruaVisible}
+        onClose={handleModalCrearGruaClose}
+        onSave={handleSaveCrane}  // Pasa la función para guardar la grúa
+      />
+
       {activeSection === 'Colaboradores' && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Colaboradores</Text>
           <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity style={styles.actionButton} onPress={handleAdd}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => handleAdd('Colaboradores')}
+            >
               <Icon name="add" size={24} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton} onPress={handleSearch}>
-              <Icon name="search" size={24} color="white" />
             </TouchableOpacity>
           </View>
           {colaboradores.map((colaborador, index) => (
             <View key={index} style={styles.collaboratorCard}>
               <TouchableOpacity onPress={() => handleCollaboratorPress(index)}>
                 <Text style={styles.collaboratorName}>{colaborador.username}</Text>
-                <Text style={styles.collaboratorDetails}>Email: {colaborador.email}</Text>
-                <Text style={styles.collaboratorDetails}>Teléfono: {colaborador.phone}</Text>
-                <Text style={styles.collaboratorDetails}>Especialidad: {colaborador.especialidad}</Text>
               </TouchableOpacity>
               {selectedCollaborator === index && (
                 <View style={styles.buttonGroup}>
@@ -130,45 +133,22 @@ export default function AdminPanel() {
         </View>
       )}
 
-      {/* Modal para Crear Colaborador */}
-      <ModalCrearColaborador 
-        isVisible={isModalCrearColaboradorVisible} 
-        onClose={handleModalCrearColaboradorClose}
-        onSave={handleAddColaborador} // Pasa la función handleAddColaborador al modal
-      />
-      
-      {/* Sección de Planes de Izaje */}
-      {activeSection === 'PlanesDeIzaje' && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Planes de Izaje</Text>
-          <Text>Contenido de los planes de izaje.</Text>
-        </View>
-      )}
-
-      {/* Sección de Grúas */}
       {activeSection === 'Gruas' && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Grúas</Text>
           <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity style={styles.actionButton} onPress={handleAdd}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => handleAdd('Gruas')}
+            >
               <Icon name="add" size={24} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton} onPress={handleSearch}>
-              <Icon name="search" size={24} color="white" />
-            </TouchableOpacity>
           </View>
-          {Object.keys(craneData).map((grua, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.gruaCard}
-              onPress={() => handleCranePress(index)}
-            >
-              <Text style={styles.gruaName}>{grua}</Text>
-              <Text style={styles.gruaDetail}>Peso del equipo: {craneData[grua].pesoEquipo} kg</Text>
-              <Text style={styles.gruaDetail}>Peso del gancho: {craneData[grua].pesoGancho} kg</Text>
-              <Text style={styles.gruaDetail}>Capacidad de levante: {craneData[grua].capacidadLevante} kg</Text>
-              <Text style={styles.gruaDetail}>Largo de la pluma: {craneData[grua].largoPluma} m</Text>
-              <Text style={styles.gruaDetail}>Contrapeso: {craneData[grua].contrapeso} t</Text>
+          {gruas.map((grua, index) => (
+            <View key={index} style={styles.gruaCard}>
+              <TouchableOpacity onPress={() => handleCranePress(index)}>
+                <Text style={styles.gruaName}>{grua.nombre}</Text>
+              </TouchableOpacity>
               {selectedCrane === index && (
                 <View style={styles.buttonGroup}>
                   <TouchableOpacity
@@ -185,7 +165,7 @@ export default function AdminPanel() {
                   </TouchableOpacity>
                 </View>
               )}
-            </TouchableOpacity>
+            </View>
           ))}
         </View>
       )}
