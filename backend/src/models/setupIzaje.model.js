@@ -22,11 +22,6 @@ const setupIzajeSchema = new Schema(
             ref: 'Cargas',
             required: true
         },
-        forma: {
-            type: Schema.Types.ObjectId,
-            ref: 'Forma',
-            required: true
-        },
     },
     {
         timestamps: true,

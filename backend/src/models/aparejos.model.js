@@ -2,10 +2,6 @@ import { Schema, model } from 'mongoose';
 
 const aparejosSchema = new Schema(
     {
-        item: {
-            type: Number,
-            required: true
-        },
         descripcion: {
             type: String,
             required: true

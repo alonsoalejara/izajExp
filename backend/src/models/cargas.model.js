@@ -2,16 +2,13 @@ import { Schema, model } from 'mongoose';
 
 const cargasSchema = new Schema(
     {
-        item: {
-            type: Number,
-            required: true
-        },
         descripcion: {
             type: String,
             required: true
         },
         pesoEquipo: {
-            type: Number,
+            type: Schema.Types.ObjectId,
+            ref: 'Grua',
             required: true
         },
         pesoAparejos: {
@@ -19,7 +16,8 @@ const cargasSchema = new Schema(
             required: true
         },
         pesoGancho: {
-            type: Number,
+            type: Schema.Types.ObjectId,
+            ref: 'Grua',
             required: true
         },
         pesoTotal: {
@@ -31,7 +29,8 @@ const cargasSchema = new Schema(
             required: true
         },
         capacidadLevante: {
-            type: Number,
+            type: Schema.Types.ObjectId,
+            ref: 'Grua',
             required: true
         },
         porcentajeUtilizacion: {

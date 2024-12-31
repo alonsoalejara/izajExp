@@ -2,20 +2,18 @@ import { Schema, model } from 'mongoose';
 
 const datosSchema = new Schema(
     {
-        item: {
-            type: Number,
-            required: true
-        },
         descripcion: {
             type: String,
             required: true
         },
         largoPluma: {
-            type: Number,
+            type: Schema.Types.ObjectId,
+            ref: 'Grua',
             required: true
         },
         contrapeso: {
-            type: Number,
+            type: Schema.Types.ObjectId,
+            ref: 'Grua',
             required: true
         },
     },
