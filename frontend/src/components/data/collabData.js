@@ -1,4 +1,4 @@
-const colaboradores = [
+const collabData = [
     {
       username: 'jose.morales',
       email: 'jose.morales@gmail.com',
@@ -36,5 +36,5 @@ const colaboradores = [
     },
   ];
   
-  export default colaboradores;
+  export default collabData;
   

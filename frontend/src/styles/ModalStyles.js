@@ -71,6 +71,47 @@ const ModalStyles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 10,
   },
+  picker: {
+    backgroundColor: '#f5f5f5',
+    color: '#000',
+  },
+    // Estilo para el contenedor del menú desplegable
+    menuContainer: {
+      position: 'absolute', // Se posiciona sobre otros elementos
+      top: 336,  // Ajusta según el espacio disponible
+      left: 20,
+      right: 20,
+      backgroundColor: '#fff',
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      zIndex: 999,  // Asegura que el menú esté sobre otros componentes
+      maxHeight: 150, // Máxima altura del menú
+    },
+    
+    // Estilo para los ítems del menú desplegable
+    menuItem: {
+      padding: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ccc',
+    },
+    
+    // Estilo para el texto dentro de cada ítem
+    menuText: {
+      fontSize: 16,
+      color: '#333',
+    },
+  
+    // Estilo para el ítem seleccionado
+    selectedMenuItem: {
+      backgroundColor: '#ee0000',  // Cambia el color de fondo cuando el ítem está seleccionado
+    },
+  
+    // Estilo para el texto de un ítem seleccionado
+    selectedMenuText: {
+      color: '#fff',  // Cambia el color del texto cuando el ítem está seleccionado
+    },  
+  
 });
 
 export default ModalStyles;

@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import colaboradores from '../components/data/collabData';
+import collabData from '../components/data/collabData';
 import craneData from '../components/data/craneData';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../styles/AdminPanelStyles';
+import ModalCrearColaborador from '../components/modals/ModalAddCollab';
 
 export default function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
+  const [colaboradores, setColaboradores] = useState(collabData); // Estado para los colaboradores
   const [selectedCollaborator, setSelectedCollaborator] = useState(null);
   const [selectedCrane, setSelectedCrane] = useState(null);
+  const [isModalCrearColaboradorVisible, setModalCrearColaboradorVisible] = useState(false); // Estado para el modal
+
 
   const handleButtonPress = (section) => {
     setActiveSection((prevSection) => (prevSection === section ? null : section));
@@ -24,6 +28,16 @@ export default function AdminPanel() {
     setSelectedCrane((prevIndex) => (prevIndex === index ? null : index));
   };
 
+  const handleModalCrearColaboradorClose = () => {
+    setModalCrearColaboradorVisible(false); // Cerrar el modal
+  };
+
+  // Función para agregar un colaborador
+  const handleAddColaborador = (nuevoColaborador) => {
+    setColaboradores([...colaboradores, nuevoColaborador]); // Agrega el nuevo colaborador al estado
+  };
+
+  
   const handleEdit = (item) => {
     console.log('Editar:', item);
     // Navegar a una pantalla de edición o realizar la acción de edición
@@ -36,7 +50,7 @@ export default function AdminPanel() {
 
   const handleAdd = () => {
     console.log('Añadir nuevo colaborador o grúa');
-    // Lógica para agregar nuevo colaborador o grúa
+    setModalCrearColaboradorVisible(true);
   };
 
   const handleSearch = () => {
@@ -116,6 +130,13 @@ export default function AdminPanel() {
         </View>
       )}
 
+      {/* Modal para Crear Colaborador */}
+      <ModalCrearColaborador 
+        isVisible={isModalCrearColaboradorVisible} 
+        onClose={handleModalCrearColaboradorClose}
+        onSave={handleAddColaborador} // Pasa la función handleAddColaborador al modal
+      />
+      
       {/* Sección de Planes de Izaje */}
       {activeSection === 'PlanesDeIzaje' && (
         <View style={styles.section}>
