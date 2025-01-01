@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import TablasStyles from '../styles/TablasStyles';
 import Tables from '../components/tables/Table.index.js';
 import GenerarPDFButton from '../components/tables/GenerarPDFButton';
 
-const Tablas = ({ route }) => {
+const Tablas = ({ route, navigation }) => {
   const { eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete, grua, radioIzaje, radioMontaje } = route.params;
 
   const gruaData = {
@@ -59,19 +59,19 @@ const Tablas = ({ route }) => {
         <Tables.AparejosTable 
           rows={rows} 
           totalPesoAparejos={totalPesoAparejos} 
-          grúaSeleccionada={grua}  // Pasamos la grúa seleccionada
+          grúaSeleccionada={grua} 
         />
 
         {/* Tabla Carga con título dinámico */}
         <Tables.CargaTable 
           cargaRows={cargaRows} 
-          grúaSeleccionada={grua}  // Pasamos la grúa seleccionada
+          grúaSeleccionada={grua} 
         />
 
         {/* Tabla Grúa con título dinámico */}
         <Tables.GruaTable 
           datosGrúaRows={datosGrúaRows} 
-          grúaSeleccionada={grua}  // Pasamos la grúa seleccionada
+          grúaSeleccionada={grua} 
         />
       </ScrollView>
 
@@ -81,6 +81,7 @@ const Tablas = ({ route }) => {
           totalPesoAparejos={totalPesoAparejos}
           cargaRows={cargaRows}
           datosGrúaRows={datosGrúaRows}
+          navigation={navigation}
         />
       </View>
     </View>

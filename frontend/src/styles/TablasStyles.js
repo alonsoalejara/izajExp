@@ -80,7 +80,7 @@ const TablasStyles = StyleSheet.create({
   button: {
     ...CommonStyles.button,
     backgroundColor: '#ee0000',
-    marginTop: 15,
+    marginBottom: 25,
     paddingVertical: 15,
     paddingHorizontal: 100,
     borderRadius: 5,
@@ -94,19 +94,34 @@ const TablasStyles = StyleSheet.create({
   },
   fixedButtonContainer: {
     position: 'absolute',
-    top: 620,
     bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: '#fff',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -5 }, // Sombra hacia arriba
+    shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 5, // Para dispositivos Android
+    elevation: 5,
     alignItems: 'center',
   },
-
+  horizontalButtonContainer: { /* Agrega este estilo */
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%', // Ajusta según el diseño
+    marginVertical: 1,
+  },
+  smallButton: {
+    ...CommonStyles.button,
+    backgroundColor: '#ee0000',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginHorizontal: 10, // Espaciado entre botones
+    marginBottom: 25, // Elimina margen inferior
+  },
+  
 });
 
 export default TablasStyles;

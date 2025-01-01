@@ -1,7 +1,8 @@
-import React from 'react';
-import { TouchableOpacity, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, TouchableOpacity, Text } from 'react-native';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
+import { useNavigation } from '@react-navigation/native'; // Importa el hook de navegación
 import TablasStyles from '../../styles/TablasStyles';
 import { convertirImagenABase64 } from '../../utils/pdfUtils';
 import { generarHTML } from '../../utils/pdfTemplate';
@@ -20,13 +21,40 @@ const generarPDF = async (selectedGrua, totalPesoAparejos, cargaRows, datosGrúa
   }
 };
 
-const GenerarPDFButton = ({ selectedGrua, totalPesoAparejos, cargaRows, datosGrúaRows }) => (
-  <TouchableOpacity
-    style={TablasStyles.button}
-    onPress={() => generarPDF(selectedGrua, totalPesoAparejos, cargaRows, datosGrúaRows)}
-  >
-    <Text style={TablasStyles.buttonText}>Generar PDF</Text>
-  </TouchableOpacity>
-);
+const SaveTablesButton = ({ selectedGrua, totalPesoAparejos, cargaRows, datosGrúaRows }) => {
+  const [buttonText, setButtonText] = useState('Guardar Tabla');
+  const navigation = useNavigation(); // Obtiene la instancia de navegación
 
-export default GenerarPDFButton;
+  const handleButtonPress = () => {
+    if (buttonText === 'Guardar Tabla') {
+      setButtonText('Generar PDF');
+    } else {
+      generarPDF(selectedGrua, totalPesoAparejos, cargaRows, datosGrúaRows);
+    }
+  };
+
+  const handleBackPress = () => {
+    navigation.navigate('SetupIzaje'); // Navega a la pantalla SetupIzaje
+  };
+
+  return (
+    <View style={{ alignItems: 'center', marginTop: 15 }}>
+      <View style={TablasStyles.horizontalButtonContainer}>
+        <TouchableOpacity
+          style={TablasStyles.smallButton}
+          onPress={handleBackPress}
+        >
+          <Text style={TablasStyles.buttonText}>Volver</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={TablasStyles.smallButton}
+          onPress={handleButtonPress}
+        >
+          <Text style={TablasStyles.buttonText}>{buttonText}</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+export default SaveTablesButton;

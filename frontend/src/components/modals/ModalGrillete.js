@@ -39,6 +39,7 @@ const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) =
             style={styles.optionButton}
             placeholder="Tipo (en pulgadas)"
             placeholderTextColor={styles.placeholderText.color}
+            keyboardType="numeric"
             value={tipo}
             onChangeText={setTipo}
           />
