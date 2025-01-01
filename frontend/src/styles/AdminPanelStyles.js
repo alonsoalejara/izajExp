@@ -111,6 +111,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },  
+  gruaDetails: {
+    marginTop: 10,
+    paddingLeft: 10,
+  },
+  gruaDetail: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 4,
+  },
+  
 });
 
 export default styles;

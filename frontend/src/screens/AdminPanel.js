@@ -12,7 +12,7 @@ export default function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
   const [colaboradores, setColaboradores] = useState(collabData);
-const [gruas, setGruas] = useState(Object.values(craneData));  // Convertir a array de valores
+  const [gruas, setGruas] = useState(Object.values(craneData)); // Convertir a array de valores
   const [selectedCollaborator, setSelectedCollaborator] = useState(null);
   const [selectedCrane, setSelectedCrane] = useState(null);
   const [isModalCrearColaboradorVisible, setModalCrearColaboradorVisible] = useState(false);
@@ -60,9 +60,9 @@ const [gruas, setGruas] = useState(Object.values(craneData));  // Convertir a ar
     setColaboradores((prevColaboradores) => [...prevColaboradores, newCollaborator]);
     setModalCrearColaboradorVisible(false);
   };
-  
+
   const handleSaveCrane = (newCrane) => {
-    setGruas((prevGruas) => [...prevGruas, newCrane]);;
+    setGruas((prevGruas) => [...prevGruas, newCrane]);
     setModalCrearGruaVisible(false);
   };
 
@@ -87,13 +87,13 @@ const [gruas, setGruas] = useState(Object.values(craneData));  // Convertir a ar
       <ModalCrearColaborador
         isVisible={isModalCrearColaboradorVisible}
         onClose={handleModalCrearColaboradorClose}
-        onSave={handleSaveCollaborator}  // Pasa la función para guardar el colaborador
+        onSave={handleSaveCollaborator}
       />
 
       <ModalCrearGrua
         isVisible={isModalCrearGruaVisible}
         onClose={handleModalCrearGruaClose}
-        onSave={handleSaveCrane}  // Pasa la función para guardar la grúa
+        onSave={handleSaveCrane}
       />
 
       {activeSection === 'Colaboradores' && (
@@ -110,7 +110,15 @@ const [gruas, setGruas] = useState(Object.values(craneData));  // Convertir a ar
           {colaboradores.map((colaborador, index) => (
             <View key={index} style={styles.collaboratorCard}>
               <TouchableOpacity onPress={() => handleCollaboratorPress(index)}>
-                <Text style={styles.collaboratorName}>{colaborador.username}</Text>
+                <Text style={styles.collaboratorName}>
+                  {colaborador.nombre} {colaborador.apellido}
+                </Text>
+                <Text style={styles.collaboratorDetails}>
+                  RUT: {colaborador.rut}{'\n'}
+                  Teléfono: {colaborador.phone}{'\n'}
+                  Email: {colaborador.email}{'\n'}
+                  Especialidad: {colaborador.specialty}
+                </Text>
               </TouchableOpacity>
               {selectedCollaborator === index && (
                 <View style={styles.buttonGroup}>
@@ -148,6 +156,13 @@ const [gruas, setGruas] = useState(Object.values(craneData));  // Convertir a ar
             <View key={index} style={styles.gruaCard}>
               <TouchableOpacity onPress={() => handleCranePress(index)}>
                 <Text style={styles.gruaName}>{grua.nombre}</Text>
+                <View style={styles.gruaDetails}>
+                  <Text style={styles.gruaDetail}>Peso del equipo: {grua.pesoEquipo} kg</Text>
+                  <Text style={styles.gruaDetail}>Peso del gancho: {grua.pesoGancho} kg</Text>
+                  <Text style={styles.gruaDetail}>Capacidad de levante: {grua.capacidadLevante} kg</Text>
+                  <Text style={styles.gruaDetail}>Largo de la pluma: {grua.largoPluma} m</Text>
+                  <Text style={styles.gruaDetail}>Contrapeso: {grua.contrapeso} toneladas</Text>
+                </View>
               </TouchableOpacity>
               {selectedCrane === index && (
                 <View style={styles.buttonGroup}>

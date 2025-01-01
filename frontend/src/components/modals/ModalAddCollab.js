@@ -22,11 +22,15 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
   const handleSave = () => {
     if (nombre && apellido && rut && email && telefono && especialidad) {
       const nuevoColaborador = {
-        username: `${nombre}.${apellido}`,
-        email,
-        phone: telefono,
-        especialidad,
+        nombre,        // Nombre del colaborador
+        apellido,      // Apellido del colaborador
+        rut,           // RUT del colaborador
+        phone: telefono,  // Teléfono del colaborador
+        email,         // Correo electrónico del colaborador
+        specialty: especialidad, // Especialidad del colaborador
+        roles: ['USER'], // Asignar roles si es necesario
       };
+  
       onSave(nuevoColaborador); // Llama a la función onSave para agregar el colaborador
       onClose(); // Cierra el modal
     } else {
