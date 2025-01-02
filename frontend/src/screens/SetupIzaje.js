@@ -100,7 +100,7 @@ const SetupIzaje = () => {
             <Text style={styles.labelText}>Cantidad de grilletes: {'\n'}</Text>{cantidadGrilletes}
           </Text>
           <Text style={styles.cardDetail}>
-            <Text style={styles.labelText}>Tipo de grillete: {'\n'}</Text>{tipoGrillete}"
+            <Text style={styles.labelText}>Tipo de grillete: {'\n'}</Text>Grillete {tipoGrillete}"
           </Text>
           <Modals.ModalGrillete
             isVisible={isGrilleteModalVisible}

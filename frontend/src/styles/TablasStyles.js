@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import CommonStyles from './CommonStyles';
 
 // Función reutilizable para estilos de celdas
-const cellStyle = (padding = 4.5, textAlign = 'center', fontSize = 14) => ({
+const cellStyle = (padding = 4.5, textAlign = 'center', fontSize = 12.7) => ({
   padding,
   borderWidth: 1,
   borderColor: '#ccc',
@@ -15,15 +15,30 @@ const TablasStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: 26,
-    paddingTop: 10,
+    paddingHorizontal: 45,
+    paddingTop: 36,
+  },
+  contentContainer: {
+    padding: 20,
+  },
+  section: {
+    marginBottom: 30,
+    padding: 10,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    color: '#333',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   header: {
     marginBottom: 15,
     alignItems: 'center',
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
   },
@@ -49,13 +64,13 @@ const TablasStyles = StyleSheet.create({
     backgroundColor: '#eaeaea',
     fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 15,
+    fontSize: 14,
     paddingVertical: 10,
   },
   valueColumn: {
     flex: 1.5,
     textAlign: 'right',
-    fontSize: 14,
+    fontSize: 13,
     paddingVertical: 10,
   },
   numberColumn: {
@@ -63,7 +78,7 @@ const TablasStyles = StyleSheet.create({
     flex: 1,
     textAlign: 'right',
     fontWeight: 'bold',
-    fontSize: 15,
+    fontSize: 13,
     paddingVertical: 10,
   },
   fullRow: {
@@ -73,7 +88,7 @@ const TablasStyles = StyleSheet.create({
     alignItems: 'center',
   },
   fullRowText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#333',
   },

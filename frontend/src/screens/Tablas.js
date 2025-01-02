@@ -50,10 +50,11 @@ const Tablas = ({ route, navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={[TablasStyles.container, { flex: 1, marginBottom: 80 }]}>
-        <View style={TablasStyles.header}>
-          <Text style={TablasStyles.title}>Tablas</Text>
+      <ScrollView style={[TablasStyles.container, TablasStyles.contentContainer, { flex: 1, marginBottom: 80 }]}>
+      <View style={TablasStyles.section}>
+          <Text style={TablasStyles.sectionTitle}>TABLAS</Text>
         </View>
+
 
         {/* Tabla Aparejos con título dinámico */}
         <Tables.AparejosTable 
