@@ -63,9 +63,7 @@ export default function AdminPanel() {
   };
 
   const handlePlanPress = (planId) => {
-    console.log('Plan presionado, ID:', planId); // Verificar qué plan se presiona
     setSelectedPlan(adminLogic.togglePlanSelection(selectedPlan, planId));
-    console.log('SelectedPlan después de toggle:', selectedPlan); // Verificar el valor actualizado
   };
 
   return (
@@ -75,7 +73,7 @@ export default function AdminPanel() {
       </View>
 
       <View style={styles.buttonContainer}>
-        {['Colaboradores', 'Gruas', 'Planes'].map((section) => (
+        {['Personal', 'Gruas', 'Planes'].map((section) => (
           <TouchableOpacity
             key={section}
             style={styles.button}
@@ -114,7 +112,7 @@ export default function AdminPanel() {
         }}
       />
 
-      {activeSection === 'Colaboradores' && (
+      {activeSection === 'Personal' && (
         <Section.CollabSection
           styles={styles}
           colaboradores={colaboradores}

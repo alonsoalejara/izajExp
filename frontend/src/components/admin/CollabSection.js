@@ -6,7 +6,7 @@ import styles from '../../styles/AdminPanelStyles';
 const CollabSection = ({ colaboradores, handleAdd }) => {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Colaboradores</Text>
+      <Text style={styles.sectionTitle}>Personal</Text>
       <TouchableOpacity
         style={styles.actionButton}
         onPress={() => handleAdd('Colaboradores')}
