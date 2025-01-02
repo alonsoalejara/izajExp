@@ -127,6 +127,12 @@ const ModalStyles = StyleSheet.create({
     // Estilo para el texto de un ítem seleccionado
     selectedMenuText: {
       color: '#fff',  // Cambia el color del texto cuando el ítem está seleccionado
+    },
+    modalDescription: {
+      fontSize: 16,
+      color: '#333',
+      marginBottom: 20,
+      textAlign: 'center',  // Centrado para el mensaje
     },  
   
 });

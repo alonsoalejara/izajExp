@@ -3,10 +3,13 @@ import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image, Platfo
 import Svg, { LinearGradient, Stop, Rect } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginStyles from "../styles/LoginStyles";
+import ModalAlert from "../components/modals/ModalAlert";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);  // Estado para controlar la visibilidad del modal
+  const [modalMessage, setModalMessage] = useState("");     // Estado para el mensaje del modal
 
   // Función para obtener la URL del API dependiendo del dispositivo
   const getApiUrl = () => {
@@ -55,26 +58,33 @@ export default function Login({ navigation }) {
                 } else if (role === "admin") {
                   navigation.navigate("AdminOptions");
                 } else {
-                  alert("Rol de usuario no reconocido");
+                  setModalMessage("Rol de usuario no reconocido");
+                  setModalVisible(true);
                 }
               } else {
-                alert("Rol de usuario no disponible o mal formateado");
+                setModalMessage("Rol de usuario no disponible o mal formateado");
+                setModalVisible(true);
               }
             } else {
-              alert("Tokens de autenticación no recibidos correctamente");
+              setModalMessage("Tokens de autenticación no recibidos correctamente");
+              setModalVisible(true);
             }
           } else {
-            alert("Error en la respuesta del servidor: datos no disponibles");
+            setModalMessage("Error en la respuesta del servidor: datos no disponibles");
+            setModalVisible(true);
           }
         } else {
-          alert(data.message || "Error al iniciar sesión");
+          setModalMessage(data.message || "Error al iniciar sesión");
+          setModalVisible(true);
         }
       } catch (error) {
         console.error("Error al autenticar:", error);
-        alert("Error en la conexión con el servidor");
+        setModalMessage("Error en la conexión con el servidor");
+        setModalVisible(true);
       }
     } else {
-      alert("Por favor, ingrese ambos campos");
+      setModalMessage("Por favor, ingrese ambos campos");
+      setModalVisible(true);
     }
   };
 
@@ -119,6 +129,13 @@ export default function Login({ navigation }) {
           <Text style={LoginStyles.buttonText}>Iniciar sesión</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Modal de alerta */}
+      <ModalAlert
+        isVisible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        message={modalMessage}
+      />
     </View>
   );
 }
