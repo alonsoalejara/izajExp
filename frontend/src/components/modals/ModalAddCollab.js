@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import styles from '../../styles/ModalStyles';
 
-const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
-  const [nombre, setNombre] = useState('');
-  const [apellido, setApellido] = useState('');
-  const [rut, setRut] = useState('');
-  const [email, setEmail] = useState('');
-  const [telefono, setTelefono] = useState('');
-  const [especialidad, setEspecialidad] = useState('');
+const ModalCrearColaborador = ({ isVisible, onClose, onSave, colaboradorEditado }) => {
+  const [nombre, setNombre] = useState(colaboradorEditado ? colaboradorEditado.nombre : '');
+  const [apellido, setApellido] = useState(colaboradorEditado ? colaboradorEditado.apellido : '');
+  const [rut, setRut] = useState(colaboradorEditado ? colaboradorEditado.rut : '');
+  const [email, setEmail] = useState(colaboradorEditado ? colaboradorEditado.email : '');
+  const [telefono, setTelefono] = useState(colaboradorEditado ? colaboradorEditado.phone : '');
+  const [especialidad, setEspecialidad] = useState(colaboradorEditado ? colaboradorEditado.specialty : '');
   const [showMenu, setShowMenu] = useState(false); // Estado para mostrar/ocultar el menú
 
   const especialidades = [
@@ -22,16 +22,16 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
   const handleSave = () => {
     if (nombre && apellido && rut && email && telefono && especialidad) {
       const nuevoColaborador = {
-        nombre,        // Nombre del colaborador
-        apellido,      // Apellido del colaborador
-        rut,           // RUT del colaborador
-        phone: telefono,  // Teléfono del colaborador
-        email,         // Correo electrónico del colaborador
-        specialty: especialidad, // Especialidad del colaborador
-        roles: ['USER'], // Asignar roles si es necesario
+        nombre,
+        apellido,
+        rut,
+        phone: telefono,
+        email,
+        specialty: especialidad,
+        roles: ['USER'],
       };
-  
-      onSave(nuevoColaborador); // Llama a la función onSave para agregar el colaborador
+
+      onSave(nuevoColaborador); // Llama a la función onSave para agregar o actualizar el colaborador
       onClose(); // Cierra el modal
     } else {
       alert('Por favor, complete todos los campos.');
@@ -47,11 +47,7 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
     <Modal transparent={true} visible={isVisible} animationType="slide">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Crear Usuario</Text>
-        
-          {/* Usamos la clase label para los textos de instrucciones */}
-
-          {/* Texto para ingresar el nombre del colaborador */}
+          <Text style={styles.modalTitle}>{colaboradorEditado ? 'Editar Usuario' : 'Crear Usuario'}</Text>
           <Text style={styles.label}>Nombre(s):</Text>
           <TextInput
             style={styles.optionButton}
@@ -61,50 +57,46 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
             value={nombre}
             onChangeText={setNombre}
           />
-
-          {/* Texto para ingresar el apellido del colaborador */}
+          
           <Text style={styles.label}>Apellido(s):</Text>
           <TextInput
-             style={styles.optionButton}
-             placeholder="Ingrese apellido(s) del colaborador"
-             placeholderTextColor={styles.placeholderText.color}
-             keyboardType="default"
-             value={apellido}
-             onChangeText={setApellido}
+            style={styles.optionButton}
+            placeholder="Ingrese apellido(s) del colaborador"
+            placeholderTextColor={styles.placeholderText.color}
+            keyboardType="default"
+            value={apellido}
+            onChangeText={setApellido}
           />
 
-            {/* Texto para ingresar el RUT del colaborador */}
-            <Text style={styles.label}>RUT:</Text>
-            <TextInput
-              style={styles.optionButton}
-              placeholder="Ingrese RUT del colaborador"
-              placeholderTextColor={styles.placeholderText.color}
-              keyboardType="default"
-              value={rut}
-              onChangeText={setRut}
-            />
+          <Text style={styles.label}>RUT:</Text>
+          <TextInput
+            style={styles.optionButton}
+            placeholder="Ingrese RUT del colaborador"
+            placeholderTextColor={styles.placeholderText.color}
+            keyboardType="default"
+            value={rut}
+            onChangeText={setRut}
+          />
 
-            {/* Texto para ingresar el correo electrónico del colaborador */}
-            <Text style={styles.label}>Correo Electrónico:</Text>
-            <TextInput
-              style={styles.optionButton}
-              placeholder="Ingrese correo electrónico del colaborador"
-              placeholderTextColor={styles.placeholderText.color}
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
-            />
+          <Text style={styles.label}>Correo Electrónico:</Text>
+          <TextInput
+            style={styles.optionButton}
+            placeholder="Ingrese correo electrónico"
+            placeholderTextColor={styles.placeholderText.color}
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
 
-            {/* Texto para ingresar el teléfono del colaborador */}
-            <Text style={styles.label}>Teléfono:</Text>
-            <TextInput
-              style={styles.optionButton}
-              placeholder="Ingrese teléfono del colaborador"
-              placeholderTextColor={styles.placeholderText.color}
-              keyboardType="phone-pad"
-              value={telefono}
-              onChangeText={setTelefono}
-            />
+          <Text style={styles.label}>Teléfono:</Text>
+          <TextInput
+            style={styles.optionButton}
+            placeholder="Ingrese teléfono"
+            placeholderTextColor={styles.placeholderText.color}
+            keyboardType="phone-pad"
+            value={telefono}
+            onChangeText={setTelefono}
+          />
 
           {/* Campo de especialidad */}
           <Text style={styles.label}>Especialidad</Text>
@@ -138,7 +130,7 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
               <Text style={styles.closeButtonText}>Cancelar</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.buttonText}>Guardar nuevo colaborador</Text>
+              <Text style={styles.buttonText}>Seleccionar</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -14,6 +14,7 @@ export default function AdminPanel() {
   const [colaboradores, setColaboradores] = useState(collabData);
   const [gruas, setGruas] = useState(Object.values(craneData)); // Convertir a array de valores
   const [selectedCollaborator, setSelectedCollaborator] = useState(null);
+  const [colaboradorEditado, setColaboradorEditado] = useState(null);
   const [selectedCrane, setSelectedCrane] = useState(null);
   const [isModalCrearColaboradorVisible, setModalCrearColaboradorVisible] = useState(false);
   const [isModalCrearGruaVisible, setModalCrearGruaVisible] = useState(false);
@@ -48,12 +49,19 @@ export default function AdminPanel() {
 
   const handleEdit = (item) => {
     console.log('Editar:', item);
-    // Lógica para editar
+    setColaboradorEditado(item);  // Asigna el colaborador a editar al estado
+    setModalCrearColaboradorVisible(true); // Abre el modal para editar
   };
-
-  const handleDelete = (item) => {
+  
+  const handleDelete = (item, type) => {
     console.log('Eliminar:', item);
-    // Lógica para eliminar
+    if (type === 'colaborador') {
+      setColaboradores((prevColaboradores) =>
+        prevColaboradores.filter((colaborador) => colaborador !== item)
+      );
+    } else if (type === 'grua') {
+      setGruas((prevGruas) => prevGruas.filter((grua) => grua !== item));
+    }
   };
 
   const handleSaveCollaborator = (newCollaborator) => {
@@ -88,6 +96,7 @@ export default function AdminPanel() {
         isVisible={isModalCrearColaboradorVisible}
         onClose={handleModalCrearColaboradorClose}
         onSave={handleSaveCollaborator}
+        colaboradorEditado={colaboradorEditado}  // Se pasa el colaborador a editar al modal
       />
 
       <ModalCrearGrua
@@ -130,7 +139,7 @@ export default function AdminPanel() {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.actionButton}
-                    onPress={() => handleDelete(colaborador)}
+                    onPress={() => handleDelete(colaborador, 'colaborador')}
                   >
                     <Text style={styles.actionButtonText}>Eliminar</Text>
                   </TouchableOpacity>
@@ -174,7 +183,7 @@ export default function AdminPanel() {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.actionButton}
-                    onPress={() => handleDelete(grua)}
+                    onPress={() => handleDelete(grua, 'grua')}
                   >
                     <Text style={styles.actionButtonText}>Eliminar</Text>
                   </TouchableOpacity>
