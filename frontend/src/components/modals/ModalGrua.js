@@ -4,12 +4,24 @@ import styles from '../../styles/ModalStyles';
 
 const ModalGrua = ({ isVisible, onClose, onSelect }) => {
   const [selected, setSelected] = useState(null);
+  const [error, setError] = useState(''); // Estado para manejar el mensaje de error
+
+  const handleSelect = () => {
+    if (!selected) {
+      setError('Debe elegir una grúa para confirmar'); // Mostrar mensaje de error
+    } else {
+      onSelect(selected);
+      setError(''); // Limpiar el mensaje de error
+      onClose();
+    }
+  };
 
   return (
     <Modal transparent={true} visible={isVisible} animationType="slide">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Seleccionar Grúa</Text>
+          {error ? <Text style={{ color: '#ff0000', marginTop: -10 }}>{error}</Text> : null}
           {['Terex RT555', 'Grúa 2', 'Grúa 3'].map((grua) => (
             <TouchableOpacity
               key={grua}
@@ -17,7 +29,10 @@ const ModalGrua = ({ isVisible, onClose, onSelect }) => {
                 styles.optionButton,
                 selected === grua ? styles.selectedOption : null,
               ]}
-              onPress={() => setSelected(grua)}
+              onPress={() => {
+                setSelected(grua);
+                setError('');
+              }}
             >
               <Text
                 style={[
@@ -33,13 +48,7 @@ const ModalGrua = ({ isVisible, onClose, onSelect }) => {
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
               <Text style={styles.closeButtonText}>Cancelar</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.saveButton}
-              onPress={() => {
-                if (selected) onSelect(selected);
-                onClose();
-              }}
-            >
+            <TouchableOpacity style={styles.saveButton} onPress={handleSelect}>
               <Text style={styles.buttonText}>Seleccionar</Text>
             </TouchableOpacity>
           </View>

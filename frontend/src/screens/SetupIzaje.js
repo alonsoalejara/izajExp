@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, TouchableOpacity, Text, TextInput, View } from 'react-native';
+import { ScrollView, TouchableOpacity, Text, TextInput, View, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
 import Modals from '../components/modals/Modal.index';
@@ -39,6 +39,30 @@ const SetupIzaje = () => {
     }
   }, [grua]);
 
+  const handleNavigateToTablas = () => {
+    if (!radioIzaje || !radioMontaje) {
+      Alert.alert('Campos incompletos', 'Por favor, completa ambos valores de configuración de radio.');
+      return;
+    }
+  
+    if (!grua || !cantidadGrilletes || !tipoGrillete || !eslingaOEstrobo || !cantidadManiobra) {
+      Alert.alert('Campos incompletos', 'Por favor, completa todos los campos de configuración: grúa, grillete, maniobra.');
+      return;
+    }
+  
+    navigation.navigate('Tablas', {
+      forma: forma,
+      grua: grua,
+      eslingaOEstrobo: eslingaOEstrobo,
+      cantidadManiobra: cantidadManiobra,
+      cantidadGrilletes: cantidadGrilletes,
+      tipoGrillete: tipoGrillete,
+      radioIzaje: radioIzaje,
+      radioMontaje: radioMontaje,
+    });
+  };
+  
+
   return (
     <View style={{ flex: 1 }}>
 
@@ -49,7 +73,7 @@ const SetupIzaje = () => {
         </View>
 
         {/* Sección comentada: Identificación del Elemento */}
-        {/*
+        {/* 
         <View style={styles.formSection}>
           <Text style={styles.formTitle}>Identificación del Elemento</Text>
           <Text style={styles.label}>Por favor, escriba el identificador o marca del elemento:</Text>
@@ -62,11 +86,12 @@ const SetupIzaje = () => {
           />
         </View>
         */}
+
         <View style={styles.section}>
-          <Text style={[styles.formTitle, { marginTop: 5, marginBottom: 15}]}>CONFIGURACIONES:</Text>
+          <Text style={[styles.formTitle, { marginTop: 5, marginBottom: 15 }]}>CONFIGURACIONES:</Text>
 
           {/* Sección comentada: Configurar Forma */}
-          {/*
+          {/* 
           <TouchableOpacity onPress={() => openModal(setFormaModalVisible)} style={styles.button}>
             <Text style={styles.buttonText}>Configurar Forma</Text>
           </TouchableOpacity>
@@ -129,7 +154,7 @@ const SetupIzaje = () => {
             }}
           />
         </View>
-        
+
         {/* Formulario Datos Izaje */}
         <FormularioDatosIzaje
           radioIzaje={radioIzaje}
@@ -139,19 +164,7 @@ const SetupIzaje = () => {
         />
 
         {/* Botón para navegar a Tablas */}
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Tablas', {
-            forma: forma,
-            grua: grua,
-            eslingaOEstrobo: eslingaOEstrobo,
-            cantidadManiobra: cantidadManiobra,
-            cantidadGrilletes: cantidadGrilletes,
-            tipoGrillete: tipoGrillete,
-            radioIzaje: radioIzaje,
-            radioMontaje: radioMontaje,
-          })}
-        >
+        <TouchableOpacity style={styles.button} onPress={handleNavigateToTablas}>
           <Text style={styles.buttonText}>Ir a Tablas</Text>
         </TouchableOpacity>
       </ScrollView>

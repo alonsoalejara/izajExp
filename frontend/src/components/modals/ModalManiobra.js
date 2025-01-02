@@ -5,21 +5,29 @@ import styles from '../../styles/ModalStyles';
 const ModalManiobra = ({ isVisible, onClose, onSelect }) => {
   const [cantidad, setCantidad] = useState(null); // Estado para la cantidad de maniobras seleccionada
   const [tipoManiobra, setTipoManiobra] = useState(null); // Estado para el tipo de maniobra seleccionada
-
-  const handleSeleccionarCantidad = (cantidadSeleccionada) => {
-    setCantidad(cantidadSeleccionada); // Actualiza el estado con la cantidad seleccionada
-  };
-
-  const handleSeleccionarTipo = (tipo) => {
-    setTipoManiobra(tipo); // Actualiza el estado con el tipo de maniobra seleccionada
-  };
+  const [errorCantidad, setErrorCantidad] = useState(''); // Mensaje de error para cantidad
+  const [errorTipo, setErrorTipo] = useState(''); // Mensaje de error para tipo
 
   const handleGuardar = () => {
-    if (cantidad && tipoManiobra) {
+    let hasError = false;
+
+    if (!cantidad) {
+      setErrorCantidad('Debe seleccionar la cantidad.'); // Mostrar error si no hay cantidad
+      hasError = true;
+    } else {
+      setErrorCantidad(''); // Limpiar error si la cantidad es válida
+    }
+
+    if (!tipoManiobra) {
+      setErrorTipo('Debe seleccionar el tipo.'); // Mostrar error si no hay tipo
+      hasError = true;
+    } else {
+      setErrorTipo(''); // Limpiar error si el tipo es válido
+    }
+
+    if (!hasError) {
       onSelect({ cantidad, tipo: tipoManiobra }); // Pasa la información seleccionada al componente padre
       onClose(); // Cierra el modal
-    } else {
-      alert("Por favor, seleccione la cantidad de maniobras y el tipo."); // Si no se han seleccionado ambos
     }
   };
 
@@ -31,22 +39,24 @@ const ModalManiobra = ({ isVisible, onClose, onSelect }) => {
 
           {/* Texto para seleccionar la cantidad de maniobras */}
           <Text style={styles.label}>Seleccionar Cantidad de Maniobras</Text>
-
-          {/* Contenedor para los botones de selección de cantidad de maniobras */}
+          {errorCantidad ? <Text style={{ color: '#ff0000', marginBottom: 10 }}>{errorCantidad}</Text> : null}
           <View style={styles.maniobrasContainer}>
             {[1, 2, 4].map((num) => (
               <TouchableOpacity
                 key={num}
                 style={[
                   styles.optionButton,
-                  cantidad === num && styles.selectedOption, // Resalta la opción seleccionada
+                  cantidad === num && styles.selectedOption,
                 ]}
-                onPress={() => handleSeleccionarCantidad(num)}
+                onPress={() => {
+                  setCantidad(num);
+                  setErrorCantidad(''); 
+                }}
               >
                 <Text
                   style={[
                     styles.optionText,
-                    cantidad === num && styles.selectedOptionText, // Cambiar color del texto seleccionado
+                    cantidad === num && styles.selectedOptionText,
                   ]}
                 >
                   {num}
@@ -57,34 +67,33 @@ const ModalManiobra = ({ isVisible, onClose, onSelect }) => {
 
           {/* Texto para seleccionar el tipo de maniobra */}
           <Text style={styles.label}>Seleccionar Tipo de Maniobra</Text>
-
-          {/* Contenedor para los botones de selección de tipo de maniobra */}
+          {errorTipo ? <Text style={{ color: '#ff0000', marginBottom: 10 }}>{errorTipo}</Text> : null}
           {['Eslinga', 'Estrobo'].map((tipo) => (
             <TouchableOpacity
               key={tipo}
               style={[
                 styles.optionButton,
-                tipoManiobra === tipo && styles.selectedOption, // Resalta la opción seleccionada
+                tipoManiobra === tipo && styles.selectedOption,
               ]}
-              onPress={() => handleSeleccionarTipo(tipo)}
+              onPress={() => {
+                setTipoManiobra(tipo);
+                setErrorTipo('');
+              }}
             >
               <Text
                 style={[
                   styles.optionText,
-                  tipoManiobra === tipo && styles.selectedOptionText, // Cambiar color del texto seleccionado
+                  tipoManiobra === tipo && styles.selectedOptionText,
                 ]}
               >
                 {tipo}
               </Text>
             </TouchableOpacity>
           ))}
-
           <View style={styles.modalButtons}>
-            {/* Botón de cancelar */}
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
               <Text style={styles.closeButtonText}>Cancelar</Text>
             </TouchableOpacity>
-            {/* Botón de seleccionar */}
             <TouchableOpacity style={styles.saveButton} onPress={handleGuardar}>
               <Text style={styles.buttonText}>Seleccionar</Text>
             </TouchableOpacity>
