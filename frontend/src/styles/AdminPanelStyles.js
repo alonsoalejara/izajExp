@@ -120,6 +120,22 @@ const styles = StyleSheet.create({
     color: '#555',
     marginBottom: 4,
   },
+  planCard: {
+    backgroundColor: '#e8f0fe',
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 10,
+  },
+  planName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#333',
+  },
+  planDetails: {
+    fontSize: 14,
+    color: '#555',
+  },
   
 });
 

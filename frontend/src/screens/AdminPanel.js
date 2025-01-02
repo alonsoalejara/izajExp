@@ -9,25 +9,20 @@ import ModalsAdmin from '../components/modals/ModalAdmin.index';
 export default function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
-  const [colaboradores, setColaboradores] = useState(Data.collabData); // Usando los datos de Data
-  const [gruas, setGruas] = useState(Object.values(Data.craneData)); // Usando los datos de Data
+  const [colaboradores, setColaboradores] = useState(Data.collabData);
+  const [gruas, setGruas] = useState(Object.values(Data.craneData));
+  const [planesDeIzaje, setPlanesDeIzaje] = useState(Data.planData || []);
   const [selectedCollaborator, setSelectedCollaborator] = useState(null);
   const [colaboradorEditado, setColaboradorEditado] = useState(null);
   const [selectedCrane, setSelectedCrane] = useState(null);
   const [isModalCrearColaboradorVisible, setModalCrearColaboradorVisible] = useState(false);
-  const [isModalEditarColaboradorVisible, setModalEditarColaboradorVisible] = useState(false); // Modal de edición
+  const [isModalEditarColaboradorVisible, setModalEditarColaboradorVisible] = useState(false);
   const [isModalCrearGruaVisible, setModalCrearGruaVisible] = useState(false);
+  const [planesIzaje, setPlanesIzaje] = useState(Data.planIzajeData); // Agregando planes de izaje
+  const [selectedPlan, setSelectedPlan] = useState(null);
 
   const handleButtonPress = (section) => {
     setActiveSection((prevSection) => (prevSection === section ? null : section));
-  };
-
-  const handleCollaboratorPress = (index) => {
-    setSelectedCollaborator((prevIndex) => (prevIndex === index ? null : index));
-  };
-
-  const handleCranePress = (index) => {
-    setSelectedCrane((prevIndex) => (prevIndex === index ? null : index));
   };
 
   const handleAdd = (section) => {
@@ -35,6 +30,8 @@ export default function AdminPanel() {
       setModalCrearColaboradorVisible(true);
     } else if (section === 'Gruas') {
       setModalCrearGruaVisible(true);
+    } else if (section === 'PlanesDeIzaje') {
+      console.log('Agregar un nuevo plan de izaje');
     }
   };
 
@@ -43,47 +40,15 @@ export default function AdminPanel() {
   };
 
   const handleModalEditarColaboradorClose = () => {
-    setModalEditarColaboradorVisible(false); // Cerrar el modal de edición
+    setModalEditarColaboradorVisible(false);
   };
 
   const handleModalCrearGruaClose = () => {
     setModalCrearGruaVisible(false);
   };
 
-  const handleEdit = (item) => {
-    console.log('Editar:', item);
-    setColaboradorEditado(item);  // Asigna el colaborador a editar al estado
-    setModalEditarColaboradorVisible(true); // Abre el modal para editar
-  };
-
-  const handleDelete = (item, type) => {
-    console.log('Eliminar:', item);
-    if (type === 'colaborador') {
-      setColaboradores((prevColaboradores) =>
-        prevColaboradores.filter((colaborador) => colaborador.rut !== item.rut) // Filtrar por rut
-      );
-    } else if (type === 'grua') {
-      setGruas((prevGruas) => prevGruas.filter((grua) => grua !== item));
-    }
-  };
-
-  const handleSaveCollaborator = (newCollaborator) => {
-    setColaboradores((prevColaboradores) => [...prevColaboradores, newCollaborator]);
-    setModalCrearColaboradorVisible(false);
-  };
-
-  const handleSaveEditedCollaborator = (editedCollaborator) => {
-    setColaboradores((prevColaboradores) =>
-      prevColaboradores.map((colaborador) =>
-        colaborador.rut === editedCollaborator.rut ? editedCollaborator : colaborador // Actualiza el colaborador correcto
-      )
-    );
-    setModalEditarColaboradorVisible(false); // Cerrar el modal después de guardar
-  };
-
-  const handleSaveCrane = (newCrane) => {
-    setGruas((prevGruas) => [...prevGruas, newCrane]);
-    setModalCrearGruaVisible(false);
+  const handleDeletePlan = (index) => {
+    setPlanesDeIzaje((prevPlanes) => prevPlanes.filter((_, i) => i !== index));
   };
 
   return (
@@ -104,68 +69,51 @@ export default function AdminPanel() {
         ))}
       </View>
 
-      {/* Modal para Crear Colaborador */}
       <ModalsAdmin.ModalAddCollab
         isVisible={isModalCrearColaboradorVisible}
         onClose={handleModalCrearColaboradorClose}
-        onSave={handleSaveCollaborator}
+        onSave={(newCollaborator) => {
+          setColaboradores((prev) => [...prev, newCollaborator]);
+          setModalCrearColaboradorVisible(false);
+        }}
       />
 
-      {/* Modal para Editar Colaborador */}
       <ModalsAdmin.ModalEditarCollab
         isVisible={isModalEditarColaboradorVisible}
         onClose={handleModalEditarColaboradorClose}
-        onSave={handleSaveEditedCollaborator}
-        colaborador={colaboradorEditado}  // Pasa el colaborador a editar
+        onSave={(editedCollaborator) => {
+          setColaboradores((prev) =>
+            prev.map((colaborador) =>
+              colaborador.rut === editedCollaborator.rut ? editedCollaborator : colaborador
+            )
+          );
+          setModalEditarColaboradorVisible(false);
+        }}
+        colaborador={colaboradorEditado}
       />
 
-      {/* Modal para Crear Grua */}
       <ModalsAdmin.ModalAddCrane
         isVisible={isModalCrearGruaVisible}
         onClose={handleModalCrearGruaClose}
-        onSave={handleSaveCrane}
+        onSave={(newCrane) => {
+          setGruas((prev) => [...prev, newCrane]);
+          setModalCrearGruaVisible(false);
+        }}
       />
 
       {activeSection === 'Colaboradores' && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Colaboradores</Text>
-          <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => handleAdd('Colaboradores')}
-            >
-              <Icon name="add" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => handleAdd('Colaboradores')}
+          >
+            <Icon name="add" size={24} color="white" />
+          </TouchableOpacity>
           {colaboradores.map((colaborador) => (
             <View key={colaborador.rut} style={styles.collaboratorCard}>
-              <TouchableOpacity onPress={() => handleCollaboratorPress(colaborador.rut)}>
-                <Text style={styles.collaboratorName}>
-                  {colaborador.nombre} {colaborador.apellido}
-                </Text>
-                <Text style={styles.collaboratorDetails}>
-                  RUT: {colaborador.rut}{'\n'}
-                  Teléfono: {colaborador.phone}{'\n'}
-                  Email: {colaborador.email}{'\n'}
-                  Especialidad: {colaborador.specialty}
-                </Text>
-              </TouchableOpacity>
-              {selectedCollaborator === colaborador.rut && (
-                <View style={styles.buttonGroup}>
-                  <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={() => handleEdit(colaborador)}
-                  >
-                    <Text style={styles.actionButtonText}>Editar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={() => handleDelete(colaborador, 'colaborador')}
-                  >
-                    <Text style={styles.actionButtonText}>Eliminar</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+              <Text style={styles.collaboratorName}>{colaborador.nombre}</Text>
+              <Text style={styles.collaboratorDetails}>RUT: {colaborador.rut}</Text>
             </View>
           ))}
         </View>
@@ -174,46 +122,56 @@ export default function AdminPanel() {
       {activeSection === 'Gruas' && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Grúas</Text>
-          <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => handleAdd('Gruas')}
-            >
-              <Icon name="add" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => handleAdd('Gruas')}
+          >
+            <Icon name="add" size={24} color="white" />
+          </TouchableOpacity>
           {gruas.map((grua, index) => (
             <View key={index} style={styles.gruaCard}>
-              <TouchableOpacity onPress={() => handleCranePress(index)}>
-                <Text style={styles.gruaName}>{grua.nombre}</Text>
-                <View style={styles.gruaDetails}>
-                  <Text style={styles.gruaDetail}>Peso del equipo: {grua.pesoEquipo} kg</Text>
-                  <Text style={styles.gruaDetail}>Peso del gancho: {grua.pesoGancho} kg</Text>
-                  <Text style={styles.gruaDetail}>Capacidad de levante: {grua.capacidadLevante} kg</Text>
-                  <Text style={styles.gruaDetail}>Largo de la pluma: {grua.largoPluma} m</Text>
-                  <Text style={styles.gruaDetail}>Contrapeso: {grua.contrapeso} toneladas</Text>
-                </View>
-              </TouchableOpacity>
-              {selectedCrane === index && (
-                <View style={styles.buttonGroup}>
-                  <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={() => handleEdit(grua)}
-                  >
-                    <Text style={styles.actionButtonText}>Editar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={() => handleDelete(grua, 'grua')}
-                  >
-                    <Text style={styles.actionButtonText}>Eliminar</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+              <Text style={styles.gruaName}>{grua.nombre}</Text>
             </View>
           ))}
         </View>
       )}
+
+    {activeSection === 'PlanesDeIzaje' && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Planes de Izaje</Text>
+              {planesIzaje.map((plan) => (
+                <View key={plan.id} style={styles.planCard}>
+                  <TouchableOpacity onPress={() => handlePlanPress(plan.id)}>
+                    <Text style={styles.planTitle}>Plan ID: {plan.id}</Text>
+                    <View style={styles.planDetails}>
+                      <Text style={styles.planDetail}>Largo de Pluma: {plan.datosGenerales.largoPluma} m</Text>
+                      <Text style={styles.planDetail}>Contrapeso: {plan.datosGenerales.contrapeso} toneladas</Text>
+                    </View>
+                  </TouchableOpacity>
+                  {selectedPlan === plan.id && (
+                    <View style={styles.planExpandedDetails}>
+                      <Text style={styles.expandedTitle}>Aparejos:</Text>
+                      {plan.aparejos.map((aparejo, index) => (
+                        <View key={index} style={styles.aparejoItem}>
+                          <Text>Descripción: {aparejo.descripcion}</Text>
+                          <Text>Cantidad: {aparejo.cantidad}</Text>
+                          <Text>Peso Unitario: {aparejo.pesoUnitario} kg</Text>
+                          <Text>Peso Total: {aparejo.pesoTotal} kg</Text>
+                        </View>
+                      ))}
+                      <Text style={styles.expandedTitle}>Cargas:</Text>
+                      <Text>Peso Equipo: {plan.cargas.pesoEquipo} kg</Text>
+                      <Text>Peso Unitario: {plan.cargas.pesoUnitario} kg</Text>
+                      <Text>Peso Total: {plan.cargas.pesoTotal} kg</Text>
+                      <Text>Radio Trabajo Máx: {plan.cargas.radioTrabajoMax} m</Text>
+                      <Text>Capacidad de Levante: {plan.cargas.capacidadLevante} toneladas</Text>
+                      <Text>% Utilización: {plan.cargas.porcentajeUtilizacion}%</Text>
+                    </View>
+                  )}
+                </View>
+              ))}
+            </View>
+          )}
     </ScrollView>
   );
 }
