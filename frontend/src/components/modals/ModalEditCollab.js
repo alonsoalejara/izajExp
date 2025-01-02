@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import styles from '../../styles/ModalStyles';
 
-const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
+const ModalEditarCollab = ({ isVisible, onClose, onSave, colaborador }) => {
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [rut, setRut] = useState('');
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [especialidad, setEspecialidad] = useState('');
-  const [showMenu, setShowMenu] = useState(false); // Estado para mostrar/ocultar el menú
+  const [showMenu, setShowMenu] = useState(false);
 
   const especialidades = [
     { label: 'Estructura', value: 'Estructura' },
@@ -19,19 +19,31 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
     { label: 'Eléctrica', value: 'Eléctrica' },
   ];
 
+  // Cargar los datos del colaborador cuando el modal se abra
+  useEffect(() => {
+    if (colaborador) {
+      setNombre(colaborador.nombre);
+      setApellido(colaborador.apellido);
+      setRut(colaborador.rut);
+      setEmail(colaborador.email);
+      setTelefono(colaborador.phone);
+      setEspecialidad(colaborador.specialty);
+    }
+  }, [colaborador, isVisible]); // Dependiendo de 'colaborador' e 'isVisible'
+  
   const handleSave = () => {
     if (nombre && apellido && rut && email && telefono && especialidad) {
-      const nuevoColaborador = {
+      const colaboradorEditado = {
         nombre,
         apellido,
         rut,
         phone: telefono,
         email,
         specialty: especialidad,
-        roles: ['USER'],
+        roles: colaborador ? colaborador.roles : [],
       };
-
-      onSave(nuevoColaborador); // Llama a la función onSave para agregar el colaborador
+    
+      onSave(colaboradorEditado); // Llama a la función onSave para actualizar el colaborador
       onClose(); // Cierra el modal
     } else {
       alert('Por favor, complete todos los campos.');
@@ -47,7 +59,7 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
     <Modal transparent={true} visible={isVisible} animationType="slide">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Crear colaborador</Text>
+          <Text style={styles.modalTitle}>Editar Colaborador</Text>
           <Text style={styles.label}>Nombre(s):</Text>
           <TextInput
             style={styles.optionButton}
@@ -98,16 +110,14 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
             onChangeText={setTelefono}
           />
 
-          {/* Campo de especialidad */}
           <Text style={styles.label}>Especialidad</Text>
           <TouchableOpacity 
             style={styles.optionButton}
-            onPress={() => setShowMenu(!showMenu)} // Muestra/oculta el menú
+            onPress={() => setShowMenu(!showMenu)}
           >
             <Text>{especialidad || 'Selecciona una especialidad'}</Text>
           </TouchableOpacity>
 
-          {/* Menú desplegable */}
           {showMenu && (
             <View style={styles.menuContainer}>
               <FlatList
@@ -139,4 +149,4 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
   );
 };
 
-export default ModalCrearColaborador;
+export default ModalEditarCollab;

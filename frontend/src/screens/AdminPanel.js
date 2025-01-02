@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import collabData from '../data/collabData';
-import craneData from '../data/craneData';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Data from '../data/data.index';
 import styles from '../styles/AdminPanelStyles';
-import ModalCrearColaborador from '../components/modals/ModalAddCollab';
-import ModalCrearGrua from '../components/modals/ModalAddCrane';
+import ModalsAdmin from '../components/modals/ModalAdmin.index';
 
 export default function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
-  const [colaboradores, setColaboradores] = useState(collabData);
-  const [gruas, setGruas] = useState(Object.values(craneData)); // Convertir a array de valores
+  const [colaboradores, setColaboradores] = useState(Data.collabData); // Usando los datos de Data
+  const [gruas, setGruas] = useState(Object.values(Data.craneData)); // Usando los datos de Data
   const [selectedCollaborator, setSelectedCollaborator] = useState(null);
   const [colaboradorEditado, setColaboradorEditado] = useState(null);
   const [selectedCrane, setSelectedCrane] = useState(null);
   const [isModalCrearColaboradorVisible, setModalCrearColaboradorVisible] = useState(false);
+  const [isModalEditarColaboradorVisible, setModalEditarColaboradorVisible] = useState(false); // Modal de edición
   const [isModalCrearGruaVisible, setModalCrearGruaVisible] = useState(false);
 
   const handleButtonPress = (section) => {
@@ -43,6 +42,10 @@ export default function AdminPanel() {
     setModalCrearColaboradorVisible(false);
   };
 
+  const handleModalEditarColaboradorClose = () => {
+    setModalEditarColaboradorVisible(false); // Cerrar el modal de edición
+  };
+
   const handleModalCrearGruaClose = () => {
     setModalCrearGruaVisible(false);
   };
@@ -50,14 +53,14 @@ export default function AdminPanel() {
   const handleEdit = (item) => {
     console.log('Editar:', item);
     setColaboradorEditado(item);  // Asigna el colaborador a editar al estado
-    setModalCrearColaboradorVisible(true); // Abre el modal para editar
+    setModalEditarColaboradorVisible(true); // Abre el modal para editar
   };
-  
+
   const handleDelete = (item, type) => {
     console.log('Eliminar:', item);
     if (type === 'colaborador') {
       setColaboradores((prevColaboradores) =>
-        prevColaboradores.filter((colaborador) => colaborador !== item)
+        prevColaboradores.filter((colaborador) => colaborador.rut !== item.rut) // Filtrar por rut
       );
     } else if (type === 'grua') {
       setGruas((prevGruas) => prevGruas.filter((grua) => grua !== item));
@@ -67,6 +70,15 @@ export default function AdminPanel() {
   const handleSaveCollaborator = (newCollaborator) => {
     setColaboradores((prevColaboradores) => [...prevColaboradores, newCollaborator]);
     setModalCrearColaboradorVisible(false);
+  };
+
+  const handleSaveEditedCollaborator = (editedCollaborator) => {
+    setColaboradores((prevColaboradores) =>
+      prevColaboradores.map((colaborador) =>
+        colaborador.rut === editedCollaborator.rut ? editedCollaborator : colaborador // Actualiza el colaborador correcto
+      )
+    );
+    setModalEditarColaboradorVisible(false); // Cerrar el modal después de guardar
   };
 
   const handleSaveCrane = (newCrane) => {
@@ -92,14 +104,23 @@ export default function AdminPanel() {
         ))}
       </View>
 
-      <ModalCrearColaborador
+      {/* Modal para Crear Colaborador */}
+      <ModalsAdmin.ModalAddCollab
         isVisible={isModalCrearColaboradorVisible}
         onClose={handleModalCrearColaboradorClose}
         onSave={handleSaveCollaborator}
-        colaboradorEditado={colaboradorEditado}  // Se pasa el colaborador a editar al modal
       />
 
-      <ModalCrearGrua
+      {/* Modal para Editar Colaborador */}
+      <ModalsAdmin.ModalEditarCollab
+        isVisible={isModalEditarColaboradorVisible}
+        onClose={handleModalEditarColaboradorClose}
+        onSave={handleSaveEditedCollaborator}
+        colaborador={colaboradorEditado}  // Pasa el colaborador a editar
+      />
+
+      {/* Modal para Crear Grua */}
+      <ModalsAdmin.ModalAddCrane
         isVisible={isModalCrearGruaVisible}
         onClose={handleModalCrearGruaClose}
         onSave={handleSaveCrane}
@@ -116,9 +137,9 @@ export default function AdminPanel() {
               <Icon name="add" size={24} color="white" />
             </TouchableOpacity>
           </View>
-          {colaboradores.map((colaborador, index) => (
-            <View key={index} style={styles.collaboratorCard}>
-              <TouchableOpacity onPress={() => handleCollaboratorPress(index)}>
+          {colaboradores.map((colaborador) => (
+            <View key={colaborador.rut} style={styles.collaboratorCard}>
+              <TouchableOpacity onPress={() => handleCollaboratorPress(colaborador.rut)}>
                 <Text style={styles.collaboratorName}>
                   {colaborador.nombre} {colaborador.apellido}
                 </Text>
@@ -129,7 +150,7 @@ export default function AdminPanel() {
                   Especialidad: {colaborador.specialty}
                 </Text>
               </TouchableOpacity>
-              {selectedCollaborator === index && (
+              {selectedCollaborator === colaborador.rut && (
                 <View style={styles.buttonGroup}>
                   <TouchableOpacity
                     style={styles.actionButton}

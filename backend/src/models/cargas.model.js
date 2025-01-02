@@ -2,10 +2,6 @@ import { Schema, model } from 'mongoose';
 
 const cargasSchema = new Schema(
     {
-        descripcion: {
-            type: String,
-            required: true
-        },
         pesoEquipo: {
             type: Schema.Types.ObjectId,
             ref: 'Grua',
