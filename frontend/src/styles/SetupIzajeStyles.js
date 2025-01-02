@@ -1,38 +1,37 @@
 import { StyleSheet } from 'react-native';
-import CommonStyles from './CommonStyles';
 
 const styles = StyleSheet.create({
   container: {
-    ...CommonStyles.container,
-    marginBottom: 0,
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingVertical: 36,
   },
-  grilleteInfo: {
-    marginBottom: -60,
-  },
-  maniobraInfo: {
-    marginBottom: -60,
-  },
-  formSection: {
-    marginBottom: 30,
+  contentContainer: {
     padding: 20,
+  },
+  section: {
+    marginBottom: 30,
+    padding: 10,
     backgroundColor: '#f5f5f5',
-    borderRadius: 40,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 15 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 10,
+    borderRadius: 10,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    color: '#333',
+    marginTop: 5,
+    marginBottom: 5,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   formTitle: {
-    ...CommonStyles.textBold,
-    fontSize: 24,
-    fontWeight: '600',
-    marginBottom: 5,
-    marginTop: 10,
+    fontSize: 20,
     color: '#333',
+    marginBottom: 10,
+    fontWeight: 'bold',
+    textAlign: 'left',
   },
   formTitleNoContainer: {
-    ...CommonStyles.textBold,
     fontSize: 26,
     fontWeight: '600',
     marginBottom: 20,
@@ -40,77 +39,115 @@ const styles = StyleSheet.create({
     color: '#000',
     textAlign: 'center',
   },
-  label: {
-    ...CommonStyles.text,
-    fontSize: 20,
-    color: '#666',
+  button: {
+    flex: 1,
+    backgroundColor: '#ee0000',
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginHorizontal: 3,
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
+  labelText: {
+    fontWeight: '600',
+  },
+  card: {
+    backgroundColor: '#fff',
+    padding: 16,
+    marginVertical: 8,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ff0000',
+    marginBottom: 8,
+  },
+  cardDetail: {
+    fontSize: 15,
+    color: '#000',
+    marginTop: -10,
     marginBottom: 10,
   },
-  input: {
-    ...CommonStyles.input,
-    padding: 8,
-    width: 220,
+  cardSubtitle: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#ff0000',
+    marginTop: 10,
     marginBottom: 10,
+  },
+  cardItem: {
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  actionButton: {
+    width: 120,
+    backgroundColor: '#ff0000',
+    paddingVertical: 8,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  actionButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  input: {
+    backgroundColor: '#e0e0e0', // Fondo gris claro para inputs
+    padding: 8,
+    borderRadius: 5,
+    fontSize: 16,
+    color: '#333', // Texto oscuro
+    width: '90%', // Ajustado a todo el ancho
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingHorizontal: 5,
-    marginVertical: 10,
+    marginRight: 10,
+    marginVertical: 15,
   },
   placeholderText: {
     color: '#aaa',
   },
   unitText: {
-    ...CommonStyles.text,
     fontSize: 18,
     color: '#666',
     marginLeft: 6,
   },
-  button: {
-    ...CommonStyles.button,
-    backgroundColor: '#ee0000',
-    marginVertical: 10,
-    marginBottom: 40,
-  },
-  buttonText: {
-    ...CommonStyles.buttonText,
-  },
-  title: {
-    ...CommonStyles.text,
-    fontSize: 18,
-    fontWeight: '500',
-    marginTop: -20,
+  formSection: {
     marginBottom: 30,
-    color: '#333',
-  },
-  optionButton: {
     padding: 20,
-    backgroundColor: '#e0e0e0',
-    marginBottom: 10,
-    borderRadius: 8,
-    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  optionText: {
-    ...CommonStyles.textBold,
-    fontSize: 15,
-    color: '#333',
+  formMarginTop: {
+    marginTop: 20,
   },
   maniobrasContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginVertical: 25,
-  },
-  selectedOption: {
-    backgroundColor: '#aa0000',
-  },
-  selectedOptionText: {
-    ...CommonStyles.text,
-    color: '#fff',
-  },
-  formMarginTop: {
-    marginTop: 20,
   },
 });
 

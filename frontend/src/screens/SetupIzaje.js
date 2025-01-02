@@ -43,11 +43,11 @@ const SetupIzaje = () => {
     <View style={{ flex: 1 }}>
 
       {/* Contenido principal */}
-      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-        <View style={styles.formTitle}>
-          <Text style={styles.formTitleNoContainer}>Cálculo Maniobras Menores</Text>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} keyboardShouldPersistTaps="handled">
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>CÁLCULO MANIOBRAS MENORES</Text>
         </View>
-        
+
         {/* Sección comentada: Identificación del Elemento */}
         {/*
         <View style={styles.formSection}>
@@ -62,62 +62,74 @@ const SetupIzaje = () => {
           />
         </View>
         */}
+        <View style={styles.section}>
+          <Text style={[styles.formTitle, { marginTop: 5, marginBottom: 15}]}>CONFIGURACIONES:</Text>
 
-        <Text style={styles.formTitle}>Configuraciones:</Text>
+          {/* Sección comentada: Configurar Forma */}
+          {/*
+          <TouchableOpacity onPress={() => openModal(setFormaModalVisible)} style={styles.button}>
+            <Text style={styles.buttonText}>Configurar Forma</Text>
+          </TouchableOpacity>
+          <Text style={styles.title}>Forma seleccionada: {forma}</Text>
+          <Modals.ModalForma
+            isVisible={isFormaModalVisible}
+            onClose={() => setFormaModalVisible(false)}
+            onSelect={setForma}
+          />
+          */}
 
-        {/* Sección comentada: Configurar Forma */}
-        {/*
-        <TouchableOpacity onPress={() => openModal(setFormaModalVisible)} style={styles.button}>
-          <Text style={styles.buttonText}>Configurar Forma</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Forma seleccionada: {forma}</Text>
-        <Modals.ModalForma
-          isVisible={isFormaModalVisible}
-          onClose={() => setFormaModalVisible(false)}
-          onSelect={setForma}
-        />
-        */}
+          {/* Configurar Grúa */}
+          <TouchableOpacity onPress={() => openModal(setGruaModalVisible)} style={styles.button}>
+            <Text style={styles.buttonText}>Configurar Grúa</Text>
+          </TouchableOpacity>
 
-        {/* Configurar Grúa */}
-        <TouchableOpacity onPress={() => openModal(setGruaModalVisible)} style={styles.button}>
-          <Text style={styles.buttonText}>Configurar Grúa</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Grúa seleccionada: {grua}</Text>
-        <Modals.ModalGrua
-          isVisible={isGruaModalVisible}
-          onClose={() => setGruaModalVisible(false)}
-          onSelect={setGrua}
-        />
+          <Text style={styles.cardDetail}>
+            <Text style={styles.labelText}>Grúa seleccionada: {'\n'}</Text>{grua}
+          </Text>
+          <Modals.ModalGrua
+            isVisible={isGruaModalVisible}
+            onClose={() => setGruaModalVisible(false)}
+            onSelect={setGrua}
+          />
 
-        {/* Configurar Grillete */}
-        <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.button}>
-          <Text style={styles.buttonText}>Configurar Grillete</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Cantidad de grilletes: {cantidadGrilletes}</Text>
-        <Text style={styles.title}>Tipo de grillete: {tipoGrillete} pulg.</Text>
-        <Modals.ModalGrillete
-          isVisible={isGrilleteModalVisible}
-          onClose={() => setGrilleteModalVisible(false)}
-          onSelectCantidad={setCantidadGrilletes}
-          onSelectTipo={setTipoGrillete}
-        />
+          {/* Configurar Grillete */}
+          <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.button}>
+            <Text style={styles.buttonText}>Configurar Grillete</Text>
+          </TouchableOpacity>
+          <Text style={styles.cardDetail}>
+            <Text style={styles.labelText}>Cantidad de grilletes: {'\n'}</Text>{cantidadGrilletes}
+          </Text>
+          <Text style={styles.cardDetail}>
+            <Text style={styles.labelText}>Tipo de grillete: {'\n'}</Text>{tipoGrillete}"
+          </Text>
+          <Modals.ModalGrillete
+            isVisible={isGrilleteModalVisible}
+            onClose={() => setGrilleteModalVisible(false)}
+            onSelectCantidad={setCantidadGrilletes}
+            onSelectTipo={setTipoGrillete}
+          />
 
-        {/* Configurar Maniobra */}
-        <TouchableOpacity onPress={() => openModal(setManiobraModalVisible)} style={styles.button}>
-          <Text style={styles.buttonText}>Configurar Maniobra</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Maniobra seleccionada: {eslingaOEstrobo}</Text>
-        <Text style={styles.title}>Cantidad: {cantidadManiobra}</Text>
-        <Modals.ModalManiobra
-          isVisible={isManiobraModalVisible}
-          onClose={() => setManiobraModalVisible(false)}
-          onSelect={({ tipo, cantidad }) => {
-            setEslingaOEstrobo(tipo);
-            setCantidadManiobra(cantidad);
-            setManipulaciones(`${tipo} x ${cantidad}`);
-          }}
-        />
-
+          {/* Configurar Maniobra */}
+          <TouchableOpacity onPress={() => openModal(setManiobraModalVisible)} style={styles.button}>
+            <Text style={styles.buttonText}>Configurar Maniobra</Text>
+          </TouchableOpacity>
+          <Text style={styles.cardDetail}>
+            <Text style={styles.labelText}>Maniobra seleccionada: {'\n'}</Text>{eslingaOEstrobo}
+          </Text>
+          <Text style={styles.cardDetail}>
+            <Text style={styles.labelText}>Cantidad: {'\n'}</Text>{cantidadManiobra}
+          </Text>
+          <Modals.ModalManiobra
+            isVisible={isManiobraModalVisible}
+            onClose={() => setManiobraModalVisible(false)}
+            onSelect={({ tipo, cantidad }) => {
+              setEslingaOEstrobo(tipo);
+              setCantidadManiobra(cantidad);
+              setManipulaciones(`${tipo} x ${cantidad}`);
+            }}
+          />
+        </View>
+        
         {/* Formulario Datos Izaje */}
         <FormularioDatosIzaje
           radioIzaje={radioIzaje}

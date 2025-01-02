@@ -3,36 +3,36 @@ import { View, Text, TextInput } from 'react-native';
 import styles from '../../styles/SetupIzajeStyles';
 
 const FormularioDatosIzaje = ({ radioIzaje, radioMontaje, setRadioIzaje, setRadioMontaje }) => (
-  <View style={[styles.formSection, styles.formMarginTop]}>
+  <View style={styles.section}>
     {/* Titulo de la configuración de radio */}
-    <Text style={styles.formTitle}>Configuración de Radio</Text>
+    <Text style={[styles.formTitle, { marginTop: 5, marginBottom: 15 }]}>CONFIGURACIÓN RADIO:</Text>
 
     {/* Radio de Izaje */}
-    <Text style={styles.label}>Radio de Izaje:</Text>
+    <Text style={styles.labelText}>Radio de Izaje:</Text>
     <View style={styles.inputWrapper}>
       <TextInput
         style={styles.input}
-        placeholder="Metros"
+        placeholder="Ingresar en metros"
         placeholderTextColor={styles.placeholderText.color}
         keyboardType="numeric"
         value={radioIzaje}
         onChangeText={setRadioIzaje}
       />
-      <Text style={styles.unitText}>m.</Text>
+      <Text style={styles.labelText}>  mts.</Text>
     </View>
 
     {/* Radio de Montaje */}
-    <Text style={styles.label}>Radio de Montaje:</Text>
+    <Text style={styles.labelText}>Radio de Montaje:</Text>
     <View style={styles.inputWrapper}>
       <TextInput
         style={styles.input}
-        placeholder="Metros"
+        placeholder="Ingresar en metros"
         placeholderTextColor={styles.placeholderText.color}
         keyboardType="numeric"
         value={radioMontaje}
         onChangeText={setRadioMontaje}
       />
-      <Text style={styles.unitText}>m.</Text>
+      <Text style={styles.labelText}>  mts.</Text>
     </View>
   </View>
 );

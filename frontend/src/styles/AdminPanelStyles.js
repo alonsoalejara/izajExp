@@ -19,7 +19,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     color: '#333',
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -41,7 +42,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
-  // Unified card styles for collaborators, cranes, and plans
   card: {
     backgroundColor: '#fff',
     padding: 16,
