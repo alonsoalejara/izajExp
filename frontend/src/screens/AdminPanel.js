@@ -5,8 +5,32 @@ import Data from '../data/data.index';
 import ModalsAdmin from '../components/modals/ModalAdmin.index';
 import Section from '../components/admin/Section.index'; 
 import styles from '../styles/AdminPanelStyles';
-import adminLogic from '../logic/adminLogic';
-import useModal from '../hooks/useModal';
+
+// Lógica de adminLogic integrada
+const adminLogic = {
+  addCollaborator: (collaborators, newCollaborator) => {
+    return [...collaborators, newCollaborator];
+  },
+  editCollaborator: (collaborators, editedCollaborator) => {
+    return collaborators.map((colaborador) =>
+      colaborador.rut === editedCollaborator.rut ? editedCollaborator : colaborador
+    );
+  },
+  deletePlan: (plans, index) => {
+    return plans.filter((_, i) => i !== index);
+  },
+  togglePlanSelection: (selectedPlan, planId) => {
+    return selectedPlan === planId ? null : planId;
+  },
+};
+
+// Hook useModal integrado
+function useModal() {
+  const [isVisible, setIsVisible] = useState(false);
+  const openModal = () => setIsVisible(true);
+  const closeModal = () => setIsVisible(false);
+  return { isVisible, openModal, closeModal };
+}
 
 export default function AdminPanel() {
   const navigation = useNavigation();
