@@ -41,23 +41,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
-  collaboratorCard: {
-    backgroundColor: '#e0e0e0',
-    padding: 15,
-    borderRadius: 10,
-    marginVertical: 10,
-  },
-  collaboratorName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#333',
-  },
-  collaboratorDetails: {
-    fontSize: 14,
-    color: '#555',
-  },
-  gruaCard: {
+  // Unified card styles for collaborators, cranes, and plans
+  card: {
     backgroundColor: '#fff',
     padding: 16,
     marginVertical: 8,
@@ -67,16 +52,28 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  gruaName: {
+  cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#ff0000',
     marginBottom: 8,
   },
-  gruaDetail: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 4,
+  cardDetail: {
+    fontSize: 15,
+    color: '#000',
+    marginTop: 0,
+    marginBottom: 0,
+  },
+  cardSubtitle: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#ff0000',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  cardItem: {
+    marginTop: 10,
+    marginBottom: 10,
   },
   actionButton: {
     width: 120,
@@ -91,65 +88,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
-  buttonGroup: {
-    marginTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    gap: 10,
-  },
-  actionButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    marginVertical: 10,
-    marginLeft: 10,
-  },
-  gruaDetails: {
-    marginTop: 10,
-    paddingLeft: 10,
-  },
-  planCard: {
-    backgroundColor: '#e8f0fe',
-    padding: 15,
-    borderRadius: 10,
-    marginVertical: 10,
-  },
-  planTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  planDetails: {
-    fontSize: 14,
-    color: '#555',
-  },
-  planExpandedDetails: {
-    marginTop: 10,
-    paddingLeft: 10,
-  },
-  expandedTitle: {
-    marginTop: 10,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#333',
-  },
-  aparejoItem: {
-    marginBottom: 10,
-  },
-  appearedText: {
-    fontSize: 14,
-    color: '#555',
-  },
-  // Nuevos estilos para negrita en "Aparejos", "Descripción" y "Cargas"
-  boldText: {
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  planResponsable: {
-    fontSize: 14,
-    color: '#333',  // Puedes elegir el color que prefieras
-    marginBottom: 8,  // Un pequeño margen para separación
+  labelText: {
+    fontWeight: '600',
   },
 });
 

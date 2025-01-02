@@ -75,7 +75,7 @@ export default function AdminPanel() {
       </View>
 
       <View style={styles.buttonContainer}>
-        {['Colaboradores', 'PlanesDeIzaje', 'Gruas'].map((section) => (
+        {['Colaboradores', 'Gruas', 'Planes'].map((section) => (
           <TouchableOpacity
             key={section}
             style={styles.button}
@@ -130,9 +130,8 @@ export default function AdminPanel() {
         />
       )}
 
-      {activeSection === 'PlanesDeIzaje' && (
+      {activeSection === 'Planes' && (
         <>
-          {console.log('Planes de Izaje:', planesDeIzaje)} 
           <Section.PlanIzajeSection
             styles={styles}
             planesIzaje={planesDeIzaje}

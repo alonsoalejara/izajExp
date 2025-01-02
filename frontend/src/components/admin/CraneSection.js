@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import styles from '../../styles/AdminPanelStyles';
 
-const CraneSection = ({ styles, gruas, handleAdd }) => {
+const CraneSection = ({ gruas, handleAdd }) => {
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Grúas</Text>
@@ -13,13 +14,23 @@ const CraneSection = ({ styles, gruas, handleAdd }) => {
         <Icon name="add" size={24} color="white" />
       </TouchableOpacity>
       {gruas.map((grua, index) => (
-        <View key={index} style={styles.gruaCard}>
-          <Text style={styles.gruaName}>{grua.nombre}</Text>
-          <Text style={styles.gruaDetails}>Peso del Equipo: {grua.pesoEquipo} kg</Text>
-          <Text style={styles.gruaDetails}>Peso del Gancho: {grua.pesoGancho} kg</Text>
-          <Text style={styles.gruaDetails}>Capacidad de Levante: {grua.capacidadLevante} kg</Text>
-          <Text style={styles.gruaDetails}>Largo de la Pluma: {grua.largoPluma} m</Text>
-          <Text style={styles.gruaDetails}>Contrapeso: {grua.contrapeso} toneladas</Text>
+        <View key={index} style={styles.card}>
+          <Text style={styles.cardTitle}>{grua.nombre}</Text>
+          <Text style={styles.cardDetail}>
+            <Text style={styles.labelText}>Peso del Equipo: </Text>{grua.pesoEquipo} kg
+          </Text>
+          <Text style={styles.cardDetail}>
+            <Text style={styles.labelText}>Peso del Gancho: </Text>{grua.pesoGancho} kg
+          </Text>
+          <Text style={styles.cardDetail}>
+            <Text style={styles.labelText}>Capacidad de Levante: </Text>{grua.capacidadLevante} kg
+          </Text>
+          <Text style={styles.cardDetail}>
+            <Text style={styles.labelText}>Largo de la Pluma: </Text>{grua.largoPluma} m
+          </Text>
+          <Text style={styles.cardDetail}>
+            <Text style={styles.labelText}>Contrapeso: </Text>{grua.contrapeso} toneladas
+          </Text>
         </View>
       ))}
     </View>
