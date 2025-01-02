@@ -74,24 +74,10 @@ const App = () => {
             }} 
           />
           <Drawer.Screen 
-            name="PlanIzaje" 
-            component={Screens.PlanIzaje}
-            options={{
-              header: () => <Header />  // Usa el Header con Drawer para PlanIzaje
-            }} 
-          />
-          <Drawer.Screen 
             name="Tablas" 
             component={Screens.Tablas}
             options={{
               header: () => <Header />  // Usa el Header con Drawer para Tablas
-            }} 
-          />
-          <Drawer.Screen 
-            name="GruaIzaje" 
-            component={Screens.GruaIzaje}
-            options={{
-              header: () => <Header />  // Usa el Header con Drawer para GruaIzaje
             }} 
           />
         </Drawer.Navigator>
