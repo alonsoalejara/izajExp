@@ -1,87 +1,52 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import Screens from './src/screens/Screens.index';
-import Header from './src/components/UI/Header';
 
 const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <View style={styles.container}>
-
-        {/* Drawer Navigator */}
-        <Drawer.Navigator
-          initialRouteName="Home"
-          screenOptions={{
-            drawerStyle: {
-              backgroundColor: '#dd0000',
-              width: 240,
-            },
-            drawerLabelStyle: {
-              color: 'white',
-              fontSize: 16,
-            },
-            activeBackgroundColor: 'darkred',
-            itemStyle: {
-              marginVertical: 5,
-            },
-          }}
-        >
-          {/* Pantalla Home */}
-          <Drawer.Screen 
-            name="Home" 
-            component={Screens.Home} 
-            options={{
-              headerShown: false,  // Home no tiene Header
-            }} 
-          />
-
-          {/* Pantalla Login */}
-          <Drawer.Screen 
-            name="Login" 
-            component={Screens.Login} 
-            options={{
-              headerShown: false,  // Login no tiene Header
-            }} 
-          />
-
-          {/* Otras pantallas con Header */}
-          <Drawer.Screen 
-            name="AdminOptions" 
-            component={Screens.AdminOptions}
-            options={{
-              header: () => <Header />  // Usa el Header con Drawer para AdminOptions
-            }} 
-          />
-          <Drawer.Screen 
-            name="AdminPanel" 
-            component={Screens.AdminPanel}
-            options={{
-              header: () => <Header />  // Usa el Header con Drawer para AdminOptions
-            }} 
-          />
-          <Drawer.Screen 
-            name="SetupIzaje" 
-            component={Screens.SetupIzaje}
-            options={{
-              header: () => <Header />  // Usa el Header con Drawer para SetupIzaje
-            }} 
-          />
-          <Drawer.Screen 
-            name="Tablas" 
-            component={Screens.Tablas}
-            options={{
-              header: () => <Header />  // Usa el Header con Drawer para Tablas
-            }} 
-          />
-        </Drawer.Navigator>
-      </View>
+      {/* Stack Navigator */}
+      <Stack.Navigator
+        screenOptions={{
+          gestureEnabled: false,
+        }}
+      >
+        <Stack.Screen
+          name="Home"
+          component={Screens.Home}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={Screens.Login}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AdminOptions"
+          component={Screens.AdminOptions}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AdminPanel"
+          component={Screens.AdminPanel}
+          options={{ headerShown: true }}
+        />
+        <Stack.Screen
+          name="SetupIzaje"
+          component={Screens.SetupIzaje}
+          options={{ headerShown: true }}
+        />
+        <Stack.Screen
+          name="Tablas"
+          component={Screens.Tablas}
+          options={{ headerShown: true }}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
@@ -89,6 +54,16 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  screenContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
   },
 });
 

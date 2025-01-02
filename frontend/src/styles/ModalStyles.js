@@ -31,19 +31,22 @@ const ModalStyles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 16,
-    marginBottom: 15,
+    marginBottom: 2,
     marginTop: 8,
     color: '#333',
   },
    selectedOption: {
-    backgroundColor: '#aa0000',
+    borderWidth: 1,
+    borderColor: '#ff0000',
+    backgroundColor: '#ffb3b3',
   },
   optionText: {
     color: '#333',
     fontSize: 16,
   },
   selectedOptionText: {
-    color: '#f5f5f5', 
+    fontWeight: '500',
+    color: '#ff0000', 
   },
   buttonText: {
     ...CommonStyles.buttonText,
@@ -79,6 +82,20 @@ const ModalStyles = StyleSheet.create({
     menuContainer: {
       position: 'absolute', // Se posiciona sobre otros elementos
       top: 336,  // Ajusta según el espacio disponible
+      left: 20,
+      right: 20,
+      backgroundColor: '#fff',
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      zIndex: 999,  // Asegura que el menú esté sobre otros componentes
+      maxHeight: 150, // Máxima altura del menú
+    },
+
+    // Estilo para el contenedor del menú desplegable
+    menuContainerGrillete: {
+      position: 'absolute', // Se posiciona sobre otros elementos
+      top: 207,  // Ajusta según el espacio disponible
       left: 20,
       right: 20,
       backgroundColor: '#fff',

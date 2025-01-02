@@ -97,7 +97,7 @@ const SetupIzaje = () => {
             <Text style={styles.buttonText}>Configurar Grillete</Text>
           </TouchableOpacity>
           <Text style={styles.cardDetail}>
-            <Text style={styles.labelText}>Cantidad de grilletes: {'\n'}</Text>{cantidadGrilletes}
+            <Text style={styles.labelText}>Cantidad de grilletes: {'\n'}</Text>{cantidadGrilletes}{'\n'}
           </Text>
           <Text style={styles.cardDetail}>
             <Text style={styles.labelText}>Tipo de grillete: {'\n'}</Text>Grillete {tipoGrillete}"
@@ -114,7 +114,7 @@ const SetupIzaje = () => {
             <Text style={styles.buttonText}>Configurar Maniobra</Text>
           </TouchableOpacity>
           <Text style={styles.cardDetail}>
-            <Text style={styles.labelText}>Maniobra seleccionada: {'\n'}</Text>{eslingaOEstrobo}
+            <Text style={styles.labelText}>Maniobra seleccionada: {'\n'}</Text>{eslingaOEstrobo}{'\n'}
           </Text>
           <Text style={styles.cardDetail}>
             <Text style={styles.labelText}>Cantidad: {'\n'}</Text>{cantidadManiobra}
