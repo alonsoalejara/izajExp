@@ -47,7 +47,7 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
     <Modal transparent={true} visible={isVisible} animationType="slide">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Crear colaborador</Text>
+          <Text style={styles.modalTitle}>Agregar Nuevo Colaborador</Text>
           <Text style={styles.label}>Nombre(s):</Text>
           <TextInput
             style={styles.optionButton}

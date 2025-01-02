@@ -1,24 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Data from '../data/data.index';
-import styles from '../styles/AdminPanelStyles';
 import ModalsAdmin from '../components/modals/ModalAdmin.index';
+import Section from '../components/admin/Section.index'; 
+import styles from '../styles/AdminPanelStyles';
+import adminLogic from '../logic/adminLogic';
+import useModal from '../hooks/useModal';
 
 export default function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
   const [colaboradores, setColaboradores] = useState(Data.collabData);
   const [gruas, setGruas] = useState(Object.values(Data.craneData));
-  const [planesDeIzaje, setPlanesDeIzaje] = useState(Data.planData || []);
-  const [selectedCollaborator, setSelectedCollaborator] = useState(null);
+  const [planesDeIzaje, setPlanesDeIzaje] = useState(Data.planIzajeData || []);
   const [colaboradorEditado, setColaboradorEditado] = useState(null);
-  const [selectedCrane, setSelectedCrane] = useState(null);
-  const [isModalCrearColaboradorVisible, setModalCrearColaboradorVisible] = useState(false);
-  const [isModalEditarColaboradorVisible, setModalEditarColaboradorVisible] = useState(false);
-  const [isModalCrearGruaVisible, setModalCrearGruaVisible] = useState(false);
-  const [planesIzaje, setPlanesIzaje] = useState(Data.planIzajeData); // Agregando planes de izaje
+  const { isVisible: isModalCrearColaboradorVisible, openModal: openModalCrearColaborador, closeModal: closeModalCrearColaborador } = useModal();
+  const { isVisible: isModalEditarColaboradorVisible, openModal: openModalEditarColaborador, closeModal: closeModalEditarColaborador } = useModal();
+  const { isVisible: isModalCrearGruaVisible, openModal: openModalCrearGrua, closeModal: closeModalCrearGrua } = useModal();
   const [selectedPlan, setSelectedPlan] = useState(null);
 
   const handleButtonPress = (section) => {
@@ -27,28 +26,22 @@ export default function AdminPanel() {
 
   const handleAdd = (section) => {
     if (section === 'Colaboradores') {
-      setModalCrearColaboradorVisible(true);
+      openModalCrearColaborador();
     } else if (section === 'Gruas') {
-      setModalCrearGruaVisible(true);
+      openModalCrearGrua();
     } else if (section === 'PlanesDeIzaje') {
       console.log('Agregar un nuevo plan de izaje');
     }
   };
 
-  const handleModalCrearColaboradorClose = () => {
-    setModalCrearColaboradorVisible(false);
-  };
-
-  const handleModalEditarColaboradorClose = () => {
-    setModalEditarColaboradorVisible(false);
-  };
-
-  const handleModalCrearGruaClose = () => {
-    setModalCrearGruaVisible(false);
-  };
-
   const handleDeletePlan = (index) => {
-    setPlanesDeIzaje((prevPlanes) => prevPlanes.filter((_, i) => i !== index));
+    setPlanesDeIzaje((prevPlanes) => adminLogic.deletePlan(prevPlanes, index));
+  };
+
+  const handlePlanPress = (planId) => {
+    console.log('Plan presionado, ID:', planId); // Verificar qué plan se presiona
+    setSelectedPlan(adminLogic.togglePlanSelection(selectedPlan, planId));
+    console.log('SelectedPlan después de toggle:', selectedPlan); // Verificar el valor actualizado
   };
 
   return (
@@ -71,107 +64,59 @@ export default function AdminPanel() {
 
       <ModalsAdmin.ModalAddCollab
         isVisible={isModalCrearColaboradorVisible}
-        onClose={handleModalCrearColaboradorClose}
+        onClose={closeModalCrearColaborador}
         onSave={(newCollaborator) => {
-          setColaboradores((prev) => [...prev, newCollaborator]);
-          setModalCrearColaboradorVisible(false);
+          setColaboradores((prev) => adminLogic.addCollaborator(prev, newCollaborator));
+          closeModalCrearColaborador();
         }}
       />
 
       <ModalsAdmin.ModalEditarCollab
         isVisible={isModalEditarColaboradorVisible}
-        onClose={handleModalEditarColaboradorClose}
+        onClose={closeModalEditarColaborador}
         onSave={(editedCollaborator) => {
-          setColaboradores((prev) =>
-            prev.map((colaborador) =>
-              colaborador.rut === editedCollaborator.rut ? editedCollaborator : colaborador
-            )
-          );
-          setModalEditarColaboradorVisible(false);
+          setColaboradores((prev) => adminLogic.editCollaborator(prev, editedCollaborator));
+          closeModalEditarColaborador();
         }}
         colaborador={colaboradorEditado}
       />
 
       <ModalsAdmin.ModalAddCrane
         isVisible={isModalCrearGruaVisible}
-        onClose={handleModalCrearGruaClose}
+        onClose={closeModalCrearGrua}
         onSave={(newCrane) => {
           setGruas((prev) => [...prev, newCrane]);
-          setModalCrearGruaVisible(false);
+          closeModalCrearGrua();
         }}
       />
 
       {activeSection === 'Colaboradores' && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Colaboradores</Text>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => handleAdd('Colaboradores')}
-          >
-            <Icon name="add" size={24} color="white" />
-          </TouchableOpacity>
-          {colaboradores.map((colaborador) => (
-            <View key={colaborador.rut} style={styles.collaboratorCard}>
-              <Text style={styles.collaboratorName}>{colaborador.nombre}</Text>
-              <Text style={styles.collaboratorDetails}>RUT: {colaborador.rut}</Text>
-            </View>
-          ))}
-        </View>
+        <Section.CollabSection
+          styles={styles}
+          colaboradores={colaboradores}
+          handleAdd={handleAdd}
+        />
       )}
 
       {activeSection === 'Gruas' && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Grúas</Text>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => handleAdd('Gruas')}
-          >
-            <Icon name="add" size={24} color="white" />
-          </TouchableOpacity>
-          {gruas.map((grua, index) => (
-            <View key={index} style={styles.gruaCard}>
-              <Text style={styles.gruaName}>{grua.nombre}</Text>
-            </View>
-          ))}
-        </View>
+        <Section.CraneSection
+          styles={styles}
+          gruas={gruas}
+          handleAdd={handleAdd}
+        />
       )}
 
-    {activeSection === 'PlanesDeIzaje' && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Planes de Izaje</Text>
-              {planesIzaje.map((plan) => (
-                <View key={plan.id} style={styles.planCard}>
-                  <TouchableOpacity onPress={() => handlePlanPress(plan.id)}>
-                    <Text style={styles.planTitle}>Plan ID: {plan.id}</Text>
-                    <View style={styles.planDetails}>
-                      <Text style={styles.planDetail}>Largo de Pluma: {plan.datosGenerales.largoPluma} m</Text>
-                      <Text style={styles.planDetail}>Contrapeso: {plan.datosGenerales.contrapeso} toneladas</Text>
-                    </View>
-                  </TouchableOpacity>
-                  {selectedPlan === plan.id && (
-                    <View style={styles.planExpandedDetails}>
-                      <Text style={styles.expandedTitle}>Aparejos:</Text>
-                      {plan.aparejos.map((aparejo, index) => (
-                        <View key={index} style={styles.aparejoItem}>
-                          <Text>Descripción: {aparejo.descripcion}</Text>
-                          <Text>Cantidad: {aparejo.cantidad}</Text>
-                          <Text>Peso Unitario: {aparejo.pesoUnitario} kg</Text>
-                          <Text>Peso Total: {aparejo.pesoTotal} kg</Text>
-                        </View>
-                      ))}
-                      <Text style={styles.expandedTitle}>Cargas:</Text>
-                      <Text>Peso Equipo: {plan.cargas.pesoEquipo} kg</Text>
-                      <Text>Peso Unitario: {plan.cargas.pesoUnitario} kg</Text>
-                      <Text>Peso Total: {plan.cargas.pesoTotal} kg</Text>
-                      <Text>Radio Trabajo Máx: {plan.cargas.radioTrabajoMax} m</Text>
-                      <Text>Capacidad de Levante: {plan.cargas.capacidadLevante} toneladas</Text>
-                      <Text>% Utilización: {plan.cargas.porcentajeUtilizacion}%</Text>
-                    </View>
-                  )}
-                </View>
-              ))}
-            </View>
-          )}
+      {activeSection === 'PlanesDeIzaje' && (
+        <>
+          {console.log('Planes de Izaje:', planesDeIzaje)} 
+          <Section.PlanIzajeSection
+            styles={styles}
+            planesIzaje={planesDeIzaje}
+            handlePlanPress={handlePlanPress}
+            selectedPlan={selectedPlan}
+          />
+        </>
+      )}
     </ScrollView>
   );
 }

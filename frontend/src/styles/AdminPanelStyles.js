@@ -103,22 +103,9 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginLeft: 10,
   },
-  actionButton: {
-    backgroundColor: '#aa0000',
-    padding: 10,
-    borderRadius: 5,
-    marginRight: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },  
   gruaDetails: {
     marginTop: 10,
     paddingLeft: 10,
-  },
-  gruaDetail: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 4,
   },
   planCard: {
     backgroundColor: '#e8f0fe',
@@ -126,17 +113,44 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 10,
   },
-  planName: {
-    fontSize: 16,
+  planTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
     color: '#333',
+    marginBottom: 8,
   },
   planDetails: {
     fontSize: 14,
     color: '#555',
   },
-  
+  planExpandedDetails: {
+    marginTop: 10,
+    paddingLeft: 10,
+  },
+  expandedTitle: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#333',
+  },
+  aparejoItem: {
+    marginBottom: 10,
+  },
+  appearedText: {
+    fontSize: 14,
+    color: '#555',
+  },
+  // Nuevos estilos para negrita en "Aparejos", "Descripción" y "Cargas"
+  boldText: {
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  planResponsable: {
+    fontSize: 14,
+    color: '#333',  // Puedes elegir el color que prefieras
+    marginBottom: 8,  // Un pequeño margen para separación
+  },
 });
 
 export default styles;
