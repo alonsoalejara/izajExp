@@ -7,16 +7,30 @@ import { ROLES } from "../constants/roles.constants.js";
 const validRoles = Array.isArray(ROLES) ? ROLES : [];
 
 const userBodySchema = Joi.object({
-  username: Joi.string().required().messages({
-    "string.empty": "El nombre de usuario no puede estar vacío.",
-    "any.required": "El nombre de usuario es obligatorio.",
-    "string.base": "El nombre de usuario debe ser de tipo string.",
+  nombre: Joi.string().required().messages({
+    "string.empty": "El nombre no puede estar vacío.",
+    "any.required": "El nombre es obligatorio.",
+    "string.base": "El nombre debe ser de tipo string.",
   }),
-  password: Joi.string().required().min(5).messages({
-    "string.empty": "La contraseña no puede estar vacía.",
-    "any.required": "La contraseña es obligatoria.",
-    "string.base": "La contraseña debe ser de tipo string.",
-    "string.min": "La contraseña debe tener al menos 5 caracteres.",
+  apellido: Joi.string().required().messages({
+    "string.empty": "El apellido no puede estar vacío.",
+    "any.required": "El apellido es obligatorio.",
+    "string.base": "El apellido debe ser de tipo string.",
+  }),
+  rut: Joi.string().required().messages({
+    "string.empty": "El RUT no puede estar vacío.",
+    "any.required": "El RUT es obligatorio.",
+    "string.base": "El RUT debe ser de tipo string.",
+  }),
+  phone: Joi.string().required().messages({
+    "string.empty": "El teléfono no puede estar vacío.",
+    "any.required": "El teléfono es obligatorio.",
+    "string.base": "El teléfono debe ser de tipo string.",
+  }),
+  specialty: Joi.string().required().messages({
+    "string.empty": "La especialidad no puede estar vacía.",
+    "any.required": "La especialidad es obligatoria.",
+    "string.base": "La especialidad debe ser de tipo string.",
   }),
   email: Joi.string().email().required().messages({
     "string.empty": "El email no puede estar vacío.",
@@ -33,8 +47,7 @@ const userBodySchema = Joi.object({
       "string.base": "El rol debe ser de tipo string.",
       "any.only": "El rol proporcionado no es válido.",
     }),
-  newPassword: Joi.string().min(5).messages({
-    "string.empty": "La contraseña no puede estar vacía.",
+  password: Joi.string().min(5).messages({
     "string.base": "La contraseña debe ser de tipo string.",
     "string.min": "La contraseña debe tener al menos 5 caracteres.",
   }),

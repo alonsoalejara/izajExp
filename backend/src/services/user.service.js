@@ -16,7 +16,7 @@ async function getUsers() {
 
 async function createUser(user) {
   try {
-    const { nombre, apellido, rut, email, roles } = user;
+    const { nombre, apellido, rut, phone, specialty, email, roles } = user;
 
     const userFound = await User.findOne({ email });
     if (userFound) return [null, "El usuario ya existe"];
@@ -32,10 +32,13 @@ async function createUser(user) {
       nombre,
       apellido,
       rut,
+      phone,
+      specialty,
       email,
       password: await User.encryptPassword(password),
       roles: validRoles,
     });
+    
     await newUser.save();
 
     return [newUser, null];
