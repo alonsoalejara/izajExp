@@ -2,7 +2,7 @@
 
 import User from "../models/user.model.js";
 import { handleError } from "../utils/errorHandler.js";
-import { ROLES }  from "../constants/roles.constants.js";
+import { ROLES } from "../constants/roles.constants.js";
 
 async function getUsers() {
   try {
@@ -16,7 +16,7 @@ async function getUsers() {
 
 async function createUser(user) {
   try {
-    const { username, email, password, roles } = user;
+    const { nombre, apellido, rut, email, roles } = user;
 
     const userFound = await User.findOne({ email });
     if (userFound) return [null, "El usuario ya existe"];
@@ -25,11 +25,16 @@ async function createUser(user) {
     const validRoles = roles.filter(role => Object.values(ROLES).includes(role));
     if (validRoles.length === 0) return [null, "El rol no existe"];
 
+    // Generación automática de contraseña
+    const password = `${nombre.charAt(0)}${rut.slice(0, 4)}`;
+
     const newUser = new User({
-      username,
+      nombre,
+      apellido,
+      rut,
       email,
       password: await User.encryptPassword(password),
-      roles: validRoles, // Asignar roles directamente como cadenas de texto
+      roles: validRoles,
     });
     await newUser.save();
 
@@ -54,29 +59,18 @@ async function updateUser(id, user) {
     const userFound = await User.findById(id);
     if (!userFound) return [null, "El usuario no existe"];
 
-    const { username, email, password, newPassword, roles } = user;
+    const { nombre, apellido, rut, email, roles } = user;
 
-    const matchPassword = await User.comparePassword(password, userFound.password);
-    if (!matchPassword) {
-      return [null, "La contraseña no coincide"];
-    }
-
-    // Validar roles ingresados
     const validRoles = roles.filter(role => Object.values(ROLES).includes(role));
     if (validRoles.length === 0) return [null, "El rol no existe"];
 
-    const userUpdated = await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       id,
-      {
-        username,
-        email,
-        password: await User.encryptPassword(newPassword || password),
-        roles: validRoles, // Actualizar roles directamente como cadenas de texto
-      },
+      { nombre, apellido, rut, email, roles: validRoles },
       { new: true }
     );
 
-    return [userUpdated, null];
+    return [updatedUser, null];
   } catch (error) {
     handleError(error, "user.service -> updateUser");
   }
