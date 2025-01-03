@@ -32,10 +32,6 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true,
-      set: function () {
-        const password = this.nombre.charAt(0).toUpperCase() + this.rut.replace(/[^0-9]/g, '').slice(0, 4);
-        return password;
-      }
     },
     rut: {
       type: String,

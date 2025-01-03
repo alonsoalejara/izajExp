@@ -16,7 +16,7 @@ async function getUsers() {
 
 async function createUser(user) {
   try {
-    const { nombre, apellido, rut, phone, specialty, email, roles } = user;
+    const { nombre, apellido, rut, phone, specialty, email, roles, password } = user;
 
     const userFound = await User.findOne({ email });
     if (userFound) return [null, "El usuario ya existe"];
@@ -25,22 +25,24 @@ async function createUser(user) {
     const validRoles = roles.filter(role => Object.values(ROLES).includes(role));
     if (validRoles.length === 0) return [null, "El rol no existe"];
 
-    // Generación automática de contraseña
-    const password = `${nombre.charAt(0)}${rut.slice(0, 4)}`;
+    // Verificar la contraseña ingresada
+    if (!password) return [null, "La contraseña es obligatoria"];
 
+    const encryptedPassword = await User.encryptPassword(password);
+
+    // Crear el objeto 'user' después de generar la contraseña
     const newUser = new User({
-      nombre,
-      apellido,
-      rut,
-      phone,
-      specialty,
-      email,
-      password: await User.encryptPassword(password),
-      roles: validRoles,
+      nombre: user.nombre,
+      apellido: user.apellido,
+      rut: user.rut,
+      phone: user.phone,
+      specialty: user.specialty,
+      email: user.email,
+      password: encryptedPassword,  // Se guarda la contraseña cifrada
+      roles: validRoles, 
     });
-    
-    await newUser.save();
 
+    await newUser.save();
     return [newUser, null];
   } catch (error) {
     handleError(error, "user.service -> createUser");
