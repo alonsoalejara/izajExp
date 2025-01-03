@@ -25,12 +25,14 @@ async function createGrua(req, res) {
     const { error: bodyError } = gruaBodySchema.validate(body);
     if (bodyError) return respondError(req, res, 400, bodyError.message);
 
-    const [newGrua, gruaError] = await GruaService.createGrua(body);
-
-    if (gruaError) return respondError(req, res, 400, gruaError);
-    if (!newGrua) {
-      return respondError(req, res, 400, "No se creó la grúa");
+    const result = await GruaService.createGrua(body);
+    if (!result) {
+      return respondError(req, res, 500, "Error al crear la grúa");
     }
+    
+    const [newGrua, gruaError] = result;
+    if (gruaError) return respondError(req, res, 400, gruaError);
+    if (!newGrua) return respondError(req, res, 400, "No se creó la grúa");
 
     respondSuccess(req, res, 201, newGrua);
   } catch (error) {

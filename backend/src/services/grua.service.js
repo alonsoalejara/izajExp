@@ -15,17 +15,25 @@ async function getGruas() {
 
 async function createGrua(grua) {
   try {
-    const { nombre, capacidad, tipo } = grua;
+    const { nombre, pesoEquipo, pesoGancho, capacidadLevante, largoPluma, contrapeso } = grua;
 
     const gruaFound = await Grua.findOne({ nombre });
     if (gruaFound) return [null, "La grúa ya existe"];
 
-    const newGrua = new Grua({ nombre, capacidad, tipo });
+    const newGrua = new Grua({ 
+      nombre, 
+      pesoEquipo, 
+      pesoGancho, 
+      capacidadLevante, 
+      largoPluma, 
+      contrapeso 
+    });
     await newGrua.save();
 
     return [newGrua, null];
   } catch (error) {
     handleError(error, "grua.service -> createGrua");
+    return [null, error.message];
   }
 }
 
@@ -41,22 +49,22 @@ async function getGruaById(id) {
 
 async function updateGrua(id, grua) {
   try {
-    const gruaFound = await Grua.findById(id);
-    if (!gruaFound) return [null, "La grúa no existe"];
-
-    const { nombre, capacidad, tipo } = grua;
+    const { nombre, pesoEquipo, pesoGancho, capacidadLevante, largoPluma, contrapeso } = grua;
 
     const gruaUpdated = await Grua.findByIdAndUpdate(
       id,
-      { nombre, capacidad, tipo },
-      { new: true }
+      { nombre, pesoEquipo, pesoGancho, capacidadLevante, largoPluma, contrapeso },
+      { new: true, runValidators: true }
     );
 
+    if (!gruaUpdated) return [null, "La grúa no existe"];
     return [gruaUpdated, null];
   } catch (error) {
     handleError(error, "grua.service -> updateGrua");
+    return [null, error.message];
   }
 }
+
 
 async function deleteGrua(id) {
   try {
