@@ -48,21 +48,19 @@ export default function Login({ navigation }) {
                 await AsyncStorage.setItem("refreshToken", refreshToken);
               }
 
-              // Verificar que roles es un array y que tiene al menos un valor
+              // Guardar los roles en AsyncStorage
               if (Array.isArray(roles) && roles.length > 0) {
-                const role = roles[0]; // roles es un array con un único valor
+                await AsyncStorage.setItem("roles", JSON.stringify(roles));  // Guardar los roles como JSON
+              }
 
-                // Redirigir según el rol del usuario
-                if (role === "user") {
-                  navigation.navigate("SetupIzaje");
-                } else if (role === "admin") {
-                  navigation.navigate("AdminOptions");
-                } else {
-                  setModalMessage("Rol de usuario no reconocido");
-                  setModalVisible(true);
-                }
+              // Verificar el rol y redirigir al usuario según corresponda
+              const role = roles[0]; // roles es un array con un único valor
+              if (role === "user") {
+                navigation.navigate("SetupIzaje");
+              } else if (role === "admin") {
+                navigation.navigate("AdminOptions");
               } else {
-                setModalMessage("Rol de usuario no disponible o mal formateado");
+                setModalMessage("Rol de usuario no reconocido");
                 setModalVisible(true);
               }
             } else {

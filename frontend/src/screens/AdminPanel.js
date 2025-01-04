@@ -1,69 +1,105 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Data from '../data/data.index';
 import ModalsAdmin from '../components/modals/ModalAdmin.index';
-import Section from '../components/admin/Section.index'; 
+import Section from '../components/admin/Section.index';
 import styles from '../styles/AdminPanelStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const axios = require('axios/dist/browser/axios.cjs');
 
-// Lógica de adminLogic integrada
 const adminLogic = {
-  addCollaborator: (collaborators, newCollaborator) => {
-    return [...collaborators, newCollaborator];
-  },
-  editCollaborator: (collaborators, editedCollaborator) => {
-    return collaborators.map((colaborador) =>
+  addCollaborator: (collaborators, newCollaborator) => [...collaborators, newCollaborator],
+  editCollaborator: (collaborators, editedCollaborator) =>
+    collaborators.map((colaborador) =>
       colaborador.rut === editedCollaborator.rut ? editedCollaborator : colaborador
-    );
-  },
-  deletePlan: (plans, index) => {
-    return plans.filter((_, i) => i !== index);
-  },
-  togglePlanSelection: (selectedPlan, planId) => {
-    return selectedPlan === planId ? null : planId;
-  },
+    ),
+  deletePlan: (plans, index) => plans.filter((_, i) => i !== index),
+  togglePlanSelection: (selectedPlan, planId) => (selectedPlan === planId ? null : planId),
 };
 
-// Hook useModal integrado
-function useModal() {
-  const [isVisible, setIsVisible] = useState(false);
-  const openModal = () => setIsVisible(true);
-  const closeModal = () => setIsVisible(false);
-  return { isVisible, openModal, closeModal };
-}
-
-export default function AdminPanel() {
+function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
-  const [colaboradores, setColaboradores] = useState(Data.collabData);
-  const [gruas, setGruas] = useState(Object.values(Data.craneData));
-  const [planesDeIzaje, setPlanesDeIzaje] = useState(Data.planIzajeData || []);
+  const [colaboradores, setColaboradores] = useState([]);
+  const [gruas, setGruas] = useState([]);
+  const [planesDeIzaje, setPlanesDeIzaje] = useState([]);
   const [colaboradorEditado, setColaboradorEditado] = useState(null);
-  const { isVisible: isModalCrearColaboradorVisible, openModal: openModalCrearColaborador, closeModal: closeModalCrearColaborador } = useModal();
-  const { isVisible: isModalEditarColaboradorVisible, openModal: openModalEditarColaborador, closeModal: closeModalEditarColaborador } = useModal();
-  const { isVisible: isModalCrearGruaVisible, openModal: openModalCrearGrua, closeModal: closeModalCrearGrua } = useModal();
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isModalCrearColaboradorVisible, setIsModalCrearColaboradorVisible] = useState(false);
+  const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
+  const [isModalCrearGruaVisible, setIsModalCrearGruaVisible] = useState(false);
 
-  const handleButtonPress = (section) => {
-    setActiveSection((prevSection) => (prevSection === section ? null : section));
-  };
+  const openModalCrearColaborador = () => setIsModalCrearColaboradorVisible(true);
+  const closeModalCrearColaborador = () => setIsModalCrearColaboradorVisible(false);
+  const openModalEditarColaborador = () => setIsModalEditarColaboradorVisible(true);
+  const closeModalEditarColaborador = () => setIsModalEditarColaboradorVisible(false);
+  const openModalCrearGrua = () => setIsModalCrearGruaVisible(true);
+  const closeModalCrearGrua = () => setIsModalCrearGruaVisible(false);
+
+  useEffect(() => {
+    const checkUserRole = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        const roles = await AsyncStorage.getItem('roles');
+        setIsAdmin(accessToken && roles?.includes('admin'));
+        if (!accessToken || !roles?.includes('admin')) {
+          navigation.navigate('Login');
+        }
+      } catch (error) {
+        console.error('Error al verificar el rol del usuario:', error);
+        navigation.navigate('Login');
+      }
+    };
+    checkUserRole();
+  }, [navigation]);
+
+  useEffect(() => {
+    const fetchCollaborators = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (accessToken) {
+          const response = await axios.get(getApiUrl(), {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+          const collaborators = response.data.data
+            .filter(collab => collab.roles.includes('user'))
+            .map((collab, index) => ({
+              key: `${collab.rut || 'no_rut'}-${index}`,
+              nombre: collab.nombre || collab.username,
+              apellido: collab.apellido || '',
+              rut: collab.rut || '',
+              phone: collab.phone || '',
+              specialty: collab.specialty || '',
+              email: collab.email,
+              roles: collab.roles,
+            }));
+          setColaboradores(collaborators);
+        } else {
+          console.error('No se encontró el token de acceso');
+        }
+      } catch (error) {
+        console.error('Error al obtener los colaboradores:', error);
+      }
+    };
+    fetchCollaborators();
+  }, []);
+
+  const getApiUrl = () => (Platform.OS === 'android' ? 'http://10.0.2.2:3000/api/user/' : 'http://192.168.1.84:3000/api/user/');
+
+  if (!isAdmin) {
+    return (
+      <View>
+        <Text>No tienes permisos para acceder a este panel.</Text>
+      </View>
+    );
+  }
+
+  const handleButtonPress = (section) => setActiveSection((prev) => (prev === section ? null : section));
 
   const handleAdd = (section) => {
-    if (section === 'Colaboradores') {
-      openModalCrearColaborador();
-    } else if (section === 'Gruas') {
-      openModalCrearGrua();
-    } else if (section === 'PlanesDeIzaje') {
-      console.log('Agregar un nuevo plan de izaje');
-    }
-  };
-
-  const handleDeletePlan = (index) => {
-    setPlanesDeIzaje((prevPlanes) => adminLogic.deletePlan(prevPlanes, index));
-  };
-
-  const handlePlanPress = (planId) => {
-    setSelectedPlan(adminLogic.togglePlanSelection(selectedPlan, planId));
+    if (section === 'Personal') openModalCrearColaborador();
+    else if (section === 'Gruas') openModalCrearGrua();
+    else if (section === 'PlanesDeIzaje') console.log('Agregar nuevo plan de izaje');
   };
 
   return (
@@ -74,11 +110,7 @@ export default function AdminPanel() {
 
       <View style={styles.buttonContainer}>
         {['Personal', 'Gruas', 'Planes'].map((section) => (
-          <TouchableOpacity
-            key={section}
-            style={styles.button}
-            onPress={() => handleButtonPress(section)}
-          >
+          <TouchableOpacity key={section} style={styles.button} onPress={() => handleButtonPress(section)}>
             <Text style={styles.buttonText}>{section}</Text>
           </TouchableOpacity>
         ))}
@@ -103,41 +135,15 @@ export default function AdminPanel() {
         colaborador={colaboradorEditado}
       />
 
-      <ModalsAdmin.ModalAddCrane
-        isVisible={isModalCrearGruaVisible}
-        onClose={closeModalCrearGrua}
-        onSave={(newCrane) => {
-          setGruas((prev) => [...prev, newCrane]);
-          closeModalCrearGrua();
-        }}
-      />
-
       {activeSection === 'Personal' && (
-        <Section.CollabSection
-          styles={styles}
-          colaboradores={colaboradores}
-          handleAdd={handleAdd}
-        />
+        <Section.CollabSection styles={styles} colaboradores={colaboradores} handleAdd={handleAdd} />
       )}
 
-      {activeSection === 'Gruas' && (
-        <Section.CraneSection
-          styles={styles}
-          gruas={gruas}
-          handleAdd={handleAdd}
-        />
-      )}
+      {activeSection === 'Gruas' && <Section.CraneSection styles={styles} gruas={gruas} handleAdd={handleAdd} />}
 
-      {activeSection === 'Planes' && (
-        <>
-          <Section.PlanIzajeSection
-            styles={styles}
-            planesIzaje={planesDeIzaje}
-            handlePlanPress={handlePlanPress}
-            selectedPlan={selectedPlan}
-          />
-        </>
-      )}
+      {activeSection === 'Planes' && <Section.PlanIzajeSection styles={styles} planesIzaje={planesDeIzaje} />}
     </ScrollView>
   );
 }
+
+export default AdminPanel;

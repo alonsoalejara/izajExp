@@ -18,14 +18,22 @@ async function createUsers() {
     // Crea usuarios predeterminados con roles como cadenas de texto
     await Promise.all([
       new User({
-        username: "user",
+        nombre: "user",
+        apellido: "role",
+        rut: "00000000-0",
         email: "user@email.com",
+        specialty: "Estructura",
+        phone: "+56900000000",
         password: await User.encryptPassword("user123"),
         roles: [ROLES.USER], // Asigna el rol 'user' directamente
       }).save(),
       new User({
-        username: "admin",
+        nombre: "admin",
+        apellido: "role",
+        rut: "11111111-1",
         email: "admin@email.com",
+        specialty: "Obras Civiles",
+        phone: "+56911111111",
         password: await User.encryptPassword("admin123"),
         roles: [ROLES.ADMIN], // Asigna el rol 'admin' directamente
       }).save(),
