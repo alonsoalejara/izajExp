@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, FlatList, Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Asegúrate de que AsyncStorage esté instalado
+import { Modal, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../styles/ModalStyles';
+import validationUser from '../../utils/validationUser';
+import { especialidades } from '../../data/especialidadesData';
+import getApiUrl from '../../utils/apiUrl';
 
 const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
   const [nombre, setNombre] = useState('');
@@ -17,96 +20,11 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
   const [emailError, setEmailError] = useState('');
   const [telefonoError, setTelefonoError] = useState('');
 
-  const especialidades = [
-    { label: 'Estructura', value: 'Estructura' },
-    { label: 'Obras Civiles', value: 'Obras Civiles' },
-    { label: 'Piping', value: 'Piping' },
-    { label: 'Mecánica', value: 'Mecánica' },
-    { label: 'Eléctrica', value: 'Eléctrica' },
-  ];
-
-  const getApiUrl = () => (
-    Platform.OS === 'android' 
-      ? 'http://10.0.2.2:3000/api/user/' 
-      : 'http://192.168.1.84:3000/api/user/'
-  );
-
-  const validarEmail = (text) => {
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    setEmail(text);
-    if (text === '') {
-      setEmailError('');
-    } else if (!emailPattern.test(text)) {
-      setEmailError('El correo electrónico no tiene el formato correcto');
-    } else {
-      setEmailError('');
-    }
-  };
-
-  const validarNombre = (text) => {
-    const trimmedText = text.trim();
-    setNombre(text);
-    if (text === '') {
-      setNombreError('');
-    } else if (text.startsWith(' ')) {
-      setNombreError('No puede comenzar con espacios.');
-    } else if (trimmedText === '') {
-      setNombreError('El nombre no puede contener solo espacios.');
-    } else if (!/^[A-Za-záéíóúÁÉÍÓÚüÜñÑ,\s-]+$/.test(trimmedText)) {
-      setNombreError('No se aceptan números/caracteres especiales.');
-    } else {
-      setNombreError('');
-    }
-  };
-
-  const validarApellido = (text) => {
-    const trimmedText = text.trim();
-    setApellido(text);
-    if (text === '') {
-      setApellidoError('');
-    } else if (text.startsWith(' ')) {
-      setApellidoError('No puede comenzar con espacios.');
-    } else if (trimmedText === '') {
-      setApellidoError('El apellido no puede contener solo espacios.');
-    } else if (!/^[A-Za-záéíóúÁÉÍÓÚüÜñÑ,\s-]+$/.test(trimmedText)) {
-      setApellidoError('No se aceptan número/caracter especial.');
-    } else {
-      setApellidoError('');
-    }
-  };
-
-  const validarRut = (text) => {
-    const rutPattern = /^\d{7,8}-[0-9Kk]{1}$/;
-    setRut(text);
-    if (text === '') {
-      setRutError('');
-    } else if (!rutPattern.test(text)) {
-      setRutError('El RUT no tiene el formato correcto (ej: 12345678-K)');
-    } else {
-      setRutError('');
-    }
-  };
-
-  const validarTelefono = (text) => {
-    const telefonoPattern = /^\+569\d{8}$/;
-    setTelefono(text);
-    if (text === '') {
-      setTelefonoError('');
-    } else if (!telefonoPattern.test(text)) {
-      setTelefonoError('Debe tener el formato +569XXXXXXXX');
-    } else {
-      setTelefonoError('');
-    }
-  };
-
   const generarPassword = () => {
-    // Genera la contraseña a partir de la primera letra del nombre, apellido y los primeros 4 dígitos del RUT
-    const password = `${nombre.charAt(0).toUpperCase()}${apellido.charAt(0).toUpperCase()}${rut.replace('-', '').substring(0, 4)}`;
-    return password;
+    return `${nombre.charAt(0).toUpperCase()}${apellido.charAt(0).toUpperCase()}${rut.replace('-', '').substring(0, 4)}`;
   };
 
   const handleSave = async () => {
-    // Verificar si todos los campos están completos y sin errores
     if (!nombreError && !apellidoError && !emailError && nombre && apellido && rut && email && telefono && especialidad) {
       const nuevoColaborador = {
         nombre,
@@ -116,54 +34,39 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
         specialty: especialidad,
         email,
         roles: ['user'],
-        password: generarPassword(), // Generar la contraseña
+        password: generarPassword(),
       };
-  
+
       try {
-        // Obtener el token de AsyncStorage
         const accessToken = await AsyncStorage.getItem('accessToken');
-        console.log('Token:', accessToken);
-  
         if (!accessToken) {
-          console.error('No se encontró el token.');
           alert('No autorizado. Por favor, inicie sesión nuevamente.');
           return;
         }
-  
-        // Verificar el formato del token
-        const tokenPattern = /^[A-Za-z0-9-._~+\/]+=*$/; // Regex básico para verificar si el token tiene el formato adecuado
-        if (!tokenPattern.test(accessToken)) {
-          console.error('El token JWT está mal formado.');
-          alert('Token JWT malformado. Por favor, inicie sesión nuevamente.');
-          return;
-        }
-  
-        // Enviar la solicitud POST
-        const response = await fetch(getApiUrl(), {
+
+        const response = await fetch(getApiUrl('user/'), { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`, // Agregar el token al encabezado
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify(nuevoColaborador),
         });
-  
+
         const data = await response.json();
         if (response.ok) {
-          console.log('Colaborador guardado con éxito:', data);
           onSave(nuevoColaborador);
           onClose();
         } else {
-          console.error('Error al guardar el colaborador:', data);
+          console.error('Error al guardar:', data);
         }
       } catch (error) {
-        console.error('Error en la solicitud:', error);
-        alert('Hubo un problema al guardar el colaborador. Intente nuevamente.');
+        console.error('Error:', error);
+        alert('Hubo un error al guardar el colaborador.');
       }
     }
   };
 
-  // Validar si el botón de guardar debe estar habilitado
   const isSaveButtonEnabled = nombre && apellido && rut && email && telefono && especialidad && !nombreError && !apellidoError && !emailError && !rutError && !telefonoError;
 
   const handleEspecialidadSelect = (item) => {
@@ -180,100 +83,71 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
           <Text style={styles.label}>Nombre(s):</Text>
           <TextInput
             style={[styles.optionButton, nombreError ? { borderColor: 'red' } : {}]}
-            placeholder="Ingrese nombre(s) del colaborador"
-            placeholderTextColor={styles.placeholderText.color}
-            keyboardType="default"
+            placeholder="Ingrese nombre(s)"
             value={nombre}
-            onChangeText={setNombre}
-            onBlur={() => validarNombre(nombre)}
+            onChangeText={(text) => validationUser.validarNombre(text, setNombre, setNombreError)}
           />
           {nombreError ? <Text style={{ color: 'red' }}>{nombreError}</Text> : null}
 
           <Text style={styles.label}>Apellido(s):</Text>
           <TextInput
             style={[styles.optionButton, apellidoError ? { borderColor: 'red' } : {}]}
-            placeholder="Ingrese apellido(s) del colaborador"
-            placeholderTextColor={styles.placeholderText.color}
-            keyboardType="default"
+            placeholder="Ingrese apellido(s)"
             value={apellido}
-            onChangeText={setApellido}
-            onBlur={() => validarApellido(apellido)}
+            onChangeText={(text) => validationUser.validarApellido(text, setApellido, setApellidoError)}
           />
           {apellidoError ? <Text style={{ color: 'red' }}>{apellidoError}</Text> : null}
 
-          <Text style={styles.label}>RUT (Sin puntos y con guión):</Text>
+          <Text style={styles.label}>RUT:</Text>
           <TextInput
             style={[styles.optionButton, rutError ? { borderColor: 'red' } : {}]}
-            placeholder="Ingrese RUT del colaborador"
-            placeholderTextColor={styles.placeholderText.color}
-            keyboardType="default"
+            placeholder="Ingrese RUT"
             value={rut}
-            onChangeText={setRut}
-            onBlur={() => validarRut(rut)}
+            onChangeText={(text) => validationUser.validarRut(text, setRut, setRutError)}
           />
           {rutError ? <Text style={{ color: 'red' }}>{rutError}</Text> : null}
 
-          <Text style={styles.label}>Correo Electrónico:</Text>
+          <Text style={styles.label}>Email:</Text>
           <TextInput
             style={[styles.optionButton, emailError ? { borderColor: 'red' } : {}]}
-            placeholder="Ingrese correo electrónico"
-            placeholderTextColor={styles.placeholderText.color}
-            keyboardType="email-address"
+            placeholder="Ingrese email"
             value={email}
-            onChangeText={setEmail}
-            onBlur={() => validarEmail(email)}
+            onChangeText={(text) => validationUser.validarEmail(text, setEmail, setEmailError)}
           />
           {emailError ? <Text style={{ color: 'red' }}>{emailError}</Text> : null}
 
-          <Text style={styles.label}>N° Teléfono:</Text>
+          <Text style={styles.label}>Teléfono:</Text>
           <TextInput
             style={[styles.optionButton, telefonoError ? { borderColor: 'red' } : {}]}
             placeholder="Ingrese teléfono"
-            placeholderTextColor={styles.placeholderText.color}
-            keyboardType="phone-pad"
             value={telefono}
-            onChangeText={setTelefono}
-            onBlur={() => validarTelefono(telefono)}
+            onChangeText={(text) => validationUser.validarTelefono(text, setTelefono, setTelefonoError)}
           />
           {telefonoError ? <Text style={{ color: 'red' }}>{telefonoError}</Text> : null}
 
-          <Text style={styles.label}>Especialidad</Text>
-          <TouchableOpacity
-            style={styles.optionButton}
-            onPress={() => setShowMenu(!showMenu)}
-          >
-            <Text>{especialidad || 'Selecciona una especialidad'}</Text>
+          {/* Menu de especialidades */}
+          <TouchableOpacity onPress={() => setShowMenu(!showMenu)} style={styles.optionButton}>
+            <Text>{especialidad || 'Seleccione especialidad'}</Text>
           </TouchableOpacity>
-
           {showMenu && (
-            <View style={styles.menuContainer}>
-              <FlatList
-                data={especialidades}
-                keyExtractor={(item) => item.value}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={styles.menuItem}
-                    onPress={() => handleEspecialidadSelect(item)}
-                  >
-                    <Text style={styles.menuText}>{item.label}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
+            <FlatList
+              data={especialidades}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => handleEspecialidadSelect(item)}>
+                  <Text style={styles.optionButton}>{item.label}</Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item.value}
+            />
           )}
 
-          <View style={styles.modalButtons}>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Text style={styles.closeButtonText}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.saveButton, !isSaveButtonEnabled ? { backgroundColor: 'gray' } : {}]}
-              onPress={handleSave}
-              disabled={!isSaveButtonEnabled}
-            >
-              <Text style={styles.buttonText}>Guardar</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={handleSave} disabled={!isSaveButtonEnabled} style={styles.saveButton}>
+            <Text style={styles.saveButtonText}>Guardar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
+            <Text style={styles.cancelButtonText}>Cancelar</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
