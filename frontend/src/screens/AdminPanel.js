@@ -8,7 +8,6 @@ import getApiUrl from '../utils/apiUrl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const axios = require('axios/dist/browser/axios.cjs');
 
-
 const adminLogic = {
   addCollaborator: (collaborators, newCollaborator) => [...collaborators, newCollaborator],
   editCollaborator: (collaborators, editedCollaborator) =>
@@ -79,20 +78,18 @@ function AdminPanel() {
     fetchCollaborators();
   }, []);
 
+  const handleAdd = () => {
+    setIsModalCrearColaboradorVisible(true); // Abrir modal de agregar colaborador
+  };
+
   const handleEdit = (collaborator) => {
     setColaboradorSeleccionado(collaborator);
-    setIsModalEditarColaboradorVisible(true); 
+    setIsModalEditarColaboradorVisible(true);
   };
   
   const handleDelete = (rut) => {
     setColaboradores((prev) => adminLogic.deleteCollaborator(prev, rut));
     console.log('Colaborador eliminado', rut);
-  };
-
-  const handleAdd = (section) => {
-    if (section === 'Personal') {
-      setIsModalCrearColaboradorVisible(true);
-    }
   };
 
   return (
@@ -122,18 +119,18 @@ function AdminPanel() {
       {/* Modal para editar colaborador */}
       <ModalsAdmin.ModalEditCollab
         isVisible={isModalEditarColaboradorVisible}
-        onClose={() => setIsModalEditarColaboradorVisible(false)} // Usar el estado de editar
-        colaborador={colaboradorSeleccionado} // Enviar el colaborador seleccionado
+        onClose={() => setIsModalEditarColaboradorVisible(false)}
+        colaborador={colaboradorSeleccionado}
         onSave={(editedCollaborator) => {
           setColaboradores((prev) => adminLogic.editCollaborator(prev, editedCollaborator));
-          setIsModalEditarColaboradorVisible(false); // Cerrar modal de editar
+          setIsModalEditarColaboradorVisible(false);
         }}
       />
 
       {activeSection === 'Personal' && (
         <Section.CollabSection
           colaboradores={colaboradores}
-          handleAdd={handleAdd}
+          handleAdd={handleAdd} // Esto abre el modal de agregar colaborador
           handleEdit={handleEdit}
           handleDelete={handleDelete}
         />
