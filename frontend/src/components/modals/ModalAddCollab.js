@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, FlatList, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Asegúrate de que AsyncStorage esté instalado
 import styles from '../../styles/ModalStyles';
 
 const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
@@ -24,10 +25,15 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
     { label: 'Eléctrica', value: 'Eléctrica' },
   ];
 
+  const getApiUrl = () => (
+    Platform.OS === 'android' 
+      ? 'http://10.0.2.2:3000/api/user/' 
+      : 'http://192.168.1.84:3000/api/user/'
+  );
+
   const validarEmail = (text) => {
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     setEmail(text);
-    
     if (text === '') {
       setEmailError('');
     } else if (!emailPattern.test(text)) {
@@ -56,7 +62,6 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
   const validarApellido = (text) => {
     const trimmedText = text.trim();
     setApellido(text);
-
     if (text === '') {
       setApellidoError('');
     } else if (text.startsWith(' ')) {
@@ -73,7 +78,6 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
   const validarRut = (text) => {
     const rutPattern = /^\d{7,8}-[0-9Kk]{1}$/;
     setRut(text);
-    
     if (text === '') {
       setRutError('');
     } else if (!rutPattern.test(text)) {
@@ -86,7 +90,6 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
   const validarTelefono = (text) => {
     const telefonoPattern = /^\+569\d{8}$/;
     setTelefono(text);
-    
     if (text === '') {
       setTelefonoError('');
     } else if (!telefonoPattern.test(text)) {
@@ -95,8 +98,14 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
       setTelefonoError('');
     }
   };
-  
-  const handleSave = () => {
+
+  const generarPassword = () => {
+    // Genera la contraseña a partir de la primera letra del nombre, apellido y los primeros 4 dígitos del RUT
+    const password = `${nombre.charAt(0).toUpperCase()}${apellido.charAt(0).toUpperCase()}${rut.replace('-', '').substring(0, 4)}`;
+    return password;
+  };
+
+  const handleSave = async () => {
     // Verificar si todos los campos están completos y sin errores
     if (!nombreError && !apellidoError && !emailError && nombre && apellido && rut && email && telefono && especialidad) {
       const nuevoColaborador = {
@@ -104,13 +113,53 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
         apellido,
         rut,
         phone: telefono,
-        email,
         specialty: especialidad,
-        roles: ['USER'],
+        email,
+        roles: ['user'],
+        password: generarPassword(), // Generar la contraseña
       };
-
-      onSave(nuevoColaborador);
-      onClose();
+  
+      try {
+        // Obtener el token de AsyncStorage
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        console.log('Token:', accessToken);
+  
+        if (!accessToken) {
+          console.error('No se encontró el token.');
+          alert('No autorizado. Por favor, inicie sesión nuevamente.');
+          return;
+        }
+  
+        // Verificar el formato del token
+        const tokenPattern = /^[A-Za-z0-9-._~+\/]+=*$/; // Regex básico para verificar si el token tiene el formato adecuado
+        if (!tokenPattern.test(accessToken)) {
+          console.error('El token JWT está mal formado.');
+          alert('Token JWT malformado. Por favor, inicie sesión nuevamente.');
+          return;
+        }
+  
+        // Enviar la solicitud POST
+        const response = await fetch(getApiUrl(), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`, // Agregar el token al encabezado
+          },
+          body: JSON.stringify(nuevoColaborador),
+        });
+  
+        const data = await response.json();
+        if (response.ok) {
+          console.log('Colaborador guardado con éxito:', data);
+          onSave(nuevoColaborador);
+          onClose();
+        } else {
+          console.error('Error al guardar el colaborador:', data);
+        }
+      } catch (error) {
+        console.error('Error en la solicitud:', error);
+        alert('Hubo un problema al guardar el colaborador. Intente nuevamente.');
+      }
     }
   };
 

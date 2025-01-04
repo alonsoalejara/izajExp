@@ -97,11 +97,15 @@ function AdminPanel() {
   const handleButtonPress = (section) => setActiveSection((prev) => (prev === section ? null : section));
 
   const handleAdd = (section) => {
-    if (section === 'Personal') openModalCrearColaborador();
-    else if (section === 'Gruas') openModalCrearGrua();
-    else if (section === 'PlanesDeIzaje') console.log('Agregar nuevo plan de izaje');
+    if (section === 'Personal') {
+      openModalCrearColaborador(); 
+    } else if (section === 'Gruas') {
+      openModalCrearGrua();
+    } else if (section === 'Planes') {
+      console.log('Agregar nuevo plan de izaje');
+    }
   };
-
+  
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.section}>
@@ -116,6 +120,7 @@ function AdminPanel() {
         ))}
       </View>
 
+      {/* Modal para agregar colaborador */}
       <ModalsAdmin.ModalAddCollab
         isVisible={isModalCrearColaboradorVisible}
         onClose={closeModalCrearColaborador}
@@ -125,6 +130,7 @@ function AdminPanel() {
         }}
       />
 
+      {/* Modal para editar colaborador */}
       <ModalsAdmin.ModalEditarCollab
         isVisible={isModalEditarColaboradorVisible}
         onClose={closeModalEditarColaborador}
@@ -136,7 +142,11 @@ function AdminPanel() {
       />
 
       {activeSection === 'Personal' && (
-        <Section.CollabSection styles={styles} colaboradores={colaboradores} handleAdd={handleAdd} />
+        <Section.CollabSection
+          styles={styles}
+          colaboradores={colaboradores}
+          handleAdd={() => handleAdd('Personal')}
+        />
       )}
 
       {activeSection === 'Gruas' && <Section.CraneSection styles={styles} gruas={gruas} handleAdd={handleAdd} />}
