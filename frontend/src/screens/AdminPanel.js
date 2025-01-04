@@ -4,8 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import ModalsAdmin from '../components/modals/ModalAdmin.index';
 import Section from '../components/admin/Section.index';
 import styles from '../styles/AdminPanelStyles';
+import getApiUrl from '../utils/apiUrl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const axios = require('axios/dist/browser/axios.cjs');
+
 
 const adminLogic = {
   addCollaborator: (collaborators, newCollaborator) => [...collaborators, newCollaborator],
@@ -48,9 +50,11 @@ function AdminPanel() {
       try {
         const accessToken = await AsyncStorage.getItem('accessToken');
         if (accessToken) {
-          const response = await axios.get(getApiUrl(), {
+          const apiUrl = getApiUrl("user");
+          const response = await axios.get(apiUrl, {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
+
           const collaborators = response.data.data
             .filter((collab) => collab.roles.includes('user'))
             .map((collab, index) => ({
@@ -63,6 +67,7 @@ function AdminPanel() {
               email: collab.email,
               roles: collab.roles,
             }));
+
           setColaboradores(collaborators);
         } else {
           console.error('No se encontró el token de acceso');
@@ -73,8 +78,6 @@ function AdminPanel() {
     };
     fetchCollaborators();
   }, []);
-
-  const getApiUrl = () => (Platform.OS === 'android' ? 'http://10.0.2.2:3000/api/user/' : 'http://192.168.1.84:3000/api/user/');
 
   const handleEdit = (collaborator) => {
     setColaboradorSeleccionado(collaborator);
