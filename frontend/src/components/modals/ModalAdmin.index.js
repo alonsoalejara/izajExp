@@ -1,11 +1,11 @@
 import ModalAddCollab from "./ModalAddCollab";
 import ModalAddCrane from "./ModalAddCrane";
-import ModalEditarCollab from "./ModalEditCollab";
+import ModalEditCollab from "./ModalEditCollab";
 
 const ModalsAdmin = {
     ModalAddCollab,
     ModalAddCrane,
-    ModalEditarCollab
+    ModalEditCollab
 };
 
 export default ModalsAdmin;

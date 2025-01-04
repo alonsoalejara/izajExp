@@ -10,31 +10,21 @@ const axios = require('axios/dist/browser/axios.cjs');
 const adminLogic = {
   addCollaborator: (collaborators, newCollaborator) => [...collaborators, newCollaborator],
   editCollaborator: (collaborators, editedCollaborator) =>
-    collaborators.map((colaborador) =>
-      colaborador.rut === editedCollaborator.rut ? editedCollaborator : colaborador
+    collaborators.map((collaborator) =>
+      collaborator.rut === editedCollaborator.rut ? editedCollaborator : collaborator
     ),
-  deletePlan: (plans, index) => plans.filter((_, i) => i !== index),
-  togglePlanSelection: (selectedPlan, planId) => (selectedPlan === planId ? null : planId),
+  deleteCollaborator: (collaborators, rutToDelete) =>
+    collaborators.filter((collaborator) => collaborator.rut !== rutToDelete),
 };
 
 function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
   const [colaboradores, setColaboradores] = useState([]);
-  const [gruas, setGruas] = useState([]);
-  const [planesDeIzaje, setPlanesDeIzaje] = useState([]);
-  const [colaboradorEditado, setColaboradorEditado] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isModalCrearColaboradorVisible, setIsModalCrearColaboradorVisible] = useState(false);
+  const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
-  const [isModalCrearGruaVisible, setIsModalCrearGruaVisible] = useState(false);
-
-  const openModalCrearColaborador = () => setIsModalCrearColaboradorVisible(true);
-  const closeModalCrearColaborador = () => setIsModalCrearColaboradorVisible(false);
-  const openModalEditarColaborador = () => setIsModalEditarColaboradorVisible(true);
-  const closeModalEditarColaborador = () => setIsModalEditarColaboradorVisible(false);
-  const openModalCrearGrua = () => setIsModalCrearGruaVisible(true);
-  const closeModalCrearGrua = () => setIsModalCrearGruaVisible(false);
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -62,7 +52,7 @@ function AdminPanel() {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
           const collaborators = response.data.data
-            .filter(collab => collab.roles.includes('user'))
+            .filter((collab) => collab.roles.includes('user'))
             .map((collab, index) => ({
               key: `${collab.rut || 'no_rut'}-${index}`,
               nombre: collab.nombre || collab.username,
@@ -86,26 +76,22 @@ function AdminPanel() {
 
   const getApiUrl = () => (Platform.OS === 'android' ? 'http://10.0.2.2:3000/api/user/' : 'http://192.168.1.84:3000/api/user/');
 
-  if (!isAdmin) {
-    return (
-      <View>
-        <Text>No tienes permisos para acceder a este panel.</Text>
-      </View>
-    );
-  }
-
-  const handleButtonPress = (section) => setActiveSection((prev) => (prev === section ? null : section));
+  const handleEdit = (collaborator) => {
+    setColaboradorSeleccionado(collaborator);
+    setIsModalEditarColaboradorVisible(true); 
+  };
+  
+  const handleDelete = (rut) => {
+    setColaboradores((prev) => adminLogic.deleteCollaborator(prev, rut));
+    console.log('Colaborador eliminado', rut);
+  };
 
   const handleAdd = (section) => {
     if (section === 'Personal') {
-      openModalCrearColaborador(); 
-    } else if (section === 'Gruas') {
-      openModalCrearGrua();
-    } else if (section === 'Planes') {
-      console.log('Agregar nuevo plan de izaje');
+      setIsModalCrearColaboradorVisible(true);
     }
   };
-  
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.section}>
@@ -114,7 +100,7 @@ function AdminPanel() {
 
       <View style={styles.buttonContainer}>
         {['Personal', 'Gruas', 'Planes'].map((section) => (
-          <TouchableOpacity key={section} style={styles.button} onPress={() => handleButtonPress(section)}>
+          <TouchableOpacity key={section} style={styles.button} onPress={() => setActiveSection((prev) => (prev === section ? null : section))}>
             <Text style={styles.buttonText}>{section}</Text>
           </TouchableOpacity>
         ))}
@@ -123,35 +109,32 @@ function AdminPanel() {
       {/* Modal para agregar colaborador */}
       <ModalsAdmin.ModalAddCollab
         isVisible={isModalCrearColaboradorVisible}
-        onClose={closeModalCrearColaborador}
+        onClose={() => setIsModalCrearColaboradorVisible(false)}
         onSave={(newCollaborator) => {
           setColaboradores((prev) => adminLogic.addCollaborator(prev, newCollaborator));
-          closeModalCrearColaborador();
+          setIsModalCrearColaboradorVisible(false);
         }}
       />
 
       {/* Modal para editar colaborador */}
-      <ModalsAdmin.ModalEditarCollab
+      <ModalsAdmin.ModalEditCollab
         isVisible={isModalEditarColaboradorVisible}
-        onClose={closeModalEditarColaborador}
+        onClose={() => setIsModalEditarColaboradorVisible(false)} // Usar el estado de editar
+        colaborador={colaboradorSeleccionado} // Enviar el colaborador seleccionado
         onSave={(editedCollaborator) => {
           setColaboradores((prev) => adminLogic.editCollaborator(prev, editedCollaborator));
-          closeModalEditarColaborador();
+          setIsModalEditarColaboradorVisible(false); // Cerrar modal de editar
         }}
-        colaborador={colaboradorEditado}
       />
 
       {activeSection === 'Personal' && (
         <Section.CollabSection
-          styles={styles}
           colaboradores={colaboradores}
-          handleAdd={() => handleAdd('Personal')}
+          handleAdd={handleAdd}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
         />
       )}
-
-      {activeSection === 'Gruas' && <Section.CraneSection styles={styles} gruas={gruas} handleAdd={handleAdd} />}
-
-      {activeSection === 'Planes' && <Section.PlanIzajeSection styles={styles} planesIzaje={planesDeIzaje} />}
     </ScrollView>
   );
 }

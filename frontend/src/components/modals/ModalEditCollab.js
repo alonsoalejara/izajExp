@@ -40,7 +40,7 @@ const ModalEditarCollab = ({ isVisible, onClose, onSave, colaborador }) => {
         phone: telefono,
         email,
         specialty: especialidad,
-        roles: colaborador ? colaborador.roles : [],
+        roles: colaborador ? colaborador.roles : [], // Mantener roles si están definidos
       };
     
       onSave(colaboradorEditado); // Llama a la función onSave para actualizar el colaborador
