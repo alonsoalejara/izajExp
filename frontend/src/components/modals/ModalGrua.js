@@ -1,17 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
 import styles from '../../styles/ModalStyles';
+import getApiUrl from '../../utils/apiUrl';
+const axios = require('axios/dist/browser/axios.cjs');
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ModalGrua = ({ isVisible, onClose, onSelect }) => {
   const [selected, setSelected] = useState(null);
-  const [error, setError] = useState(''); // Estado para manejar el mensaje de error
+  const [error, setError] = useState('');
+  const [gruas, setGruas] = useState([]);
+
+  useEffect(() => {
+    const fetchGruas = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        
+        if (!accessToken) {
+          console.error('No se encontró el token de acceso');
+          return;
+        }
+
+        const apiUrl = getApiUrl('grua');
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (response.data.state === 'Success') {
+          setGruas(response.data.data);
+        } else {
+          console.error('No se pudieron obtener las grúas');
+        }
+      } catch (error) {
+        console.error('Error al obtener las grúas:', error);
+      }
+    };
+
+    if (isVisible) {
+      fetchGruas();
+    }
+  }, [isVisible]);
 
   const handleSelect = () => {
     if (!selected) {
-      setError('Debe elegir una grúa para confirmar'); // Mostrar mensaje de error
+      setError('Debe elegir una grúa para confirmar');
     } else {
-      onSelect(selected);
-      setError(''); // Limpiar el mensaje de error
+      const selectedGrua = gruas.find(grua => grua._id === selected);
+      onSelect(selectedGrua);
+      setError('');
       onClose();
     }
   };
@@ -22,28 +59,32 @@ const ModalGrua = ({ isVisible, onClose, onSelect }) => {
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Seleccionar Grúa</Text>
           {error ? <Text style={{ color: '#ff0000', marginTop: -10 }}>{error}</Text> : null}
-          {['Terex RT555', 'Grúa 2', 'Grúa 3'].map((grua) => (
-            <TouchableOpacity
-              key={grua}
-              style={[
-                styles.optionButton,
-                selected === grua ? styles.selectedOption : null,
-              ]}
-              onPress={() => {
-                setSelected(grua);
-                setError('');
-              }}
-            >
-              <Text
-                style={[
-                  styles.optionText,
-                  selected === grua ? styles.selectedOptionText : null,
+          {gruas.length === 0 ? (
+            <Text>No se encontraron grúas disponibles.</Text>
+          ) : (
+            gruas.map((grua) => (
+              <TouchableOpacity
+                key={grua._id}
+                style={[ 
+                  styles.optionButton,
+                  selected === grua._id ? styles.selectedOption : null,
                 ]}
+                onPress={() => {
+                  setSelected(grua._id);
+                  setError('');
+                }}
               >
-                {grua}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  style={[
+                    styles.optionText,
+                    selected === grua._id ? styles.selectedOptionText : null,
+                  ]}
+                >
+                  {grua.nombre}
+                </Text>
+              </TouchableOpacity>
+            ))
+          )}
           <View style={styles.modalButtons}>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
               <Text style={styles.closeButtonText}>Cancelar</Text>

@@ -3,7 +3,6 @@ import { ScrollView, TouchableOpacity, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
 import Modals from '../components/modals/Modal.index';
-import FormularioDatosIzaje from '../components/forms/FormularioDatosIzaje';
 
 const SetupIzaje = () => {
   const navigation = useNavigation();
@@ -23,29 +22,16 @@ const SetupIzaje = () => {
   const [tipoGrillete, setTipoGrillete] = useState('');
   const [manipulaciones, setManipulaciones] = useState('');
 
-  const [radioIzaje, setRadioIzaje] = useState('');
-  const [radioMontaje, setRadioMontaje] = useState('');
-
-  // Función para abrir un modal
   const openModal = (setModalVisible) => {
     setModalVisible(true);
   };
 
-  // Effect to log the selected crane data when it changes
-  useEffect(() => {
-    if (grua) {
-      console.log(`Grúa seleccionada: ${grua}`);
-    }
-  }, [grua]);
-
-  // Función para navegar a SetupRadio
   const handleNavigateToSetupRadio = () => {
     if (!grua || !cantidadGrilletes || !tipoGrillete || !eslingaOEstrobo || !cantidadManiobra) {
-      setFormaModalVisible(true); // Mostrar el modal si falta información
+      setFormaModalVisible(true);
       return;
     }
   
-    // Navegar a la pantalla de configuración de radio
     navigation.navigate('SetupRadio', {
       forma: forma,
       grua: grua,
@@ -77,7 +63,7 @@ const SetupIzaje = () => {
         <Modals.ModalGrua
           isVisible={isGruaModalVisible}
           onClose={() => setGruaModalVisible(false)}
-          onSelect={setGrua}
+          onSelect={(selectedGrua) => setGrua(selectedGrua.nombre)}
         />
 
         {/* Configurar Grillete */}
