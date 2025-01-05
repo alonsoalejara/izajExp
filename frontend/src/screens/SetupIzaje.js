@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, TouchableOpacity, Text, TextInput, View } from 'react-native';
+import { ScrollView, TouchableOpacity, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
-import Modals from '../components/modals/Modal.index';  // Importar tu modal personalizado
+import Modals from '../components/modals/Modal.index';
 import FormularioDatosIzaje from '../components/forms/FormularioDatosIzaje';
 
 const SetupIzaje = () => {
@@ -26,6 +26,7 @@ const SetupIzaje = () => {
   const [radioIzaje, setRadioIzaje] = useState('');
   const [radioMontaje, setRadioMontaje] = useState('');
 
+  // Función para abrir un modal
   const openModal = (setModalVisible) => {
     setModalVisible(true);
   };
@@ -34,34 +35,26 @@ const SetupIzaje = () => {
   useEffect(() => {
     if (grua) {
       console.log(`Grúa seleccionada: ${grua}`);
-      // Example: You can fetch data for the selected crane (assuming data is available)
-      // fetchGrúaData(grua); // You would use your own function to get data for the crane
     }
   }, [grua]);
 
-  const handleNavigateToTablas = () => {
-    if (!radioIzaje || !radioMontaje) {
-      setFormaModalVisible(true); // Show modal instead of Alert
-      return;
-    }
-  
+  // Función para navegar a SetupRadio
+  const handleNavigateToSetupRadio = () => {
     if (!grua || !cantidadGrilletes || !tipoGrillete || !eslingaOEstrobo || !cantidadManiobra) {
-      setFormaModalVisible(true); // Show modal instead of Alert
+      setFormaModalVisible(true); // Mostrar el modal si falta información
       return;
     }
   
-    navigation.navigate('Tablas', {
+    // Navegar a la pantalla de configuración de radio
+    navigation.navigate('SetupRadio', {
       forma: forma,
       grua: grua,
       eslingaOEstrobo: eslingaOEstrobo,
       cantidadManiobra: cantidadManiobra,
       cantidadGrilletes: cantidadGrilletes,
       tipoGrillete: tipoGrillete,
-      radioIzaje: radioIzaje,
-      radioMontaje: radioMontaje,
     });
   };
-  
 
   return (
     <View style={{ flex: 1 }}>
@@ -77,7 +70,8 @@ const SetupIzaje = () => {
           <Text style={styles.buttonText}>Configurar Grúa</Text>
         </TouchableOpacity>
 
-        <Text style={styles.cardDetail}>
+        {/* Mostrar la grúa seleccionada */}
+        <Text style={[styles.cardDetail, { marginBottom: 30 }]}>
           <Text style={styles.labelText}>Grúa seleccionada: {'\n'}</Text>{grua}
         </Text>
         <Modals.ModalGrua
@@ -90,7 +84,7 @@ const SetupIzaje = () => {
         <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.button}>
           <Text style={styles.buttonText}>Configurar Grillete</Text>
         </TouchableOpacity>
-        <Text style={styles.cardDetail}>
+        <Text style={[styles.cardDetail, { marginBottom: 10 }]}>
           <Text style={styles.labelText}>Cantidad de grilletes: {'\n'}</Text>{cantidadGrilletes}{'\n'}
         </Text>
         <Text style={styles.cardDetail}>
@@ -98,6 +92,7 @@ const SetupIzaje = () => {
           {tipoGrillete ? `Grillete ${tipoGrillete}"` : ''}
         </Text>
 
+        {/* Modal para seleccionar grillete */}
         <Modals.ModalGrillete
           isVisible={isGrilleteModalVisible}
           onClose={() => setGrilleteModalVisible(false)}
@@ -109,7 +104,7 @@ const SetupIzaje = () => {
         <TouchableOpacity onPress={() => openModal(setManiobraModalVisible)} style={styles.button}>
           <Text style={styles.buttonText}>Configurar Maniobra</Text>
         </TouchableOpacity>
-        <Text style={styles.cardDetail}>
+        <Text style={[styles.cardDetail, { marginBottom: 10 }]}>
           <Text style={styles.labelText}>Maniobra seleccionada: {'\n'}</Text>{eslingaOEstrobo}{'\n'}
         </Text>
         <Text style={styles.cardDetail}>
@@ -124,17 +119,10 @@ const SetupIzaje = () => {
             setManipulaciones(`${tipo} x ${cantidad}`);
           }}
         />
-        {/* Formulario Datos Izaje */}
-        <FormularioDatosIzaje
-          radioIzaje={radioIzaje}
-          radioMontaje={radioMontaje}
-          setRadioIzaje={setRadioIzaje}
-          setRadioMontaje={setRadioMontaje}
-        />
-
-        {/* Botón para navegar a Tablas */}
-        <TouchableOpacity style={styles.button} onPress={handleNavigateToTablas}>
-          <Text style={styles.buttonText}>Ir a Tablas</Text>
+        
+        {/* Botón para navegar a SetupRadio */}
+        <TouchableOpacity style={[styles.button, { marginTop: 160}]} onPress={handleNavigateToSetupRadio}>
+          <Text style={styles.buttonText}>Siguiente</Text>
         </TouchableOpacity>
       </ScrollView>
 

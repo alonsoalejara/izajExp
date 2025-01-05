@@ -53,6 +53,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
+    justifyContent: 'space-around',
+  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',

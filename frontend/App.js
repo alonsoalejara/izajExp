@@ -42,6 +42,11 @@ const App = () => {
           options={{ headerShown: true }}
         />
         <Stack.Screen
+          name="SetupRadio"
+          component={Screens.SetupRadio}
+          options={{ headerShown: true }}
+        />
+        <Stack.Screen
           name="Tablas"
           component={Screens.Tablas}
           options={{ headerShown: true }}
