@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { ScrollView, TouchableOpacity, Text, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
 import FormularioDatosIzaje from '../components/forms/FormularioDatosIzaje';
@@ -8,7 +8,7 @@ const SetupRadio = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const { forma, grua, eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete } = route.params;
+  const { grua, eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete } = route.params;
 
   const [radioIzaje, setRadioIzaje] = useState('');
   const [radioMontaje, setRadioMontaje] = useState('');
@@ -20,19 +20,18 @@ const SetupRadio = () => {
     }
 
     navigation.navigate('Tablas', {
-      forma: forma,
       grua: grua,
       eslingaOEstrobo: eslingaOEstrobo,
       cantidadManiobra: cantidadManiobra,
-      cantidadGrilletes: cantidadGrilletes,
       tipoGrillete: tipoGrillete,
+      cantidadGrilletes: cantidadGrilletes,
       radioIzaje: radioIzaje,
       radioMontaje: radioMontaje,
     });
   };
 
   const handleGoBack = () => {
-    navigation.goBack(); // Regresa a la pantalla anterior
+    navigation.goBack();
   };
 
   return (

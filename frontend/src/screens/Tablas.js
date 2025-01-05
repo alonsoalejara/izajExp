@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import TablasStyles from '../styles/TablasStyles';
 import Tables from '../components/tables/Table.index.js';
@@ -66,7 +66,9 @@ const Tablas = ({ route, navigation }) => {
         {/* Tabla Carga con título dinámico */}
         <Tables.CargaTable 
           cargaRows={cargaRows} 
-          grúaSeleccionada={grua} 
+          grúaSeleccionada={grua}
+          radioIzaje={radioIzaje}
+          radioMontaje={radioMontaje}
         />
 
         {/* Tabla Grúa con título dinámico */}

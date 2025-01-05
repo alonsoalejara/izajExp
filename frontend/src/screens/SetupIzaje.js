@@ -12,7 +12,6 @@ const SetupIzaje = () => {
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
 
-  const [forma, setForma] = useState('');
   const [grua, setGrua] = useState('');
   const [eslingaOEstrobo, setEslingaOEstrobo] = useState('');
   const [cantidadManiobra, setCantidadManiobra] = useState('');
@@ -32,7 +31,6 @@ const SetupIzaje = () => {
     }
   
     console.log("Datos enviados a SetupRadio:");
-    console.log("Forma:", forma);
     console.log("Grua:", grua);
     console.log("Eslinga o Estrobo:", eslingaOEstrobo);
     console.log("Cantidad de Maniobras:", cantidadManiobra);
@@ -40,12 +38,11 @@ const SetupIzaje = () => {
     console.log("Tipo de Grillete:", tipoGrillete);
   
     navigation.navigate('SetupRadio', {
-      forma: forma,
       grua: grua,
       eslingaOEstrobo: eslingaOEstrobo,
       cantidadManiobra: cantidadManiobra,
-      cantidadGrilletes: cantidadGrilletes,
       tipoGrillete: tipoGrillete,
+      cantidadGrilletes: cantidadGrilletes,
     });
   };
   

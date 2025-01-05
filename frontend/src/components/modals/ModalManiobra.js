@@ -3,31 +3,31 @@ import { Modal, View, Text, TouchableOpacity } from 'react-native';
 import styles from '../../styles/ModalStyles';
 
 const ModalManiobra = ({ isVisible, onClose, onSelect }) => {
-  const [cantidad, setCantidad] = useState(null); // Estado para la cantidad de maniobras seleccionada
-  const [tipoManiobra, setTipoManiobra] = useState(null); // Estado para el tipo de maniobra seleccionada
-  const [errorCantidad, setErrorCantidad] = useState(''); // Mensaje de error para cantidad
-  const [errorTipo, setErrorTipo] = useState(''); // Mensaje de error para tipo
+  const [cantidad, setCantidad] = useState(null);
+  const [tipoManiobra, setTipoManiobra] = useState(null);
+  const [errorCantidad, setErrorCantidad] = useState('');
+  const [errorTipo, setErrorTipo] = useState('');
 
   const handleGuardar = () => {
     let hasError = false;
 
     if (!cantidad) {
-      setErrorCantidad('Debe seleccionar la cantidad.'); // Mostrar error si no hay cantidad
+      setErrorCantidad('Debe seleccionar la cantidad.');
       hasError = true;
     } else {
-      setErrorCantidad(''); // Limpiar error si la cantidad es válida
+      setErrorCantidad('');
     }
 
     if (!tipoManiobra) {
-      setErrorTipo('Debe seleccionar el tipo.'); // Mostrar error si no hay tipo
+      setErrorTipo('Debe seleccionar el tipo.');
       hasError = true;
     } else {
-      setErrorTipo(''); // Limpiar error si el tipo es válido
+      setErrorTipo('');
     }
 
     if (!hasError) {
-      onSelect({ cantidad, tipo: tipoManiobra }); // Pasa la información seleccionada al componente padre
-      onClose(); // Cierra el modal
+      onSelect({ cantidad, tipo: tipoManiobra });
+      onClose();
     }
   };
 

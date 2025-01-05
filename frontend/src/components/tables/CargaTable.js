@@ -5,7 +5,7 @@ import axios from 'axios';
 import getApiUrl from '../../utils/apiUrl';
 import TablasStyles from '../../styles/TablasStyles';
 
-const CargaTable = ({ grúaSeleccionada }) => {
+const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje }) => {
     const [cargaRows, setCargaRows] = useState([
         { item: '1', descripcion: 'PESO DEL EQUIPO', valor: 'N/A' },
         { item: '2', descripcion: 'PESO DE APAREJOS', valor: 'N/A' },
@@ -45,6 +45,11 @@ const CargaTable = ({ grúaSeleccionada }) => {
                             if (row.descripcion === 'CAPACIDAD DE LEVANTE') {
                                 return { ...row, valor: `${gruaSeleccionadaData.capacidadLevante} kg` };
                             }
+                            if (row.descripcion === 'RADIO DE TRABAJO MÁX') {
+                                // Asegúrate de que los radios estén disponibles
+                                const radioMax = Math.max(radioIzaje, radioMontaje); 
+                                return { ...row, valor: `${radioMax} mts` };
+                            }
                             return row;
                         }));
                     }
@@ -57,7 +62,7 @@ const CargaTable = ({ grúaSeleccionada }) => {
         };
 
         fetchGruas();
-    }, [grúaSeleccionada]);
+    }, [grúaSeleccionada, radioIzaje, radioMontaje]);
 
     if (loading) {
         return <ActivityIndicator size="large" color="#0000ff" />;
