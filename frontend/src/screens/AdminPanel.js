@@ -63,6 +63,7 @@ function AdminPanel() {
   
           const mappedCollaborators = collaborators.map((collab) => ({
             key: collab._id,
+            _id: collab._id, // Asegúrate de pasar el _id como propiedad
             nombre: collab.nombre || collab.username,
             apellido: collab.apellido || '',
             rut: collab.rut || '',
@@ -128,9 +129,9 @@ function AdminPanel() {
         isVisible={isModalEditarColaboradorVisible}
         onClose={() => setIsModalEditarColaboradorVisible(false)}
         colaborador={colaboradorSeleccionado}
-        onSave={(editedCollaborator) => {
-          setColaboradores((prev) => adminLogic.editCollaborator(prev, editedCollaborator));
-          setIsModalEditarColaboradorVisible(false);
+        onUpdate={(editedCollaborator) => {  // Ahora sí coincide con la prop utilizada
+            setColaboradores((prev) => adminLogic.editCollaborator(prev, editedCollaborator));
+            setIsModalEditarColaboradorVisible(false);
         }}
       />
 

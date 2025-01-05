@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../styles/ModalStyles';
-import { especialidades } from '../../data/especialidadesData'; // Importa las especialidades desde el archivo adecuado
-import getApiUrl from '../../utils/apiUrl'; // Importa getApiUrl
+import { especialidades } from '../../data/especialidadesData';
+import getApiUrl from '../../utils/apiUrl';
 
 const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => {
-  // Asegúrate de que 'colaborador' no sea null antes de asignar los valores.
   const [nombre, setNombre] = useState(colaborador ? colaborador.nombre : '');
   const [apellido, setApellido] = useState(colaborador ? colaborador.apellido : '');
   const [rut, setRut] = useState(colaborador ? colaborador.rut : '');
@@ -23,6 +22,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => 
       setEmail(colaborador.email);
       setTelefono(colaborador.phone);
       setEspecialidad(colaborador.specialty);
+      console.log('(ModalEditCollab.js) Datos antes de editar:', colaborador);
     }
   }, [colaborador]);
 
@@ -34,7 +34,10 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => 
       email,
       phone,
       specialty,
+      roles: colaborador.roles,
     };
+
+    console.log('(ModalEditCollab.js) Datos actualizados luego de presionar Guardar:', updatedColaborador);
 
     try {
       const accessToken = await AsyncStorage.getItem('accessToken');
@@ -42,9 +45,13 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => 
         alert('No autorizado. Por favor, inicie sesión nuevamente.');
         return;
       }
-
-      const response = await fetch(getApiUrl(`user/${colaborador._id}`), { // Usa getApiUrl para la URL
-        method: 'PUT', // Método PUT para actualizar
+      console.log('(ModalEditCollab.js) ID del colaborador:', colaborador._id);
+      if (!colaborador._id) {
+        alert('Error: ID del colaborador no válido.');
+        return;
+    }
+      const response = await fetch(getApiUrl(`user/${colaborador._id}`), {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
@@ -54,7 +61,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => 
 
       const data = await response.json();
       if (response.ok) {
-        onUpdate(updatedColaborador); // Actualiza el colaborador
+        onUpdate(updatedColaborador);
         onClose();
       } else {
         console.error('Error al actualizar:', data);
@@ -116,13 +123,12 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => 
             onChangeText={setTelefono}
           />
 
-          {/* Menú de especialidades */}
           <TouchableOpacity onPress={() => setShowMenu(!showMenu)} style={styles.optionButton}>
             <Text>{specialty || 'Seleccione especialidad'}</Text>
           </TouchableOpacity>
           {showMenu && (
             <FlatList
-              data={especialidades} // Asegúrate de que especialidades esté bien importado
+              data={especialidades}
               renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => handleEspecialidadSelect(item)}>
                   <Text style={styles.optionButton}>{item.label}</Text>
