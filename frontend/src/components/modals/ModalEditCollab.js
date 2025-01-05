@@ -1,61 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../styles/ModalStyles';
-import validationUser from '../../utils/validationUser';
 import { especialidades } from '../../data/especialidadesData';
+import getApiUrl from '../../utils/apiUrl'; // Importa getApiUrl
 
-const ModalAddCollab = ({ isVisible, onClose, onSave, colaborador }) => {
-  const [nombre, setNombre] = useState('');
-  const [apellido, setApellido] = useState('');
-  const [rut, setRut] = useState('');
-  const [email, setEmail] = useState('');
-  const [telefono, setTelefono] = useState('');
-  const [especialidad, setEspecialidad] = useState('');
+const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => {
+  const [nombre, setNombre] = useState(colaborador.nombre);
+  const [apellido, setApellido] = useState(colaborador.apellido);
+  const [rut, setRut] = useState(colaborador.rut);
+  const [email, setEmail] = useState(colaborador.email);
+  const [telefono, setTelefono] = useState(colaborador.telefono);
+  const [especialidad, setEspecialidad] = useState(colaborador.especialidad);
   const [showMenu, setShowMenu] = useState(false);
-  const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    if (colaborador) {
-      setNombre(colaborador.nombre || '');
-      setApellido(colaborador.apellido || '');
-      setRut(colaborador.rut || '');
-      setEmail(colaborador.email || '');
-      setTelefono(colaborador.phone || '');
-      setEspecialidad(colaborador.specialty || '');
-    }
-  }, [colaborador, isVisible]);
+    setNombre(colaborador.nombre);
+    setApellido(colaborador.apellido);
+    setRut(colaborador.rut);
+    setEmail(colaborador.email);
+    setTelefono(colaborador.telefono);
+    setEspecialidad(colaborador.especialidad);
+  }, [colaborador]);
 
-  const handleSave = () => {
-    const newErrors = {};
+  const handleUpdate = async () => {
+    const updatedColaborador = {
+      nombre,
+      apellido,
+      rut,
+      email,
+      telefono,
+      especialidad,
+    };
 
-    // Usamos las funciones del objeto validationUser
-    validationUser.validarNombre(nombre, setNombre, (error) => newErrors.nombre = error);
-    validationUser.validarApellido(apellido, setApellido, (error) => newErrors.apellido = error);
-    validationUser.validarRut(rut, setRut, (error) => newErrors.rut = error);
-    validationUser.validarEmail(email, setEmail, (error) => newErrors.email = error);
-    validationUser.validarTelefono(telefono, setTelefono, (error) => newErrors.telefono = error);
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      if (!accessToken) {
+        alert('No autorizado. Por favor, inicie sesión nuevamente.');
+        return;
+      }
 
-    if (!especialidad) newErrors.especialidad = 'Seleccione una especialidad';
+      const response = await fetch(getApiUrl(`user/${colaborador.id}`), { // Usa getApiUrl para la URL
+        method: 'PUT', // Método PUT para actualizar
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(updatedColaborador),
+      });
 
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length === 0) {
-      const colaboradorEditado = {
-        nombre,
-        apellido,
-        rut,
-        phone: telefono,
-        email,
-        specialty: especialidad,
-        roles: colaborador ? colaborador.roles : [],
-      };
-      onSave(colaboradorEditado);
-      onClose();
+      const data = await response.json();
+      if (response.ok) {
+        onUpdate(updatedColaborador); // Actualiza el colaborador
+        onClose(); // Cierra el modal
+      } else {
+        console.error('Error al actualizar:', data);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Hubo un error al actualizar el colaborador.');
     }
   };
 
   const handleEspecialidadSelect = (item) => {
-    setEspecialidad(item.value);
+    setEspecialidad(item.label);
     setShowMenu(false);
   };
 
@@ -63,42 +71,39 @@ const ModalAddCollab = ({ isVisible, onClose, onSave, colaborador }) => {
     <Modal transparent={true} visible={isVisible} animationType="slide">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Añadir Colaborador</Text>
+          <Text style={styles.modalTitle}>Editar Colaborador</Text>
+
           <Text style={styles.label}>Nombre(s):</Text>
           <TextInput
             style={styles.optionButton}
-            placeholder="Ingrese nombre(s) del colaborador"
+            placeholder="Ingrese nombre(s)"
             value={nombre}
             onChangeText={setNombre}
           />
-          {errors.nombre && <Text style={styles.errorText}>{errors.nombre}</Text>}
 
           <Text style={styles.label}>Apellido(s):</Text>
           <TextInput
             style={styles.optionButton}
-            placeholder="Ingrese apellido(s) del colaborador"
+            placeholder="Ingrese apellido(s)"
             value={apellido}
             onChangeText={setApellido}
           />
-          {errors.apellido && <Text style={styles.errorText}>{errors.apellido}</Text>}
 
           <Text style={styles.label}>RUT:</Text>
           <TextInput
             style={styles.optionButton}
-            placeholder="Ingrese RUT del colaborador"
+            placeholder="Ingrese RUT"
             value={rut}
             onChangeText={setRut}
           />
-          {errors.rut && <Text style={styles.errorText}>{errors.rut}</Text>}
 
-          <Text style={styles.label}>Correo Electrónico:</Text>
+          <Text style={styles.label}>Email:</Text>
           <TextInput
             style={styles.optionButton}
-            placeholder="Ingrese correo electrónico"
+            placeholder="Ingrese email"
             value={email}
             onChangeText={setEmail}
           />
-          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
           <Text style={styles.label}>Teléfono:</Text>
           <TextInput
@@ -107,46 +112,34 @@ const ModalAddCollab = ({ isVisible, onClose, onSave, colaborador }) => {
             value={telefono}
             onChangeText={setTelefono}
           />
-          {errors.telefono && <Text style={styles.errorText}>{errors.telefono}</Text>}
 
-          <Text style={styles.label}>Especialidad</Text>
-          <TouchableOpacity 
-            style={styles.optionButton}
-            onPress={() => setShowMenu(!showMenu)}
-          >
-            <Text>{especialidad || 'Selecciona una especialidad'}</Text>
+          {/* Menú de especialidades */}
+          <TouchableOpacity onPress={() => setShowMenu(!showMenu)} style={styles.optionButton}>
+            <Text>{especialidad || 'Seleccione especialidad'}</Text>
           </TouchableOpacity>
-          {errors.especialidad && <Text style={styles.errorText}>{errors.especialidad}</Text>}
-
           {showMenu && (
-            <View style={styles.menuContainer}>
-              <FlatList
-                data={especialidades}
-                keyExtractor={(item) => item.value}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={styles.menuItem}
-                    onPress={() => handleEspecialidadSelect(item)}
-                  >
-                    <Text style={styles.menuText}>{item.label}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
+            <FlatList
+              data={especialidades}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => handleEspecialidadSelect(item)}>
+                  <Text style={styles.optionButton}>{item.label}</Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item.value}
+            />
           )}
 
-          <View style={styles.modalButtons}>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Text style={styles.closeButtonText}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.buttonText}>Guardar</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={handleUpdate} style={styles.saveButton}>
+            <Text style={styles.saveButtonText}>Actualizar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
+            <Text style={styles.cancelButtonText}>Cancelar</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
   );
 };
 
-export default ModalAddCollab;
+export default ModalEditColaborador;
