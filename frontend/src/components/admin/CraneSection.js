@@ -1,9 +1,49 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import styles from '../../styles/AdminPanelStyles';
+import styles from '../../styles/AdminPanelStyles'; 
+import ModalAlert from '../modals/ModalAlert';
+import getApiUrl from '../../utils/apiUrl';
 
-const CraneSection = ({ gruas, handleAdd }) => {
+const CraneSection = ({ gruas, handleAdd, handleEdit }) => {
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [gruaToDelete, setGruaToDelete] = useState(null);
+
+  const handleCardPress = (key) => {
+    setSelectedCard(selectedCard === key ? null : key);
+  };
+
+  const confirmDelete = (id) => {
+    setGruaToDelete(id);
+    setModalVisible(true);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (!accessToken) {
+            alert('No autorizado. Por favor, inicie sesión nuevamente.');
+            return;
+        }
+        const response = await fetch(getApiUrl(`crane/${id}`), {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.ok) {
+            alert('Grúa eliminada con éxito');
+        } else {
+            alert('Error al eliminar la grúa');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+  };
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Grúas</Text>
@@ -13,26 +53,52 @@ const CraneSection = ({ gruas, handleAdd }) => {
       >
         <Icon name="add" size={24} color="white" />
       </TouchableOpacity>
-      {gruas.map((grua, index) => (
-        <View key={index} style={styles.card}>
-          <Text style={styles.cardTitle}>{grua.nombre}</Text>
-          <Text style={styles.cardDetail}>
-            <Text style={styles.labelText}>Peso del Equipo: </Text>{grua.pesoEquipo} kg
-          </Text>
-          <Text style={styles.cardDetail}>
-            <Text style={styles.labelText}>Peso del Gancho: </Text>{grua.pesoGancho} kg
-          </Text>
-          <Text style={styles.cardDetail}>
-            <Text style={styles.labelText}>Capacidad de Levante: </Text>{grua.capacidadLevante} kg
-          </Text>
-          <Text style={styles.cardDetail}>
-            <Text style={styles.labelText}>Largo de la Pluma: </Text>{grua.largoPluma} m
-          </Text>
-          <Text style={styles.cardDetail}>
-            <Text style={styles.labelText}>Contrapeso: </Text>{grua.contrapeso} toneladas
-          </Text>
-        </View>
-      ))}
+
+      {gruas.map((grua) => {        
+        return (
+          <View key={grua.key} style={styles.card}>
+            <TouchableOpacity onPress={() => handleCardPress(grua.key)}>
+              <Text style={styles.cardTitle}>{grua.nombre}</Text>
+              <Text style={styles.cardDetail}><Text style={styles.labelText}>Peso del Equipo: </Text>{grua.pesoEquipo} kg</Text>
+              <Text style={styles.cardDetail}><Text style={styles.labelText}>Peso del Gancho: </Text>{grua.pesoGancho} kg</Text>
+              <Text style={styles.cardDetail}><Text style={styles.labelText}>Capacidad de Levante: </Text>{grua.capacidadLevante} kg</Text>
+              <Text style={styles.cardDetail}><Text style={styles.labelText}>Largo de la Pluma: </Text>{grua.largoPluma} m</Text>
+              <Text style={styles.cardDetail}><Text style={styles.labelText}>Contrapeso: </Text>{grua.contrapeso} toneladas</Text>
+            </TouchableOpacity>
+
+            {selectedCard === grua.key && (
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={() => handleEdit(grua)}
+                >
+                  <Text style={styles.actionButtonText}>Editar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={() => confirmDelete(grua.key)}
+                >
+                  <Text style={styles.actionButtonText}>Eliminar</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        );
+      })}
+
+      <ModalAlert
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        message="¿Estás seguro de que deseas eliminar esta grúa?"
+        showCloseButton={false} 
+      >
+        <TouchableOpacity style={styles.actionButton} onPress={() => setModalVisible(false)}>
+          <Text style={styles.buttonText}>Cancelar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton} onPress={() => handleDelete(gruaToDelete)}>
+          <Text style={styles.buttonText}>Confirmar</Text>
+        </TouchableOpacity>
+      </ModalAlert>
     </View>
   );
 };

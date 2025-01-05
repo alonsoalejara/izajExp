@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import ModalsAdmin from '../components/modals/ModalAdmin.index'; // Verifica que este archivo exporte correctamente los modales
-import Section from '../components/admin/Section.index'; // Verifica que este archivo exporte correctamente la sección
+import ModalsAdmin from '../components/modals/ModalAdmin.index';
+import Section from '../components/admin/Section.index';
 import styles from '../styles/AdminPanelStyles';
 import getApiUrl from '../utils/apiUrl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,6 +18,16 @@ const adminLogic = {
     collaborators.filter((collaborator) => collaborator.rut !== rutToDelete),
 };
 
+const gruaLogic = {
+  addGrua: (gruas, newGrua) => [...gruas, newGrua],
+  editGrua: (gruas, editedGrua) =>
+    gruas.map((grua) =>
+      grua._id === editedGrua._id ? editedGrua : grua
+    ),
+  deleteGrua: (gruas, idToDelete) =>
+    gruas.filter((grua) => grua._id !== idToDelete),
+};
+
 function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
@@ -26,6 +36,10 @@ function AdminPanel() {
   const [isModalCrearColaboradorVisible, setIsModalCrearColaboradorVisible] = useState(false);
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
+  const [gruas, setGruas] = useState([]);
+  const [isModalCrearGruaVisible, setIsModalCrearGruaVisible] = useState(false);
+  const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
+  const [isModalEditarGruaVisible, setIsModalEditarGruaVisible] = useState(false);
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -82,6 +96,40 @@ function AdminPanel() {
     fetchCollaborators();
   }, []);
 
+  useEffect(() => {
+    const fetchGruas = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (accessToken) {
+          const apiUrl = getApiUrl("grua");
+          const response = await axios.get(apiUrl, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+          const mappedGruas = response.data.data.map((grua) => ({
+            key: grua._id,
+            _id: grua._id,
+            nombre: grua.nombre || '',
+            pesoEquipo: grua.pesoEquipo || '',
+            pesoGancho: grua.pesoGancho || '',
+            capacidadLevante: grua.capacidadLevante || '',
+            largoPluma: grua.largoPluma || '',
+            contrapeso: grua.contrapeso || '',
+          }));
+  
+          setGruas(mappedGruas);
+        } else {
+          console.error('(AdminPanel.js) No se encontró el token de acceso');
+        }
+      } catch (error) {
+        console.error('(AdminPanel.js) Error al obtener las grúas:', error);
+      }
+    };
+    
+    fetchGruas();
+  }, []);
+  
+  
+
   const handleAdd = () => {
     setIsModalCrearColaboradorVisible(true);
   };
@@ -96,6 +144,20 @@ function AdminPanel() {
     console.log('Colaborador eliminado', rut);
   };
 
+  const handleAddGrua = () => {
+    setIsModalCrearGruaVisible(true);
+  };
+  
+  const handleEditGrua = (grua) => {
+    setGruaSeleccionada(grua);
+    setIsModalEditarGruaVisible(true);
+  };
+  
+  const handleDeleteGrua = (id) => {
+    setGruas((prev) => gruaLogic.deleteGrua(prev, id));
+    console.log('Grúa eliminada', id);
+  };
+  
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.section}>
@@ -125,9 +187,30 @@ function AdminPanel() {
         isVisible={isModalEditarColaboradorVisible}
         onClose={() => setIsModalEditarColaboradorVisible(false)}
         colaborador={colaboradorSeleccionado}
-        onUpdate={(editedCollaborator) => {  // Ahora sí coincide con la prop utilizada
+        onUpdate={(editedCollaborator) => {
             setColaboradores((prev) => adminLogic.editCollaborator(prev, editedCollaborator));
             setIsModalEditarColaboradorVisible(false);
+        }}
+      />
+
+      {/* Modal para agregar grúa */}
+      <ModalsAdmin.ModalAddCrane
+        isVisible={isModalCrearGruaVisible}
+        onClose={() => setIsModalCrearGruaVisible(false)}
+        onSave={(newGrua) => {
+          setGruas((prev) => gruaLogic.addGrua(prev, newGrua));
+          setIsModalCrearGruaVisible(false);
+        }}
+      />
+
+      {/* Modal para editar grúa */}
+      <ModalsAdmin.ModalEditCrane
+        isVisible={isModalEditarGruaVisible}
+        onClose={() => setIsModalEditarGruaVisible(false)}
+        grua={gruaSeleccionada}
+        onUpdate={(editedGrua) => {
+          setGruas((prev) => gruaLogic.editGrua(prev, editedGrua));
+          setIsModalEditarGruaVisible(false);
         }}
       />
 
@@ -137,6 +220,15 @@ function AdminPanel() {
           handleAdd={handleAdd}
           handleEdit={handleEdit}
           handleDelete={handleDelete}
+        />
+      )}
+
+      {activeSection === 'Gruas' && (
+        <Section.CraneSection
+          gruas={gruas}
+          handleAdd={handleAddGrua}
+          handleEdit={handleEditGrua}
+          handleDelete={handleDeleteGrua}
         />
       )}
     </ScrollView>
