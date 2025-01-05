@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import ModalsAdmin from '../components/modals/ModalAdmin.index';
-import Section from '../components/admin/Section.index';
+import ModalsAdmin from '../components/modals/ModalAdmin.index'; // Verifica que este archivo exporte correctamente los modales
+import Section from '../components/admin/Section.index'; // Verifica que este archivo exporte correctamente la sección
 import styles from '../styles/AdminPanelStyles';
 import getApiUrl from '../utils/apiUrl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -53,33 +53,40 @@ function AdminPanel() {
           const response = await axios.get(apiUrl, {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
-
+  
+          console.log('(AdminPanel.js) Datos rescatados de la API:', response.data);
+  
           const collaborators = response.data.data
-            .filter((collab) => collab.roles.includes('user'))
-            .map((collab, index) => ({
-              key: `${collab.rut || 'no_rut'}-${index}`,
-              nombre: collab.nombre || collab.username,
-              apellido: collab.apellido || '',
-              rut: collab.rut || '',
-              phone: collab.phone || '',
-              specialty: collab.specialty || '',
-              email: collab.email,
-              roles: collab.roles,
-            }));
-
-          setColaboradores(collaborators);
+            .filter((collab) => collab.roles.includes('user'));
+  
+          console.log('(AdminPanel.js) Colaboradores filtrados por rol "user":', collaborators);
+  
+          const mappedCollaborators = collaborators.map((collab) => ({
+            key: collab._id,
+            nombre: collab.nombre || collab.username,
+            apellido: collab.apellido || '',
+            rut: collab.rut || '',
+            phone: collab.phone || '',
+            specialty: collab.specialty || '',
+            email: collab.email,
+            roles: collab.roles,
+          }));
+  
+          console.log('(AdminPanel.js) Colaboradores después de mapear:', mappedCollaborators);
+  
+          setColaboradores(mappedCollaborators);
         } else {
-          console.error('No se encontró el token de acceso');
+          console.error('(AdminPanel.js) No se encontró el token de acceso');
         }
       } catch (error) {
-        console.error('Error al obtener los colaboradores:', error);
+        console.error('(AdminPanel.js) Error al obtener los colaboradores:', error);
       }
     };
     fetchCollaborators();
   }, []);
 
   const handleAdd = () => {
-    setIsModalCrearColaboradorVisible(true); // Abrir modal de agregar colaborador
+    setIsModalCrearColaboradorVisible(true);
   };
 
   const handleEdit = (collaborator) => {
@@ -130,7 +137,7 @@ function AdminPanel() {
       {activeSection === 'Personal' && (
         <Section.CollabSection
           colaboradores={colaboradores}
-          handleAdd={handleAdd} // Esto abre el modal de agregar colaborador
+          handleAdd={handleAdd}
           handleEdit={handleEdit}
           handleDelete={handleDelete}
         />

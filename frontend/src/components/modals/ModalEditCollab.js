@@ -2,25 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../styles/ModalStyles';
-import { especialidades } from '../../data/especialidadesData';
+import { especialidades } from '../../data/especialidadesData'; // Importa las especialidades desde el archivo adecuado
 import getApiUrl from '../../utils/apiUrl'; // Importa getApiUrl
 
 const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => {
-  const [nombre, setNombre] = useState(colaborador.nombre);
-  const [apellido, setApellido] = useState(colaborador.apellido);
-  const [rut, setRut] = useState(colaborador.rut);
-  const [email, setEmail] = useState(colaborador.email);
-  const [telefono, setTelefono] = useState(colaborador.telefono);
-  const [especialidad, setEspecialidad] = useState(colaborador.especialidad);
+  // Asegúrate de que 'colaborador' no sea null antes de asignar los valores.
+  const [nombre, setNombre] = useState(colaborador ? colaborador.nombre : '');
+  const [apellido, setApellido] = useState(colaborador ? colaborador.apellido : '');
+  const [rut, setRut] = useState(colaborador ? colaborador.rut : '');
+  const [email, setEmail] = useState(colaborador ? colaborador.email : '');
+  const [phone, setTelefono] = useState(colaborador ? colaborador.phone : '');
+  const [specialty, setEspecialidad] = useState(colaborador ? colaborador.specialty : '');
   const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
-    setNombre(colaborador.nombre);
-    setApellido(colaborador.apellido);
-    setRut(colaborador.rut);
-    setEmail(colaborador.email);
-    setTelefono(colaborador.telefono);
-    setEspecialidad(colaborador.especialidad);
+    if (colaborador) {
+      setNombre(colaborador.nombre);
+      setApellido(colaborador.apellido);
+      setRut(colaborador.rut);
+      setEmail(colaborador.email);
+      setTelefono(colaborador.phone);
+      setEspecialidad(colaborador.specialty);
+    }
   }, [colaborador]);
 
   const handleUpdate = async () => {
@@ -29,8 +32,8 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => 
       apellido,
       rut,
       email,
-      telefono,
-      especialidad,
+      phone,
+      specialty,
     };
 
     try {
@@ -40,7 +43,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => 
         return;
       }
 
-      const response = await fetch(getApiUrl(`user/${colaborador.id}`), { // Usa getApiUrl para la URL
+      const response = await fetch(getApiUrl(`user/${colaborador._id}`), { // Usa getApiUrl para la URL
         method: 'PUT', // Método PUT para actualizar
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +55,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => 
       const data = await response.json();
       if (response.ok) {
         onUpdate(updatedColaborador); // Actualiza el colaborador
-        onClose(); // Cierra el modal
+        onClose();
       } else {
         console.error('Error al actualizar:', data);
       }
@@ -109,17 +112,17 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => 
           <TextInput
             style={styles.optionButton}
             placeholder="Ingrese teléfono"
-            value={telefono}
+            value={phone}
             onChangeText={setTelefono}
           />
 
           {/* Menú de especialidades */}
           <TouchableOpacity onPress={() => setShowMenu(!showMenu)} style={styles.optionButton}>
-            <Text>{especialidad || 'Seleccione especialidad'}</Text>
+            <Text>{specialty || 'Seleccione especialidad'}</Text>
           </TouchableOpacity>
           {showMenu && (
             <FlatList
-              data={especialidades}
+              data={especialidades} // Asegúrate de que especialidades esté bien importado
               renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => handleEspecialidadSelect(item)}>
                   <Text style={styles.optionButton}>{item.label}</Text>
