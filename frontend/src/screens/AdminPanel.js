@@ -67,12 +67,8 @@ function AdminPanel() {
           const response = await axios.get(apiUrl, {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
-    
           const collaborators = response.data.data
             .filter((collab) => collab.roles.includes('user'));
-  
-          console.log('(AdminPanel.js) Colaboradores filtrados por rol "user":', collaborators);
-  
           const mappedCollaborators = collaborators.map((collab) => ({
             key: collab._id,
             _id: collab._id,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ScrollView, TouchableOpacity, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
@@ -16,7 +16,6 @@ const SetupIzaje = () => {
   const [grua, setGrua] = useState('');
   const [eslingaOEstrobo, setEslingaOEstrobo] = useState('');
   const [cantidadManiobra, setCantidadManiobra] = useState('');
-  const [elemento, setElemento] = useState('');
 
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState('');
@@ -32,6 +31,14 @@ const SetupIzaje = () => {
       return;
     }
   
+    console.log("Datos enviados a SetupRadio:");
+    console.log("Forma:", forma);
+    console.log("Grua:", grua);
+    console.log("Eslinga o Estrobo:", eslingaOEstrobo);
+    console.log("Cantidad de Maniobras:", cantidadManiobra);
+    console.log("Cantidad de Grilletes:", cantidadGrilletes);
+    console.log("Tipo de Grillete:", tipoGrillete);
+  
     navigation.navigate('SetupRadio', {
       forma: forma,
       grua: grua,
@@ -41,7 +48,7 @@ const SetupIzaje = () => {
       tipoGrillete: tipoGrillete,
     });
   };
-
+  
   return (
     <View style={{ flex: 1 }}>
 
@@ -82,8 +89,13 @@ const SetupIzaje = () => {
         <Modals.ModalGrillete
           isVisible={isGrilleteModalVisible}
           onClose={() => setGrilleteModalVisible(false)}
-          onSelectCantidad={setCantidadGrilletes}
-          onSelectTipo={setTipoGrillete}
+          onSelectCantidad={(cantidad) => {
+            setCantidadGrilletes(cantidad);
+            console.log("Cantidad de grilletes seleccionada:", cantidad);
+          }}
+          onSelectTipo={(tipoObj) => {
+            setTipoGrillete(tipoObj.tipo);
+          }}
         />
 
         {/* Configurar Maniobra */}

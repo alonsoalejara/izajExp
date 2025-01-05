@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, FlatList } from 'react-native';
-import ModalStyles from '../../styles/ModalStyles'; // Asegúrate de importar el archivo de estilos
+import ModalStyles from '../../styles/ModalStyles';
+import { grilleteOptions } from '../../data/grilleteData';
 
 const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) => {
   const [cantidad, setCantidad] = useState('');
-  const [tipo, setTipo] = useState(''); // Inicia como vacío
-  const [errorCantidad, setErrorCantidad] = useState(''); // Error específico para cantidad
-  const [errorTipo, setErrorTipo] = useState(''); // Error específico para tipo
-  const [cantidadBorderColor, setCantidadBorderColor] = useState('#ccc'); // Color del borde para cantidad
-  const [tipoBorderColor, setTipoBorderColor] = useState('#ccc'); // Color del borde para tipo
-  const [showMenu, setShowMenu] = useState(false); // Estado para mostrar el menú desplegable
-  const grilleteOptions = [
-    '3/16', '1/4', '5/16', '3/8', '7/16', '1/2', '5/8', '3/4', '7/8', '1', 
-    '1 1/8', '1 1/4', '1 3/8', '1 1/2'
-  ];
+  const [tipo, setTipo] = useState('');
+  const [peso, setPeso] = useState(null);
+  const [errorCantidad, setErrorCantidad] = useState('')
+  const [errorTipo, setErrorTipo] = useState('');
+  const [cantidadBorderColor, setCantidadBorderColor] = useState('#ccc');
+  const [tipoBorderColor, setTipoBorderColor] = useState('#ccc');
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
     if (cantidad === '') {
       setErrorCantidad('');
       setCantidadBorderColor('#ccc');
-    } else if (!/^\d+$/.test(cantidad)) { // Solo permite números enteros positivos
+    } else if (!/^\d+$/.test(cantidad)) {
       setErrorCantidad('Ingrese un valor numérico válido');
       setCantidadBorderColor('#ff0000');
     } else if (cantidad <= 0) {
@@ -36,46 +34,42 @@ const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) =
 
   const handleGuardar = () => {
     let hasError = false;
-
+  
     if (!cantidad) {
       setErrorCantidad('Ingrese un valor');
       setCantidadBorderColor('#ff0000');
       hasError = true;
     }
-
+  
     if (!tipo) {
       setErrorTipo('Seleccione un diámetro para grillete');
       setTipoBorderColor('#ff0000');
       hasError = true;
     }
-
+  
     if (!hasError) {
       onSelectCantidad(cantidad);
-      onSelectTipo(tipo);
+      onSelectTipo({ tipo: tipo, peso: peso });
       onClose();
     }
   };
+  
 
   const renderOption = ({ item }) => (
     <TouchableOpacity 
-      style={[
-        ModalStyles.menuItem, 
-        tipo === item ? ModalStyles.selectedMenuItem : {}
-      ]}
+      style={[ModalStyles.menuItem, tipo === item.pulgada ? ModalStyles.selectedMenuItem : {}]}
       onPress={() => {
-        setTipo(item);
-        setErrorTipo(''); // Limpiar error al seleccionar
+        setTipo(item.pulgada);
+        setPeso(item.peso);
+        setErrorTipo('');
         setTipoBorderColor('#ccc');
         setShowMenu(false);
       }}
     >
       <Text 
-        style={[
-          ModalStyles.menuText, 
-          tipo === item ? ModalStyles.selectedMenuText : {}
-        ]}
+        style={[ModalStyles.menuText, tipo === item.pulgada ? ModalStyles.selectedMenuText : {}]}
       >
-        {item}
+        {item.pulgada}
       </Text>
     </TouchableOpacity>
   );
@@ -96,7 +90,7 @@ const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) =
               value={cantidad}
               onChangeText={(value) => {
                 setCantidad(value);
-                setErrorCantidad(''); // Limpiar error al escribir
+                setErrorCantidad('');
                 setCantidadBorderColor('#ccc');
               }}
             />
@@ -105,7 +99,7 @@ const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) =
             <Text style={ModalStyles.label}>Seleccione el tipo de grillete (pulg.)</Text>
             <TouchableOpacity
               style={[ModalStyles.optionButton, { borderColor: tipoBorderColor }]}
-              onPress={() => setShowMenu(!showMenu)} // Muestra/oculta el menú desplegable
+              onPress={() => setShowMenu(!showMenu)}
             >
               <Text>{tipo || 'Seleccione el diámetro'}</Text>
             </TouchableOpacity>
@@ -116,7 +110,7 @@ const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) =
                 <FlatList
                   data={grilleteOptions}
                   renderItem={renderOption}
-                  keyExtractor={(item) => item}
+                  keyExtractor={(item) => item.pulgada}
                 />
               </View>
             )}
