@@ -1,16 +1,49 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../../styles/AdminPanelStyles'; 
+import ModalAlert from '../modals/ModalAlert';
+import getApiUrl from '../../utils/apiUrl';
 
-const CollabSection = ({ colaboradores, handleAdd, handleEdit, handleDelete }) => {
+const CollabSection = ({ colaboradores, handleAdd, handleEdit }) => {
   const [selectedCard, setSelectedCard] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [colaboradorToDelete, setColaboradorToDelete] = useState(null);
 
   const handleCardPress = (key) => {
     setSelectedCard(selectedCard === key ? null : key);
   };
 
-  console.log("(CollabSection.js) Datos recibidos de colaboradores:", colaboradores);
+  const confirmDelete = (id) => {
+    setColaboradorToDelete(id);
+    setModalVisible(true);
+};
+
+const handleDelete = async (id) => {
+    try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (!accessToken) {
+            alert('No autorizado. Por favor, inicie sesión nuevamente.');
+            return;
+        }
+        const response = await fetch(getApiUrl(`user/${id}`), {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.ok) {
+            alert('Colaborador eliminado con éxito');
+        } else {
+            alert('Error al eliminar el colaborador');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
+
 
   return (
     <View style={styles.section}>
@@ -21,9 +54,8 @@ const CollabSection = ({ colaboradores, handleAdd, handleEdit, handleDelete }) =
       >
         <Icon name="add" size={24} color="white" />
       </TouchableOpacity>
-      {colaboradores.map((colaborador) => {
-        console.log("(CollabSection.js) Datos del colaborador:", colaborador);
-        
+
+      {colaboradores.map((colaborador) => {        
         return (
           <View key={colaborador.key} style={styles.card}>
             <TouchableOpacity onPress={() => handleCardPress(colaborador.key)}>
@@ -48,16 +80,13 @@ const CollabSection = ({ colaboradores, handleAdd, handleEdit, handleDelete }) =
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
                   style={styles.actionButton}
-                  onPress={() => {
-                    console.log("(CollabSection.js) Datos enviados a ModalEditCollab:", colaborador);
-                    handleEdit(colaborador);
-                  }}
+                  onPress={() => handleEdit(colaborador)}
                 >
                   <Text style={styles.actionButtonText}>Editar</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionButton}
-                  onPress={() => handleDelete(colaborador.key)}
+                  onPress={() => confirmDelete(colaborador.key)}
                 >
                   <Text style={styles.actionButtonText}>Eliminar</Text>
                 </TouchableOpacity>
@@ -66,6 +95,20 @@ const CollabSection = ({ colaboradores, handleAdd, handleEdit, handleDelete }) =
           </View>
         );
       })}
+
+      <ModalAlert
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        message="¿Estás seguro de que deseas eliminar este colaborador?"
+        showCloseButton={false} 
+      >
+        <TouchableOpacity style={styles.actionButton} onPress={() => setModalVisible(false)}>
+          <Text style={styles.buttonText}>Cancelar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton} onPress={() => handleDelete(colaboradorToDelete)}>
+          <Text style={styles.buttonText}>Confirmar</Text>
+        </TouchableOpacity>
+      </ModalAlert>
     </View>
   );
 };

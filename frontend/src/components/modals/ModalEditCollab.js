@@ -22,7 +22,6 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => 
       setEmail(colaborador.email);
       setTelefono(colaborador.phone);
       setEspecialidad(colaborador.specialty);
-      console.log('(ModalEditCollab.js) Datos antes de editar:', colaborador);
     }
   }, [colaborador]);
 
@@ -36,8 +35,6 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => 
       specialty,
       roles: colaborador.roles,
     };
-
-    console.log('(ModalEditCollab.js) Datos actualizados luego de presionar Guardar:', updatedColaborador);
 
     try {
       const accessToken = await AsyncStorage.getItem('accessToken');

@@ -53,9 +53,7 @@ function AdminPanel() {
           const response = await axios.get(apiUrl, {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
-  
-          console.log('(AdminPanel.js) Datos rescatados de la API:', response.data);
-  
+    
           const collaborators = response.data.data
             .filter((collab) => collab.roles.includes('user'));
   
@@ -63,7 +61,7 @@ function AdminPanel() {
   
           const mappedCollaborators = collaborators.map((collab) => ({
             key: collab._id,
-            _id: collab._id, // Asegúrate de pasar el _id como propiedad
+            _id: collab._id,
             nombre: collab.nombre || collab.username,
             apellido: collab.apellido || '',
             rut: collab.rut || '',
@@ -72,9 +70,7 @@ function AdminPanel() {
             email: collab.email,
             roles: collab.roles,
           }));
-  
-          console.log('(AdminPanel.js) Colaboradores después de mapear:', mappedCollaborators);
-  
+    
           setColaboradores(mappedCollaborators);
         } else {
           console.error('(AdminPanel.js) No se encontró el token de acceso');
