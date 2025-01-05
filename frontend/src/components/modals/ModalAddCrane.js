@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../styles/ModalStyles'; 
 import validationCrane from '../../utils/validationCrane';

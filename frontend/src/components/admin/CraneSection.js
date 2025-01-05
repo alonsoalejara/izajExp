@@ -27,7 +27,7 @@ const CraneSection = ({ gruas, handleAdd, handleEdit }) => {
             alert('No autorizado. Por favor, inicie sesión nuevamente.');
             return;
         }
-        const response = await fetch(getApiUrl(`crane/${id}`), {
+        const response = await fetch(getApiUrl(`grua/${id}`), {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${accessToken}`
