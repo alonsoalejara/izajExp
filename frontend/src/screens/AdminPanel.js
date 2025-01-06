@@ -28,6 +28,7 @@ function AdminPanel() {
 
   const colaboradoresUser = colaboradores.filter(collaborator => collaborator.roles.includes('user'));
   const [collabs, setCollabs] = useState([]);
+  const [cranes, setGruas] = useState([]);
 
   useEffect(() => {
     const checkUserRole = async () => {
