@@ -12,12 +12,12 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit }) => {
 
     console.log("Datos recibidos en SetupIzajeSection:", setupIzaje);
 
-    const confirmDelete = (id) => {
-        setSetupToDelete(id);
+    const confirmDelete = (_id) => {
+        setSetupToDelete(_id);
         setModalVisible(true);
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (_id) => {
         try {
             const accessToken = await AsyncStorage.getItem('accessToken');
             if (!accessToken) {
@@ -25,7 +25,7 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit }) => {
                 return;
             }
     
-            const response = await fetch(getApiUrl(`setupIzaje/${id}`), {
+            const response = await fetch(getApiUrl(`setupIzaje/${_id}`), {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -34,7 +34,6 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit }) => {
     
             if (response.ok) {
                 alert('Plan de izaje eliminado con éxito');
-                // Aquí puedes agregar lógica adicional, como actualizar el estado para reflejar el cambio
             } else {
                 const errorResponse = await response.json();
                 console.error('Error al eliminar el plan de izaje:', errorResponse);

@@ -11,12 +11,22 @@ export const useFetchData = (endpoint) => {
     const fetchData = async () => {
       try {
         const accessToken = await AsyncStorage.getItem('accessToken');
+
         if (accessToken) {
           const apiUrl = getApiUrl(endpoint);
+
           const response = await axios.get(apiUrl, {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
-          setData(response.data.data);
+
+          console.log('API Response:', response.data);
+
+          if (response.data && response.data.data) {
+            setData(response.data.data);
+            console.log("Data set:", response.data.data);  // Verifica si los datos se han actualizado
+          } else {
+            console.error('No data found in response');
+          }
         } else {
           console.error('No access token found');
         }
@@ -26,6 +36,7 @@ export const useFetchData = (endpoint) => {
         setIsLoading(false);
       }
     };
+
     fetchData();
   }, [endpoint]);
 

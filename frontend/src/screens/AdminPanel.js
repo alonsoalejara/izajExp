@@ -16,9 +16,18 @@ function AdminPanel() {
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
   const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
 
+  // Definir los estados para la visibilidad de los modales
+  const [isModalCrearColaboradorVisible, setIsModalCrearColaboradorVisible] = useState(false);
+  const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
+  const [isModalCrearGruaVisible, setIsModalCrearGruaVisible] = useState(false);
+  const [isModalEditarGruaVisible, setIsModalEditarGruaVisible] = useState(false);
+
   const { data: colaboradores, isLoading: isLoadingColaboradores } = useFetchData('user');
   const { data: gruas, isLoading: isLoadingGruas } = useFetchData('grua');
   const { data: setupIzajes, isLoading: isLoadingSetupIzajes } = useFetchData('setupIzaje');
+
+  const colaboradoresUser = colaboradores.filter(collaborator => collaborator.roles.includes('user'));
+  const [collabs, setCollabs] = useState([]);
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -37,18 +46,18 @@ function AdminPanel() {
     checkUserRole();
   }, [navigation]);
 
-  const handleAdd = () => {
-    setIsModalCrearColaboradorVisible(true);
+  const handleAdd = (newCollaborator) => {
+    setCollabs((prev) => adminLogic.addCollaborator(prev, newCollaborator));
   };
 
   const handleEdit = (collaborator) => {
     setColaboradorSeleccionado(collaborator);
     setIsModalEditarColaboradorVisible(true);
   };
+  
 
-  const handleDelete = (rut) => {
-    setColaboradores((prev) => adminLogic.deleteCollaborator(prev, rut));
-    console.log('Colaborador eliminado', rut);
+  const handleDelete = (_id) => {
+    setCollabs((prev) => prev.filter((collaborator) => collaborator._id !== _id));
   };
 
   const handleAddGrua = () => {
@@ -84,7 +93,10 @@ function AdminPanel() {
         isVisible={isModalCrearColaboradorVisible}
         onClose={() => setIsModalCrearColaboradorVisible(false)}
         onSave={(newCollaborator) => {
-          setColaboradores((prev) => adminLogic.addCollaborator(prev, newCollaborator));
+          // Asegúrate de que 'newCollaborator' tenga los campos necesarios
+          if (newCollaborator) {
+            setCollabs((prev) => adminLogic.addCollaborator(prev, newCollaborator));
+          }
           setIsModalCrearColaboradorVisible(false);
         }}
       />
@@ -95,7 +107,7 @@ function AdminPanel() {
         onClose={() => setIsModalEditarColaboradorVisible(false)}
         colaborador={colaboradorSeleccionado}
         onUpdate={(editedCollaborator) => {
-          setColaboradores((prev) => adminLogic.editCollaborator(prev, editedCollaborator));
+          setCollabs((prev) => adminLogic.editCollaborator(prev, editedCollaborator));
           setIsModalEditarColaboradorVisible(false);
         }}
       />
@@ -123,10 +135,10 @@ function AdminPanel() {
 
       {activeSection === 'Personal' && (
         <Section.CollabSection
-          colaboradores={colaboradores}
-          handleAdd={handleAdd}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
+          colaboradores={colaboradoresUser}
+          handleAdd={() => setIsModalCrearColaboradorVisible(true)}
+          handleEdit={(collaborator) => handleEdit(collaborator)}
+          handleDelete={(_id) => handleDelete(_id)}
         />
       )}
 
@@ -134,8 +146,8 @@ function AdminPanel() {
         <Section.CraneSection
           gruas={gruas}
           handleAdd={handleAddGrua}
-          handleEdit={handleEditGrua}
-          handleDelete={handleDeleteGrua}
+          handleEdit={(grua) => handleEditGrua(grua)}
+          handleDelete={(id) => handleDeleteGrua(id)}
         />
       )}
 

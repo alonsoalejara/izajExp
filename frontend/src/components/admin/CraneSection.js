@@ -11,23 +11,23 @@ const CraneSection = ({ gruas, handleAdd, handleEdit }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [gruaToDelete, setGruaToDelete] = useState(null);
 
-  const handleCardPress = (key) => {
-    setSelectedCard(selectedCard === key ? null : key);
+  const handleCardPress = (_id) => {
+    setSelectedCard(selectedCard === _id ? null : _id);
   };
 
-  const confirmDelete = (id) => {
-    setGruaToDelete(id);
+  const confirmDelete = (_id) => {
+    setGruaToDelete(_id);
     setModalVisible(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (_id) => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken');
         if (!accessToken) {
             alert('No autorizado. Por favor, inicie sesión nuevamente.');
             return;
         }
-        const response = await fetch(getApiUrl(`grua/${id}`), {
+        const response = await fetch(getApiUrl(`grua/${_id}`), {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -56,8 +56,8 @@ const CraneSection = ({ gruas, handleAdd, handleEdit }) => {
 
       {gruas.map((grua) => {        
         return (
-          <View key={grua.key} style={styles.card}>
-            <TouchableOpacity onPress={() => handleCardPress(grua.key)}>
+          <View key={grua._id} style={styles.card}>
+            <TouchableOpacity onPress={() => handleCardPress(grua._id)}>
               <Text style={styles.cardTitle}>{grua.nombre}</Text>
               <Text style={styles.cardDetail}><Text style={styles.labelText}>Peso del Equipo: </Text>{grua.pesoEquipo} kg</Text>
               <Text style={styles.cardDetail}><Text style={styles.labelText}>Peso del Gancho: </Text>{grua.pesoGancho} kg</Text>
@@ -66,7 +66,7 @@ const CraneSection = ({ gruas, handleAdd, handleEdit }) => {
               <Text style={styles.cardDetail}><Text style={styles.labelText}>Contrapeso: </Text>{grua.contrapeso} toneladas</Text>
             </TouchableOpacity>
 
-            {selectedCard === grua.key && (
+            {selectedCard === grua._id && (
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
                   style={styles.actionButton}
@@ -76,7 +76,7 @@ const CraneSection = ({ gruas, handleAdd, handleEdit }) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionButton}
-                  onPress={() => confirmDelete(grua.key)}
+                  onPress={() => confirmDelete(grua._id)}
                 >
                   <Text style={styles.actionButtonText}>Eliminar</Text>
                 </TouchableOpacity>
