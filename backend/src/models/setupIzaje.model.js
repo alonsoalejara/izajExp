@@ -7,20 +7,51 @@ const setupIzajeSchema = new Schema(
             ref: 'User',
             required: true
         },
-        aparejos: {
-            type: Schema.Types.ObjectId,
-            ref: 'Aparejos',
-            required: true
-        },
+        aparejos: [{
+            descripcion: { type: String, required: true },
+            cantidad: { type: Number, required: true },
+            pesoUnitario: { type: Number, required: true },
+            pesoTotal: { type: Number, required: true },
+        }],
         datos: {
-            type: Schema.Types.ObjectId,
-            ref: 'Datos',
-            required: true
+            largoPluma: {
+                type: Number,
+                required: true
+            },
+            contrapeso: {
+                type: Number,
+                required: true
+            }
         },
         cargas: {
-            type: Schema.Types.ObjectId,
-            ref: 'Cargas',
-            required: true
+            pesoEquipo: {
+                type: Number,
+                required: true
+            },
+            pesoAparejos: {
+                type: Number,
+                required: true
+            },
+            pesoGancho: {
+                type: Number,
+                required: true
+            },
+            pesoTotal: {
+                type: Number,
+                required: true
+            },
+            radioTrabajoMax: {
+                type: Number,
+                required: true
+            },
+            capacidadLevante: {
+                type: Number,
+                required: true
+            },
+            porcentajeUtilizacion: {
+                type: Number,
+                required: true
+            }
         },
     },
     {
