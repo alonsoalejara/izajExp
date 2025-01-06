@@ -95,9 +95,9 @@ const TablasStyles = StyleSheet.create({
   button: {
     ...CommonStyles.button,
     backgroundColor: '#ee0000',
-    marginBottom: 25,
+    marginBottom: 30,
     paddingVertical: 15,
-    paddingHorizontal: 100,
+    paddingHorizontal: 25,
     borderRadius: 5,
     alignItems: 'center',
   },
@@ -109,7 +109,7 @@ const TablasStyles = StyleSheet.create({
   },
   fixedButtonContainer: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 20,
     left: 0,
     right: 0,
     backgroundColor: '#fff',
@@ -119,6 +119,7 @@ const TablasStyles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     alignItems: 'center',
+    paddingBottom: 20,
   },
   horizontalButtonContainer: { /* Agrega este estilo */
     flexDirection: 'row',

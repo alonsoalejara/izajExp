@@ -19,14 +19,26 @@ const SetupRadio = () => {
       return;
     }
 
+    // Agregar console.log para revisar los datos que se están enviando
+    console.log('Datos enviados a Tablas.js:');
+    console.log({
+      grua,
+      eslingaOEstrobo,
+      cantidadManiobra,
+      tipoGrillete,
+      cantidadGrilletes,
+      radioIzaje,
+      radioMontaje,
+    });
+
     navigation.navigate('Tablas', {
-      grua: grua,
-      eslingaOEstrobo: eslingaOEstrobo,
-      cantidadManiobra: cantidadManiobra,
-      tipoGrillete: tipoGrillete,
-      cantidadGrilletes: cantidadGrilletes,
-      radioIzaje: radioIzaje,
-      radioMontaje: radioMontaje,
+      grua,
+      eslingaOEstrobo,
+      cantidadManiobra,
+      tipoGrillete,
+      cantidadGrilletes,
+      radioIzaje,
+      radioMontaje,
     });
   };
 

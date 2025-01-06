@@ -5,7 +5,7 @@ import axios from 'axios';
 import getApiUrl from '../../utils/apiUrl';
 import TablasStyles from '../../styles/TablasStyles';
 
-const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje }) => {
+const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga }) => {
     const [cargaRows, setCargaRows] = useState([
         { item: '1', descripcion: 'PESO DEL EQUIPO', valor: 'N/A' },
         { item: '2', descripcion: 'PESO DE APAREJOS', valor: 'N/A' },
@@ -46,10 +46,16 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje }) => {
                                 return { ...row, valor: `${gruaSeleccionadaData.capacidadLevante} kg` };
                             }
                             if (row.descripcion === 'RADIO DE TRABAJO MÁX') {
-                                // Asegúrate de que los radios estén disponibles
                                 const radioMax = Math.max(radioIzaje, radioMontaje); 
                                 return { ...row, valor: `${radioMax} mts` };
                             }
+                            if (row.descripcion === 'PESO DE APAREJOS') {
+                                return { ...row, valor: `${totalPesoAparejos} kg` };
+                            }
+                            if (row.descripcion === 'PESO TOTAL') {
+                                return { ...row, valor: `${pesoTotalCarga} kg` };
+                            }
+
                             return row;
                         }));
                     }
@@ -62,7 +68,7 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje }) => {
         };
 
         fetchGruas();
-    }, [grúaSeleccionada, radioIzaje, radioMontaje]);
+    }, [grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga]);
 
     if (loading) {
         return <ActivityIndicator size="large" color="#0000ff" />;

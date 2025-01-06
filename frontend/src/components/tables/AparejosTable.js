@@ -3,14 +3,12 @@ import TablasStyles from '../../styles/TablasStyles';
 
 const AparejosTable = ({ rows, totalPesoAparejos, grúaSeleccionada }) => (
   <View style={TablasStyles.table}>
-    {/* Título con el nombre de la grúa seleccionada */}
     <View style={TablasStyles.fullRow}>
       <Text style={[TablasStyles.fullRowText, TablasStyles.titleText]}>
         {grúaSeleccionada ? `CUADRO APAREJOS GRÚA: ${grúaSeleccionada}` : 'CUADRO APAREJOS'}
       </Text>
     </View>
 
-    {/* Encabezados de las columnas */}
     <View style={TablasStyles.row}>
       <Text style={[TablasStyles.cell, { flex: 1.2 , fontWeight: 'bold'}]}>ITEM</Text>
       <Text style={[TablasStyles.cell, { flex: 4.9, fontWeight: 'bold' }]}>DESCRIPCIÓN</Text>
@@ -19,7 +17,6 @@ const AparejosTable = ({ rows, totalPesoAparejos, grúaSeleccionada }) => (
       <Text style={[TablasStyles.cell, { flex: 1.5 , fontWeight: 'bold' }]}>PESO TOTAL (Kg.)</Text>
     </View>
 
-    {/* Filas dinámicas */}
     {rows.map((row, index) => (
       <View key={index} style={TablasStyles.row}>
         <Text style={[TablasStyles.cell, { flex: 1.2 }]}>{row.item}</Text>
@@ -30,7 +27,6 @@ const AparejosTable = ({ rows, totalPesoAparejos, grúaSeleccionada }) => (
       </View>
     ))}
 
-    {/* Fila de total */}
     <View style={TablasStyles.row}>
       <Text style={TablasStyles.totalColumn}>Total Peso Aparejos</Text>
       <Text style={[TablasStyles.numberColumn, { padding: 3 }]}>{totalPesoAparejos} kg</Text>
