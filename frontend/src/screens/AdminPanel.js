@@ -40,6 +40,7 @@ function AdminPanel() {
   const [isModalCrearGruaVisible, setIsModalCrearGruaVisible] = useState(false);
   const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
   const [isModalEditarGruaVisible, setIsModalEditarGruaVisible] = useState(false);
+  const [setupIzajes, setSetupIzaje] = useState([]);
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -124,7 +125,62 @@ function AdminPanel() {
     fetchGruas();
   }, []);
   
-  
+  useEffect(() => {
+    const fetchSetupIzaje = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (accessToken) {
+          const apiUrl = getApiUrl("setupIzaje");
+          const response = await axios.get(apiUrl, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+          
+          if (response.data && response.data.data) {
+            const mappedSetupIzaje = response.data.data.map((setup) => ({
+              key: setup._id,
+              _id: setup._id,
+              datos: {
+                largoPluma: setup.datos.largoPluma || '',
+                contrapeso: setup.datos.contrapeso || ''
+              },
+              cargas: {
+                pesoEquipo: setup.cargas.pesoEquipo || '',
+                pesoAparejos: setup.cargas.pesoAparejos || '',
+                pesoGancho: setup.cargas.pesoGancho || '',
+                pesoTotal: setup.cargas.pesoTotal || '',
+                radioTrabajoMax: setup.cargas.radioTrabajoMax || '',
+                capacidadLevante: setup.cargas.capacidadLevante || '',
+                porcentajeUtilizacion: setup.cargas.porcentajeUtilizacion || ''
+              },
+              usuario: {
+                _id: setup.usuario._id,
+                nombre: setup.usuario.nombre || '',
+                apellido: setup.usuario.apellido || '',
+                email: setup.usuario.email || ''
+              },
+              aparejos: setup.aparejos.map(aparejo => ({
+                descripcion: aparejo.descripcion || '',
+                cantidad: aparejo.cantidad || '',
+                pesoUnitario: aparejo.pesoUnitario || '',
+                pesoTotal: aparejo.pesoTotal || '',
+                _id: aparejo._id
+              }))
+            }));
+
+            setSetupIzaje(mappedSetupIzaje);
+          } else {
+            console.error('Respuesta inesperada al obtener los planes de izaje:', response);
+          }
+        } else {
+          console.error('(AdminPanel.js) No se encontró el token de acceso');
+        }
+      } catch (error) {
+        console.error('(AdminPanel.js) Error al obtener los planes de izaje:', error);
+      }
+    };
+
+    fetchSetupIzaje();
+  }, []);
 
   const handleAdd = () => {
     setIsModalCrearColaboradorVisible(true);
@@ -225,6 +281,13 @@ function AdminPanel() {
           handleAdd={handleAddGrua}
           handleEdit={handleEditGrua}
           handleDelete={handleDeleteGrua}
+        />
+      )}
+
+      {activeSection === 'Planes' && (
+        <Section.SetupIzajeSection
+          setupIzaje={setupIzajes}
+          handleDelete={handleDelete}
         />
       )}
     </ScrollView>

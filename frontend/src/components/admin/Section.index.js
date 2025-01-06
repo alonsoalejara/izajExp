@@ -1,11 +1,11 @@
 import CollabSection from "./CollabSection";
 import CraneSection from "./CraneSection";
-import PlanIzajeSection from "./PlanIzajeSection";
+import SetupIzajeSection from "./SetupIzajeSection";
 
 const Section = {
     CollabSection,
     CraneSection,
-    PlanIzajeSection
+    SetupIzajeSection
 };
 
 export default Section;
