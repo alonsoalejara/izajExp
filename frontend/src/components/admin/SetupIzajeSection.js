@@ -10,8 +10,6 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit }) => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [setupToDelete, setSetupToDelete] = useState(null);
 
-    console.log("Datos recibidos en SetupIzajeSection:", setupIzaje);
-
     const confirmDelete = (_id) => {
         setSetupToDelete(_id);
         setModalVisible(true);
@@ -53,7 +51,6 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit }) => {
 
             {/* Verificación de datos */}
             {(setupIzaje && Array.isArray(setupIzaje) && setupIzaje.length > 0) ? setupIzaje.map((setup) => {
-                console.log("Configuración de izaje individual:", setup);
                 return (
                     <View key={setup._id} style={styles.card}>
                         <TouchableOpacity onPress={() => setSelectedSetup(selectedSetup === setup._id ? null : setup._id)}>
@@ -78,7 +75,6 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit }) => {
 
                                 <Text style={styles.cardSubtitle}>Aparejos:</Text>
                                 {setup.aparejos && setup.aparejos.length > 0 ? setup.aparejos.map((aparejo, index) => {
-                                    console.log("Aparejo individual:", aparejo);
                                     return (
                                         <View key={index} style={styles.cardItem}>
                                             <Text style={styles.cardDetail}><Text style={styles.labelText}>Descripción: </Text>{aparejo.descripcion || 'No disponible'}</Text>

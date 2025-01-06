@@ -72,7 +72,6 @@ function AdminPanel() {
 
   const handleDeleteGrua = (id) => {
     setGruas((prev) => Logic.gruaLogic.deleteGrua(prev, id));
-    console.log('Grúa eliminada', id);
   };
 
   // Manejo de editar y eliminar planes de izaje
@@ -83,7 +82,6 @@ function AdminPanel() {
 
   const handleDeleteSetupIzaje = (id) => {
     setSetupIzajes((prev) => Logic.setupIzajeLogic.deleteSetupIzaje(prev, id));
-    console.log('Plan de izaje eliminado', id);
   };
 
   return (
