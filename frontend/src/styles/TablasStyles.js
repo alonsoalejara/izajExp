@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
 import CommonStyles from './CommonStyles';
 
-// Función reutilizable para estilos de celdas
 const cellStyle = (padding = 4.5, textAlign = 'center', fontSize = 12.7) => ({
   padding,
   borderWidth: 1,

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image, Platform } from "react-native";
 import Svg, { LinearGradient, Stop, Rect } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { jwtDecode } from 'jwt-decode';
 import LoginStyles from "../styles/LoginStyles";
 import ModalAlert from "../components/modals/ModalAlert";
 import getApiUrl from "../utils/apiUrl";
@@ -14,63 +15,76 @@ export default function Login({ navigation }) {
 
   const handleLogin = async () => {
     if (email && password) {
-      try {
-        const apiUrl = getApiUrl("auth/login");
-        const response = await fetch(apiUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        });
+        try {
+            const apiUrl = getApiUrl("auth/login");
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (response.ok) {
-          if (data && data.data) {
-            const { accessToken, refreshToken, roles } = data.data;
+            if (response.ok) {
+                if (data && data.data) {
+                    const { accessToken, refreshToken, roles } = data.data;
 
-            if (accessToken) {
-              await AsyncStorage.setItem("accessToken", accessToken);
-              if (refreshToken) {
-                await AsyncStorage.setItem("refreshToken", refreshToken);
-              }
+                    if (accessToken) {
+                        await AsyncStorage.setItem("accessToken", accessToken);
+                        
+                        // ✅ Decodificar el token y extraer el usuarioId
+                        const decodedToken = jwtDecode(accessToken);
+                        const usuarioId = decodedToken.id;
 
-              if (Array.isArray(roles) && roles.length > 0) {
-                await AsyncStorage.setItem("roles", JSON.stringify(roles));
-              }
+                        if (usuarioId) {
+                            await AsyncStorage.setItem("usuarioId", usuarioId.toString());
+                        } else {
+                            console.warn("No se pudo extraer el usuarioId del token.");
+                        }
 
-              const role = roles[0];
-              if (role === "user") {
-                navigation.navigate("SetupIzaje");
-              } else if (role === "admin") {
-                navigation.navigate("AdminOptions");
-              } else {
-                setModalMessage("Rol de usuario no reconocido");
-                setModalVisible(true);
-              }
+                        if (refreshToken) {
+                            await AsyncStorage.setItem("refreshToken", refreshToken);
+                        }
+
+                        if (Array.isArray(roles) && roles.length > 0) {
+                            await AsyncStorage.setItem("roles", JSON.stringify(roles));
+                        }
+
+                        // ✅ Navegación basada en el rol
+                        const role = roles[0];
+                        if (role === "user") {
+                            navigation.navigate("SetupIzaje");
+                        } else if (role === "admin") {
+                            navigation.navigate("AdminOptions");
+                        } else {
+                            setModalMessage("Rol de usuario no reconocido");
+                            setModalVisible(true);
+                        }
+                    } else {
+                        setModalMessage("Tokens de autenticación no recibidos correctamente");
+                        setModalVisible(true);
+                    }
+                } else {
+                    setModalMessage("Error en la respuesta del servidor: datos no disponibles");
+                    setModalVisible(true);
+                }
             } else {
-              setModalMessage("Tokens de autenticación no recibidos correctamente");
-              setModalVisible(true);
+                setModalMessage(data.message || "Error al iniciar sesión");
+                setModalVisible(true);
             }
-          } else {
-            setModalMessage("Error en la respuesta del servidor: datos no disponibles");
+        } catch (error) {
+            console.error("Error al autenticar:", error);
+            setModalMessage("Error en la conexión con el servidor");
             setModalVisible(true);
-          }
-        } else {
-          setModalMessage(data.message || "Error al iniciar sesión");
-          setModalVisible(true);
         }
-      } catch (error) {
-        console.error("Error al autenticar:", error);
-        setModalMessage("Error en la conexión con el servidor");
-        setModalVisible(true);
-      }
     } else {
-      setModalMessage("Por favor, ingrese ambos campos");
-      setModalVisible(true);
+        setModalMessage("Por favor, ingrese ambos campos");
+        setModalVisible(true);
     }
   };
+
 
   return (
     <View style={LoginStyles.container}>
