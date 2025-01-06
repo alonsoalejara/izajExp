@@ -6,8 +6,7 @@ import Section from '../components/admin/Section.index';
 import styles from '../styles/AdminPanelStyles';
 import { useFetchData } from '../hooks/useFetchData';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { gruaLogic } from '../logic/gruaLogic';
-import { adminLogic } from '../logic/adminLogic';
+import Logic from '../logic/logic.index'; // Importa el objeto Logic que contiene todas las lógicas
 
 function AdminPanel() {
   const navigation = useNavigation();
@@ -15,12 +14,14 @@ function AdminPanel() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
   const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
+  const [setupIzajeSeleccionado, setSetupIzajeSeleccionado] = useState(null);
 
-  // Definir los estados para la visibilidad de los modales
+  // Modal visibility states
   const [isModalCrearColaboradorVisible, setIsModalCrearColaboradorVisible] = useState(false);
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
   const [isModalCrearGruaVisible, setIsModalCrearGruaVisible] = useState(false);
   const [isModalEditarGruaVisible, setIsModalEditarGruaVisible] = useState(false);
+  const [isModalEditarSetupIzajeVisible, setIsModalEditarSetupIzajeVisible] = useState(false);
 
   const { data: colaboradores, isLoading: isLoadingColaboradores } = useFetchData('user');
   const { data: gruas, isLoading: isLoadingGruas } = useFetchData('grua');
@@ -48,14 +49,13 @@ function AdminPanel() {
   }, [navigation]);
 
   const handleAdd = (newCollaborator) => {
-    setCollabs((prev) => adminLogic.addCollaborator(prev, newCollaborator));
+    setCollabs((prev) => Logic.adminLogic.addCollaborator(prev, newCollaborator));
   };
 
   const handleEdit = (collaborator) => {
     setColaboradorSeleccionado(collaborator);
     setIsModalEditarColaboradorVisible(true);
   };
-  
 
   const handleDelete = (_id) => {
     setCollabs((prev) => prev.filter((collaborator) => collaborator._id !== _id));
@@ -71,8 +71,19 @@ function AdminPanel() {
   };
 
   const handleDeleteGrua = (id) => {
-    setGruas((prev) => gruaLogic.deleteGrua(prev, id));
+    setGruas((prev) => Logic.gruaLogic.deleteGrua(prev, id));
     console.log('Grúa eliminada', id);
+  };
+
+  // Manejo de editar y eliminar planes de izaje
+  const handleEditSetupIzaje = (setup) => {
+    setSetupIzajeSeleccionado(setup);
+    setIsModalEditarSetupIzajeVisible(true);
+  };
+
+  const handleDeleteSetupIzaje = (id) => {
+    setSetupIzajes((prev) => Logic.setupIzajeLogic.deleteSetupIzaje(prev, id));
+    console.log('Plan de izaje eliminado', id);
   };
 
   return (
@@ -96,7 +107,7 @@ function AdminPanel() {
         onSave={(newCollaborator) => {
           // Asegúrate de que 'newCollaborator' tenga los campos necesarios
           if (newCollaborator) {
-            setCollabs((prev) => adminLogic.addCollaborator(prev, newCollaborator));
+            setCollabs((prev) => Logic.adminLogic.addCollaborator(prev, newCollaborator));
           }
           setIsModalCrearColaboradorVisible(false);
         }}
@@ -108,7 +119,7 @@ function AdminPanel() {
         onClose={() => setIsModalEditarColaboradorVisible(false)}
         colaborador={colaboradorSeleccionado}
         onUpdate={(editedCollaborator) => {
-          setCollabs((prev) => adminLogic.editCollaborator(prev, editedCollaborator));
+          setCollabs((prev) => Logic.adminLogic.editCollaborator(prev, editedCollaborator));
           setIsModalEditarColaboradorVisible(false);
         }}
       />
@@ -118,7 +129,7 @@ function AdminPanel() {
         isVisible={isModalCrearGruaVisible}
         onClose={() => setIsModalCrearGruaVisible(false)}
         onSave={(newGrua) => {
-          setGruas((prev) => gruaLogic.addGrua(prev, newGrua));
+          setGruas((prev) => Logic.gruaLogic.addGrua(prev, newGrua));
           setIsModalCrearGruaVisible(false);
         }}
       />
@@ -129,8 +140,19 @@ function AdminPanel() {
         onClose={() => setIsModalEditarGruaVisible(false)}
         grua={gruaSeleccionada}
         onUpdate={(editedGrua) => {
-          setGruas((prev) => gruaLogic.editGrua(prev, editedGrua));
+          setGruas((prev) => Logic.gruaLogic.editGrua(prev, editedGrua));
           setIsModalEditarGruaVisible(false);
+        }}
+      />
+
+      {/* Modal para editar plan de izaje */}
+      <ModalsAdmin.ModalEditSetupIzaje
+        isVisible={isModalEditarSetupIzajeVisible}
+        onClose={() => setIsModalEditarSetupIzajeVisible(false)}
+        setupIzaje={setupIzajeSeleccionado}
+        onUpdate={(editedSetupIzaje) => {
+          setSetupIzajes((prev) => Logic.setupIzajeLogic.editSetupIzaje(prev, editedSetupIzaje));
+          setIsModalEditarSetupIzajeVisible(false);
         }}
       />
 
@@ -155,7 +177,8 @@ function AdminPanel() {
       {activeSection === 'Planes' && (
         <Section.SetupIzajeSection
           setupIzaje={setupIzajes}
-          handleDelete={handleDelete}
+          handleEdit={(setup) => handleEditSetupIzaje(setup)}
+          handleDelete={(id) => handleDeleteSetupIzaje(id)}
         />
       )}
     </ScrollView>
