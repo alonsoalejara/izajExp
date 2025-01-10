@@ -16,6 +16,7 @@ function AdminPanel() {
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
   const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
   const [setupIzajeSeleccionado, setSetupIzajeSeleccionado] = useState(null);
+  const [gruasState, setGruasState] = useState(gruas || []);
 
   const [isModalCrearColaboradorVisible, setIsModalCrearColaboradorVisible] = useState(false);
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
@@ -24,7 +25,7 @@ function AdminPanel() {
   const [isModalEditarSetupIzajeVisible, setIsModalEditarSetupIzajeVisible] = useState(false);
 
   const { data: colaboradores, refetch: refetchColaboradores } = useFetchData('user');
-  const { data: gruas, refetch: refetchGruas } = useFetchData('grua');
+  const { data: gruas = [], refetch: refetchGruas } = useFetchData('grua');
   const { data: setupIzajes, refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
 
   useEffect(() => {
@@ -43,6 +44,10 @@ function AdminPanel() {
     };
     checkUserRole();
   }, [navigation]);
+
+  useEffect(() => {
+    setGruasState(gruas || []);
+  }, [gruas]);
 
   const handleAddColaborador = async (newCollaborator) => {
     try {
@@ -95,9 +100,10 @@ function AdminPanel() {
 
   const handleAddGrua = async (newGrua) => {
     try {
-      Logic.gruaLogic.addGrua(newGrua);
-      setIsModalCrearGruaVisible(false);
+      const updatedGruas = Logic.gruaLogic.addGrua(gruasState, newGrua);
+      setGruasState(updatedGruas);
       refetchGruas();
+      setIsModalCrearGruaVisible(false);
     } catch (error) {
       console.error('Error al agregar grúa:', error);
     }
@@ -193,7 +199,7 @@ function AdminPanel() {
 
       {activeSection === 'Gruas' && (
         <Section.CraneSection
-          gruas={gruas}
+          gruas={Array.isArray(gruas) ? gruas : []}
           handleAdd={() => setIsModalCrearGruaVisible(true)}
           handleEdit={handleEditGrua}
           handleDelete={handleDeleteGrua}
