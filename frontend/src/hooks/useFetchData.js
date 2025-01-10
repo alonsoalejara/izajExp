@@ -19,11 +19,8 @@ export const useFetchData = (endpoint) => {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
 
-          console.log('API Response:', response.data);
-
           if (response.data && response.data.data) {
             setData(response.data.data);
-            console.log("Data set:", response.data.data);  // Verifica si los datos se han actualizado
           } else {
             console.error('No data found in response');
           }
