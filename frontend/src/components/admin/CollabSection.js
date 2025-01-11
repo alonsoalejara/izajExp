@@ -6,7 +6,7 @@ import styles from '../../styles/AdminPanelStyles';
 import ModalAlert from '../modals/ModalAlert';
 import getApiUrl from '../../utils/apiUrl';
 
-const CollabSection = ({ colaboradores, handleAdd, handleEdit, fetchColaboradores }) => {
+const CollabSection = ({ colaboradores, handleAdd, handleEdit, setColaboradores }) => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [colaboradorToDelete, setColaboradorToDelete] = useState(null);
@@ -36,7 +36,9 @@ const CollabSection = ({ colaboradores, handleAdd, handleEdit, fetchColaboradore
 
       if (response.ok) {
         alert('Colaborador eliminado con éxito');
-        await fetchColaboradores();
+        const updatedColaboradores = colaboradores.filter(colaborador => colaborador._id !== _id);
+        setColaboradores(updatedColaboradores);
+        setModalVisible(false);  // Cerrar modal solo después de la eliminación exitosa
       } else {
         alert('Error al eliminar el colaborador');
       }
@@ -54,7 +56,6 @@ const CollabSection = ({ colaboradores, handleAdd, handleEdit, fetchColaboradore
         style={styles.actionButton}
         onPress={async () => {
           await handleAdd('Colaboradores');
-          await fetchColaboradores(); 
         }}
       >
         <Icon name="add" size={24} color="white" />

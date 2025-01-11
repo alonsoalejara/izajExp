@@ -16,6 +16,7 @@ function AdminPanel() {
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
   const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
   const [setupIzajeSeleccionado, setSetupIzajeSeleccionado] = useState(null);
+  const [colaboradoresState, setColaboradoresState] = useState(colaboradores || []);
   const [gruasState, setGruasState] = useState(gruas || []);
 
   const [isModalCrearColaboradorVisible, setIsModalCrearColaboradorVisible] = useState(false);
@@ -24,7 +25,7 @@ function AdminPanel() {
   const [isModalEditarGruaVisible, setIsModalEditarGruaVisible] = useState(false);
   const [isModalEditarSetupIzajeVisible, setIsModalEditarSetupIzajeVisible] = useState(false);
 
-  const { data: colaboradores, refetch: refetchColaboradores } = useFetchData('user');
+  const { data: colaboradores = [], refetch: refetchColaboradores } = useFetchData('user');
   const { data: gruas = [], refetch: refetchGruas } = useFetchData('grua');
   const { data: setupIzajes, refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
 
@@ -47,44 +48,35 @@ function AdminPanel() {
 
   useEffect(() => {
     setGruasState(gruas || []);
-  }, [gruas]);
+    setColaboradoresState(colaboradores || []);
+  }, [gruas, colaboradores]);
 
   const handleAddColaborador = async (newCollaborator) => {
     try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
-      
-      if (!accessToken) {
-        alert('No se encontró el token de acceso');
-        return;
-      }
-  
-      const response = await fetch(getApiUrl('user/'), { 
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(newCollaborator),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        refetchColaboradores();
-        setIsModalCrearColaboradorVisible(false);
-      } else {
-        console.error('Error al guardar:', data);
-        alert('Hubo un error al guardar el colaborador.');
-      }
+      const updatedColaboradores = adminLogic.addCollaborator(colaboradoresState, newCollaborator);
+      setColaboradoresState(updatedColaboradores);
+      refetchColaboradores();
+      setIsModalCrearColaboradorVisible(false);
     } catch (error) {
       console.error('Error al agregar colaborador:', error);
-      alert('Hubo un error al agregar el colaborador.');
     }
   };
 
   const handleEditColaborador = (collaborator) => {
     setColaboradorSeleccionado(collaborator);
     setIsModalEditarColaboradorVisible(true);
+  };
+
+  const handleDeleteColaborador = async (id) => {
+    try {
+      await adminLogic.deleteCollaborator(id);
+      refetchColaboradores();
+        const updatedColaboradores = colaboradoresState.filter(collaborator => collaborator.id !== id);
+      setColaboradoresState(updatedColaboradores);
+  
+    } catch (error) {
+      console.error('Error al eliminar colaborador:', error);
+    }
   };
 
   const handleAddGrua = async (newGrua) => {
@@ -187,10 +179,12 @@ function AdminPanel() {
 
       {activeSection === 'Personal' && (
         <Section.CollabSection
-          colaboradores={colaboradores}
+          colaboradores={colaboradoresState}
           handleAdd={() => setIsModalCrearColaboradorVisible(true)}
           handleEdit={handleEditColaborador}
-          fetchColaboradores={refetchColaboradores}  
+          handleDelete={handleDeleteColaborador}
+          fetchColaboradores={refetchColaboradores}
+          setColaboradores={setColaboradoresState}
         />
       )}
 
