@@ -36,14 +36,14 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
         roles: ['user'],
         password: generarPassword(),
       };
-
+  
       try {
         const accessToken = await AsyncStorage.getItem('accessToken');
         if (!accessToken) {
           alert('No autorizado. Por favor, inicie sesión nuevamente.');
           return;
         }
-
+  
         const response = await fetch(getApiUrl('user/'), { 
           method: 'POST',
           headers: {
@@ -52,11 +52,12 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
           },
           body: JSON.stringify(nuevoColaborador),
         });
-
+  
         const data = await response.json();
         if (response.ok) {
           onSave(nuevoColaborador);
           onClose();
+          fetchColaboradores();
         } else {
           console.error('Error al guardar:', data);
         }

@@ -1,6 +1,6 @@
-import * as adminLogic from './adminLogic';
-import * as gruaLogic from './gruaLogic';
-import * as setupIzajeLogic from './setupIzajeLogic';
+import { adminLogic } from './adminLogic';
+import { gruaLogic } from './gruaLogic';
+import { setupIzajeLogic } from './setupIzajeLogic';
 
 const Logic = {
   adminLogic,
