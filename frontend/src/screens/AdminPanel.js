@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useFetchData } from '../hooks/useFetchData';
+import Logic from '../logic/logic.index';
 import ModalsAdmin from '../components/modals/ModalAdmin.index';
 import Section from '../components/admin/Section.index';
 import styles from '../styles/AdminPanelStyles';
-import { useFetchData } from '../hooks/useFetchData';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Logic from '../logic/logic.index';
-import getApiUrl from '../utils/apiUrl';
 
 function AdminPanel() {
   const navigation = useNavigation();
@@ -53,7 +52,7 @@ function AdminPanel() {
 
   const handleAddColaborador = async (newCollaborator) => {
     try {
-      const updatedColaboradores = adminLogic.addCollaborator(colaboradoresState, newCollaborator);
+      const updatedColaboradores = Logic.adminLogic.addCollaborator(colaboradoresState, newCollaborator);
       setColaboradoresState(updatedColaboradores);
       refetchColaboradores();
       setIsModalCrearColaboradorVisible(false);
@@ -62,14 +61,20 @@ function AdminPanel() {
     }
   };
 
-  const handleEditColaborador = (collaborator) => {
-    setColaboradorSeleccionado(collaborator);
-    setIsModalEditarColaboradorVisible(true);
+  const handleEditColaborador = async (colaborador) => {
+    try {
+      const updatedColaboradores = Logic.colaboradorLogic.editColaborador(colaboradoresState, colaborador);
+      setColaboradoresState(updatedColaboradores);
+      refetchColaboradores();
+      setIsModalEditarColaboradorVisible(false);
+    } catch (error) {
+      console.error('Error al editar colaborador:', error);
+    }
   };
 
   const handleDeleteColaborador = async (id) => {
     try {
-      await adminLogic.deleteCollaborator(id);
+      await Logic.adminLogic.deleteCollaborator(id);
       refetchColaboradores();
         const updatedColaboradores = colaboradoresState.filter(collaborator => collaborator.id !== id);
       setColaboradoresState(updatedColaboradores);
@@ -179,11 +184,13 @@ function AdminPanel() {
 
       {activeSection === 'Personal' && (
         <Section.CollabSection
-          colaboradores={colaboradoresState}
+          colaboradores={colaboradoresState} 
           handleAdd={() => setIsModalCrearColaboradorVisible(true)}
-          handleEdit={handleEditColaborador}
+          handleEdit={(colaborador) => {
+            setColaboradorSeleccionado(colaborador);
+            setIsModalEditarColaboradorVisible(true);
+          }}
           handleDelete={handleDeleteColaborador}
-          fetchColaboradores={refetchColaboradores}
           setColaboradores={setColaboradoresState}
         />
       )}

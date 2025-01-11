@@ -38,7 +38,7 @@ const CollabSection = ({ colaboradores, handleAdd, handleEdit, setColaboradores 
         alert('Colaborador eliminado con éxito');
         const updatedColaboradores = colaboradores.filter(colaborador => colaborador._id !== _id);
         setColaboradores(updatedColaboradores);
-        setModalVisible(false);  // Cerrar modal solo después de la eliminación exitosa
+        setModalVisible(false);
       } else {
         alert('Error al eliminar el colaborador');
       }
@@ -61,8 +61,8 @@ const CollabSection = ({ colaboradores, handleAdd, handleEdit, setColaboradores 
         <Icon name="add" size={24} color="white" />
       </TouchableOpacity>
 
-      {colaboradoresFiltrados.map((colaborador) => (
-        <View key={colaborador._id} style={styles.card}>
+      {colaboradoresFiltrados.map((colaborador, index) => (
+        <View key={colaborador._id || `colaborador-${index}`} style={styles.card}>
           <TouchableOpacity onPress={() => handleCardPress(colaborador._id)}>
             <Text style={styles.cardTitle}>
               {colaborador.nombre} {colaborador.apellido}

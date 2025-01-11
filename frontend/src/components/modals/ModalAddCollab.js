@@ -57,7 +57,6 @@ const ModalCrearColaborador = ({ isVisible, onClose, onSave }) => {
         if (response.ok) {
           onSave(nuevoColaborador);
           onClose();
-          fetchColaboradores();
         } else {
           console.error('Error al guardar:', data);
         }
