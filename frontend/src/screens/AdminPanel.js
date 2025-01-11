@@ -81,21 +81,10 @@ function AdminPanel() {
       alert('Hubo un error al agregar el colaborador.');
     }
   };
-  
-  
 
   const handleEditColaborador = (collaborator) => {
     setColaboradorSeleccionado(collaborator);
     setIsModalEditarColaboradorVisible(true);
-  };
-
-  const handleDeleteColaborador = async (_id) => {
-    try {
-      await Logic.adminLogic.deleteCollaborator(_id);
-      refetchColaboradores();
-    } catch (error) {
-      console.error('Error al eliminar colaborador:', error);
-    }
   };
 
   const handleAddGrua = async (newGrua) => {
@@ -109,9 +98,15 @@ function AdminPanel() {
     }
   };
 
-  const handleEditGrua = (grua) => {
-    setGruaSeleccionada(grua);
-    setIsModalEditarGruaVisible(true);
+  const handleEditGrua = async (grua) => {
+    try {
+      const updatedGruas = Logic.gruaLogic.editGrua(gruasState, grua);
+      setGruasState(updatedGruas);
+      refetchGruas();
+      setIsModalEditarGruaVisible(false);
+    } catch (error) {
+      console.error('Error al editar grúa:', error);
+    }
   };
 
   const handleDeleteGrua = async (id) => {
@@ -124,7 +119,7 @@ function AdminPanel() {
       console.error('Error al eliminar grúa:', error);
     }
   };
-  
+
   const handleEditSetupIzaje = (setup) => {
     setSetupIzajeSeleccionado(setup);
     setIsModalEditarSetupIzajeVisible(true);
@@ -203,7 +198,10 @@ function AdminPanel() {
         <Section.CraneSection
           gruas={gruasState} 
           handleAdd={() => setIsModalCrearGruaVisible(true)}
-          handleEdit={handleEditGrua}
+          handleEdit={(grua) => {
+            setGruaSeleccionada(grua);
+            setIsModalEditarGruaVisible(true);
+          }}
           handleDelete={handleDeleteGrua}
           setGruas={setGruasState}
         />
