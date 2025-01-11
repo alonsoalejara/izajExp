@@ -118,11 +118,13 @@ function AdminPanel() {
     try {
       await Logic.gruaLogic.deleteGrua(id);
       refetchGruas();
+      const updatedGruas = gruasState.filter(grua => grua._id !== id);
+      setGruasState(updatedGruas);
     } catch (error) {
       console.error('Error al eliminar grúa:', error);
     }
   };
-
+  
   const handleEditSetupIzaje = (setup) => {
     setSetupIzajeSeleccionado(setup);
     setIsModalEditarSetupIzajeVisible(true);
@@ -199,10 +201,11 @@ function AdminPanel() {
 
       {activeSection === 'Gruas' && (
         <Section.CraneSection
-          gruas={Array.isArray(gruas) ? gruas : []}
+          gruas={gruasState} 
           handleAdd={() => setIsModalCrearGruaVisible(true)}
           handleEdit={handleEditGrua}
           handleDelete={handleDeleteGrua}
+          setGruas={setGruasState}
         />
       )}
 

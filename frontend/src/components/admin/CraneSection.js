@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import styles from '../../styles/AdminPanelStyles'; 
+import styles from '../../styles/AdminPanelStyles';
 import ModalAlert from '../modals/ModalAlert';
 import getApiUrl from '../../utils/apiUrl';
 
-const CraneSection = ({ gruas, handleAdd, handleEdit }) => {
+const CraneSection = ({ gruas, handleAdd, handleEdit, setGruas }) => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [gruaToDelete, setGruaToDelete] = useState(null);
@@ -36,13 +36,16 @@ const CraneSection = ({ gruas, handleAdd, handleEdit }) => {
 
         if (response.ok) {
             alert('Grúa eliminada con éxito');
+            const updatedGruas = gruas.filter(grua => grua._id !== _id);
+            setGruas(updatedGruas);
+            setModalVisible(false);
         } else {
             alert('Error al eliminar la grúa');
         }
     } catch (error) {
         console.error('Error:', error);
     }
-  };
+};
 
   return (
     <View style={styles.section}>
@@ -54,9 +57,8 @@ const CraneSection = ({ gruas, handleAdd, handleEdit }) => {
         <Icon name="add" size={24} color="white" />
       </TouchableOpacity>
 
-      {gruas.map((grua) => {        
-        return (
-          <View key={grua._id} style={styles.card}>
+      {gruas.map((grua, index) => (
+          <View key={grua._id || `grua-${index}`} style={styles.card}>
             <TouchableOpacity onPress={() => handleCardPress(grua._id)}>
               <Text style={styles.cardTitle}>{grua.nombre}</Text>
               <Text style={styles.cardDetail}><Text style={styles.labelText}>Peso del Equipo: </Text>{grua.pesoEquipo} kg</Text>
@@ -83,8 +85,7 @@ const CraneSection = ({ gruas, handleAdd, handleEdit }) => {
               </View>
             )}
           </View>
-        );
-      })}
+      ))}
 
       <ModalAlert
         isVisible={isModalVisible}
