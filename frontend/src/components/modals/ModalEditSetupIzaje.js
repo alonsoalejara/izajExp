@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import styles from '../../styles/ModalStyles';
 import getApiUrl from '../../utils/apiUrl';
 
-const ModalEditCrane = ({ isVisible, onClose, setupIzaje, onUpdate }) => {
+const ModalEditSetupIzaje = ({ isVisible, onClose, setupIzaje, onUpdate }) => {
   const [largoPluma, setLargoPluma] = useState(setupIzaje ? setupIzaje.datos.largoPluma : '');
   const [contrapeso, setContrapeso] = useState(setupIzaje ? setupIzaje.datos.contrapeso : '');
   const [pesoEquipo, setPesoEquipo] = useState(setupIzaje ? setupIzaje.cargas.pesoEquipo : '');
-  const [pesoAparejos1] = useState(setupIzaje ? setupIzaje.aparejos[0].pesoUnitario : '');
-  const [cantidadAparejos1, setCantidadAparejos1] = useState(setupIzaje ? setupIzaje.aparejos[0].cantidad : '');
-  const [pesoAparejos2] = useState(setupIzaje ? setupIzaje.aparejos[1].pesoUnitario : '');
-  const [cantidadAparejos2, setCantidadAparejos2] = useState(setupIzaje ? setupIzaje.aparejos[1].cantidad : '');
   const [pesoGancho, setPesoGancho] = useState(setupIzaje ? setupIzaje.cargas.pesoGancho : '');
   const [radioTrabajoMax, setRadioTrabajoMax] = useState(setupIzaje ? setupIzaje.cargas.radioTrabajoMax : '');
   const [capacidadLevante, setCapacidadLevante] = useState(setupIzaje ? setupIzaje.cargas.capacidadLevante : '');
-
-  const calcularPesoTotalAparejos1 = cantidadAparejos1 * pesoAparejos1;
-  const calcularPesoTotalAparejos2 = cantidadAparejos2 * pesoAparejos2;
-  const pesoTotalAparejos = calcularPesoTotalAparejos1 + calcularPesoTotalAparejos2;
-  const porcentajeUtilizacion = 0;
+  const [aparejos, setAparejos] = useState(setupIzaje ? setupIzaje.aparejos : [{ descripcion: '', cantidad: '', pesoUnitario: '', pesoTotal: '' }]);
+  const [usuario, setUserId] = useState(null);
 
   useEffect(() => {
+    const getUserId = async () => {
+      const storedUserId = await AsyncStorage.getItem('usuarioId');
+      setUserId(storedUserId);
+    };
+
+    getUserId();
+
     if (setupIzaje) {
       setLargoPluma(setupIzaje.datos.largoPluma);
       setContrapeso(setupIzaje.datos.contrapeso);
@@ -30,44 +29,43 @@ const ModalEditCrane = ({ isVisible, onClose, setupIzaje, onUpdate }) => {
       setPesoGancho(setupIzaje.cargas.pesoGancho);
       setRadioTrabajoMax(setupIzaje.cargas.radioTrabajoMax);
       setCapacidadLevante(setupIzaje.cargas.capacidadLevante);
+      setAparejos(setupIzaje.aparejos || []);
     }
   }, [setupIzaje]);
 
   const handleUpdate = async () => {
+    if (!usuario) {
+      alert('El ID del usuario no está disponible.');
+      return;
+    }
+
+    const totalAparejosPeso = aparejos.reduce((acc, aparejo) => acc + Number(aparejo.pesoTotal), 0);
 
     const updatedSetupIzaje = {
-      aparejos: [
-        {
-          descripcion: 'Estrobo',
-          cantidad: Number(cantidadAparejos1),
-          pesoUnitario: Number(pesoAparejos1),
-          pesoTotal: calcularPesoTotalAparejos1,
-        },
-        {
-          descripcion: 'Grillete',
-          cantidad: Number(cantidadAparejos2),
-          pesoUnitario: Number(pesoAparejos2),
-          pesoTotal: calcularPesoTotalAparejos2,
-        },
-      ],
+      usuario, 
+      aparejos: aparejos.map(({ descripcion, cantidad, pesoUnitario, pesoTotal }) => ({
+        descripcion, 
+        cantidad: Number(cantidad), 
+        pesoUnitario: Number(pesoUnitario), 
+        pesoTotal: Number(pesoTotal),
+      })),
       datos: {
-        largoPluma,
-        contrapeso,
+        largoPluma: Number(largoPluma),
+        contrapeso: Number(contrapeso),
       },
       cargas: {
         pesoEquipo: Number(pesoEquipo),
-        pesoAparejos: pesoTotalAparejos,
+        pesoAparejos: totalAparejosPeso,
         pesoGancho: Number(pesoGancho),
-        pesoTotal: pesoTotalAparejos + Number(pesoGancho) + Number(pesoEquipo),  // Total de los pesos
+        pesoTotal: Number(pesoEquipo) + Number(pesoGancho) + totalAparejosPeso,
         radioTrabajoMax: Number(radioTrabajoMax),
         capacidadLevante: Number(capacidadLevante),
-        porcentajeUtilizacion,  // Se mantiene como 0
-      },
+        porcentajeUtilizacion: 0,  // Porcentaje de utilización (esto se puede ajustar)
+      }
     };
 
     try {
       const accessToken = await AsyncStorage.getItem('accessToken');
-
       if (!accessToken) {
         alert('No autorizado. Por favor, inicie sesión nuevamente.');
         return;
@@ -78,23 +76,43 @@ const ModalEditCrane = ({ isVisible, onClose, setupIzaje, onUpdate }) => {
         return;
       }
 
-      const response = await axios.put(getApiUrl(`setupIzaje/${setupIzaje._id}`), updatedSetupIzaje, {
+      const response = await fetch(getApiUrl(`setupIzaje/${setupIzaje._id}`), {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
         },
+        body: JSON.stringify(updatedSetupIzaje),
       });
 
-      if (response.status === 200) {
+      const data = await response.json();
+      if (response.ok) {
         onUpdate(updatedSetupIzaje);
         onClose();
       } else {
-        console.error('Error al actualizar:', response.data);
+        alert(`Error: ${data.message}`);
       }
     } catch (error) {
-      console.error('Error:', error);
       alert('Hubo un error al actualizar el plan de izaje.');
     }
+  };
+
+  const handleAparejoChange = (index, field, value) => {
+    const updatedAparejos = [...aparejos];
+    updatedAparejos[index][field] = value;
+    if (field === 'pesoUnitario' || field === 'cantidad') {
+      updatedAparejos[index].pesoTotal = updatedAparejos[index].cantidad * updatedAparejos[index].pesoUnitario;
+    }
+    setAparejos(updatedAparejos);
+  };
+
+  const addAparejo = () => {
+    setAparejos([...aparejos, { descripcion: '', cantidad: '', pesoUnitario: '', pesoTotal: '' }]);
+  };
+
+  const removeAparejo = (index) => {
+    const updatedAparejos = aparejos.filter((_, i) => i !== index);
+    setAparejos(updatedAparejos);
   };
 
   return (
@@ -131,24 +149,6 @@ const ModalEditCrane = ({ isVisible, onClose, setupIzaje, onUpdate }) => {
             keyboardType="numeric"
           />
 
-          <Text style={styles.label}>Cantidad de Aparejos 1:</Text>
-          <TextInput
-            style={styles.optionButton}
-            placeholder="Ingrese cantidad"
-            value={cantidadAparejos1}
-            onChangeText={setCantidadAparejos1}
-            keyboardType="numeric"
-          />
-
-          <Text style={styles.label}>Cantidad de Aparejos 2:</Text>
-          <TextInput
-            style={styles.optionButton}
-            placeholder="Ingrese cantidad"
-            value={cantidadAparejos2}
-            onChangeText={setCantidadAparejos2}
-            keyboardType="numeric"
-          />
-
           <Text style={styles.label}>Peso del Gancho (kg):</Text>
           <TextInput
             style={styles.optionButton}
@@ -176,6 +176,50 @@ const ModalEditCrane = ({ isVisible, onClose, setupIzaje, onUpdate }) => {
             keyboardType="numeric"
           />
 
+          {/* Lista de aparejos */}
+          <Text style={styles.label}>Aparejos:</Text>
+          <FlatList
+            data={aparejos}
+            renderItem={({ item, index }) => (
+              <View key={index} style={styles.aparejoContainer}>
+                <TextInput
+                  style={styles.optionButton}
+                  placeholder="Descripción"
+                  value={item.descripcion}
+                  onChangeText={(text) => handleAparejoChange(index, 'descripcion', text)}
+                />
+                <TextInput
+                  style={styles.optionButton}
+                  placeholder="Cantidad"
+                  value={item.cantidad}
+                  onChangeText={(text) => handleAparejoChange(index, 'cantidad', text)}
+                  keyboardType="numeric"
+                />
+                <TextInput
+                  style={styles.optionButton}
+                  placeholder="Peso Unitario"
+                  value={item.pesoUnitario}
+                  onChangeText={(text) => handleAparejoChange(index, 'pesoUnitario', text)}
+                  keyboardType="numeric"
+                />
+                <TextInput
+                  style={styles.optionButton}
+                  placeholder="Peso Total"
+                  value={item.pesoTotal.toString()}
+                  editable={false}
+                />
+                <TouchableOpacity onPress={() => removeAparejo(index)} style={styles.removeButton}>
+                  <Text style={styles.removeButtonText}>Eliminar</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+
+          <TouchableOpacity onPress={addAparejo} style={styles.addButton}>
+            <Text style={styles.addButtonText}>Agregar Aparejo</Text>
+          </TouchableOpacity>
+
           {/* Botones de acción */}
           <TouchableOpacity onPress={handleUpdate} style={styles.saveButton}>
             <Text style={styles.saveButtonText}>Actualizar</Text>
@@ -190,4 +234,4 @@ const ModalEditCrane = ({ isVisible, onClose, setupIzaje, onUpdate }) => {
   );
 };
 
-export default ModalEditCrane;
+export default ModalEditSetupIzaje;

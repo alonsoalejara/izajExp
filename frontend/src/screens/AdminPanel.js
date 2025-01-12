@@ -15,8 +15,10 @@ function AdminPanel() {
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
   const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
   const [setupIzajeSeleccionado, setSetupIzajeSeleccionado] = useState(null);
+  
   const [colaboradoresState, setColaboradoresState] = useState(colaboradores || []);
   const [gruasState, setGruasState] = useState(gruas || []);
+  const [setupsState, setSetupsState] = useState(setupIzajes || []);
 
   const [isModalCrearColaboradorVisible, setIsModalCrearColaboradorVisible] = useState(false);
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
@@ -117,17 +119,25 @@ function AdminPanel() {
     }
   };
 
-  const handleEditSetupIzaje = (setup) => {
-    setSetupIzajeSeleccionado(setup);
-    setIsModalEditarSetupIzajeVisible(true);
-  };
+  const handleEditSetupIzaje = async (setup) => {
+    try {
+        const updatedSetups = Logic.setupIzajeLogic.editSetupIzaje(setupsState, setup);
+        setSetupsState(updatedSetups);
+        refetchSetupIzajes();
+        setIsModalEditarSetupIzajeVisible(false);
+    } catch (error) {
+        console.error('Error al editar setup de izaje:', error);
+    }
+};
 
   const handleDeleteSetupIzaje = async (id) => {
     try {
-      await Logic.setupIzajeLogic.deleteSetupIzaje(id);
-      refetchSetupIzajes();
+        await Logic.setupIzajeLogic.deleteSetupIzaje(id);
+        refetchSetupIzajes();
+        const updatedSetups = setupsState.filter(setup => setup._id !== id);
+        setSetupsState(updatedSetups);
     } catch (error) {
-      console.error('Error al eliminar setup de izaje:', error);
+        console.error('Error al eliminar setup de izaje:', error);
     }
   };
 
@@ -211,8 +221,12 @@ function AdminPanel() {
       {activeSection === 'Planes' && (
         <Section.SetupIzajeSection
           setupIzaje={setupIzajes}
-          handleEdit={handleEditSetupIzaje}
+          handleEdit={(setup) => {
+            setSetupIzajeSeleccionado(setup);
+            setIsModalEditarSetupIzajeVisible(true);
+          }}          
           handleDelete={handleDeleteSetupIzaje}
+          setSetups={setSetupsState}
         />
       )}
     </ScrollView>

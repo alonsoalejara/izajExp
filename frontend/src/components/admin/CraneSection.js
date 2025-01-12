@@ -45,7 +45,7 @@ const CraneSection = ({ gruas, handleAdd, handleEdit, setGruas }) => {
     } catch (error) {
         console.error('Error:', error);
     }
-};
+  };
 
   return (
     <View style={styles.section}>
