@@ -28,7 +28,7 @@ function AdminPanel() {
 
   const { data: colaboradores = [], refetch: refetchColaboradores } = useFetchData('user');
   const { data: gruas = [], refetch: refetchGruas } = useFetchData('grua');
-  const { data: setupIzajes, refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
+  const { data: setupIzajes = [], refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -50,7 +50,8 @@ function AdminPanel() {
   useEffect(() => {
     setGruasState(gruas || []);
     setColaboradoresState(colaboradores || []);
-  }, [gruas, colaboradores]);
+    setSetupsState(setupIzajes || []);
+  }, [gruas, colaboradores, setupIzajes]);
 
   const handleAddColaborador = async (newCollaborator) => {
     try {
@@ -220,7 +221,7 @@ function AdminPanel() {
 
       {activeSection === 'Planes' && (
         <Section.SetupIzajeSection
-          setupIzaje={setupIzajes}
+          setupIzaje={setupsState}
           handleEdit={(setup) => {
             setSetupIzajeSeleccionado(setup);
             setIsModalEditarSetupIzajeVisible(true);
