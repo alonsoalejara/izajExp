@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../../styles/AdminSectionStyles'; 
 import ModalAlert from '../modals/ModalAlert';
 import getApiUrl from '../../utils/apiUrl';
 
-const CollabSection = ({ colaboradores, handleAdd, handleEdit, setColaboradores }) => {
+const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [colaboradorToDelete, setColaboradorToDelete] = useState(null);
@@ -51,15 +50,6 @@ const CollabSection = ({ colaboradores, handleAdd, handleEdit, setColaboradores 
 
   return (
     <View style={styles.section}>
-      <TouchableOpacity
-        style={styles.actionButton}
-        onPress={async () => {
-          await handleAdd('Colaboradores');
-        }}
-      >
-        <Icon name="add" size={24} color="white" />
-      </TouchableOpacity>
-
       {colaboradoresFiltrados.map((colaborador, index) => (
         <View key={colaborador._id || `colaborador-${index}`} style={styles.card}>
           <TouchableOpacity onPress={() => handleCardPress(colaborador._id)}>

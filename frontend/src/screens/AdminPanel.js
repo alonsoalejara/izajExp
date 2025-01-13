@@ -19,7 +19,8 @@ function AdminPanel() {
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
   const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
   const [setupIzajeSeleccionado, setSetupIzajeSeleccionado] = useState(null);
-  
+  const [selectedIcon, setSelectedIcon] = useState(null);
+
   const [colaboradoresState, setColaboradoresState] = useState(colaboradores || []);
   const [gruasState, setGruasState] = useState(gruas || []);
   const [setupsState, setSetupsState] = useState(setupIzajes || []);
@@ -59,8 +60,15 @@ function AdminPanel() {
     setSetupsState(setupIzajes || []);
   }, [gruas, colaboradores, setupIzajes]);
 
-
-  const handlePress = (section) => {
+  if (!isAdmin) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.noAccessText}>Acceso denegado. Solo los administradores pueden acceder a este panel.</Text>
+      </View>
+    );
+  }
+  
+  const handlePressButton = (section) => {
     setActiveSection(section);
     if (!animations.current[section]) {
       animations.current[section] = new Animated.Value(0);
@@ -72,6 +80,16 @@ function AdminPanel() {
       duration: 300,
       useNativeDriver: false,
     }).start();
+  };
+
+  const handlePressIcon = (icon) => {
+    setSelectedIcon(icon);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    // Aquí puedes filtrar los datos según el valor de la búsqueda.
+    // Ejemplo: setFilteredData(colaboradoresState.filter(collaborator => collaborator.name.toLowerCase().includes(query.toLowerCase())));
   };
 
   const handleAddColaborador = async (newCollaborator) => {
@@ -162,19 +180,20 @@ function AdminPanel() {
     }
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    // Aquí puedes filtrar los datos según el valor de la búsqueda.
-    // Ejemplo: setFilteredData(colaboradoresState.filter(collaborator => collaborator.name.toLowerCase().includes(query.toLowerCase())));
+  const renderSection = () => {
+    switch (selectedSection) {
+      case 'gruas':
+        return <CraneSection handleAdd={handleAdd} />;
+      case 'colaboradores':
+        return <CollabSection handleAdd={handleAdd} />;
+      case 'planes':
+        return <SetupIzajeSection />; // No mostrará el botón
+      default:
+        return null;
+    }
   };
 
-  if (!isAdmin) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.noAccessText}>Acceso denegado. Solo los administradores pueden acceder a este panel.</Text>
-      </View>
-    );
-  }
+
 
   return (
     <View style={styles.container}>
@@ -231,7 +250,7 @@ function AdminPanel() {
               <TouchableOpacity
                 key={section}
                 style={[styles.button, activeSection === section && styles.activeButton]}
-                onPress={() => handlePress(section)}
+                onPress={() => handlePressButton(section)}
               >
                 <Text
                   style={[styles.buttonText, activeSection === section && { color: 'red' }]}
@@ -252,7 +271,66 @@ function AdminPanel() {
           })}
         </View>
       </View>
+
+      {/* Contenedor para el botón "Crear" */}
+      {(activeSection === 'Personal' || activeSection === 'Gruas') && (
+        <View style={styles.actionContainer}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => {
+              if (activeSection === 'Personal') {
+                setIsModalCrearColaboradorVisible(true);
+              } else if (activeSection === 'Gruas') {
+
+                setIsModalCrearGruaVisible(true);
+              }
+            }}
+          >
+            <Text style={styles.actionButtonText}>
+              {activeSection === 'Personal' ? 'Crear usuario' : 'Crear grúa'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
   
+      {/* Modal para agregar colaborador */}
+      <ModalsAdmin.ModalAddCollab
+        isVisible={isModalCrearColaboradorVisible}
+        onClose={() => setIsModalCrearColaboradorVisible(false)}
+        onSave={handleAddColaborador}
+      />
+
+      {/* Modal para editar colaborador */}
+      <ModalsAdmin.ModalEditCollab
+        isVisible={isModalEditarColaboradorVisible}
+        onClose={() => setIsModalEditarColaboradorVisible(false)}
+        colaborador={colaboradorSeleccionado}
+        onUpdate={handleEditColaborador}
+      />
+
+      {/* Modal para agregar grúa */}
+      <ModalsAdmin.ModalAddCrane
+        isVisible={isModalCrearGruaVisible}
+        onClose={() => setIsModalCrearGruaVisible(false)}
+        onSave={handleAddGrua}
+      />
+
+      {/* Modal para editar grúa */}
+      <ModalsAdmin.ModalEditCrane
+        isVisible={isModalEditarGruaVisible}
+        onClose={() => setIsModalEditarGruaVisible(false)}
+        grua={gruaSeleccionada}
+        onUpdate={handleEditGrua}
+      />
+
+      {/* Modal para editar plan de izaje */}
+      <ModalsAdmin.ModalEditSetupIzaje
+        isVisible={isModalEditarSetupIzajeVisible}
+        onClose={() => setIsModalEditarSetupIzajeVisible(false)}
+        setupIzaje={setupIzajeSeleccionado}
+        onUpdate={handleEditSetupIzaje}
+      />
+
       {/* Contenido desplazable */}
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer}>
         {activeSection === 'Personal' && (
@@ -293,6 +371,45 @@ function AdminPanel() {
           />
         )}
       </ScrollView>
+
+        {/* Footer con los tres iconos */}
+        <View style={styles.footer}>
+        {/* Ícono Casa */}
+        <TouchableOpacity
+          style={styles.footerIcon}
+          onPress={() => handlePressIcon('home')}
+        >
+          <Icon
+            name="home"
+            size={30}
+            color={selectedIcon === 'home' ? '#ee0000' : '#bbb'}
+          />
+        </TouchableOpacity>
+
+        {/* Ícono Perfil */}
+        <TouchableOpacity
+          style={styles.footerIcon}
+          onPress={() => handlePressIcon('user')}
+        >
+          <Icon
+            name="user"
+            size={30}
+            color={selectedIcon === 'user' ? '#ee0000' : '#bbb'}
+          />
+        </TouchableOpacity>
+
+        {/* Ícono Lista */}
+        <TouchableOpacity
+          style={styles.footerIcon}
+          onPress={() => handlePressIcon('list')}
+        >
+          <Icon
+            name="list"
+            size={30}
+            color={selectedIcon === 'list' ? '#ee0000' : '#bbb'}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

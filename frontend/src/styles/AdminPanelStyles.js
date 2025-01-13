@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
       circleContainer: {
         width: 600,
         height: 550,
-        borderRadius: 300,
+        borderRadius: 150,
         position: 'absolute',
         bottom: '92%',
         left: '37%',
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
       },
       logo: {
         position: 'absolute',
-        top: '82%',
+        top: '84%',
         left: '58.4%',
         transform: [{ translateX: -165 }],
         width: 200,
@@ -121,6 +121,48 @@ const styles = StyleSheet.create({
         height: 2,
         backgroundColor: 'red',
       },
+    /* Contenedor para botón Crear*/
+    actionContainer: {
+      backgroundColor: 'transparent',
+      marginTop: 20,
+      marginBottom: 0,
+      paddingRight: 175,
+      alignItems: 'center',
+      borderBottomWidth: 1,
+      borderColor: '#ccc',
+      position: 'relative',
+    },   
+    actionButton: {
+      backgroundColor: '#ee0000',
+      paddingVertical: 12,
+      marginBottom: 15,
+      width: 130,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: 100,
+    },
+    actionButtonText: {
+      color: '#fff',
+      fontSize: 14,
+      fontWeight: 'bold',
+      textAlign: 'center', 
+    },
+    /* Footer */
+    footer: {
+      flexDirection: 'row',
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
+      padding: 10,
+      marginBottom: -10,
+      backgroundColor: 'transparent',
+    },
+    footerIcon: {
+      flex: 1,
+      height: 32,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
 });
 
 export default styles;

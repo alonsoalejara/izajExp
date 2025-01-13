@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../../styles/AdminSectionStyles'; 
 import ModalAlert from '../modals/ModalAlert';
 import getApiUrl from '../../utils/apiUrl';
 
-const CraneSection = ({ gruas, handleAdd, handleEdit, setGruas }) => {
+const CraneSection = ({ gruas, handleEdit, setGruas }) => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [gruaToDelete, setGruaToDelete] = useState(null);
@@ -49,13 +48,6 @@ const CraneSection = ({ gruas, handleAdd, handleEdit, setGruas }) => {
 
   return (
     <View style={styles.section}>
-      <TouchableOpacity
-        style={styles.actionButton}
-        onPress={() => handleAdd('Gruas')}
-      >
-        <Icon name="add" size={24} color="white" />
-      </TouchableOpacity>
-
       {gruas.map((grua, index) => (
           <View key={grua._id || `grua-${index}`} style={styles.card}>
             <TouchableOpacity onPress={() => handleCardPress(grua._id)}>
