@@ -34,7 +34,7 @@ const App = () => {
         <Stack.Screen
           name="AdminPanel"
           component={Screens.AdminPanel}
-          options={{ headerShown: true }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="SetupIzaje"

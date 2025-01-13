@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import styles from '../../styles/AdminPanelStyles'; 
+import styles from '../../styles/AdminSectionStyles'; 
 import ModalAlert from '../modals/ModalAlert';
 import getApiUrl from '../../utils/apiUrl';
 
@@ -51,7 +51,6 @@ const CollabSection = ({ colaboradores, handleAdd, handleEdit, setColaboradores 
 
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Personal</Text>
       <TouchableOpacity
         style={styles.actionButton}
         onPress={async () => {
@@ -82,7 +81,7 @@ const CollabSection = ({ colaboradores, handleAdd, handleEdit, setColaboradores 
           </TouchableOpacity>
 
           {selectedCard === colaborador._id && (
-            <View style={styles.buttonContainer}>
+            <View style={styles.buttonContainerCard}>
               <TouchableOpacity
                 style={styles.actionButton}
                 onPress={() => handleEdit(colaborador)}

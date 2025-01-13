@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import styles from '../../styles/AdminPanelStyles';
+import styles from '../../styles/AdminSectionStyles'; 
 import ModalAlert from '../modals/ModalAlert';
 import getApiUrl from '../../utils/apiUrl';
 
@@ -49,7 +49,6 @@ const CraneSection = ({ gruas, handleAdd, handleEdit, setGruas }) => {
 
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Grúas</Text>
       <TouchableOpacity
         style={styles.actionButton}
         onPress={() => handleAdd('Gruas')}
@@ -69,7 +68,7 @@ const CraneSection = ({ gruas, handleAdd, handleEdit, setGruas }) => {
             </TouchableOpacity>
 
             {selectedCard === grua._id && (
-              <View style={styles.buttonContainer}>
+              <View style={styles.buttonContainerCard}>
                 <TouchableOpacity
                   style={styles.actionButton}
                   onPress={() => handleEdit(grua)}

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput, ImageBackground, Image } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, ImageBackground, Image, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useFetchData } from '../hooks/useFetchData';
 import Logic from '../logic/logic.index';
@@ -13,6 +13,8 @@ import Icon from 'react-native-vector-icons/Feather';
 function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
+  const animations = useRef({});
+
   const [isAdmin, setIsAdmin] = useState(false);
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
   const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
@@ -56,6 +58,21 @@ function AdminPanel() {
     setColaboradoresState(colaboradores || []);
     setSetupsState(setupIzajes || []);
   }, [gruas, colaboradores, setupIzajes]);
+
+
+  const handlePress = (section) => {
+    setActiveSection(section);
+    if (!animations.current[section]) {
+      animations.current[section] = new Animated.Value(0);
+    } else {
+      animations.current[section].setValue(0);
+    }
+    Animated.timing(animations.current[section], {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
 
   const handleAddColaborador = async (newCollaborator) => {
     try {
@@ -161,6 +178,7 @@ function AdminPanel() {
 
   return (
     <View style={styles.container}>
+      {/* Sección superior fija con la imagen, logo y gradiente */}
       <View style={styles.circleContainer}>
         <ImageBackground
           source={require('../../assets/grua-home.png')}
@@ -174,118 +192,107 @@ function AdminPanel() {
             </LinearGradient>
             <Rect width="100%" height="100%" fill="url(#grad1)" />
           </Svg>
-          <Image source={require('../../assets/EI-Montajes.png')} style={styles.logo} resizeMode="contain" />
+          <Image
+            source={require('../../assets/EI-Montajes.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
         </ImageBackground>
       </View>
   
-      <View style={styles.formContainer}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Panel de Administrador</Text>
-          </View>
+      {/* Sección fija con título, buscador y botones */}
+      <View style={styles.fixedHeader}>
+        <Text style={styles.sectionTitle}>Panel de Administrador</Text>
   
-          {/* Input de búsqueda con icono */}
-          <View style={styles.searchContainer}>
-            <Icon name="search" size={20} color="gray" style={styles.searchIcon} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Buscar..."
-              value={searchQuery}
-              onChangeText={handleSearch}
-            />
-          </View>
+        {/* Input de búsqueda con icono */}
+        <View style={styles.searchContainer}>
+          <Icon name="search" size={20} color="gray" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar..."
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
+        </View>
   
-          <View style={styles.buttonContainer}>
-            {['Personal', 'Gruas', 'Planes'].map((section) => (
+        {/* Botones fijos con animación */}
+        <View style={styles.buttonContainer}>
+          {['Personal', 'Gruas', 'Planes'].map((section) => {
+            if (!animations.current[section]) {
+              animations.current[section] = new Animated.Value(0);
+            }
+  
+            const animatedWidth = animations.current[section].interpolate({
+              inputRange: [0, 1],
+              outputRange: ['0%', '100%'],
+            });
+  
+            return (
               <TouchableOpacity
                 key={section}
-                style={[
-                  styles.button,
-                  activeSection === section && styles.activeButton,
-                ]}
-                onPress={() => setActiveSection((prev) => (prev === section ? null : section))}
+                style={[styles.button, activeSection === section && styles.activeButton]}
+                onPress={() => handlePress(section)}
               >
                 <Text
-                  style={[
-                    styles.buttonText,
-                    activeSection === section && { color: 'red' },
-                  ]}
+                  style={[styles.buttonText, activeSection === section && { color: 'red' }]}
                 >
                   {section}
                 </Text>
+                <Animated.View
+                  style={[
+                    styles.line,
+                    {
+                      width: animatedWidth,
+                      opacity: activeSection === section ? 1 : 0,
+                    },
+                  ]}
+                />
               </TouchableOpacity>
-            ))}
-          </View>
-  
-          {/* Modales */}
-          <ModalsAdmin.ModalAddCollab
-            isVisible={isModalCrearColaboradorVisible}
-            onClose={() => setIsModalCrearColaboradorVisible(false)}
-            onSave={handleAddColaborador}
-          />
-          <ModalsAdmin.ModalEditCollab
-            isVisible={isModalEditarColaboradorVisible}
-            onClose={() => setIsModalEditarColaboradorVisible(false)}
-            colaborador={colaboradorSeleccionado}
-            onUpdate={handleEditColaborador}
-          />
-          <ModalsAdmin.ModalAddCrane
-            isVisible={isModalCrearGruaVisible}
-            onClose={() => setIsModalCrearGruaVisible(false)}
-            onSave={handleAddGrua}
-          />
-          <ModalsAdmin.ModalEditCrane
-            isVisible={isModalEditarGruaVisible}
-            onClose={() => setIsModalEditarGruaVisible(false)}
-            grua={gruaSeleccionada}
-            onUpdate={handleEditGrua}
-          />
-          <ModalsAdmin.ModalEditSetupIzaje
-            isVisible={isModalEditarSetupIzajeVisible}
-            onClose={() => setIsModalEditarSetupIzajeVisible(false)}
-            setupIzaje={setupIzajeSeleccionado}
-            onUpdate={handleEditSetupIzaje}
-          />
-  
-          {activeSection === 'Personal' && (
-            <Section.CollabSection
-              colaboradores={colaboradoresState}
-              handleAdd={() => setIsModalCrearColaboradorVisible(true)}
-              handleEdit={(colaborador) => {
-                setColaboradorSeleccionado(colaborador);
-                setIsModalEditarColaboradorVisible(true);
-              }}
-              handleDelete={handleDeleteColaborador}
-              setColaboradores={setColaboradoresState}
-            />
-          )}
-  
-          {activeSection === 'Gruas' && (
-            <Section.CraneSection
-              gruas={gruasState}
-              handleAdd={() => setIsModalCrearGruaVisible(true)}
-              handleEdit={(grua) => {
-                setGruaSeleccionada(grua);
-                setIsModalEditarGruaVisible(true);
-              }}
-              handleDelete={handleDeleteGrua}
-              setGruas={setGruasState}
-            />
-          )}
-  
-          {activeSection === 'Planes' && (
-            <Section.SetupIzajeSection
-              setupIzaje={setupsState}
-              handleEdit={(setup) => {
-                setSetupIzajeSeleccionado(setup);
-                setIsModalEditarSetupIzajeVisible(true);
-              }}
-              handleDelete={handleDeleteSetupIzaje}
-              setSetups={setSetupsState}
-            />
-          )}
-        </ScrollView>
+            );
+          })}
+        </View>
       </View>
+  
+      {/* Contenido desplazable */}
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer}>
+        {activeSection === 'Personal' && (
+          <Section.CollabSection
+            colaboradores={colaboradoresState}
+            handleAdd={() => setIsModalCrearColaboradorVisible(true)}
+            handleEdit={(colaborador) => {
+              setColaboradorSeleccionado(colaborador);
+              setIsModalEditarColaboradorVisible(true);
+            }}
+            handleDelete={handleDeleteColaborador}
+            setColaboradores={setColaboradoresState}
+          />
+        )}
+  
+        {activeSection === 'Gruas' && (
+          <Section.CraneSection
+            gruas={gruasState}
+            handleAdd={() => setIsModalCrearGruaVisible(true)}
+            handleEdit={(grua) => {
+              setGruaSeleccionada(grua);
+              setIsModalEditarGruaVisible(true);
+            }}
+            handleDelete={handleDeleteGrua}
+            setGruas={setGruasState}
+          />
+        )}
+  
+        {activeSection === 'Planes' && (
+          <Section.SetupIzajeSection
+            setupIzaje={setupsState}
+            handleEdit={(setup) => {
+              setSetupIzajeSeleccionado(setup);
+              setIsModalEditarSetupIzajeVisible(true);
+            }}
+            handleDelete={handleDeleteSetupIzaje}
+            setSetups={setSetupsState}
+          />
+        )}
+      </ScrollView>
     </View>
   );
 }

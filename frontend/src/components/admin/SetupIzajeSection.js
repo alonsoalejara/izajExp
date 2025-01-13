@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import styles from '../../styles/AdminPanelStyles';
+import styles from '../../styles/AdminSectionStyles'; 
 import ModalAlert from '../modals/ModalAlert';
 import getApiUrl from '../../utils/apiUrl';
 
@@ -44,8 +44,6 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
     
     return (
         <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Planes de Izaje</Text>
-
             {/* Verificación de datos */}
             {(setupIzaje && Array.isArray(setupIzaje) && setupIzaje.length > 0) ? setupIzaje.map((setup) => {
                 return (
@@ -81,7 +79,7 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
                                     );
                                 }) : <Text>No hay aparejos disponibles.</Text>}
 
-                                <View style={styles.buttonContainer}>
+                                <View style={styles.buttonContainerCard}>
                                     <TouchableOpacity
                                         style={styles.actionButton}
                                         onPress={() => handleEdit(setup)}
