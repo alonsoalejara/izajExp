@@ -26,6 +26,9 @@ function AdminPanel() {
   const [setupsState, setSetupsState] = useState(setupIzajes || []);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [originalColaboradoresState, setOriginalColaboradoresState] = useState(colaboradores || []);
+  const [originalGruasState, setOriginalGruasState] = useState(gruas || []);
+  const [originalSetupsState, setOriginalSetupsState] = useState(setupIzajes || []);
 
   const [isModalCrearColaboradorVisible, setIsModalCrearColaboradorVisible] = useState(false);
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
@@ -60,6 +63,21 @@ function AdminPanel() {
     setSetupsState(setupIzajes || []);
   }, [gruas, colaboradores, setupIzajes]);
 
+  useEffect(() => {
+      setColaboradoresState(colaboradores);
+      setOriginalColaboradoresState(colaboradores);
+  }, [colaboradores]);
+
+  useEffect(() => {
+      setGruasState(gruas);
+      setOriginalGruasState(gruas);
+  }, [gruas]);
+
+  useEffect(() => {
+      setSetupsState(setupIzajes);
+      setOriginalSetupsState(setupIzajes);
+  }, [setupIzajes]);
+
   if (!isAdmin) {
     return (
       <View style={styles.container}>
@@ -86,10 +104,27 @@ function AdminPanel() {
     setSelectedIcon(icon);
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    // Aquí puedes filtrar los datos según el valor de la búsqueda.
-    // Ejemplo: setFilteredData(colaboradoresState.filter(collaborator => collaborator.name.toLowerCase().includes(query.toLowerCase())));
+  const handleSearch = (text) => {
+    setSearchQuery(text);
+    if (!text) {
+        setColaboradoresState(originalColaboradoresState);
+        setGruasState(originalGruasState);
+        setSetupsState(originalSetupsState);
+        return;
+    }
+
+    const lowerText = text.toLowerCase();
+    setColaboradoresState(originalColaboradoresState.filter(colaborador =>
+        colaborador?.nombre?.toLowerCase().includes(lowerText) ||
+        colaborador?.apellido?.toLowerCase().includes(lowerText)
+    ));
+    setGruasState(originalGruasState.filter(grua =>
+        grua?.nombre?.toLowerCase().includes(lowerText)
+    ));
+    setSetupsState(originalSetupsState.filter(setup =>
+      setup?.usuario?.nombre?.toLowerCase().includes(lowerText) ||
+      setup?.usuario?.apellido?.toLowerCase().includes(lowerText)
+    ));
   };
 
   const handleAddColaborador = async (newCollaborator) => {
@@ -179,21 +214,6 @@ function AdminPanel() {
       console.error('Error al eliminar setup de izaje:', error);
     }
   };
-
-  const renderSection = () => {
-    switch (selectedSection) {
-      case 'gruas':
-        return <CraneSection handleAdd={handleAdd} />;
-      case 'colaboradores':
-        return <CollabSection handleAdd={handleAdd} />;
-      case 'planes':
-        return <SetupIzajeSection />; // No mostrará el botón
-      default:
-        return null;
-    }
-  };
-
-
 
   return (
     <View style={styles.container}>
