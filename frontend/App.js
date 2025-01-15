@@ -37,6 +37,21 @@ const App = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="AddCollabName"
+          component={Screens.AddCollabName}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddCollabData"
+          component={Screens.AddCollabData}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddCollabSpecial"
+          component={Screens.AddCollabSpecial}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="SetupIzaje"
           component={Screens.SetupIzaje}
           options={{ headerShown: true }}

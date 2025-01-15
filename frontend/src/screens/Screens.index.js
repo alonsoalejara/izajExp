@@ -6,6 +6,9 @@ import GruaIzaje from './GruaIzaje';
 import AdminOptions from './AdminOptions';
 import Tablas from './Tablas';
 import AdminPanel from './AdminPanel';
+import AddCollabName from './AddCollabName';
+import AddCollabData from './AddCollabData';
+import AddCollabSpecial from './AddCollabSpecial';
 
 const Screens = {
   Home,
@@ -15,6 +18,9 @@ const Screens = {
   GruaIzaje,
   AdminOptions,
   AdminPanel,
+  AddCollabName,
+  AddCollabData,
+  AddCollabSpecial,
   Tablas,
 };
 

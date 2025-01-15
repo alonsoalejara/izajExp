@@ -299,7 +299,7 @@ function AdminPanel() {
             style={styles.actionButton}
             onPress={() => {
               if (activeSection === 'Personal') {
-                setIsModalCrearColaboradorVisible(true);
+                navigation.navigate('AddCollabName');
               } else if (activeSection === 'Gruas') {
 
                 setIsModalCrearGruaVisible(true);
