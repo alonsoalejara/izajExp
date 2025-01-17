@@ -31,7 +31,6 @@ function AdminPanel() {
   const [originalSetupsState, setOriginalSetupsState] = useState(setupIzajes || []);
 
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
-  const [isModalCrearGruaVisible, setIsModalCrearGruaVisible] = useState(false);
   const [isModalEditarGruaVisible, setIsModalEditarGruaVisible] = useState(false);
   const [isModalEditarSetupIzajeVisible, setIsModalEditarSetupIzajeVisible] = useState(false);
 
@@ -145,17 +144,6 @@ function AdminPanel() {
       setColaboradoresState(updatedColaboradores);
     } catch (error) {
       console.error('Error al eliminar colaborador:', error);
-    }
-  };
-
-  const handleAddGrua = async (newGrua) => {
-    try {
-      const updatedGruas = Logic.gruaLogic.addGrua(gruasState, newGrua);
-      setGruasState(updatedGruas);
-      refetchGruas();
-      setIsModalCrearGruaVisible(false);
-    } catch (error) {
-      console.error('Error al agregar grúa:', error);
     }
   };
 
@@ -289,8 +277,7 @@ function AdminPanel() {
               if (activeSection === 'Personal') {
                 navigation.navigate('AddCollabName');
               } else if (activeSection === 'Gruas') {
-
-                setIsModalCrearGruaVisible(true);
+                navigation.navigate('AddCraneName');
               }
             }}
           >
@@ -307,13 +294,6 @@ function AdminPanel() {
         onClose={() => setIsModalEditarColaboradorVisible(false)}
         colaborador={colaboradorSeleccionado}
         onUpdate={handleEditColaborador}
-      />
-
-      {/* Modal para agregar grúa */}
-      <ModalsAdmin.ModalAddCrane
-        isVisible={isModalCrearGruaVisible}
-        onClose={() => setIsModalCrearGruaVisible(false)}
-        onSave={handleAddGrua}
       />
 
       {/* Modal para editar grúa */}
@@ -349,7 +329,6 @@ function AdminPanel() {
         {activeSection === 'Gruas' && (
           <Section.CraneSection
             gruas={gruasState}
-            handleAdd={() => setIsModalCrearGruaVisible(true)}
             handleEdit={(grua) => {
               setGruaSeleccionada(grua);
               setIsModalEditarGruaVisible(true);

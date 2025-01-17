@@ -52,6 +52,21 @@ const App = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="AddCraneName"
+          component={Screens.AddCraneName}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddCraneWeight"
+          component={Screens.AddCraneWeight}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddCraneData"
+          component={Screens.AddCraneData}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="SetupIzaje"
           component={Screens.SetupIzaje}
           options={{ headerShown: true }}

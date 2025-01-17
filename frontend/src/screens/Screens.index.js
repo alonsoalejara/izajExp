@@ -9,6 +9,9 @@ import AdminPanel from './AdminPanel';
 import AddCollabName from './AddCollabName';
 import AddCollabData from './AddCollabData';
 import AddCollabSpecial from './AddCollabSpecial';
+import AddCraneName from './AddCraneName';
+import AddCraneWeight from './AddCraneWeight';
+import AddCraneData from './AddCraneData';
 
 const Screens = {
   Home,
@@ -21,6 +24,9 @@ const Screens = {
   AddCollabName,
   AddCollabData,
   AddCollabSpecial,
+  AddCraneName,
+  AddCraneWeight,
+  AddCraneData,
   Tablas,
 };
 
