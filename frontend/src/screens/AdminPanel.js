@@ -19,7 +19,6 @@ function AdminPanel() {
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
   const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
   const [setupIzajeSeleccionado, setSetupIzajeSeleccionado] = useState(null);
-  const [selectedIcon, setSelectedIcon] = useState(null);
 
   const [colaboradoresState, setColaboradoresState] = useState(colaboradores || []);
   const [gruasState, setGruasState] = useState(gruas || []);
@@ -37,6 +36,9 @@ function AdminPanel() {
   const { data: colaboradores = [], refetch: refetchColaboradores } = useFetchData('user');
   const { data: gruas = [], refetch: refetchGruas } = useFetchData('grua');
   const { data: setupIzajes = [], refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
+
+  const [selectedIcon, setSelectedIcon] = useState('home');
+
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -353,18 +355,6 @@ function AdminPanel() {
 
         {/* Footer con los tres iconos */}
         <View style={styles.footer}>
-        {/* Ícono Casa */}
-        <TouchableOpacity
-          style={styles.footerIcon}
-          onPress={() => handlePressIcon('home')}
-        >
-          <Icon
-            name="home"
-            size={30}
-            color={selectedIcon === 'home' ? '#ee0000' : '#bbb'}
-          />
-        </TouchableOpacity>
-
         {/* Ícono Perfil */}
         <TouchableOpacity
           style={styles.footerIcon}
@@ -374,6 +364,18 @@ function AdminPanel() {
             name="user"
             size={30}
             color={selectedIcon === 'user' ? '#ee0000' : '#bbb'}
+          />
+        </TouchableOpacity>
+
+        {/* Ícono Casa */}
+        <TouchableOpacity
+          style={styles.footerIcon}
+          onPress={() => handlePressIcon('home')}
+        >
+          <Icon
+            name="home"
+            size={30}
+            color={selectedIcon === 'home' ? '#ee0000' : '#bbb'}
           />
         </TouchableOpacity>
 
