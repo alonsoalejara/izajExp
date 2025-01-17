@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from '../styles/AddStyles';
 
 const AddCollabName = ({ navigation }) => {
+    const [nombre, setNombre] = useState('');
+    const [apellido, setApellido] = useState('');
+
+    const handleNext = () => {
+        navigation.navigate('AddCollabData', { nombre, apellido });
+    };
+
     return (
         <View style={styles.container}>
             {/* Icono de flecha hacia atrás */}
@@ -22,18 +29,22 @@ const AddCollabName = ({ navigation }) => {
                     style={styles.input}
                     placeholder="Nombre"
                     placeholderTextColor="#888"
+                    value={nombre}
+                    onChangeText={setNombre}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder="Apellido"
                     placeholderTextColor="#888"
+                    value={apellido}
+                    onChangeText={setApellido}
                 />
             </View>
 
             {/* Botón Siguiente */}
             <TouchableOpacity 
                 style={styles.button}
-                onPress={() => navigation.navigate('AddCollabData')}
+                onPress={handleNext}
             >
                 <Text style={styles.buttonText}>Siguiente</Text>
             </TouchableOpacity>

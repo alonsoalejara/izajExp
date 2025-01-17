@@ -30,7 +30,6 @@ function AdminPanel() {
   const [originalGruasState, setOriginalGruasState] = useState(gruas || []);
   const [originalSetupsState, setOriginalSetupsState] = useState(setupIzajes || []);
 
-  const [isModalCrearColaboradorVisible, setIsModalCrearColaboradorVisible] = useState(false);
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
   const [isModalCrearGruaVisible, setIsModalCrearGruaVisible] = useState(false);
   const [isModalEditarGruaVisible, setIsModalEditarGruaVisible] = useState(false);
@@ -125,17 +124,6 @@ function AdminPanel() {
       setup?.usuario?.nombre?.toLowerCase().includes(lowerText) ||
       setup?.usuario?.apellido?.toLowerCase().includes(lowerText)
     ));
-  };
-
-  const handleAddColaborador = async (newCollaborator) => {
-    try {
-      const updatedColaboradores = Logic.adminLogic.addCollaborator(colaboradoresState, newCollaborator);
-      setColaboradoresState(updatedColaboradores);
-      refetchColaboradores();
-      setIsModalCrearColaboradorVisible(false);
-    } catch (error) {
-      console.error('Error al agregar colaborador:', error);
-    }
   };
 
   const handleEditColaborador = async (colaborador) => {
@@ -312,13 +300,6 @@ function AdminPanel() {
           </TouchableOpacity>
         </View>
       )}
-  
-      {/* Modal para agregar colaborador */}
-      <ModalsAdmin.ModalAddCollab
-        isVisible={isModalCrearColaboradorVisible}
-        onClose={() => setIsModalCrearColaboradorVisible(false)}
-        onSave={handleAddColaborador}
-      />
 
       {/* Modal para editar colaborador */}
       <ModalsAdmin.ModalEditCollab
@@ -356,7 +337,6 @@ function AdminPanel() {
         {activeSection === 'Personal' && (
           <Section.CollabSection
             colaboradores={colaboradoresState}
-            handleAdd={() => setIsModalCrearColaboradorVisible(true)}
             handleEdit={(colaborador) => {
               setColaboradorSeleccionado(colaborador);
               setIsModalEditarColaboradorVisible(true);

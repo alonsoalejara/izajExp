@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react'; 
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from '../styles/AddStyles';
 
-const AddCollabData = ({ navigation }) => {
+const AddCollabData = ({ navigation, route }) => {
+    const { nombre, apellido } = route.params;
+
+    const [rut, setRut] = useState('');
+    const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
+
+    const handleNext = () => {
+        const collabData = { nombre, apellido, rut, phone, email };
+        navigation.navigate('AddCollabSpecial', collabData);
+    };
+
     return (
         <View style={styles.container}>
             {/* Icono de flecha hacia atrás */}
@@ -21,11 +32,15 @@ const AddCollabData = ({ navigation }) => {
                     style={styles.input}
                     placeholder="RUT"
                     placeholderTextColor="#888"
+                    value={rut}
+                    onChangeText={setRut}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder="Teléfono"
                     placeholderTextColor="#888"
+                    value={phone}
+                    onChangeText={setPhone}
                 />
             </View>
 
@@ -34,12 +49,14 @@ const AddCollabData = ({ navigation }) => {
                 style={styles.longInput}
                 placeholder="Correo electrónico"
                 placeholderTextColor="#888"
+                value={email}
+                onChangeText={setEmail}
             />
 
             {/* Botón Siguiente */}
             <TouchableOpacity 
                 style={styles.button}
-                onPress={() => navigation.navigate('AddCollabSpecial')}
+                onPress={handleNext}
             >
                 <Text style={styles.buttonText}>Siguiente</Text>
             </TouchableOpacity>
