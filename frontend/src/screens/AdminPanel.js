@@ -353,44 +353,6 @@ function AdminPanel() {
         )}
       </ScrollView>
 
-        {/* Footer con los tres iconos */}
-        <View style={styles.footer}>
-        {/* Ícono Perfil */}
-        <TouchableOpacity
-          style={styles.footerIcon}
-          onPress={() => handlePressIcon('user')}
-        >
-          <Icon
-            name="user"
-            size={30}
-            color={selectedIcon === 'user' ? '#ee0000' : '#bbb'}
-          />
-        </TouchableOpacity>
-
-        {/* Ícono Casa */}
-        <TouchableOpacity
-          style={styles.footerIcon}
-          onPress={() => handlePressIcon('home')}
-        >
-          <Icon
-            name="home"
-            size={30}
-            color={selectedIcon === 'home' ? '#ee0000' : '#bbb'}
-          />
-        </TouchableOpacity>
-
-        {/* Ícono Lista */}
-        <TouchableOpacity
-          style={styles.footerIcon}
-          onPress={() => handlePressIcon('list')}
-        >
-          <Icon
-            name="list"
-            size={30}
-            color={selectedIcon === 'list' ? '#ee0000' : '#bbb'}
-          />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }

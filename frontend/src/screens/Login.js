@@ -57,7 +57,7 @@ export default function Login({ navigation }) {
                         if (role === "user") {
                             navigation.navigate("SetupIzaje");
                         } else if (role === "admin") {
-                            navigation.navigate("AdminOptions");
+                            navigation.navigate("AdminTabs");
                         } else {
                             setModalMessage("Rol de usuario no reconocido");
                             setModalVisible(true);

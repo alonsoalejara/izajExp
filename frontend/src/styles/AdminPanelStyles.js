@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ddd',
-    paddingVertical: 40,
+    paddingVertical: 0,
   },
   
   /* Header */
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
         height: 550,
         borderRadius: 150,
         position: 'absolute',
-        bottom: '92%',
+        bottom: '84%',
         left: '37%',
         transform: [{ translateX: -250 }],
         justifyContent: 'center',
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
       sectionTitle: {
         fontSize: 26,
         color: '#333',
-        marginTop: 100,
+        marginTop: 120,
         marginBottom: 30,
         fontWeight: 'bold',
         textAlign: 'center',
@@ -147,21 +147,6 @@ const styles = StyleSheet.create({
       fontSize: 14,
       fontWeight: 'bold',
       textAlign: 'center', 
-    },
-    /* Footer */
-    footer: {
-      flexDirection: 'row',
-      justifyContent: 'space-evenly',
-      alignItems: 'center',
-      padding: 10,
-      marginBottom: -10,
-      backgroundColor: 'transparent',
-    },
-    footerIcon: {
-      flex: 1,
-      height: 32,
-      justifyContent: 'center',
-      alignItems: 'center',
     },
 });
 

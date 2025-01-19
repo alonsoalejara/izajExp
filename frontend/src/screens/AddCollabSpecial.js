@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/AddStyles';
 import getApiUrl from '../utils/apiUrl';
@@ -69,7 +69,7 @@ const AddCollabSpecial = ({ navigation, route }) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back" size={30} color="#000" />
+                <Icon name="keyboard-arrow-left" size={30} color="#000" />
             </TouchableOpacity>
 
             <Text style={styles.title}>¿Cuál será su especialidad?</Text>

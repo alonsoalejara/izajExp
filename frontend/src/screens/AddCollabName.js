@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../styles/AddStyles';
 
 const AddCollabName = ({ navigation }) => {
@@ -18,7 +18,7 @@ const AddCollabName = ({ navigation }) => {
                 style={styles.backButton} 
                 onPress={() => navigation.goBack()}
             >
-                <Icon name="arrow-back" size={30} color="#000" />
+                <Icon name="keyboard-arrow-left" size={30} color="#000" />
             </TouchableOpacity>
 
             <Text style={styles.title}>¿Cómo se llama el colaborador?</Text>

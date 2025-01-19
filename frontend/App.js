@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet } from 'react-native';
 
 import Screens from './src/screens/Screens.index';
+import AdminTabNavigator from './src/navigation/AdminTabNavigator';
 
 const Stack = createStackNavigator();
 
@@ -27,13 +28,8 @@ const App = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="AdminOptions"
-          component={Screens.AdminOptions}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="AdminPanel"
-          component={Screens.AdminPanel}
+          name="AdminTabs"
+          component={AdminTabNavigator}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -65,11 +61,6 @@ const App = () => {
           name="AddCraneData"
           component={Screens.AddCraneData}
           options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="SetupIzaje"
-          component={Screens.SetupIzaje}
-          options={{ headerShown: true }}
         />
         <Stack.Screen
           name="SetupRadio"
