@@ -1,16 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { Modal, View, Text, TouchableOpacity, PanResponder, Animated, TouchableWithoutFeedback } from 'react-native';
 import styles from '../../styles/ModalStyles';
 import getApiUrl from '../../utils/apiUrl';
 const axios = require('axios/dist/browser/axios.cjs');
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import IconFA from 'react-native-vector-icons/FontAwesome';
+import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ModalGrua = ({ isVisible, onClose, onSelect }) => {
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState('');
   const [gruas, setGruas] = useState([]);
+  const [modalPosition] = useState(new Animated.Value(30)); // No se necesita objeto, es solo un número
+  const [modalOpacity] = useState(new Animated.Value(0)); // Opacidad del fondo
+  const modalRef = useRef(null);
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: (e, gestureState) => {
+      if (gestureState.dy > 0) {
+        modalPosition.setValue(gestureState.dy + 30); // Asegúrate de que esto sea solo un número
+      }
+    },
+    onPanResponderRelease: (e, gestureState) => {
+      if (gestureState.dy > 10) {
+        onClose();
+      } else {
+        Animated.spring(modalPosition, {
+          toValue: 30, // Asegúrate de que esto sea un número
+          useNativeDriver: false,
+          stiffness: 80,
+          damping: 10,
+        }).start();
+      }
+    },
+  });
 
   useEffect(() => {
+    if (isVisible) {
+      modalPosition.setValue(30);
+
+      // Animar la opacidad del fondo cuando se muestra el modal
+      Animated.timing(modalOpacity, {
+        toValue: 0.7, // Fondo semi-transparente
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      // Animar la opacidad del fondo cuando se cierra el modal
+      Animated.timing(modalOpacity, {
+        toValue: 0, // Fondo completamente transparente
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+
     const fetchGruas = async () => {
       try {
         const accessToken = await AsyncStorage.getItem('accessToken');
@@ -53,50 +98,69 @@ const ModalGrua = ({ isVisible, onClose, onSelect }) => {
     }
   };
 
+  // Manejar el toque fuera del modal
+  const handleOutsidePress = () => {
+    onClose();
+  };
+
   return (
-    <Modal transparent={true} visible={isVisible} animationType="slide">
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Seleccionar Grúa</Text>
-          {error ? <Text style={{ color: '#ff0000', marginTop: -10 }}>{error}</Text> : null}
-          {gruas.length === 0 ? (
-            <Text>No se encontraron grúas disponibles.</Text>
-          ) : (
-            gruas.map((grua) => (
-              <TouchableOpacity
-                key={grua._id}
-                style={[ 
-                  styles.optionButton,
-                  selected === grua._id ? styles.selectedOption : null,
-                ]}
-                onPress={() => {
-                  setSelected(grua._id);
-                  setError('');
-                }}
-              >
-                <Text
-                  style={[
-                    styles.optionText,
-                    selected === grua._id ? styles.selectedOptionText : null,
-                  ]}
+    <Modal transparent={true} visible={isVisible} animationType="none">
+      {/* Agregar TouchableWithoutFeedback para cerrar al hacer clic fuera */}
+      <TouchableWithoutFeedback onPress={handleOutsidePress}>
+        <Animated.View style={[styles.modalContainer, { opacity: modalOpacity }]}>
+          <View
+            style={[
+              styles.modalContent,
+              { transform: [{ translateY: 30 }] }, // Esto sigue siendo un número
+            ]}
+            ref={modalRef}
+            {...panResponder.panHandlers}
+          >
+            {/* Línea de arrastre */}
+            <View style={styles.dragLine}></View>
+
+            {/* Cabecera del modal */}
+            <View style={styles.modalHeader}>
+              <IconFA
+                name="angle-left"
+                size={35}
+                color="#333"
+                style={styles.backIcon}
+                onPress={onClose}
+              />
+              <Text style={styles.modalTitle}>Seleccionar grúa</Text>
+            </View>
+
+            <View style={styles.separatorLine}></View>
+
+            {/* Opciones de grúas */}
+            {gruas.length === 0 ? (
+              <Text>No se encontraron grúas disponibles.</Text>
+            ) : (
+              gruas.map((grua) => (
+                <TouchableOpacity
+                  key={grua._id}
+                  style={styles.optionButton}
+                  onPress={() => {
+                    onSelect(grua);
+                    onClose();
+                  }}
                 >
-                  {grua.nombre}
-                </Text>
-              </TouchableOpacity>
-            ))
-          )}
-          <View style={styles.modalButtons}>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Text style={styles.closeButtonText}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSelect}>
-              <Text style={styles.buttonText}>Seleccionar</Text>
-            </TouchableOpacity>
+                  <View style={styles.optionContent}>
+                    <IconMC name="crane" size={30} color="#333" style={styles.icon} />
+                    <Text style={styles.optionText}>
+                      {grua.nombre}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))
+            )}
           </View>
-        </View>
-      </View>
+        </Animated.View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
 
 export default ModalGrua;
+

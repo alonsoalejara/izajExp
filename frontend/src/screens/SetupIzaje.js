@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { ScrollView, TouchableOpacity, Text, View } from 'react-native';
+import { ScrollView, TouchableOpacity, Text, View, Image, ImageBackground } from 'react-native';
+import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
 import Modals from '../components/modals/Modal.index';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import getApiUrl from '../utils/apiUrl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { grilleteOptions } from '../data/grilleteData';
@@ -44,29 +46,59 @@ const SetupIzaje = () => {
 
   return (
     <View style={{ flex: 1 }}>
+      {/* Sección superior con imagen, degradado y logo */}
+      <View style={styles.circleContainer}>
+        <ImageBackground
+          source={require('../../assets/grua-home.png')}
+          style={styles.background}
+          imageStyle={styles.image}
+        >
+          <Svg style={styles.gradient}>
+            <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+              <Stop offset="80%" stopColor="white" stopOpacity="0.6" />
+              <Stop offset="70%" stopColor="red" stopOpacity="0.8" />
+            </LinearGradient>
+            <Rect width="100%" height="100%" fill="url(#grad1)" />
+          </Svg>
+          <Image
+            source={require('../../assets/EI-Montajes.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </ImageBackground>
+      </View>
+
+      {/* Contenido desplazable */}
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} keyboardShouldPersistTaps="handled">
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>CÁLCULO MANIOBRAS MENORES</Text>
+          <Text style={styles.sectionTitle}>Cálculo maniobras menores</Text>
         </View>
+      <View style={styles.inputWrapper}>
+        <Text style={styles.labelText}>Seleccione grúa:</Text>
+      </View>
 
-        {/* Configurar Grúa */}
-        <TouchableOpacity onPress={() => openModal(setGruaModalVisible)} style={styles.button}>
-          <Text style={styles.buttonText}>Configurar Grúa</Text>
-        </TouchableOpacity>
+      {/* Configurar Grúa */}
+      <TouchableOpacity 
+        onPress={() => openModal(setGruaModalVisible)} 
+        style={styles.inputButton}
+      >
+        <View style={styles.inputButtonContent}>
+          <Text style={styles.inputButtonText}>
+            {grua ? `${grua}` : "Configurar Grúa"}
+          </Text>
+          <Icon name="caret-down" size={20} color="#555" style={styles.icon} />
+        </View>
+      </TouchableOpacity>
 
-        {/* Mostrar la grúa seleccionada */}
-        <Text style={[styles.cardDetail, { marginBottom: 30 }]}>
-          <Text style={styles.labelText}>Grúa seleccionada: {'\n'}</Text>{grua}
-        </Text>
-        <Modals.ModalGrua
-          isVisible={isGruaModalVisible}
-          onClose={() => setGruaModalVisible(false)}
-          onSelect={(selectedGrua) => setGrua(selectedGrua.nombre)}
-        />
+      <Modals.ModalGrua
+        isVisible={isGruaModalVisible}
+        onClose={() => setGruaModalVisible(false)}
+        onSelect={(selectedGrua) => setGrua(selectedGrua.nombre)}
+      />
 
         {/* Configurar Grillete */}
-        <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.button}>
-          <Text style={styles.buttonText}>Configurar Grillete</Text>
+        <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.inputButton}>
+          <Text style={styles.inputButtonText}>Configurar Grillete</Text>
         </TouchableOpacity>
         <Text style={[styles.cardDetail, { marginBottom: 10 }]}>
           <Text style={styles.labelText}>Cantidad de grilletes: {'\n'}</Text>{cantidadGrilletes}{'\n'}
@@ -75,21 +107,16 @@ const SetupIzaje = () => {
           <Text style={styles.labelText}>Tipo de grillete: {'\n'}</Text>
           {tipoGrillete ? `Grillete ${tipoGrillete}"` : ''}
         </Text>
-
         <Modals.ModalGrillete
           isVisible={isGrilleteModalVisible}
           onClose={() => setGrilleteModalVisible(false)}
-          onSelectCantidad={(cantidad) => {
-            setCantidadGrilletes(cantidad);
-          }}
-          onSelectTipo={(tipoObj) => {
-            setTipoGrillete(tipoObj.tipo);
-          }}
+          onSelectCantidad={(cantidad) => setCantidadGrilletes(cantidad)}
+          onSelectTipo={(tipoObj) => setTipoGrillete(tipoObj.tipo)}
         />
 
         {/* Configurar Maniobra */}
-        <TouchableOpacity onPress={() => openModal(setManiobraModalVisible)} style={styles.button}>
-          <Text style={styles.buttonText}>Configurar Maniobra</Text>
+        <TouchableOpacity onPress={() => openModal(setManiobraModalVisible)} style={styles.inputButton}>
+          <Text style={styles.inputButtonText}>Configurar Maniobra</Text>
         </TouchableOpacity>
         <Text style={[styles.cardDetail, { marginBottom: 10 }]}>
           <Text style={styles.labelText}>Maniobra seleccionada: {'\n'}</Text>{eslingaOEstrobo}{'\n'}
@@ -106,10 +133,13 @@ const SetupIzaje = () => {
             setManipulaciones(`${tipo} x ${cantidad}`);
           }}
         />
-        
-        {/* Botón para navegar a SetupRadio */}
-        <TouchableOpacity style={[styles.button, { backgroundColor: '#0288D1', marginTop: 50 }]} onPress={handleNavigateToSetupRadio}>
-          <Text style={styles.buttonText}>Confirmar Configuración</Text>
+
+        {/* Botón para confirmar configuración */}
+        <TouchableOpacity
+          style={[styles.inputButton, { backgroundColor: '#0288D1', marginTop: 50 }]}
+          onPress={handleNavigateToSetupRadio}
+        >
+          <Text style={styles.inputButtonText}>Confirmar Configuración</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

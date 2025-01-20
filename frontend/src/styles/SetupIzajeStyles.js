@@ -4,101 +4,146 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ddd',
-    paddingHorizontal: 20,
-    paddingVertical: 36,
+    paddingHorizontal: 5,
+    paddingVertical: 130,
   },
   contentContainer: {
-    padding: 20,
+    padding: 0,
   },
-  section: {
-    marginBottom: 30,
-    padding: 10,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 10,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    color: '#333',
-    marginTop: 5,
-    marginBottom: 5,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  formTitle: {
-    fontSize: 20,
-    color: '#333',
-    marginBottom: 10,
-    fontWeight: 'bold',
-    textAlign: 'left',
-  },
-  formTitleNoContainer: {
-    fontSize: 26,
-    fontWeight: '600',
-    marginBottom: 20,
-    marginTop: -10,
-    color: '#000',
-    textAlign: 'center',
-  },
-  button: {
-    flex: 1,
-    backgroundColor: '#ee0000',
-    paddingVertical: 15,
-    borderRadius: 25,
+  // Estilos para la sección superior con imagen, degradado y logo
+  circleContainer: {
+    width: 600,
+    height: 550,
+    borderRadius: 150,
+    position: 'absolute',
+    bottom: '84%',
+    left: '37%',
+    transform: [{ translateX: -250 }],
+    justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 3,
-    marginBottom: 20,
+    overflow: 'hidden',
+    backgroundColor: 'transparent',
+    zIndex: 1,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    marginTop: 10,
-    justifyContent: 'space-around',
+  image: {
+    width: '80%',
+    height: '80%',
+    top: 120,
+    left: 15,
+    resizeMode: 'cover',
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+  gradient: {
+    position: 'absolute',
+    top: 50,
+    left: 112,
+    width: 555,
+    height: '100%',
+    zIndex: 0,
   },
-  labelText: {
-    fontWeight: '600',
+  logo: {
+    position: 'absolute',
+    top: '84%',
+    left: '58.4%',
+    transform: [{ translateX: -165 }],
+    width: 200,
+    height: 80,
+    zIndex: 0,
   },
-  card: {
-    backgroundColor: '#fff',
-    padding: 16,
-    marginVertical: 8,
-    borderRadius: 8,
+  // Estilos de la sección de contenido
+  section: {
+    marginTop: 20,
+    marginBottom: 10,
+    backgroundColor: 'transparent',
+    borderRadius: 10,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
-  cardTitle: {
-    fontSize: 18,
+  sectionTitle: {
+    fontSize: 25,
+    color: '#333',
     fontWeight: 'bold',
-    color: '#ff0000',
-    marginBottom: 8,
+    textAlign: 'center',
+    marginBottom: 15,
   },
+
+  // Estilos para los botones
+  inputButton: {
+    backgroundColor: '#ddd',
+    paddingVertical: 16,
+    paddingHorizontal: 15,
+    paddingBottom: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#aaa',
+    marginHorizontal: 10,
+    marginTop: 15,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  inputButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  inputButtonText: {
+    color: '#666',
+    fontSize: 18,
+    fontWeight: '400',
+  },
+  icon: {
+    marginLeft: 10,  // Espacio entre el texto y el ícono
+  },
+
+  // Estilos para los inputs y contenedores
+  input: {
+    backgroundColor: '#e0e0e0',
+    padding: 10,
+    borderRadius: 5,
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 15,
+    width: '100%',
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginLeft: 14,
+  },
+  labelText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  unitText: {
+    fontSize: 18,
+    color: '#666',
+    marginLeft: 6,
+  },
+  // Estilos adicionales
   cardDetail: {
     fontSize: 15,
     color: '#000',
     marginTop: -10,
     marginBottom: 10,
   },
-  cardSubtitle: {
-    fontSize: 17,
+  // Estilos para los modales y configuraciones
+  cardTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#ff0000',
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  cardItem: {
-    marginTop: 10,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   actionButton: {
     width: 120,
@@ -113,46 +158,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
-  input: {
-    backgroundColor: '#e0e0e0', // Fondo gris claro para inputs
-    padding: 8,
-    borderRadius: 5,
-    fontSize: 16,
-    color: '#333', // Texto oscuro
-    width: '90%', // Ajustado a todo el ancho
-  },
-  inputWrapper: {
+  buttonContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginRight: 10,
-    marginVertical: 15,
-  },
-  placeholderText: {
-    color: '#aaa',
-  },
-  unitText: {
-    fontSize: 18,
-    color: '#666',
-    marginLeft: 6,
-  },
-  formSection: {
-    marginBottom: 30,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  formMarginTop: {
+    justifyContent: 'center',
     marginTop: 20,
-  },
-  maniobrasContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginVertical: 25,
   },
 });
 
