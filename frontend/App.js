@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet } from 'react-native';
 
 import Screens from './src/screens/Screens.index';
+import AdminTabNavigator from './src/navigation/AdminTabNavigator';
 
 const Stack = createStackNavigator();
 
@@ -27,19 +28,39 @@ const App = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="AdminOptions"
-          component={Screens.AdminOptions}
+          name="AdminTabs"
+          component={AdminTabNavigator}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="AdminPanel"
-          component={Screens.AdminPanel}
-          options={{ headerShown: true }}
+          name="AddCollabName"
+          component={Screens.AddCollabName}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="SetupIzaje"
-          component={Screens.SetupIzaje}
-          options={{ headerShown: true }}
+          name="AddCollabData"
+          component={Screens.AddCollabData}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddCollabSpecial"
+          component={Screens.AddCollabSpecial}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddCraneName"
+          component={Screens.AddCraneName}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddCraneWeight"
+          component={Screens.AddCraneWeight}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddCraneData"
+          component={Screens.AddCraneData}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="SetupRadio"

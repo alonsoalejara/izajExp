@@ -1,32 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, ImageBackground, Image, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useFetchData } from '../hooks/useFetchData';
+import Logic from '../logic/logic.index';
 import ModalsAdmin from '../components/modals/ModalAdmin.index';
 import Section from '../components/admin/Section.index';
 import styles from '../styles/AdminPanelStyles';
-import { useFetchData } from '../hooks/useFetchData';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Logic from '../logic/logic.index';
-import getApiUrl from '../utils/apiUrl';
+import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
+import Icon from 'react-native-vector-icons/Feather';
 
 function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
+  const animations = useRef({});
+
   const [isAdmin, setIsAdmin] = useState(false);
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
   const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
   const [setupIzajeSeleccionado, setSetupIzajeSeleccionado] = useState(null);
-  const [gruasState, setGruasState] = useState(gruas || []);
 
-  const [isModalCrearColaboradorVisible, setIsModalCrearColaboradorVisible] = useState(false);
+  const [colaboradoresState, setColaboradoresState] = useState(colaboradores || []);
+  const [gruasState, setGruasState] = useState(gruas || []);
+  const [setupsState, setSetupsState] = useState(setupIzajes || []);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [originalColaboradoresState, setOriginalColaboradoresState] = useState(colaboradores || []);
+  const [originalGruasState, setOriginalGruasState] = useState(gruas || []);
+  const [originalSetupsState, setOriginalSetupsState] = useState(setupIzajes || []);
+
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
-  const [isModalCrearGruaVisible, setIsModalCrearGruaVisible] = useState(false);
   const [isModalEditarGruaVisible, setIsModalEditarGruaVisible] = useState(false);
   const [isModalEditarSetupIzajeVisible, setIsModalEditarSetupIzajeVisible] = useState(false);
 
-  const { data: colaboradores, refetch: refetchColaboradores } = useFetchData('user');
+  const { data: colaboradores = [], refetch: refetchColaboradores } = useFetchData('user');
   const { data: gruas = [], refetch: refetchGruas } = useFetchData('grua');
-  const { data: setupIzajes, refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
+  const { data: setupIzajes = [], refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
+
+  const [selectedIcon, setSelectedIcon] = useState('home');
+
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -47,95 +59,24 @@ function AdminPanel() {
 
   useEffect(() => {
     setGruasState(gruas || []);
+    setColaboradoresState(colaboradores || []);
+    setSetupsState(setupIzajes || []);
+  }, [gruas, colaboradores, setupIzajes]);
+
+  useEffect(() => {
+      setColaboradoresState(colaboradores);
+      setOriginalColaboradoresState(colaboradores);
+  }, [colaboradores]);
+
+  useEffect(() => {
+      setGruasState(gruas);
+      setOriginalGruasState(gruas);
   }, [gruas]);
 
-  const handleAddColaborador = async (newCollaborator) => {
-    try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
-      
-      if (!accessToken) {
-        alert('No se encontró el token de acceso');
-        return;
-      }
-  
-      const response = await fetch(getApiUrl('user/'), { 
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(newCollaborator),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        refetchColaboradores();
-        setIsModalCrearColaboradorVisible(false);
-      } else {
-        console.error('Error al guardar:', data);
-        alert('Hubo un error al guardar el colaborador.');
-      }
-    } catch (error) {
-      console.error('Error al agregar colaborador:', error);
-      alert('Hubo un error al agregar el colaborador.');
-    }
-  };
-  
-  
-
-  const handleEditColaborador = (collaborator) => {
-    setColaboradorSeleccionado(collaborator);
-    setIsModalEditarColaboradorVisible(true);
-  };
-
-  const handleDeleteColaborador = async (_id) => {
-    try {
-      await Logic.adminLogic.deleteCollaborator(_id);
-      refetchColaboradores();
-    } catch (error) {
-      console.error('Error al eliminar colaborador:', error);
-    }
-  };
-
-  const handleAddGrua = async (newGrua) => {
-    try {
-      const updatedGruas = Logic.gruaLogic.addGrua(gruasState, newGrua);
-      setGruasState(updatedGruas);
-      refetchGruas();
-      setIsModalCrearGruaVisible(false);
-    } catch (error) {
-      console.error('Error al agregar grúa:', error);
-    }
-  };
-
-  const handleEditGrua = (grua) => {
-    setGruaSeleccionada(grua);
-    setIsModalEditarGruaVisible(true);
-  };
-
-  const handleDeleteGrua = async (id) => {
-    try {
-      await Logic.gruaLogic.deleteGrua(id);
-      refetchGruas();
-    } catch (error) {
-      console.error('Error al eliminar grúa:', error);
-    }
-  };
-
-  const handleEditSetupIzaje = (setup) => {
-    setSetupIzajeSeleccionado(setup);
-    setIsModalEditarSetupIzajeVisible(true);
-  };
-
-  const handleDeleteSetupIzaje = async (id) => {
-    try {
-      await Logic.setupIzajeLogic.deleteSetupIzaje(id);
-      refetchSetupIzajes();
-    } catch (error) {
-      console.error('Error al eliminar setup de izaje:', error);
-    }
-  };
+  useEffect(() => {
+      setSetupsState(setupIzajes);
+      setOriginalSetupsState(setupIzajes);
+  }, [setupIzajes]);
 
   if (!isAdmin) {
     return (
@@ -144,43 +85,228 @@ function AdminPanel() {
       </View>
     );
   }
+  
+  const handlePressButton = (section) => {
+    setActiveSection(section);
+    if (!animations.current[section]) {
+      animations.current[section] = new Animated.Value(0);
+    } else {
+      animations.current[section].setValue(0);
+    }
+    Animated.timing(animations.current[section], {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handlePressIcon = (icon) => {
+    setSelectedIcon(icon);
+  };
+
+  const handleSearch = (text) => {
+    setSearchQuery(text);
+    if (!text) {
+        setColaboradoresState(originalColaboradoresState);
+        setGruasState(originalGruasState);
+        setSetupsState(originalSetupsState);
+        return;
+    }
+
+    const lowerText = text.toLowerCase();
+    setColaboradoresState(originalColaboradoresState.filter(colaborador =>
+        colaborador?.nombre?.toLowerCase().includes(lowerText) ||
+        colaborador?.apellido?.toLowerCase().includes(lowerText)
+    ));
+    setGruasState(originalGruasState.filter(grua =>
+        grua?.nombre?.toLowerCase().includes(lowerText)
+    ));
+    setSetupsState(originalSetupsState.filter(setup =>
+      setup?.usuario?.nombre?.toLowerCase().includes(lowerText) ||
+      setup?.usuario?.apellido?.toLowerCase().includes(lowerText)
+    ));
+  };
+
+  const handleEditColaborador = async (colaborador) => {
+    try {
+      const updatedColaboradores = Logic.colaboradorLogic.editColaborador(colaboradoresState, colaborador);
+      setColaboradoresState(updatedColaboradores);
+      refetchColaboradores();
+      setIsModalEditarColaboradorVisible(false);
+    } catch (error) {
+      console.error('Error al editar colaborador:', error);
+    }
+  };
+
+  const handleDeleteColaborador = async (id) => {
+    try {
+      await Logic.adminLogic.deleteCollaborator(id);
+      refetchColaboradores();
+      const updatedColaboradores = colaboradoresState.filter(collaborator => collaborator.id !== id);
+      setColaboradoresState(updatedColaboradores);
+    } catch (error) {
+      console.error('Error al eliminar colaborador:', error);
+    }
+  };
+
+  const handleEditGrua = async (grua) => {
+    try {
+      const updatedGruas = Logic.gruaLogic.editGrua(gruasState, grua);
+      setGruasState(updatedGruas);
+      refetchGruas();
+      setIsModalEditarGruaVisible(false);
+    } catch (error) {
+      console.error('Error al editar grúa:', error);
+    }
+  };
+
+  const handleDeleteGrua = async (id) => {
+    try {
+      await Logic.gruaLogic.deleteGrua(id);
+      refetchGruas();
+      const updatedGruas = gruasState.filter(grua => grua._id !== id);
+      setGruasState(updatedGruas);
+    } catch (error) {
+      console.error('Error al eliminar grúa:', error);
+    }
+  };
+
+  const handleEditSetupIzaje = async (setup) => {
+    try {
+      const updatedSetups = Logic.setupIzajeLogic.editSetupIzaje(setupsState, setup);
+      setSetupsState(updatedSetups);
+      refetchSetupIzajes();
+      setIsModalEditarSetupIzajeVisible(false);
+    } catch (error) {
+      console.error('Error al editar setup de izaje:', error);
+    }
+  };
+
+  const handleDeleteSetupIzaje = async (id) => {
+    try {
+      await Logic.setupIzajeLogic.deleteSetupIzaje(id);
+      refetchSetupIzajes();
+      const updatedSetups = setupsState.filter(setup => setup._id !== id);
+      setSetupsState(updatedSetups);
+    } catch (error) {
+      console.error('Error al eliminar setup de izaje:', error);
+    }
+  };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>PANEL DE ADMINISTRADOR</Text>
+    <View style={styles.container}>
+      {/* Sección superior fija con la imagen, logo y gradiente */}
+      <View style={styles.circleContainer}>
+        <ImageBackground
+          source={require('../../assets/grua-home.png')}
+          style={styles.background}
+          imageStyle={styles.image}
+        >
+          <Svg style={styles.gradient}>
+            <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+              <Stop offset="80%" stopColor="white" stopOpacity="0.6" />
+              <Stop offset="70%" stopColor="red" stopOpacity="0.8" />
+            </LinearGradient>
+            <Rect width="100%" height="100%" fill="url(#grad1)" />
+          </Svg>
+          <Image
+            source={require('../../assets/EI-Montajes.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </ImageBackground>
+      </View>
+  
+      {/* Sección fija con título, buscador y botones */}
+      <View style={styles.fixedHeader}>
+        <Text style={styles.sectionTitle}>Panel de Administrador</Text>
+  
+        {/* Input de búsqueda con icono */}
+        <View style={styles.searchContainer}>
+          <Icon name="search" size={20} color="gray" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar..."
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
+        </View>
+  
+        {/* Botones fijos con animación */}
+        <View style={styles.buttonContainer}>
+          {['Personal', 'Gruas', 'Planes'].map((section) => {
+            if (!animations.current[section]) {
+              animations.current[section] = new Animated.Value(0);
+            }
+  
+            const animatedWidth = animations.current[section].interpolate({
+              inputRange: [0, 1],
+              outputRange: ['0%', '100%'],
+            });
+  
+            return (
+              <TouchableOpacity
+                key={section}
+                style={[styles.button, activeSection === section && styles.activeButton]}
+                onPress={() => handlePressButton(section)}
+              >
+                <Text
+                  style={[styles.buttonText, activeSection === section && { color: 'red' }]}
+                >
+                  {section}
+                </Text>
+                <Animated.View
+                  style={[
+                    styles.line,
+                    {
+                      width: animatedWidth,
+                      opacity: activeSection === section ? 1 : 0,
+                    },
+                  ]}
+                />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
 
-      <View style={styles.buttonContainer}>
-        {['Personal', 'Gruas', 'Planes'].map((section) => (
-          <TouchableOpacity key={section} style={styles.button} onPress={() => setActiveSection((prev) => (prev === section ? null : section))}>
-            <Text style={styles.buttonText}>{section}</Text>
+      {/* Contenedor para el botón "Crear" */}
+      {(activeSection === 'Personal' || activeSection === 'Gruas') && (
+        <View style={styles.actionContainer}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => {
+              if (activeSection === 'Personal') {
+                navigation.navigate('AddCollabName');
+              } else if (activeSection === 'Gruas') {
+                navigation.navigate('AddCraneName');
+              }
+            }}
+          >
+            <Text style={styles.actionButtonText}>
+              {activeSection === 'Personal' ? 'Crear usuario' : 'Crear grúa'}
+            </Text>
           </TouchableOpacity>
-        ))}
-      </View>
+        </View>
+      )}
 
-      <ModalsAdmin.ModalAddCollab
-        isVisible={isModalCrearColaboradorVisible}
-        onClose={() => setIsModalCrearColaboradorVisible(false)}
-        onSave={handleAddColaborador}
-      />
+      {/* Modal para editar colaborador */}
       <ModalsAdmin.ModalEditCollab
         isVisible={isModalEditarColaboradorVisible}
         onClose={() => setIsModalEditarColaboradorVisible(false)}
         colaborador={colaboradorSeleccionado}
         onUpdate={handleEditColaborador}
       />
-      <ModalsAdmin.ModalAddCrane
-        isVisible={isModalCrearGruaVisible}
-        onClose={() => setIsModalCrearGruaVisible(false)}
-        onSave={handleAddGrua}
-      />
+
+      {/* Modal para editar grúa */}
       <ModalsAdmin.ModalEditCrane
         isVisible={isModalEditarGruaVisible}
         onClose={() => setIsModalEditarGruaVisible(false)}
         grua={gruaSeleccionada}
         onUpdate={handleEditGrua}
       />
+
+      {/* Modal para editar plan de izaje */}
       <ModalsAdmin.ModalEditSetupIzaje
         isVisible={isModalEditarSetupIzajeVisible}
         onClose={() => setIsModalEditarSetupIzajeVisible(false)}
@@ -188,32 +314,46 @@ function AdminPanel() {
         onUpdate={handleEditSetupIzaje}
       />
 
-      {activeSection === 'Personal' && (
-        <Section.CollabSection
-          colaboradores={colaboradores}
-          handleAdd={() => setIsModalCrearColaboradorVisible(true)}
-          handleEdit={handleEditColaborador}
-          fetchColaboradores={refetchColaboradores}  
-        />
-      )}
+      {/* Contenido desplazable */}
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer}>
+        {activeSection === 'Personal' && (
+          <Section.CollabSection
+            colaboradores={colaboradoresState}
+            handleEdit={(colaborador) => {
+              setColaboradorSeleccionado(colaborador);
+              setIsModalEditarColaboradorVisible(true);
+            }}
+            handleDelete={handleDeleteColaborador}
+            setColaboradores={setColaboradoresState}
+          />
+        )}
+  
+        {activeSection === 'Gruas' && (
+          <Section.CraneSection
+            gruas={gruasState}
+            handleEdit={(grua) => {
+              setGruaSeleccionada(grua);
+              setIsModalEditarGruaVisible(true);
+            }}
+            handleDelete={handleDeleteGrua}
+            setGruas={setGruasState}
+          />
+        )}
+  
+        {activeSection === 'Planes' && (
+          <Section.SetupIzajeSection
+            setupIzaje={setupsState}
+            handleEdit={(setup) => {
+              setSetupIzajeSeleccionado(setup);
+              setIsModalEditarSetupIzajeVisible(true);
+            }}
+            handleDelete={handleDeleteSetupIzaje}
+            setSetups={setSetupsState}
+          />
+        )}
+      </ScrollView>
 
-      {activeSection === 'Gruas' && (
-        <Section.CraneSection
-          gruas={Array.isArray(gruas) ? gruas : []}
-          handleAdd={() => setIsModalCrearGruaVisible(true)}
-          handleEdit={handleEditGrua}
-          handleDelete={handleDeleteGrua}
-        />
-      )}
-
-      {activeSection === 'Planes' && (
-        <Section.SetupIzajeSection
-          setupIzaje={setupIzajes}
-          handleEdit={handleEditSetupIzaje}
-          handleDelete={handleDeleteSetupIzaje}
-        />
-      )}
-    </ScrollView>
+    </View>
   );
 }
 

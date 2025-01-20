@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import styles from '../../styles/AdminPanelStyles';
+import styles from '../../styles/AdminSectionStyles'; 
 import ModalAlert from '../modals/ModalAlert';
 import getApiUrl from '../../utils/apiUrl';
 
-const SetupIzajeSection = ({ setupIzaje = [], handleEdit }) => {
+const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
     const [selectedSetup, setSelectedSetup] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [setupToDelete, setSetupToDelete] = useState(null);
@@ -22,33 +22,28 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit }) => {
                 alert('No autorizado. Por favor, inicie sesión nuevamente.');
                 return;
             }
-    
             const response = await fetch(getApiUrl(`setupIzaje/${_id}`), {
                 method: 'DELETE',
                 headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
+                    Authorization: `Bearer ${accessToken}`
+                }
             });
     
             if (response.ok) {
                 alert('Plan de izaje eliminado con éxito');
+                const updatedSetups = setupIzaje.filter(setup => setup._id !== _id);
+                setSetups(updatedSetups);
+                setModalVisible(false);
             } else {
-                const errorResponse = await response.json();
-                console.error('Error al eliminar el plan de izaje:', errorResponse);
-                alert(`Error al eliminar el plan de izaje: ${errorResponse.message || 'Desconocido'}`);
+                alert('Error al eliminar el plan de izaje');
             }
         } catch (error) {
-            console.error('Error al intentar eliminar el plan de izaje:', error);
-            alert('Hubo un error al intentar eliminar el plan de izaje');
-        } finally {
-            setModalVisible(false);
+            console.error('Error:', error);
         }
     };
     
     return (
         <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Planes de Izaje</Text>
-
             {/* Verificación de datos */}
             {(setupIzaje && Array.isArray(setupIzaje) && setupIzaje.length > 0) ? setupIzaje.map((setup) => {
                 return (
@@ -84,7 +79,7 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit }) => {
                                     );
                                 }) : <Text>No hay aparejos disponibles.</Text>}
 
-                                <View style={styles.buttonContainer}>
+                                <View style={styles.buttonContainerCard}>
                                     <TouchableOpacity
                                         style={styles.actionButton}
                                         onPress={() => handleEdit(setup)}
