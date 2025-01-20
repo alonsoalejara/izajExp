@@ -108,7 +108,7 @@ const SetupIzaje = () => {
         />
         
         {/* Botón para navegar a SetupRadio */}
-        <TouchableOpacity style={[styles.button, { backgroundColor: '#0288D1' }]} onPress={handleNavigateToSetupRadio}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: '#0288D1', marginTop: 50 }]} onPress={handleNavigateToSetupRadio}>
           <Text style={styles.buttonText}>Confirmar Configuración</Text>
         </TouchableOpacity>
       </ScrollView>
