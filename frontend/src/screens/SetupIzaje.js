@@ -96,43 +96,63 @@ const SetupIzaje = () => {
         onSelect={(selectedGrua) => setGrua(selectedGrua.nombre)}
       />
 
-        {/* Configurar Grillete */}
-        <TouchableOpacity onPress={() => openModal(setGrilleteModalVisible)} style={styles.inputButton}>
-          <Text style={styles.inputButtonText}>Configurar Grillete</Text>
-        </TouchableOpacity>
-        <Text style={[styles.cardDetail, { marginBottom: 10 }]}>
-          <Text style={styles.labelText}>Cantidad de grilletes: {'\n'}</Text>{cantidadGrilletes}{'\n'}
-        </Text>
-        <Text style={styles.cardDetail}>
-          <Text style={styles.labelText}>Tipo de grillete: {'\n'}</Text>
-          {tipoGrillete ? `Grillete ${tipoGrillete}"` : ''}
-        </Text>
-        <Modals.ModalGrillete
-          isVisible={isGrilleteModalVisible}
-          onClose={() => setGrilleteModalVisible(false)}
-          onSelectCantidad={(cantidad) => setCantidadGrilletes(cantidad)}
-          onSelectTipo={(tipoObj) => setTipoGrillete(tipoObj.tipo)}
-        />
+      <View style={styles.inputWrapper}>
+        <Text style={styles.labelText}>Seleccione la cantidad y los tipos de grilletes:</Text>
+      </View>
 
-        {/* Configurar Maniobra */}
-        <TouchableOpacity onPress={() => openModal(setManiobraModalVisible)} style={styles.inputButton}>
-          <Text style={styles.inputButtonText}>Configurar Maniobra</Text>
-        </TouchableOpacity>
-        <Text style={[styles.cardDetail, { marginBottom: 10 }]}>
-          <Text style={styles.labelText}>Maniobra seleccionada: {'\n'}</Text>{eslingaOEstrobo}{'\n'}
-        </Text>
-        <Text style={styles.cardDetail}>
-          <Text style={styles.labelText}>Cantidad: {'\n'}</Text>{cantidadManiobra}
-        </Text>
-        <Modals.ModalManiobra
-          isVisible={isManiobraModalVisible}
-          onClose={() => setManiobraModalVisible(false)}
-          onSelect={({ tipo, cantidad }) => {
-            setEslingaOEstrobo(tipo);
-            setCantidadManiobra(cantidad);
-            setManipulaciones(`${tipo} x ${cantidad}`);
-          }}
-        />
+      {/* Configurar Grillete */}
+      <TouchableOpacity 
+        onPress={() => openModal(setGrilleteModalVisible)} 
+        style={styles.inputButton}
+      >
+        <View style={styles.inputButtonContent}>
+          <Text style={styles.inputButtonText}>
+            {cantidadGrilletes && tipoGrillete 
+              ? `${cantidadGrilletes} Grillete(s) ${tipoGrillete}"` 
+              : "Configurar Grillete"}
+          </Text>
+          <Icon name="caret-down" size={20} color="#555" style={styles.icon} />
+        </View>
+      </TouchableOpacity>
+
+      <Modals.ModalGrillete
+        isVisible={isGrilleteModalVisible}
+        onClose={() => setGrilleteModalVisible(false)}
+        onSelect={(cantidad, tipo) => {
+          setCantidadGrilletes(cantidad);
+          setTipoGrillete(tipo);
+        }}
+      />
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.labelText}>Configure la maniobra:</Text>
+      </View>
+
+      {/* Configurar Maniobra */}
+      <TouchableOpacity 
+        onPress={() => openModal(setManiobraModalVisible)} 
+        style={styles.inputButton}
+      >
+        <View style={styles.inputButtonContent}>
+          <Text style={styles.inputButtonText}>
+            {cantidadManiobra && eslingaOEstrobo 
+              ? `${cantidadManiobra} ${eslingaOEstrobo}` 
+              : "Configurar Maniobra"}
+          </Text>
+          <Icon name="caret-down" size={20} color="#555" style={styles.icon} />
+        </View>
+      </TouchableOpacity>
+
+      {/* Modal para Maniobra */}
+      <Modals.ModalManiobra
+        isVisible={isManiobraModalVisible}
+        onClose={() => setManiobraModalVisible(false)}
+        onSelect={({ tipo, cantidad }) => {
+          setEslingaOEstrobo(tipo);
+          setCantidadManiobra(cantidad);
+          setManipulaciones(`${tipo} x ${cantidad}`);
+        }}
+      />
 
         {/* Botón para confirmar configuración */}
         <TouchableOpacity
