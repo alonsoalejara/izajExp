@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, FlatList } from 'react-native';
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+  FlatList,
+} from 'react-native';
 import ModalStyles from '../../styles/ModalStyles';
 import { grilleteOptions } from '../../data/grilleteData';
 
@@ -7,7 +16,7 @@ const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) =
   const [cantidad, setCantidad] = useState('');
   const [tipo, setTipo] = useState('');
   const [peso, setPeso] = useState(null);
-  const [errorCantidad, setErrorCantidad] = useState('')
+  const [errorCantidad, setErrorCantidad] = useState('');
   const [errorTipo, setErrorTipo] = useState('');
   const [cantidadBorderColor, setCantidadBorderColor] = useState('#ccc');
   const [tipoBorderColor, setTipoBorderColor] = useState('#ccc');
@@ -34,29 +43,28 @@ const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) =
 
   const handleGuardar = () => {
     let hasError = false;
-  
+
     if (!cantidad) {
       setErrorCantidad('Ingrese un valor');
       setCantidadBorderColor('#ff0000');
       hasError = true;
     }
-  
+
     if (!tipo) {
       setErrorTipo('Seleccione un diámetro para grillete');
       setTipoBorderColor('#ff0000');
       hasError = true;
     }
-  
+
     if (!hasError) {
       onSelectCantidad(cantidad);
       onSelectTipo({ tipo: tipo, peso: peso });
       onClose();
     }
   };
-  
 
   const renderOption = ({ item }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[ModalStyles.menuItem, tipo === item.pulgada ? ModalStyles.selectedMenuItem : {}]}
       onPress={() => {
         setTipo(item.pulgada);
@@ -66,7 +74,7 @@ const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) =
         setShowMenu(false);
       }}
     >
-      <Text 
+      <Text
         style={[ModalStyles.menuText, tipo === item.pulgada ? ModalStyles.selectedMenuText : {}]}
       >
         {item.pulgada}
@@ -85,7 +93,9 @@ const ModalGrillete = ({ isVisible, onClose, onSelectCantidad, onSelectTipo }) =
             <TextInput
               style={[ModalStyles.optionButton, { borderColor: cantidadBorderColor }]}
               placeholder="Cantidad de Grilletes"
-              placeholderTextColor={ModalStyles.placeholderText.color}
+              placeholderTextColor={
+                ModalStyles.placeholderText?.color || '#999' // Valor por defecto si es undefined
+              }
               keyboardType="numeric"
               value={cantidad}
               onChangeText={(value) => {
