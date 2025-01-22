@@ -13,6 +13,14 @@ const ModalGrillete = ({ isVisible, onClose, onSelect }) => {
   const bottomSheetHeight = SCREEN_HEIGHT * 0.7;
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
+  const handleSelectGrillete = (grillete) => {
+    setSelectedGrillete(grillete);
+    setTimeout(() => {
+      onSelect(grillete.pulgada);
+      onClose();
+    }, 150);
+  };
+
   useEffect(() => {
     if (isVisible) {
       openBottomSheet();
@@ -39,12 +47,6 @@ const ModalGrillete = ({ isVisible, onClose, onSelect }) => {
       duration: 150,
       useNativeDriver: false,
     }).start(() => onClose());
-  };
-
-  const handleSelectGrillete = (grillete) => {
-    setSelectedGrillete(grillete);
-    closeBottomSheet();
-    setTimeout(() => onSelect(grillete.pulgada), 150); 
   };
 
   return (
@@ -79,7 +81,7 @@ const ModalGrillete = ({ isVisible, onClose, onSelect }) => {
               >
                 <View style={styles.optionContent}>
                   <View style={styles.optionTextContainer}>
-                    <IconMC name="anchor" size={30} color="#333" style={styles.icon} />
+                    <IconMC name="hook" size={30} color="#333" style={styles.icon} />
                     <Text style={styles.optionText}>Grillete de {grillete.pulgada}"</Text>
                   </View>
                   {/* Radio button alineado a la derecha */}

@@ -12,8 +12,8 @@ import { grilleteOptions } from '../data/grilleteData';
 const SetupIzaje = () => {
   const navigation = useNavigation();
 
-  const [isFormaModalVisible, setFormaModalVisible] = useState(false);
   const [isGruaModalVisible, setGruaModalVisible] = useState(false);
+  const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
 
@@ -146,45 +146,60 @@ const SetupIzaje = () => {
             <Text style={styles.labelText}>Configure maniobra(s) (cantidad y tipo):</Text>
           </View>
 
-          {/* Configurar Maniobra */}
-          <View style={[styles.inputContainer]}>
-            {/* Input para ingresar cantidad de maniobras */}
-            <TextInput
-              style={[styles.input, { width: 120 }]}
-              placeholder="Cantidad"
-              placeholderTextColor="#ccc"
-              keyboardType="numeric"
-              value={cantidadManiobra}
-              onChangeText={setCantidadManiobra}
-            />
+        {/* Configurar Maniobra */}
+        <View style={[styles.inputContainer]}>
+          {/* Botón para abrir el bottom sheet de cantidad de maniobras */}
+          <TouchableOpacity
+            onPress={() => openModal(setCantidadModalVisible)}
+            style={[styles.inputButton, { width: 120, paddingVertical: 20 }]}
+          >
+            <View style={[styles.inputButtonContent, { justifyContent: 'space-between' }]}>
+              <Text
+                style={[styles.inputButtonText, { fontSize: 18, flexShrink: 1, color: cantidadManiobra ? 'black' : '#ccc' }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {cantidadManiobra ? `${cantidadManiobra}` : "Cantidad"}
+              </Text>
+              <Icon name="caret-down" size={18} color="#ccc" style={styles.icon} />
+            </View>
+          </TouchableOpacity>
 
-            {/* Botón para abrir el bottom sheet de tipo de maniobra */}
-            <TouchableOpacity
-              onPress={() => openModal(setManiobraModalVisible)}
-              style={[styles.inputButton, { flex: 1, paddingVertical: 20, marginLeft: 5 }]}
-            >
-              <View style={[styles.inputButtonContent, { justifyContent: 'space-between' }]}>
-                <Text
-                  style={[styles.inputButtonText, { fontSize: 18, flexShrink: 1, color: eslingaOEstrobo ? 'black' : '#ccc' }]}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {eslingaOEstrobo ? `Tipo: ${eslingaOEstrobo}` : "Tipo"}
-                </Text>
-                <Icon name="caret-down" size={18} color="#ccc" style={styles.icon} />
-              </View>
-            </TouchableOpacity>
-          </View>
+          {/* Botón para abrir el bottom sheet de tipo de maniobra */}
+          <TouchableOpacity
+            onPress={() => openModal(setManiobraModalVisible)}
+            style={[styles.inputButton, { flex: 1, paddingVertical: 20, marginLeft: 5 }]}
+          >
+            <View style={[styles.inputButtonContent, { justifyContent: 'space-between' }]}>
+              <Text
+                style={[styles.inputButtonText, { fontSize: 18, flexShrink: 1, color: eslingaOEstrobo ? 'black' : '#ccc' }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {eslingaOEstrobo ? `${eslingaOEstrobo}` : "Tipo"}
+              </Text>
+              <Icon name="caret-down" size={18} color="#ccc" style={styles.icon} />
+            </View>
+          </TouchableOpacity>
+        </View>
 
-          {/* Modal para seleccionar configuración de maniobra */}
-          <Modals.ModalManiobra
-            isVisible={isManiobraModalVisible}
-            onClose={() => setManiobraModalVisible(false)}
-            onSelect={({ tipo, cantidad }) => {
-              setEslingaOEstrobo(tipo);
-              setCantidadManiobra(cantidad);
-            }}
-          />
+        {/* Modal para seleccionar cantidad de maniobras */}
+        <Modals.ModalCantidad
+          isVisible={isCantidadModalVisible}
+          onClose={() => setCantidadModalVisible(false)}
+          onSelect={(cantidad) => {
+            setCantidadManiobra(cantidad); // Actualiza la cantidad seleccionada
+          }}
+        />
+
+        {/* Modal para seleccionar configuración de maniobra */}
+        <Modals.ModalManiobra
+          isVisible={isManiobraModalVisible}
+          onClose={() => setManiobraModalVisible(false)}
+          onSelect={(tipo) => {
+            setEslingaOEstrobo(tipo); // Actualiza el tipo seleccionado
+          }}
+        />
 
           {/* Botón para confirmar configuración */}
           <TouchableOpacity

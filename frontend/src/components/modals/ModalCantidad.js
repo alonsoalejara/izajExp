@@ -6,15 +6,15 @@ import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const ModalManiobra = ({ isVisible, onClose, onSelect }) => {
-  const [tipoManiobra, setTipoManiobra] = useState(null);
-  const bottomSheetHeight = SCREEN_HEIGHT * 0.3;
+const ModalCantidad = ({ isVisible, onClose, onSelect }) => {
+  const [cantidadSeleccionada, setCantidadSeleccionada] = useState(null);
+  const bottomSheetHeight = SCREEN_HEIGHT * 0.35;
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
-  const handleSelectManiobra = (tipo) => {
-    setTipoManiobra(tipo);
+  const handleSelectCantidad = (cantidad) => {
+    setCantidadSeleccionada(cantidad);
     setTimeout(() => {
-      onSelect(tipo);
+      onSelect(cantidad);
       onClose();
     }, 150);
   };
@@ -35,7 +35,7 @@ const ModalManiobra = ({ isVisible, onClose, onSelect }) => {
     }).start(() => onClose());
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isVisible) {
       openBottomSheet();
     } else {
@@ -57,38 +57,38 @@ const ModalManiobra = ({ isVisible, onClose, onSelect }) => {
       >
         <View style={styles.dragLine}></View>
         <View style={styles.modalHeader}>
-        <IconFA
+          <IconFA
             name="angle-left"
             size={35}
             color="#333"
             style={styles.backIcon}
             onPress={closeBottomSheet}
           />
-          <Text style={[styles.modalTitle, { marginLeft: 40 }]}>Seleccionar Tipo de Maniobra</Text>
+          <Text style={[styles.modalTitle, { marginLeft: 40 }]}>Seleccionar Cantidad</Text>
         </View>
         <View style={styles.separatorLine}></View>
         <ScrollView style={styles.optionsContainer}>
-          {/* Opciones de maniobra (Eslinga / Estrobo) */}
-          {['Eslinga', 'Estrobo'].map((tipo) => (
+          {/* Opciones de cantidad: 1, 2, 4 */}
+          {[1, 2, 4].map((cantidad) => (
             <TouchableOpacity
-              key={tipo}
+              key={cantidad}
               style={styles.optionButton}
-              onPress={() => handleSelectManiobra(tipo)}
+              onPress={() => handleSelectCantidad(cantidad)}
             >
               <View style={styles.optionContent}>
                 <View style={styles.optionTextContainer}>
-                  <IconMC name="transit-connection" size={30} color="#333" style={styles.icon} />
-                  <Text style={styles.optionText}>{tipo}</Text>
+                  <IconMC name="transit-detour" size={30} color="#333" style={styles.icon} />
+                  <Text style={styles.optionText}>{cantidad}</Text>
                 </View>
                 {/* Radio button alineado a la derecha */}
                 <View style={styles.radioContainer}>
                   <View
                     style={[
                       styles.radioButton,
-                      tipoManiobra === tipo && styles.selectedRadioButton,
+                      cantidadSeleccionada === cantidad && styles.selectedRadioButton,
                     ]}
                   >
-                    {tipoManiobra === tipo && <View style={styles.selectedCircle} />}
+                    {cantidadSeleccionada === cantidad && <View style={styles.selectedCircle} />}
                   </View>
                 </View>
               </View>
@@ -100,4 +100,4 @@ const ModalManiobra = ({ isVisible, onClose, onSelect }) => {
   );
 };
 
-export default ModalManiobra;
+export default ModalCantidad;
