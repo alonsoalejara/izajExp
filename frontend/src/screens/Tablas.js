@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground, Image, Alert } from 'react-native';
 import TablasStyles from '../styles/TablasStyles';
 import Tables from '../components/tables/Table.index.js';
-import GenerarPDFButton from '../components/tables/GenerarPDFButton';
-import Modals from '../components/modals/Modal.index.js';
 import getApiUrl from '../utils/apiUrl';
+import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
 const axios = require('axios/dist/browser/axios.cjs');
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tablas = ({ route, navigation }) => {
   const { eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete, grua, radioIzaje, radioMontaje, usuarioId } = route.params;
-  const [isSaved, setIsSaved] = useState(false); // Para saber si el plan de izaje fue guardado
-  const [isModalVisible, setIsModalVisible] = useState(false); // Controla la visibilidad del modal
-  const [currentUsuarioId, setCurrentUsuarioId] = useState(null); // Estado para el usuarioId
+  const [isSaved, setIsSaved] = useState(false);
+  const [currentUsuarioId, setCurrentUsuarioId] = useState(null);
 
   const gruaData = {
     'Terex RT555': { pesoEquipo: 12000, pesoGancho: 450, capacidadLevante: 17800, largoPluma: 19.8, contrapeso: 6.4 },
@@ -78,9 +76,23 @@ const Tablas = ({ route, navigation }) => {
     fetchUsuarioId();
   }, []);
 
-  // Función para manejar el botón Guardar
   const handleGuardar = () => {
-    setIsModalVisible(true);
+    Alert.alert(
+      'Confirmar',
+      '¿Estás seguro de guardar este plan de izaje?',
+      [
+        {
+          text: 'Cancelar',
+          onPress: () => console.log('Cancelado'),
+          style: 'cancel',
+        },
+        {
+          text: 'Confirmar',
+          onPress: handleConfirmar,
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   const handleConfirmar = async () => {
@@ -89,7 +101,7 @@ const Tablas = ({ route, navigation }) => {
       return;
     }
     const requestBody = {
-      usuario: currentUsuarioId, // Usar currentUsuarioId
+      usuario: currentUsuarioId,
       aparejos: rows.map(row => ({
         descripcion: row.descripcion,
         cantidad: row.cantidad,
@@ -113,7 +125,6 @@ const Tablas = ({ route, navigation }) => {
 
     console.log('Datos a enviar:', requestBody);
 
-    // Obtener el token de autenticación desde AsyncStorage
     const token = await AsyncStorage.getItem('accessToken');
     if (!token) {
       console.error('No se encontró token de autenticación');
@@ -122,16 +133,15 @@ const Tablas = ({ route, navigation }) => {
     }
 
     try {
-      const apiUrl = getApiUrl('setupIzaje'); // Asegúrate de que la URL sea correcta
+      const apiUrl = getApiUrl('setupIzaje');
       const response = await axios.post(apiUrl, requestBody, {
         headers: {
-          Authorization: `Bearer ${token}`, // Agregar el token en el encabezado
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         },
       });
       setIsSaved(true);
-      setIsModalVisible(false);
-      console.log('Respuesta del servidor:', response.data); // Mostrar la respuesta del servidor
+      console.log('Respuesta del servidor:', response.data);
     } catch (error) {
       console.error('Error al guardar el plan de izaje:', error.response ? error.response.data : error.message);
       alert('Hubo un error al guardar el plan de izaje. Intenta nuevamente.');
@@ -140,10 +150,30 @@ const Tablas = ({ route, navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={[TablasStyles.container, TablasStyles.contentContainer, { flex: 1, marginBottom: 80 }]}>
-        <View style={TablasStyles.section}>
-          <Text style={TablasStyles.sectionTitle}>TABLAS</Text>
-        </View>
+      {/* Sección superior con imagen, degradado y logo */}
+      <View style={TablasStyles.circleContainer}>
+        <ImageBackground
+          source={require('../../assets/grua-home.png')}
+          style={TablasStyles.background}
+          imageStyle={TablasStyles.image}
+        >
+          <Svg style={TablasStyles.gradient}>
+            <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+              <Stop offset="80%" stopColor="white" stopOpacity="0.6" />
+              <Stop offset="70%" stopColor="red" stopOpacity="0.8" />
+            </LinearGradient>
+            <Rect width="100%" height="100%" fill="url(#grad1)" />
+          </Svg>
+          <Image
+            source={require('../../assets/EI-Montajes.png')}
+            style={TablasStyles.logo}
+            resizeMode="contain"
+          />
+        </ImageBackground>
+      </View>
+
+      <ScrollView style={TablasStyles.container}>
+        <Text style={TablasStyles.title}>Tablas</Text>
 
         <Tables.AparejosTable
           rows={rows}
@@ -166,33 +196,18 @@ const Tablas = ({ route, navigation }) => {
         />
       </ScrollView>
 
-      <View style={TablasStyles.horizontalButtonContainer}>
+      <View style={TablasStyles.buttonContainer}>
+        <TouchableOpacity style={TablasStyles.cancelButton} onPress={() => navigation.goBack()}>
+          <Text style={TablasStyles.cancelButtonText}>Volver</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={TablasStyles.button}
           onPress={isSaved ? () => navigation.navigate('GenerarPDF') : handleGuardar}
         >
-          <Text style={TablasStyles.buttonText}>{isSaved ? 'Generar PDF' : 'Guardar Plan de Izaje'}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={TablasStyles.button} onPress={() => navigation.goBack()}>
-          <Text style={TablasStyles.buttonText}>Volver</Text>
+          <Text style={TablasStyles.buttonText}>{isSaved ? 'PDF' : 'Guardar'}</Text>
         </TouchableOpacity>
       </View>
-
-      <Modals.ModalAlert
-        isVisible={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
-        message="¿Deseas continuar y guardar el plan de izaje?"
-        showCloseButton={false}
-      >
-        <TouchableOpacity style={TablasStyles.button} onPress={handleConfirmar}>
-          <Text style={TablasStyles.buttonText}>Confirmar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={TablasStyles.button} onPress={() => setIsModalVisible(false)}>
-          <Text style={TablasStyles.buttonText}>Cerrar</Text>
-        </TouchableOpacity>
-      </Modals.ModalAlert>
     </View>
   );
 };

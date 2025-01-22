@@ -65,7 +65,7 @@ const App = () => {
         <Stack.Screen
           name="Tablas"
           component={Screens.Tablas}
-          options={{ headerShown: true }}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

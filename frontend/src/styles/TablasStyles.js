@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import CommonStyles from './CommonStyles';
 
 const cellStyle = (padding = 4.5, textAlign = 'center', fontSize = 12.7) => ({
   padding,
@@ -14,20 +13,64 @@ const TablasStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: 45,
-    paddingTop: 36,
+    paddingHorizontal: 5,
+    paddingVertical: 130,
   },
   contentContainer: {
-    padding: 20,
+    padding: 0,
   },
-  section: {
-    marginBottom: 30,
-    padding: 10,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 10,
+  // Estilos para la sección superior con imagen, degradado y logo
+  circleContainer: {
+    width: 600,
+    height: 550,
+    borderRadius: 150,
+    position: 'absolute',
+    bottom: '85.5%',
+    left: '37%',
+    transform: [{ translateX: -250 }],
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    backgroundColor: 'transparent',
+    zIndex: 1,
   },
-  sectionTitle: {
-    fontSize: 20,
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  image: {
+    width: '80%',
+    height: '80%',
+    top: 120,
+    left: 15,
+    resizeMode: 'cover',
+  },
+  gradient: {
+    position: 'absolute',
+    top: 50,
+    left: 112,
+    width: 555,
+    height: '100%',
+    zIndex: 0,
+  },
+  logo: {
+    position: 'absolute',
+    top: '84%',
+    left: '58.4%',
+    transform: [{ translateX: -165 }],
+    width: 200,
+    height: 80,
+    zIndex: 0,
+  },
+  /* Titulo de la pagina */
+  title: {
+    fontSize: 24,
+    marginTop: 18,
+    marginBottom: 40,
     color: '#333',
     fontWeight: 'bold',
     textAlign: 'center',
@@ -35,11 +78,6 @@ const TablasStyles = StyleSheet.create({
   header: {
     marginBottom: 15,
     alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
   },
   table: {
     marginBottom: 20,
@@ -91,52 +129,48 @@ const TablasStyles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
+  /* Botones */
+  buttonContainer: {
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    height: 80,
+    width: '100%',
+    alignSelf: 'center',
+  },
   button: {
-    ...CommonStyles.button,
     backgroundColor: '#ee0000',
-    marginBottom: 30,
-    paddingVertical: 15,
-    paddingHorizontal: 25,
-    borderRadius: 5,
+    marginTop: 20,
+    marginBottom: 20,
+    paddingHorizontal: 20,
+    width: 130,
+    borderRadius: 20,
     alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 100,
   },
   buttonText: {
-    ...CommonStyles.buttonText,
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center', 
   },
-  fixedButtonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -5 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
+  cancelButton: {
+    backgroundColor: 'transparent',
+    paddingVertical: 10,
+    marginBottom: 5,
+    width: 130,
+    borderRadius: 20,
     alignItems: 'center',
-    paddingBottom: 20,
+    justifyContent: 'center',
+    minWidth: 100,
   },
-  horizontalButtonContainer: { /* Agrega este estilo */
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '80%', // Ajusta según el diseño
-    marginVertical: 1,
+  cancelButtonText: {
+    color: '#ff0000',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center', 
   },
-  smallButton: {
-    ...CommonStyles.button,
-    backgroundColor: '#ee0000',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginHorizontal: 10, // Espaciado entre botones
-    marginBottom: 25, // Elimina margen inferior
-  },
-  
 });
 
 export default TablasStyles;
