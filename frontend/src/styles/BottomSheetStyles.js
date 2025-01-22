@@ -65,6 +65,13 @@ const BottomSheetStyles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    width: '100%',
+  },
+  optionTextContainer: {
+    flexDirection: 'row',           // Para alinear los elementos en una fila
+    justifyContent: 'space-between', // Asegura que los elementos se distribuyan con espacio entre ellos
+    alignItems: 'center',           // Alinea verticalmente los elementos en el centro
+    flex: 1,                        // Ocupa todo el espacio disponible en el contenedor
   },
   icon: {
     marginRight: 10,
@@ -74,6 +81,30 @@ const BottomSheetStyles = StyleSheet.create({
     fontWeight: '400',
     color: '#333',
   },
+  radioContainer: {
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    width: 230,
+    
+  },
+  radioButton: {
+    width: 19,
+    height: 19,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#aaa',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  selectedRadioButton: {
+    borderColor: '#ff0000',
+  },
+  selectedCircle: {
+    width: 11,
+    height: 11,
+    borderRadius: 6,
+    backgroundColor: '#ff0000',
+  }
 });
 
 export default BottomSheetStyles;

@@ -23,7 +23,6 @@ const SetupIzaje = () => {
 
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState('');
-  const [manipulaciones, setManipulaciones] = useState('');
 
   const openModal = (setModalVisible) => {
     setModalVisible(true);
@@ -69,7 +68,7 @@ const SetupIzaje = () => {
           </ImageBackground>
         </View>
 
-        {/* Contenido sin ScrollView */}
+        {/* Contenido */}
         <View style={styles.container}>
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
@@ -117,7 +116,7 @@ const SetupIzaje = () => {
 
             {/* Input para abrir el bottom sheet de tipo de grillete */}
             <TouchableOpacity
-              onPress={() => openModal(setGrilleteModalVisible)}
+              onPress={() => openModal(setGrilleteModalVisible)} // Asegúrate de pasar la función setGrilleteModalVisible
               style={[styles.inputButton, { flex: 1, paddingVertical: 20, marginLeft: 5 }]}
             >
               <View style={[styles.inputButtonContent, { justifyContent: 'space-between' }]}>
@@ -126,24 +125,25 @@ const SetupIzaje = () => {
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {tipoGrillete ? `Tipo: ${tipoGrillete}` : "Grillete"}
+                  {tipoGrillete ? `Grillete de ${tipoGrillete}"` : "Grillete"}
                 </Text>
                 <Icon name="caret-down" size={18} color="#ccc" style={styles.icon} />
               </View>
             </TouchableOpacity>
           </View>
 
+          {/* Modal para seleccionar tipo de grillete */}
           <Modals.ModalGrillete
             isVisible={isGrilleteModalVisible}
             onClose={() => setGrilleteModalVisible(false)}
-            onSelect={(cantidad, tipo) => {
-              setCantidadGrilletes(cantidad);
-              setTipoGrillete(tipo);
+            onSelect={(tipo) => {
+              setTipoGrillete(tipo);  // Actualiza el tipo de grillete
+              setGrilleteModalVisible(false);  // Cierra el modal
             }}
           />
 
           <View style={styles.inputWrapper}>
-            <Text style={styles.labelText}>Configure la maniobra (cantidad y tipo):</Text>
+            <Text style={styles.labelText}>Configure maniobra(s) (cantidad y tipo):</Text>
           </View>
 
           {/* Configurar Maniobra */}
