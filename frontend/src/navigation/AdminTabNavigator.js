@@ -32,7 +32,7 @@ function AdminTabNavigator() {
           justifyContent: 'center',
         },
         tabBarActiveTintColor: 'red',
-        tabBarInactiveTintColor: 'gray',
+        tabBarInactiveTintColor: '#ddd',
         tabBarShowLabel: false,
         headerShown: false,
       })}

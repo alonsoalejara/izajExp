@@ -223,7 +223,7 @@ function AdminPanel() {
   
         {/* Input de búsqueda con icono */}
         <View style={styles.searchContainer}>
-          <Icon name="search" size={20} color="gray" style={styles.searchIcon} />
+          <Icon name="search" size={20} color="#ddd" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder="Buscar..."

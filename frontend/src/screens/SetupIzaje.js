@@ -72,7 +72,7 @@ const SetupIzaje = () => {
         {/* Contenido sin ScrollView */}
         <View style={styles.container}>
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Cálculo maniobras menores</Text>
+            <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
           </View>
           <View style={styles.inputWrapper}>
             <Text style={styles.labelText}>Seleccione grúa:</Text>
@@ -84,10 +84,12 @@ const SetupIzaje = () => {
             style={styles.inputButton}
           >
             <View style={styles.inputButtonContent}>
-              <Text style={styles.inputButtonText}>
+              <Text
+                style={[styles.inputButtonText, { color: grua ? 'black' : '#ccc' }]}
+              >
                 {grua ? `${grua}` : "Configurar Grúa"}
               </Text>
-              <Icon name="caret-down" size={20} color="#555" style={styles.icon} />
+              <Icon name="caret-down" size={20} color="#ccc" style={styles.icon} />
             </View>
           </TouchableOpacity>
 
@@ -107,7 +109,7 @@ const SetupIzaje = () => {
             <TextInput
               style={[styles.input, { width: 120 }]}
               placeholder="Cantidad"
-              placeholderTextColor="#888"
+              placeholderTextColor="#ccc"
               keyboardType="numeric"
               value={cantidadGrilletes}
               onChangeText={setCantidadGrilletes}
@@ -120,15 +122,13 @@ const SetupIzaje = () => {
             >
               <View style={[styles.inputButtonContent, { justifyContent: 'space-between' }]}>
                 <Text
-                  style={[styles.inputButtonText, { fontSize: 18, flexShrink: 1 }]}
+                  style={[styles.inputButtonText, { fontSize: 18, flexShrink: 1, color: tipoGrillete ? 'black' : '#ccc' }]}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {tipoGrillete
-                    ? `Tipo: ${tipoGrillete}`
-                    : "Grillete"}
+                  {tipoGrillete ? `Tipo: ${tipoGrillete}` : "Grillete"}
                 </Text>
-                <Icon name="caret-down" size={18} color="#555" style={styles.icon} />
+                <Icon name="caret-down" size={18} color="#ccc" style={styles.icon} />
               </View>
             </TouchableOpacity>
           </View>
@@ -152,7 +152,7 @@ const SetupIzaje = () => {
             <TextInput
               style={[styles.input, { width: 120 }]}
               placeholder="Cantidad"
-              placeholderTextColor="#888"
+              placeholderTextColor="#ccc"
               keyboardType="numeric"
               value={cantidadManiobra}
               onChangeText={setCantidadManiobra}
@@ -165,15 +165,13 @@ const SetupIzaje = () => {
             >
               <View style={[styles.inputButtonContent, { justifyContent: 'space-between' }]}>
                 <Text
-                  style={[styles.inputButtonText, { fontSize: 18, flexShrink: 1 }]}
+                  style={[styles.inputButtonText, { fontSize: 18, flexShrink: 1, color: eslingaOEstrobo ? 'black' : '#ccc' }]}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {eslingaOEstrobo
-                    ? `Tipo: ${eslingaOEstrobo}`
-                    : "Tipo"}
+                  {eslingaOEstrobo ? `Tipo: ${eslingaOEstrobo}` : "Tipo"}
                 </Text>
-                <Icon name="caret-down" size={18} color="#555" style={styles.icon} />
+                <Icon name="caret-down" size={18} color="#ccc" style={styles.icon} />
               </View>
             </TouchableOpacity>
           </View>
