@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     minWidth: 100,
   },
   buttonText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 17,
     fontWeight: 'bold',
   },
@@ -105,6 +105,19 @@ const styles = StyleSheet.create({
     height: 80,
   },
   input: {
+    backgroundColor: '#fff',
+    width: 100,
+    marginLeft: -10,
+    paddingVertical: 20,
+    paddingLeft: 15,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    fontSize: 18,
+    textAlign: 'left',
+    textAlignVertical: 'center',
+  },
+  littleInput: {
     backgroundColor: '#fff',
     paddingVertical: 20,
     paddingLeft: 15,
@@ -132,8 +145,8 @@ const styles = StyleSheet.create({
   },
   unitText: {
     fontSize: 18,
-    color: '#666',
-    marginLeft: 6,
+    fontWeight: '500',
+    color: '#000',
   },
     // Estilos para los inputs (botones)
     inputButton: {
