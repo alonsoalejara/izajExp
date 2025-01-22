@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ImageBackground, Alert } from 'react-native';
 import styles from '../styles/AdminProfileStyles';
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { jwtDecode } from 'jwt-decode';
+import getApiUrl from '../utils/apiUrl';
 
 const AdminProfile = () => {
+  const navigation = useNavigation();
   const [user, setUser] = useState({
     username: '',
     nombre: 'No disponible',
@@ -20,33 +24,66 @@ const AdminProfile = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const storedUser = await AsyncStorage.getItem('userData');
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          console.log('Datos recibidos del usuario logeado:', parsedUser);
-
-          setUser({
-            username: parsedUser.username || '',
-            nombre: parsedUser.nombre || parsedUser.username || 'No disponible',
-            apellido: parsedUser.apellido || '',
-            rut: parsedUser.rut || 'No disponible',
-            phone: parsedUser.phone || 'No disponible',
-            specialty: parsedUser.specialty || 'No disponible',
-            email: parsedUser.email || 'No disponible',
-            profileImage: parsedUser.profileImage || require('../../assets/blank-user-image.png'),
+        const token = await AsyncStorage.getItem('accessToken');
+  
+        if (token) {
+          const decodedToken = jwtDecode(token);  
+          const userId = decodedToken.id;
+          const url = getApiUrl(`user/${userId}`);
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
           });
+          const data = await response.json();  
+          if (data && data.data) {
+            setUser({
+              username: data.data.username || '',
+              nombre: data.data.nombre || (data.data.username ? '' : 'No disponible'),
+              apellido: data.data.apellido || '',
+              rut: data.data.rut || 'No disponible',
+              phone: data.data.phone || 'No disponible',
+              specialty: data.data.specialty || 'No disponible',
+              email: data.data.email || 'No disponible',
+              profileImage: data.data.profileImage || require('../../assets/blank-user-image.png'),
+            });
+          }
         }
       } catch (error) {
         console.error('Error al obtener los datos del usuario:', error);
       }
     };
-
+  
     fetchUserData();
   }, []);
+  
+  
 
   const handleSignOut = () => {
-    console.log('Cerrar sesión');
-    // Aquí puedes manejar la lógica de cierre de sesión si es necesario
+    Alert.alert(
+      "Cerrar sesión",
+      "¿Estás seguro de que deseas cerrar sesión?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => console.log("Cancelado"),
+          style: "cancel"
+        },
+        {
+          text: "Confirmar",
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem('accessToken');
+              navigation.navigate('Home');
+            } catch (error) {
+              console.error('Error al cerrar sesión:', error);
+            }
+          }
+        }
+      ]
+    );
   };
 
   return (
@@ -77,7 +114,7 @@ const AdminProfile = () => {
         <View>
           <View style={styles.infoContainer}>
             <Icon name="person-2" size={30} color="#ff0000" style={styles.icon} />
-            <Text style={styles.value}>{user.username}{user.nombre} {user.apellido || ''}</Text>
+            <Text style={styles.value}>{user.username} {user.nombre} {user.apellido || ''}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Icon name="credit-card" size={30} color="#ff0000" style={styles.icon} />
