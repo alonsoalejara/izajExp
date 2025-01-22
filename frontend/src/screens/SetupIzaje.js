@@ -27,18 +27,46 @@ const SetupIzaje = () => {
     setModalVisible(true);
   };
 
+  const handleGruaSelect = (selectedGrua) => {
+    setGrua(selectedGrua.nombre);
+  };
+
+  const handleRadioIzajeChange = (value) => {
+    setRadioIzaje(value);
+  };
+
+  const handleRadioMontajeChange = (value) => {
+    setRadioMontaje(value);
+  };
+
+  const handleCantidadGrilletesChange = (value) => {
+    setCantidadGrilletes(value);
+  };
+
+  const handleTipoGrilleteSelect = (tipo) => {
+    setTipoGrillete(tipo);
+  };
+
+  const handleCantidadManiobraSelect = (cantidad) => {
+    setCantidadManiobra(cantidad);
+  };
+
+  const handleTipoManiobraSelect = (tipo) => {
+    setEslingaOEstrobo(tipo);
+  };
+
   const handleNavigateToTablas = async () => {
     if (!grua || !cantidadGrilletes || !tipoGrillete || !eslingaOEstrobo || !cantidadManiobra) {
-      setFormaModalVisible(true);
       return;
     }
-  
     navigation.navigate('Tablas', {
       grua: grua,
       eslingaOEstrobo: eslingaOEstrobo,
       cantidadManiobra: cantidadManiobra,
       tipoGrillete: tipoGrillete,
       cantidadGrilletes: cantidadGrilletes,
+      radioIzaje: radioIzaje,
+      radioMontaje: radioMontaje,
     });
   };
 
@@ -66,18 +94,18 @@ const SetupIzaje = () => {
             />
           </ImageBackground>
         </View>
-  
+
         {/* Contenido desplazable */}
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
           </View>
-  
+
           {/* Configurar Grúa */}
           <View style={styles.inputWrapper}>
             <Text style={styles.labelText}>Seleccione grúa:</Text>
           </View>
-  
+
           <TouchableOpacity
             onPress={() => openModal(setGruaModalVisible)}
             style={styles.inputButton}
@@ -89,35 +117,35 @@ const SetupIzaje = () => {
               <Icon name="caret-down" size={20} color="#ccc" style={styles.icon} />
             </View>
           </TouchableOpacity>
-  
+
           <Modals.ModalGrua
             isVisible={isGruaModalVisible}
             onClose={() => setGruaModalVisible(false)}
-            onSelect={(selectedGrua) => setGrua(selectedGrua.nombre)}
+            onSelect={handleGruaSelect}
           />
-  
+
           {/* Formulario de radios: Radio Izaje y Radio Montaje */}
           <View style={styles.inputWrapper}>
             <Text style={styles.labelText}>Radio Izaje (metros)             Radio Montaje (metros)</Text>
           </View>
 
           <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.littleInput, { width: 165 }]}
-                placeholder="Izaje"
-                keyboardType="numeric"
-                value={radioIzaje}
-                onChangeText={setRadioIzaje}
-              />
-              <TextInput
-                style={[styles.littleInput, { width: 174, marginLeft: -3 }]}
-                placeholder="Montaje"
-                keyboardType="numeric"
-                value={radioMontaje}
-                onChangeText={setRadioMontaje}
-              />
+            <TextInput
+              style={[styles.littleInput, { width: 165 }]}
+              placeholder="Izaje"
+              keyboardType="numeric"
+              value={radioIzaje}
+              onChangeText={handleRadioIzajeChange}
+            />
+            <TextInput
+              style={[styles.littleInput, { width: 174, marginLeft: -3 }]}
+              placeholder="Montaje"
+              keyboardType="numeric"
+              value={radioMontaje}
+              onChangeText={handleRadioMontajeChange}
+            />
           </View>
-  
+
           {/* Configurar Grillete */}
           <View style={styles.inputWrapper}>
             <Text style={styles.labelText}>Configure grillete(s) (cantidad y tipo):</Text>
@@ -130,7 +158,7 @@ const SetupIzaje = () => {
               placeholderTextColor="#ccc"
               keyboardType="numeric"
               value={cantidadGrilletes}
-              onChangeText={setCantidadGrilletes}
+              onChangeText={handleCantidadGrilletesChange}
             />
             <TouchableOpacity
               onPress={() => openModal(setGrilleteModalVisible)}
@@ -148,21 +176,18 @@ const SetupIzaje = () => {
               </View>
             </TouchableOpacity>
           </View>
-  
+
           <Modals.ModalGrillete
             isVisible={isGrilleteModalVisible}
             onClose={() => setGrilleteModalVisible(false)}
-            onSelect={(tipo) => {
-              setTipoGrillete(tipo);
-              setGrilleteModalVisible(false);
-            }}
+            onSelect={handleTipoGrilleteSelect}
           />
-  
+
           {/* Configurar Maniobra */}
           <View style={styles.inputWrapper}>
             <Text style={styles.labelText}>Configure maniobra(s) (cantidad y tipo):</Text>
           </View>
-  
+
           <View style={[styles.inputContainer]}>
             <TouchableOpacity
               onPress={() => openModal(setCantidadModalVisible)}
@@ -179,7 +204,7 @@ const SetupIzaje = () => {
                 <Icon name="caret-down" size={18} color="#ccc" style={styles.icon} />
               </View>
             </TouchableOpacity>
-  
+
             <TouchableOpacity
               onPress={() => openModal(setManiobraModalVisible)}
               style={[styles.inputButton, { flex: 1, paddingVertical: 20, marginLeft: 5 }]}
@@ -196,23 +221,19 @@ const SetupIzaje = () => {
               </View>
             </TouchableOpacity>
           </View>
-  
+
           <Modals.ModalCantidad
             isVisible={isCantidadModalVisible}
             onClose={() => setCantidadModalVisible(false)}
-            onSelect={(cantidad) => {
-              setCantidadManiobra(cantidad);
-            }}
+            onSelect={handleCantidadManiobraSelect}
           />
-  
+
           <Modals.ModalManiobra
             isVisible={isManiobraModalVisible}
             onClose={() => setManiobraModalVisible(false)}
-            onSelect={(tipo) => {
-              setEslingaOEstrobo(tipo);
-            }}
+            onSelect={handleTipoManiobraSelect}
           />
-  
+
           {/* Botón para confirmar configuración */}
           <TouchableOpacity
             style={[styles.button, { marginTop: 30 }]}
