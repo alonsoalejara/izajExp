@@ -73,11 +73,11 @@ const SetupIzaje = () => {
             <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
           </View>
   
+          {/* Configurar Grúa */}
           <View style={styles.inputWrapper}>
             <Text style={styles.labelText}>Seleccione grúa:</Text>
           </View>
   
-          {/* Configurar Grúa */}
           <TouchableOpacity
             onPress={() => openModal(setGruaModalVisible)}
             style={styles.inputButton}
@@ -96,11 +96,33 @@ const SetupIzaje = () => {
             onSelect={(selectedGrua) => setGrua(selectedGrua.nombre)}
           />
   
+          {/* Formulario de radios: Radio Izaje y Radio Montaje */}
           <View style={styles.inputWrapper}>
-            <Text style={styles.labelText}>Configure grillete(s) (cantidad y tipo):</Text>
+            <Text style={styles.labelText}>Radio Izaje (metros)             Radio Montaje (metros)</Text>
+          </View>
+
+          <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.littleInput, { width: 165 }]}
+                placeholder="Izaje"
+                keyboardType="numeric"
+                value={radioIzaje}
+                onChangeText={setRadioIzaje}
+              />
+              <TextInput
+                style={[styles.littleInput, { width: 174, marginLeft: -3 }]}
+                placeholder="Montaje"
+                keyboardType="numeric"
+                value={radioMontaje}
+                onChangeText={setRadioMontaje}
+              />
           </View>
   
           {/* Configurar Grillete */}
+          <View style={styles.inputWrapper}>
+            <Text style={styles.labelText}>Configure grillete(s) (cantidad y tipo):</Text>
+          </View>
+
           <View style={[styles.inputContainer]}>
             <TextInput
               style={[styles.littleInput, { width: 120 }]}
@@ -136,11 +158,11 @@ const SetupIzaje = () => {
             }}
           />
   
+          {/* Configurar Maniobra */}
           <View style={styles.inputWrapper}>
             <Text style={styles.labelText}>Configure maniobra(s) (cantidad y tipo):</Text>
           </View>
   
-          {/* Configurar Maniobra */}
           <View style={[styles.inputContainer]}>
             <TouchableOpacity
               onPress={() => openModal(setCantidadModalVisible)}
@@ -190,28 +212,6 @@ const SetupIzaje = () => {
               setEslingaOEstrobo(tipo);
             }}
           />
-  
-          <View style={styles.inputWrapper}>
-            <Text style={styles.labelText}>Radio Izaje (metros)             Radio Montaje (metros)</Text>
-          </View>
-  
-          <View style={styles.inputContainer}>
-            {/* Formulario de radios: Radio Izaje y Radio Montaje */}
-              <TextInput
-                style={[styles.littleInput, { width: 165 }]}
-                placeholder="Izaje"
-                keyboardType="numeric"
-                value={radioIzaje}
-                onChangeText={setRadioIzaje}
-              />
-              <TextInput
-                style={[styles.littleInput, { width: 174, marginLeft: -3 }]}
-                placeholder="Montaje"
-                keyboardType="numeric"
-                value={radioMontaje}
-                onChangeText={setRadioMontaje}
-              />
-          </View>
   
           {/* Botón para confirmar configuración */}
           <TouchableOpacity
