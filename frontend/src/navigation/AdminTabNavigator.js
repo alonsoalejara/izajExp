@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AdminPanel from '../screens/AdminPanel';
 import SetupIzaje from '../screens/SetupIzaje';
-import AdminProfile from '../screens/AdminProfile';
+import Profile from '../screens/Profile';
 
 const Tab = createBottomTabNavigator();
 
@@ -40,7 +40,7 @@ function AdminTabNavigator() {
       {/* Pestaña de Usuario */}
       <Tab.Screen
         name="User"
-        component={AdminProfile}
+        component={Profile}
       />
       
       {/* Pestaña de AdminPanel */}

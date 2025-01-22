@@ -1,5 +1,6 @@
 import Home from './Home';
 import Login from './Login';
+import Profile from './Profile';
 import SetupIzaje from './SetupIzaje';
 import GruaIzaje from './GruaIzaje';
 import Tablas from './Tablas';
@@ -14,6 +15,7 @@ import AddCraneData from './AddCraneData';
 const Screens = {
   Home,
   Login,
+  Profile,
   SetupIzaje,
   GruaIzaje,
   AdminPanel,
