@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ddd',
+    backgroundColor: '#fff',
     paddingHorizontal: 5,
     paddingVertical: 130,
   },
@@ -75,46 +75,48 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 15,
   },
+  icon: {
+    marginLeft: 10,
+  },
+  // Estilos para botón
+  button: {
+    backgroundColor: '#ee0000',
+    paddingVertical: 13,
+    marginBottom: 18,
+    marginLeft: 55,
+    width: 250,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 100,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: 'bold',
+  },
 
-  // Estilos para los botones
-  inputButton: {
-    backgroundColor: '#ddd',
-    paddingVertical: 16,
-    paddingHorizontal: 15,
-    paddingBottom: 20,
+  // Estilos para los inputs y contenedores
+  inputContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: -5,
+    height: 80,
+  },
+  input: {
+    backgroundColor: '#fff',
+    paddingVertical: 20,
+    paddingLeft: 15,
+    paddingRight: 40,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#aaa',
     marginHorizontal: 10,
     marginTop: 15,
-    justifyContent: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  inputButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  inputButtonText: {
-    color: '#666',
     fontSize: 18,
-    fontWeight: '400',
-  },
-  icon: {
-    marginLeft: 10,  // Espacio entre el texto y el ícono
-  },
-
-  // Estilos para los inputs y contenedores
-  input: {
-    backgroundColor: '#e0e0e0',
-    padding: 10,
-    borderRadius: 5,
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 15,
-    width: '100%',
+    textAlign: 'left',
+    textAlignVertical: 'center',
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -133,6 +135,32 @@ const styles = StyleSheet.create({
     color: '#666',
     marginLeft: 6,
   },
+    // Estilos para los inputs (botones)
+    inputButton: {
+      backgroundColor: '#fff',
+      paddingVertical: 16,
+      paddingHorizontal: 15,
+      paddingBottom: 20,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: '#aaa',
+      marginHorizontal: 10,
+      marginTop: 15,
+      justifyContent: 'center',
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    inputButtonContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: '100%',
+    },
+    inputButtonText: {
+      color: '#666',
+      fontSize: 18,
+      fontWeight: '400',
+    },
   // Estilos adicionales
   cardDetail: {
     fontSize: 15,

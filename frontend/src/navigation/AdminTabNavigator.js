@@ -24,7 +24,7 @@ function AdminTabNavigator() {
           return <Icon name={iconName} size={iconSize} color={color} />;
         },
         tabBarStyle: {
-          backgroundColor: '#ddd',
+          backgroundColor: '#fff',
           borderTopWidth: 0,
           height: 80,
           paddingBottom: 15,
