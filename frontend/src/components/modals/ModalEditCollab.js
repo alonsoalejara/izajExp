@@ -1,149 +1,137 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import styles from '../../styles/ModalStyles';
-import { especialidades } from '../../data/especialidadesData';
-import getApiUrl from '../../utils/apiUrl';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Modal,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Animated,
+  Dimensions,
+  PanResponder,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import styles from '../../styles/BottomSheetStyles';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const ModalEditColaborador = ({ isVisible, onClose, colaborador, onUpdate }) => {
-  const [nombre, setNombre] = useState(colaborador ? colaborador.nombre : '');
-  const [apellido, setApellido] = useState(colaborador ? colaborador.apellido : '');
-  const [rut, setRut] = useState(colaborador ? colaborador.rut : '');
-  const [email, setEmail] = useState(colaborador ? colaborador.email : '');
-  const [phone, setTelefono] = useState(colaborador ? colaborador.phone : '');
-  const [specialty, setEspecialidad] = useState(colaborador ? colaborador.specialty : '');
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [rut, setRut] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setTelefono] = useState('');
+  const [specialty, setEspecialidad] = useState('');
   const [showMenu, setShowMenu] = useState(false);
+  const bottomSheetHeight = SCREEN_HEIGHT * 0.6;
+  const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: (e, gestureState) => {
+      if (gestureState.dy > 0) {
+        positionY.setValue(SCREEN_HEIGHT - bottomSheetHeight + gestureState.dy);
+      }
+    },
+    onPanResponderRelease: (e, gestureState) => {
+      if (gestureState.dy > 100) {
+        closeBottomSheet();
+      } else {
+        openBottomSheet();
+      }
+    },
+  });
 
   useEffect(() => {
     if (colaborador) {
-      setNombre(colaborador.nombre);
-      setApellido(colaborador.apellido);
-      setRut(colaborador.rut);
-      setEmail(colaborador.email);
-      setTelefono(colaborador.phone);
-      setEspecialidad(colaborador.specialty);
+      setNombre(colaborador.nombre || '');
+      setApellido(colaborador.apellido || '');
+      setRut(colaborador.rut || '');
+      setEmail(colaborador.email || '');
+      setTelefono(colaborador.phone || '');
+      setEspecialidad(colaborador.specialty || '');
     }
   }, [colaborador]);
 
-  const handleUpdate = async () => {
-    const updatedColaborador = {
-      nombre,
-      apellido,
-      rut,
-      email,
-      phone,
-      specialty,
-      roles: colaborador.roles,
-    };
-
-    try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
-      if (!accessToken) {
-        alert('No autorizado. Por favor, inicie sesión nuevamente.');
-        return;
-      }
-      console.log('(ModalEditCollab.js) ID del colaborador:', colaborador._id);
-      if (!colaborador._id) {
-        alert('Error: ID del colaborador no válido.');
-        return;
+  useEffect(() => {
+    if (isVisible) {
+      openBottomSheet();
+    } else {
+      closeBottomSheet();
     }
-      const response = await fetch(getApiUrl(`user/${colaborador._id}`), {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(updatedColaborador),
-      });
+  }, [isVisible]);
 
-      const data = await response.json();
-      if (response.ok) {
-        onUpdate(updatedColaborador);
-        onClose();
-      } else {
-        console.error('Error al actualizar:', data);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Hubo un error al actualizar el colaborador.');
-    }
+  const openBottomSheet = () => {
+    Animated.timing(positionY, {
+      toValue: SCREEN_HEIGHT - bottomSheetHeight,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
   };
 
-  const handleEspecialidadSelect = (item) => {
-    setEspecialidad(item.label);
-    setShowMenu(false);
+  const closeBottomSheet = () => {
+    Animated.timing(positionY, {
+      toValue: SCREEN_HEIGHT,
+      duration: 150,
+      useNativeDriver: false,
+    }).start(() => onClose());
   };
 
   return (
-    <Modal transparent={true} visible={isVisible} animationType="slide">
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Editar Colaborador</Text>
+    <Modal transparent={true} visible={isVisible} animationType="none">
+      <TouchableWithoutFeedback onPress={closeBottomSheet}>
+        <View style={styles.overlay} />
+      </TouchableWithoutFeedback>
+      <Animated.View
+        style={[
+          styles.bottomSheet,
+          {
+            height: bottomSheetHeight,
+            transform: [{ translateY: positionY }],
+          },
+        ]}
+        {...panResponder.panHandlers}
+      >
+        {/* Línea de arrastre */}
+        <View style={styles.dragLine}></View>
 
-          <Text style={styles.label}>Nombre(s):</Text>
-          <TextInput
-            style={styles.optionButton}
-            placeholder="Ingrese nombre(s)"
-            value={nombre}
-            onChangeText={setNombre}
-          />
-
-          <Text style={styles.label}>Apellido(s):</Text>
-          <TextInput
-            style={styles.optionButton}
-            placeholder="Ingrese apellido(s)"
-            value={apellido}
-            onChangeText={setApellido}
-          />
-
-          <Text style={styles.label}>RUT:</Text>
-          <TextInput
-            style={styles.optionButton}
-            placeholder="Ingrese RUT"
-            value={rut}
-            onChangeText={setRut}
-          />
-
-          <Text style={styles.label}>Email:</Text>
-          <TextInput
-            style={styles.optionButton}
-            placeholder="Ingrese email"
-            value={email}
-            onChangeText={setEmail}
-          />
-
-          <Text style={styles.label}>Teléfono:</Text>
-          <TextInput
-            style={styles.optionButton}
-            placeholder="Ingrese teléfono"
-            value={phone}
-            onChangeText={setTelefono}
-          />
-
-          <TouchableOpacity onPress={() => setShowMenu(!showMenu)} style={styles.optionButton}>
-            <Text>{specialty || 'Seleccione especialidad'}</Text>
+        {/* Encabezado con ícono y título */}
+        <View style={styles.modalHeader}>
+          <TouchableOpacity onPress={closeBottomSheet}>
+            <Icon name="keyboard-arrow-left" size={30} color="#000" />
           </TouchableOpacity>
-          {showMenu && (
-            <FlatList
-              data={especialidades}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => handleEspecialidadSelect(item)}>
-                  <Text style={styles.optionButton}>{item.label}</Text>
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item) => item.value}
-            />
-          )}
+          <Text style={[styles.modalTitle,{ left: -10 }]}>Editar Colaborador</Text>
+        </View>
 
-          <TouchableOpacity onPress={handleUpdate} style={styles.saveButton}>
-            <Text style={styles.saveButtonText}>Actualizar</Text>
+        {/* Contenedor de imagen de perfil y nombre */}
+        <View style={styles.profileContainer}>
+          <Image source={require('../../../assets/blank-user-image.png')} style={styles.profileImage} />
+          <Text style={styles.profileName}>Juan Perez</Text>
+        </View>
+
+        {/* Contenedor de botones */}
+        <View style={styles.roundedButtonContainer}>
+          <TouchableOpacity style={[styles.actionButton, styles.topButton]}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.actionButtonText}>Nombre y apellido</Text>
+              <Icon name="keyboard-arrow-right" size={28} color="#666" />
+            </View>
           </TouchableOpacity>
-
-          <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
-            <Text style={styles.cancelButtonText}>Cancelar</Text>
+          <TouchableOpacity style={styles.actionButton}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.actionButtonText}>Datos personales</Text>
+              <Icon name="keyboard-arrow-right" size={28} color="#666" />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.actionButton, styles.bottomButton]}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.actionButtonText}>Especialidad</Text>
+              <Icon name="keyboard-arrow-right" size={28} color="#666" />
+            </View>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     </Modal>
   );
 };

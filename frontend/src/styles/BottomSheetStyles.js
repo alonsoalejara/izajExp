@@ -68,10 +68,10 @@ const BottomSheetStyles = StyleSheet.create({
     width: '100%',
   },
   optionTextContainer: {
-    flexDirection: 'row',           // Para alinear los elementos en una fila
-    justifyContent: 'space-between', // Asegura que los elementos se distribuyan con espacio entre ellos
-    alignItems: 'center',           // Alinea verticalmente los elementos en el centro
-    flex: 1,                        // Ocupa todo el espacio disponible en el contenedor
+    flexDirection: 'row',           
+    justifyContent: 'space-between',
+    alignItems: 'center',           
+    flex: 1,                        
   },
   icon: {
     marginRight: 10,
@@ -104,7 +104,58 @@ const BottomSheetStyles = StyleSheet.create({
     height: 11,
     borderRadius: 6,
     backgroundColor: '#ff0000',
-  }
+  },
+  /* Perfil del usuario */
+  profileContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 10,
+  },
+  profileName: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#333',
+  },  
+  /* Botones de acción */
+  roundedButtonContainer: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 20,
+    overflow: 'hidden',
+    width: '90%',
+    alignSelf: 'center',
+    marginVertical: 20,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  actionButton: {
+    padding: 15,
+    justifyContent: 'center',
+  },
+  actionButtonText: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#333',
+    marginLeft: 5,
+  },
+  topButton: {
+    borderBottomWidth: 0.5,
+    borderColor: '#ddd',
+  },
+  bottomButton: {
+    borderTopWidth: 0.5,
+    borderColor: '#ddd',
+  },
 });
 
 export default BottomSheetStyles;
