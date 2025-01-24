@@ -108,7 +108,8 @@ const BottomSheetStyles = StyleSheet.create({
   /* Titulo */
   titleContainer: {
     paddingVertical: 10,
-    marginRight: 240,
+    textAlign: "left",
+    marginRight: 150,
     backgroundColor: "#fff",
   },
   titleText: {
@@ -226,7 +227,7 @@ const BottomSheetStyles = StyleSheet.create({
   },
   /* Botones de acción */
   button: {
-    marginTop: 395,
+    marginTop: 325,
     backgroundColor: "#ff0000",
     paddingVertical: 15,
     paddingHorizontal: 20,

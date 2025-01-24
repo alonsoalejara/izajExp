@@ -25,6 +25,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
   const [specialty, setEspecialidad] = useState('');
   const [activeTab, setActiveTab] = useState('main');
 
+  const [isNavigating, setIsNavigating] = useState(false);
   const [isFocusedNombre, setIsFocusedNombre] = useState(false);
   const [isFocusedApellido, setIsFocusedApellido] = useState(false);
 
@@ -35,12 +36,12 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
     onPanResponderMove: (e, gestureState) => {
-      if (gestureState.dy > 0) {
+      if (gestureState.dy > 150) {
         positionY.setValue(SCREEN_HEIGHT - bottomSheetHeight + gestureState.dy);
       }
     },
     onPanResponderRelease: (e, gestureState) => {
-      if (gestureState.dy > 100) {
+      if (gestureState.dy > 150) {
         closeBottomSheet();
       } else {
         openBottomSheet();
@@ -71,20 +72,25 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
     Animated.timing(positionY, {
       toValue: SCREEN_HEIGHT - bottomSheetHeight,
       duration: 300,
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start();
   };
 
   const closeBottomSheet = () => {
     Animated.timing(positionY, {
       toValue: SCREEN_HEIGHT,
-      duration: 150,
-      useNativeDriver: false,
+      duration: 300,
+      useNativeDriver: true,
     }).start(() => onClose());
   };
 
+  const handleTabChange = (newTab) => {
+    if (isNavigating) return;
+    setActiveTab(newTab);
+    setTimeout(() => setIsNavigating(false), 300);
+  };
+
   const handleBackPress = () => {
-    // Si la pestaña activa no es la principal, regresa a "main"
     if (activeTab !== 'main') {
       setActiveTab('main');
     } else {
@@ -135,7 +141,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
                 source={require('../../../assets/blank-user-image.png')}
                 style={styles.profileImage}
               />
-                <Text style={styles.profileName}>
+              <Text style={styles.profileName}>
                 {nombre || apellido ? `${nombre} ${apellido}` : 'Nombre del Usuario'}
               </Text>
             </View>
@@ -144,20 +150,23 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
             <View style={styles.roundedButtonContainer}>
               <TouchableOpacity
                 style={[styles.actionButton, styles.topButton]}
-                onPress={() => setActiveTab('name')}>
+                onPress={() => handleTabChange('name')}>
                 <View style={styles.buttonContent}>
                   <Text style={styles.actionButtonText}>Nombre del usuario</Text>
                   <Icon name="keyboard-arrow-right" size={28} color="#666" />
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButton}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => handleTabChange('personal')}>
                 <View style={styles.buttonContent}>
                   <Text style={styles.actionButtonText}>Datos personales</Text>
                   <Icon name="keyboard-arrow-right" size={28} color="#666" />
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.actionButton, styles.bottomButton]}>
+                style={[styles.actionButton, styles.bottomButton]}
+                onPress={() => handleTabChange('specialty')}>
                 <View style={styles.buttonContent}>
                   <Text style={styles.actionButtonText}>Especialidad</Text>
                   <Icon name="keyboard-arrow-right" size={28} color="#666" />
@@ -245,7 +254,89 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
               </View>
             </View>
 
-             {/* Botón Aplicar Cambios */}
+            {/* Botón Aplicar Cambios */}
+            <TouchableOpacity style={styles.button} onPress={handleAplicarCambios}>
+              <Text style={styles.buttonText}>Aplicar cambios</Text>
+            </TouchableOpacity>
+          </>
+        ) : activeTab === 'personal' ? (
+          <>
+            {/* Pestaña de Datos Personales */}
+            <View>
+              {/* Header */}
+              <View style={styles.modalHeader}>
+                <TouchableOpacity onPress={handleBackPress}>
+                  <Icon name="keyboard-arrow-left" size={30} color="#000" />
+                </TouchableOpacity>
+              </View>
+
+              {/* Contenedor para el título */}
+              <View style={styles.titleContainer}>
+                <Text style={styles.titleText}>Datos personales</Text>
+              </View>
+            </View>
+
+            {/* Contenedor de inputs */}
+            <View style={styles.roundedInputContainer}>
+              {/* Input de RUT */}
+              <View style={[styles.inputWrapper, styles.inputTop]}>
+                <Text style={styles.inputLabel}>RUT</Text>
+                <View style={styles.inputWithIcon}>
+                  <TextInput
+                    style={styles.input}
+                    value={rut}
+                    onChangeText={setRut}
+                    placeholder=""
+                    placeholderTextColor="transparent"
+                  />
+                  {rut.length > 0 && (
+                    <TouchableOpacity onPress={() => setRut("")} style={styles.clearIcon}>
+                      <Icon name="close" size={20} color="#999" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+
+              {/* Input de Teléfono */}
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputLabel}>Teléfono</Text>
+                <View style={styles.inputWithIcon}>
+                  <TextInput
+                    style={styles.input}
+                    value={phone}
+                    onChangeText={setTelefono}
+                    placeholder=""
+                    placeholderTextColor="transparent"
+                  />
+                  {phone.length > 0 && (
+                    <TouchableOpacity onPress={() => setTelefono("")} style={styles.clearIcon}>
+                      <Icon name="close" size={20} color="#999" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+
+              {/* Input de Email */}
+              <View style={[styles.inputWrapper, styles.inputBottom]}>
+                <Text style={styles.inputLabel}>Email</Text>
+                <View style={styles.inputWithIcon}>
+                  <TextInput
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder=""
+                    placeholderTextColor="transparent"
+                  />
+                  {email.length > 0 && (
+                    <TouchableOpacity onPress={() => setEmail("")} style={styles.clearIcon}>
+                      <Icon name="close" size={20} color="#999" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            </View>
+
+            {/* Botón Aplicar Cambios */}
             <TouchableOpacity style={styles.button} onPress={handleAplicarCambios}>
               <Text style={styles.buttonText}>Aplicar cambios</Text>
             </TouchableOpacity>
