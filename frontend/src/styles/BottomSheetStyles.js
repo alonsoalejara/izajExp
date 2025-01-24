@@ -105,6 +105,18 @@ const BottomSheetStyles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#ff0000',
   },
+  /* Titulo */
+  titleContainer: {
+    paddingVertical: 10,
+    marginRight: 240,
+    backgroundColor: "#fff",
+  },
+  titleText: {
+    fontSize: 26,
+    fontWeight: "600",
+    color: "#333",
+    textAlign: "center",
+  },
   /* Perfil del usuario */
   profileContainer: {
     alignItems: 'center',
@@ -155,6 +167,78 @@ const BottomSheetStyles = StyleSheet.create({
   bottomButton: {
     borderTopWidth: 0.5,
     borderColor: '#ddd',
+  },
+  /* Inputs */
+  roundedInputContainer: {
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    overflow: 'hidden',
+    top: 20,
+    width: '87%',
+    alignSelf: 'center',
+    backgroundColor: '#fff',
+  },
+  inputWrapper: {
+    position: 'relative',
+    width: '100%',
+  },
+  inputWithIcon: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  inputTop: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  inputBottom: {
+    // Sin borde inferior, ya que es el último input
+  },
+  inputLabel: {
+    position: "absolute",
+    top: 12,
+    left: 15,
+    fontSize: 16,
+    color: "#aaa",
+  },
+  inputLabelPlaceholder: {
+    top: 20,
+    fontSize: 18,
+    color: '#aaa',
+  },
+  inputLabelFloating: {
+    fontSize: 16,
+    color: '#666',
+  },
+  input: {
+    flex: 1,
+    padding: 22,
+    top: 7,
+    marginLeft: -7,
+    borderRadius: 5,
+    fontSize: 17,
+    fontWeight: "500",
+    color: "#000",
+  },
+  clearIcon: {
+    position: "absolute",
+    right: 10,
+  },
+  /* Botones de acción */
+  button: {
+    marginTop: 395,
+    backgroundColor: "#ff0000",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    alignSelf: "center",
+    width: "87%",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    textAlign: "center",
+    fontWeight: "600",
   },
 });
 

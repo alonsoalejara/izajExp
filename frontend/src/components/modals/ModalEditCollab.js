@@ -9,6 +9,7 @@ import {
   Dimensions,
   PanResponder,
   TouchableWithoutFeedback,
+  TextInput,
 } from 'react-native';
 import styles from '../../styles/BottomSheetStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -22,8 +23,12 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
   const [email, setEmail] = useState('');
   const [phone, setTelefono] = useState('');
   const [specialty, setEspecialidad] = useState('');
-  const [showMenu, setShowMenu] = useState(false);
-  const bottomSheetHeight = SCREEN_HEIGHT * 0.6;
+  const [activeTab, setActiveTab] = useState('main');
+
+  const [isFocusedNombre, setIsFocusedNombre] = useState(false);
+  const [isFocusedApellido, setIsFocusedApellido] = useState(false);
+
+  const bottomSheetHeight = SCREEN_HEIGHT * 0.85;
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   const panResponder = PanResponder.create({
@@ -78,6 +83,21 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
     }).start(() => onClose());
   };
 
+  const handleBackPress = () => {
+    // Si la pestaña activa no es la principal, regresa a "main"
+    if (activeTab !== 'main') {
+      setActiveTab('main');
+    } else {
+      closeBottomSheet();
+    }
+  };
+
+  const handleAplicarCambios = () => {
+    // Lógica para aplicar los cambios
+    console.log("Nombre:", nombre);
+    console.log("Apellido:", apellido);
+  };
+
   return (
     <Modal transparent={true} visible={isVisible} animationType="none">
       <TouchableWithoutFeedback onPress={closeBottomSheet}>
@@ -96,41 +116,141 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
         {/* Línea de arrastre */}
         <View style={styles.dragLine}></View>
 
-        {/* Encabezado con ícono y título */}
-        <View style={styles.modalHeader}>
-          <TouchableOpacity onPress={closeBottomSheet}>
-            <Icon name="keyboard-arrow-left" size={30} color="#000" />
-          </TouchableOpacity>
-          <Text style={[styles.modalTitle,{ left: -10 }]}>Editar Colaborador</Text>
-        </View>
+        {/* Contenido dinámico según la pestaña activa */}
+        {activeTab === 'main' ? (
+          <>
+            {/* Encabezado con ícono y título */}
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={closeBottomSheet}>
+                <Icon name="keyboard-arrow-left" size={30} color="#000" />
+              </TouchableOpacity>
+              <Text style={[styles.modalTitle, { left: -10 }]}>
+                Editar Colaborador
+              </Text>
+            </View>
 
-        {/* Contenedor de imagen de perfil y nombre */}
-        <View style={styles.profileContainer}>
-          <Image source={require('../../../assets/blank-user-image.png')} style={styles.profileImage} />
-          <Text style={styles.profileName}>Juan Perez</Text>
-        </View>
+            {/* Contenedor de imagen de perfil y nombre */}
+            <View style={styles.profileContainer}>
+              <Image
+                source={require('../../../assets/blank-user-image.png')}
+                style={styles.profileImage}
+              />
+                <Text style={styles.profileName}>
+                {nombre || apellido ? `${nombre} ${apellido}` : 'Nombre del Usuario'}
+              </Text>
+            </View>
 
-        {/* Contenedor de botones */}
-        <View style={styles.roundedButtonContainer}>
-          <TouchableOpacity style={[styles.actionButton, styles.topButton]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.actionButtonText}>Nombre y apellido</Text>
-              <Icon name="keyboard-arrow-right" size={28} color="#666" />
+            {/* Contenedor de botones */}
+            <View style={styles.roundedButtonContainer}>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.topButton]}
+                onPress={() => setActiveTab('name')}>
+                <View style={styles.buttonContent}>
+                  <Text style={styles.actionButtonText}>Nombre del usuario</Text>
+                  <Icon name="keyboard-arrow-right" size={28} color="#666" />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionButton}>
+                <View style={styles.buttonContent}>
+                  <Text style={styles.actionButtonText}>Datos personales</Text>
+                  <Icon name="keyboard-arrow-right" size={28} color="#666" />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.bottomButton]}>
+                <View style={styles.buttonContent}>
+                  <Text style={styles.actionButtonText}>Especialidad</Text>
+                  <Icon name="keyboard-arrow-right" size={28} color="#666" />
+                </View>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.actionButtonText}>Datos personales</Text>
-              <Icon name="keyboard-arrow-right" size={28} color="#666" />
+          </>
+        ) : activeTab === 'name' ? (
+          <>
+            {/* Pestaña de Nombre y Apellido */}
+            <View>
+              {/* Header */}
+              <View style={styles.modalHeader}>
+                <TouchableOpacity onPress={handleBackPress}>
+                  <Icon name="keyboard-arrow-left" size={30} color="#000" />
+                </TouchableOpacity>
+              </View>
+
+              {/* Contenedor para el título */}
+              <View style={styles.titleContainer}>
+                <Text style={styles.titleText}>Nombre</Text>
+              </View>
             </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionButton, styles.bottomButton]}>
-            <View style={styles.buttonContent}>
-              <Text style={styles.actionButtonText}>Especialidad</Text>
-              <Icon name="keyboard-arrow-right" size={28} color="#666" />
+
+            {/* Contenedor de inputs */}
+            <View style={styles.roundedInputContainer}>
+              {/* Input de Nombre */}
+              <View style={[styles.inputWrapper, styles.inputTop]}>
+                <Text
+                  style={[
+                    styles.inputLabel,
+                    (nombre || isFocusedNombre)
+                      ? styles.inputLabelFloating
+                      : styles.inputLabelPlaceholder,
+                  ]}
+                >
+                  Nombre
+                </Text>
+                <View style={styles.inputWithIcon}>
+                  <TextInput
+                    style={styles.input}
+                    value={nombre}
+                    onChangeText={setNombre}
+                    onFocus={() => setIsFocusedNombre(true)}
+                    onBlur={() => setIsFocusedNombre(false)}
+                    placeholder=""
+                    placeholderTextColor="transparent"
+                  />
+                  {isFocusedNombre && nombre.length > 0 && (
+                    <TouchableOpacity onPress={() => setNombre("")} style={styles.clearIcon}>
+                      <Icon name="close" size={20} color="#999" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+
+              {/* Input de Apellido */}
+              <View style={[styles.inputWrapper, styles.inputBottom]}>
+                <Text
+                  style={[
+                    styles.inputLabel,
+                    (apellido || isFocusedApellido)
+                      ? styles.inputLabelFloating
+                      : styles.inputLabelPlaceholder,
+                  ]}
+                >
+                  Apellido
+                </Text>
+                <View style={styles.inputWithIcon}>
+                  <TextInput
+                    style={styles.input}
+                    value={apellido}
+                    onChangeText={setApellido}
+                    onFocus={() => setIsFocusedApellido(true)}
+                    onBlur={() => setIsFocusedApellido(false)}
+                    placeholder=""
+                    placeholderTextColor="transparent"
+                  />
+                  {isFocusedApellido && apellido.length > 0 && (
+                    <TouchableOpacity onPress={() => setApellido("")} style={styles.clearIcon}>
+                      <Icon name="close" size={20} color="#999" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
             </View>
-          </TouchableOpacity>
-        </View>
+
+             {/* Botón Aplicar Cambios */}
+            <TouchableOpacity style={styles.button} onPress={handleAplicarCambios}>
+              <Text style={styles.buttonText}>Aplicar cambios</Text>
+            </TouchableOpacity>
+          </>
+        ) : null}
       </Animated.View>
     </Modal>
   );
