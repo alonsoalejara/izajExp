@@ -11,7 +11,7 @@ import {
   TouchableWithoutFeedback,
   TextInput,
 } from 'react-native';
-import styles from '../../styles/BottomSheetStyles';
+import styles from '../../../styles/BottomSheetStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -138,7 +138,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
             {/* Contenedor de imagen de perfil y nombre */}
             <View style={styles.profileContainer}>
               <Image
-                source={require('../../../assets/blank-user-image.png')}
+                source={require('../../../../assets/blank-user-image.png')}
                 style={styles.profileImage}
               />
               <Text style={styles.profileName}>

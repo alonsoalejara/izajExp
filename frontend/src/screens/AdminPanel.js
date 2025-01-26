@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity, ScrollView, TextInput, ImageBackground, I
 import { useNavigation } from '@react-navigation/native';
 import { useFetchData } from '../hooks/useFetchData';
 import Logic from '../logic/logic.index';
-import ModalsAdmin from '../components/modals/ModalAdmin.index';
-import Section from '../components/admin/Section.index';
+import ModalsAdmin from '../components/admin/AdminBS/ModalAdmin.index';
+import Section from '../components/admin/sections/Section.index';
 import styles from '../styles/AdminPanelStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';

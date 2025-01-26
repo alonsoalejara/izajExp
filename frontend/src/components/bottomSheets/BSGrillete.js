@@ -7,7 +7,7 @@ import { grilleteOptions } from '../../data/grilleteData';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const ModalGrillete = ({ isVisible, onClose, onSelect }) => {
+const BSGrillete = ({ isVisible, onClose, onSelect }) => {
   const [grilletes, setGrilletes] = useState([]);
   const [selectedGrillete, setSelectedGrillete] = useState(null);
   const bottomSheetHeight = SCREEN_HEIGHT * 0.7;
@@ -107,4 +107,4 @@ const ModalGrillete = ({ isVisible, onClose, onSelect }) => {
   );
 };
 
-export default ModalGrillete;
+export default BSGrillete;

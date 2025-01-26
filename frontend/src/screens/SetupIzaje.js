@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, View, Image, TextInput, ImageBackground, Toucha
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
-import Modals from '../components/modals/Modal.index';
+import BS from '../components/bottomSheets/BS.index';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const SetupIzaje = () => {
@@ -118,7 +118,7 @@ const SetupIzaje = () => {
             </View>
           </TouchableOpacity>
 
-          <Modals.ModalGrua
+          <BS.BSGrua
             isVisible={isGruaModalVisible}
             onClose={() => setGruaModalVisible(false)}
             onSelect={handleGruaSelect}
@@ -177,7 +177,7 @@ const SetupIzaje = () => {
             </TouchableOpacity>
           </View>
 
-          <Modals.ModalGrillete
+          <BS.BSGrillete
             isVisible={isGrilleteModalVisible}
             onClose={() => setGrilleteModalVisible(false)}
             onSelect={handleTipoGrilleteSelect}
@@ -222,13 +222,13 @@ const SetupIzaje = () => {
             </TouchableOpacity>
           </View>
 
-          <Modals.ModalCantidad
+          <BS.BSCantidad
             isVisible={isCantidadModalVisible}
             onClose={() => setCantidadModalVisible(false)}
             onSelect={handleCantidadManiobraSelect}
           />
 
-          <Modals.ModalManiobra
+          <BS.BSManiobra
             isVisible={isManiobraModalVisible}
             onClose={() => setManiobraModalVisible(false)}
             onSelect={handleTipoManiobraSelect}

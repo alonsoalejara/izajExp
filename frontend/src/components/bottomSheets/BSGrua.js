@@ -9,7 +9,7 @@ import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const ModalGrua = ({ isVisible, onClose, onSelect }) => {
+const BSGrua = ({ isVisible, onClose, onSelect }) => {
   const [gruas, setGruas] = useState([]);
   const [selected, setSelected] = useState(null);
   const bottomSheetHeight = SCREEN_HEIGHT * 0.55;
@@ -139,4 +139,4 @@ const ModalGrua = ({ isVisible, onClose, onSelect }) => {
   );
 };
 
-export default ModalGrua;
+export default BSGrua;

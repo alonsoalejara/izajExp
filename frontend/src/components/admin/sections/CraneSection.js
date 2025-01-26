@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import styles from '../../styles/AdminSectionStyles'; 
-import getApiUrl from '../../utils/apiUrl';
+import styles from '../../../styles/AdminSectionStyles'; 
+import getApiUrl from '../../../utils/apiUrl';
 
 const CraneSection = ({ gruas, handleEdit, setGruas }) => {
   const [selectedCard, setSelectedCard] = useState(null);

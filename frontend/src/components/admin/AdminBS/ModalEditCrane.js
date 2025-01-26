@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import styles from '../../styles/ModalStyles';
-import getApiUrl from '../../utils/apiUrl';
+import styles from '../../../styles/ModalStyles';
+import getApiUrl from '../../../utils/apiUrl';
 
 const ModalEditCrane = ({ isVisible, onClose, grua, onUpdate }) => {
   const [nombre, setNombre] = useState(grua ? grua.nombre : '');
