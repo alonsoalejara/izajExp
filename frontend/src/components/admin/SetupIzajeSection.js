@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import styles from '../../styles/AdminSectionStyles'; 
-import ModalAlert from '../modals/ModalAlert';
+import styles from '../../styles/AdminSectionStyles';
 import getApiUrl from '../../utils/apiUrl';
 
 const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
     const [selectedSetup, setSelectedSetup] = useState(null);
-    const [isModalVisible, setModalVisible] = useState(false);
-    const [setupToDelete, setSetupToDelete] = useState(null);
 
     const confirmDelete = (_id) => {
-        setSetupToDelete(_id);
-        setModalVisible(true);
+        Alert.alert(
+            'Confirmar Eliminación',
+            '¿Estás seguro de que deseas eliminar este plan de izaje?',
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                { text: 'Confirmar', onPress: () => handleDelete(_id) },
+            ]
+        );
     };
 
     const handleDelete = async (_id) => {
@@ -25,15 +28,14 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
             const response = await fetch(getApiUrl(`setupIzaje/${_id}`), {
                 method: 'DELETE',
                 headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
+                    Authorization: `Bearer ${accessToken}`,
+                },
             });
-    
+
             if (response.ok) {
                 alert('Plan de izaje eliminado con éxito');
-                const updatedSetups = setupIzaje.filter(setup => setup._id !== _id);
+                const updatedSetups = setupIzaje.filter((setup) => setup._id !== _id);
                 setSetups(updatedSetups);
-                setModalVisible(false);
             } else {
                 alert('Error al eliminar el plan de izaje');
             }
@@ -41,19 +43,18 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
             console.error('Error:', error);
         }
     };
-    
+
     return (
         <View style={styles.section}>
-            {/* Verificación de datos */}
-            {(setupIzaje && Array.isArray(setupIzaje) && setupIzaje.length > 0) ? setupIzaje.map((setup) => {
-                return (
+            {(setupIzaje && Array.isArray(setupIzaje) && setupIzaje.length > 0) ? (
+                setupIzaje.map((setup) => (
                     <View key={setup._id} style={styles.card}>
                         <TouchableOpacity onPress={() => setSelectedSetup(selectedSetup === setup._id ? null : setup._id)}>
                             <Text style={styles.cardTitle}>Plan</Text>
                             <Text style={styles.cardDetail}>
                                 <Text style={styles.labelText}>
-                                    Responsable: {setup.usuario.nombre && setup.usuario.apellido 
-                                        ? `${setup.usuario.nombre} ${setup.usuario.apellido}` 
+                                    Responsable: {setup.usuario.nombre && setup.usuario.apellido
+                                        ? `${setup.usuario.nombre} ${setup.usuario.apellido}`
                                         : 'No disponible'}
                                 </Text>
                             </Text>
@@ -69,15 +70,17 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
                                 </Text>
 
                                 <Text style={styles.cardSubtitle}>Aparejos:</Text>
-                                {setup.aparejos && setup.aparejos.length > 0 ? setup.aparejos.map((aparejo, index) => {
-                                    return (
+                                {setup.aparejos && setup.aparejos.length > 0 ? (
+                                    setup.aparejos.map((aparejo, index) => (
                                         <View key={index} style={styles.cardItem}>
                                             <Text style={styles.cardDetail}><Text style={styles.labelText}>Descripción: </Text>{aparejo.descripcion || 'No disponible'}</Text>
                                             <Text style={styles.cardDetail}><Text style={styles.labelText}>Cantidad: </Text>{aparejo.cantidad || 'No disponible'}</Text>
                                             <Text style={styles.cardDetail}><Text style={styles.labelText}>Peso Unitario: </Text>{aparejo.pesoUnitario || 'No disponible'} kg</Text>
                                         </View>
-                                    );
-                                }) : <Text>No hay aparejos disponibles.</Text>}
+                                    ))
+                                ) : (
+                                    <Text>No hay aparejos disponibles.</Text>
+                                )}
 
                                 <View style={styles.buttonContainerCard}>
                                     <TouchableOpacity
@@ -96,23 +99,10 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
                             </View>
                         )}
                     </View>
-                );
-            }) : <Text>No hay planes de izaje disponibles.</Text>}
-
-            {/* Modal para confirmación de eliminación */}
-            <ModalAlert
-                isVisible={isModalVisible}
-                onClose={() => setModalVisible(false)}
-                message="¿Estás seguro de que deseas eliminar este plan de izaje?"
-                showCloseButton={false}
-            >
-                <TouchableOpacity style={styles.actionButton} onPress={() => setModalVisible(false)}>
-                    <Text style={styles.buttonText}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.actionButton} onPress={() => handleDelete(setupToDelete)}>
-                    <Text style={styles.buttonText}>Confirmar</Text>
-                </TouchableOpacity>
-            </ModalAlert>
+                ))
+            ) : (
+                <Text>No hay planes de izaje disponibles.</Text>
+            )}
         </View>
     );
 };

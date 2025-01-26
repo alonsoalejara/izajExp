@@ -1,29 +1,32 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../styles/AdminSectionStyles'; 
-import ModalAlert from '../modals/ModalAlert';
 import getApiUrl from '../../utils/apiUrl';
 
 const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
   const [selectedCard, setSelectedCard] = useState(null);
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [colaboradorToDelete, setColaboradorToDelete] = useState(null);
 
   const handleCardPress = (_id) => {
     setSelectedCard(selectedCard === _id ? null : _id);
   };
 
   const confirmDelete = (_id) => {
-    setColaboradorToDelete(_id);
-    setModalVisible(true);
+    Alert.alert(
+      "Confirmación",
+      "¿Estás seguro de que deseas eliminar este colaborador?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Confirmar", onPress: () => handleDelete(_id) }
+      ]
+    );
   };
 
   const handleDelete = async (_id) => {
     try {
       const accessToken = await AsyncStorage.getItem('accessToken');
       if (!accessToken) {
-        alert('No autorizado. Por favor, inicie sesión nuevamente.');
+        Alert.alert('Error', 'No autorizado. Por favor, inicie sesión nuevamente.');
         return;
       }
       const response = await fetch(getApiUrl(`user/${_id}`), {
@@ -34,12 +37,11 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
       });
 
       if (response.ok) {
-        alert('Colaborador eliminado con éxito');
+        Alert.alert('Éxito', 'Colaborador eliminado con éxito');
         const updatedColaboradores = colaboradores.filter(colaborador => colaborador._id !== _id);
         setColaboradores(updatedColaboradores);
-        setModalVisible(false);
       } else {
-        alert('Error al eliminar el colaborador');
+        Alert.alert('Error', 'Error al eliminar el colaborador');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -88,20 +90,6 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
           )}
         </View>
       ))}
-
-      <ModalAlert
-        isVisible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-        message="¿Estás seguro de que deseas eliminar este colaborador?"
-        showCloseButton={false} 
-      >
-        <TouchableOpacity style={styles.actionButton} onPress={() => setModalVisible(false)}>
-          <Text style={styles.buttonText}>Cancelar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton} onPress={() => handleDelete(colaboradorToDelete)}>
-          <Text style={styles.buttonText}>Confirmar</Text>
-        </TouchableOpacity>
-      </ModalAlert>
     </View>
   );
 };

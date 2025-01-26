@@ -1,17 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image, Platform } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image, Alert } from "react-native";
 import Svg, { LinearGradient, Stop, Rect } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from 'jwt-decode';
 import LoginStyles from "../styles/LoginStyles";
-import ModalAlert from "../components/modals/ModalAlert";
 import getApiUrl from "../utils/apiUrl";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
 
   const handleLogin = async () => {
     if (email && password) {
@@ -33,7 +30,7 @@ export default function Login({ navigation }) {
 
                     if (accessToken) {
                         await AsyncStorage.setItem("accessToken", accessToken);
-                        
+
                         // ✅ Decodificar el token y extraer el usuarioId
                         const decodedToken = jwtDecode(accessToken);
                         const usuarioId = decodedToken.id;
@@ -59,32 +56,25 @@ export default function Login({ navigation }) {
                         } else if (role === "admin") {
                             navigation.navigate("AdminTabs");
                         } else {
-                            setModalMessage("Rol de usuario no reconocido");
-                            setModalVisible(true);
+                            Alert.alert("Error", "Rol de usuario no reconocido");
                         }
                     } else {
-                        setModalMessage("Tokens de autenticación no recibidos correctamente");
-                        setModalVisible(true);
+                        Alert.alert("Error", "Tokens de autenticación no recibidos correctamente");
                     }
                 } else {
-                    setModalMessage("Error en la respuesta del servidor: datos no disponibles");
-                    setModalVisible(true);
+                    Alert.alert("Error", "Error en la respuesta del servidor: datos no disponibles");
                 }
             } else {
-                setModalMessage(data.message || "Error al iniciar sesión");
-                setModalVisible(true);
+                Alert.alert("Error", data.message || "Error al iniciar sesión");
             }
         } catch (error) {
             console.error("Error al autenticar:", error);
-            setModalMessage("Error en la conexión con el servidor");
-            setModalVisible(true);
+            Alert.alert("Error", "Error en la conexión con el servidor");
         }
     } else {
-        setModalMessage("Por favor, ingrese ambos campos");
-        setModalVisible(true);
+        Alert.alert("Error", "Por favor, ingrese ambos campos");
     }
   };
-
 
   return (
     <View style={LoginStyles.container}>
@@ -127,13 +117,6 @@ export default function Login({ navigation }) {
           <Text style={LoginStyles.buttonText}>Iniciar sesión</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Modal de alerta */}
-      <ModalAlert
-        isVisible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        message={modalMessage}
-      />
     </View>
   );
 }

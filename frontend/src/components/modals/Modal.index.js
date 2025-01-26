@@ -3,7 +3,6 @@ import ModalGrua from './ModalGrua';
 import ModalManiobra from './ModalManiobra';
 import ModalCantidad from './ModalCantidad';
 import ModalGrillete from './ModalGrillete';
-import ModalAlert from './ModalAlert';
 
 const Modals = {
   ModalForma,
@@ -11,7 +10,6 @@ const Modals = {
   ModalManiobra,
   ModalCantidad,
   ModalGrillete,
-  ModalAlert
 };
 
 export default Modals;
