@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
-import styles from '../styles/AddStyles';
-import getApiUrl from '../utils/apiUrl';
+import styles from '../../styles/AddStyles';
+import getApiUrl from '../../utils/apiUrl';
 
 const AddCraneData = ({ route, navigation }) => {
     const { nombre, pesoEquipo, pesoGancho, capacidadLevante } = route.params;

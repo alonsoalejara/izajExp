@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'r
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import styles from '../styles/AddStyles';
-import getApiUrl from '../utils/apiUrl';
+import styles from '../../styles/AddStyles';
+import getApiUrl from '../../utils/apiUrl';
 
 const AddCollabSpecial = ({ navigation, route }) => {
     const { nombre, apellido, rut, phone, email } = route.params;

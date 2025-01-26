@@ -1,7 +1,7 @@
 import React, { useState } from 'react'; 
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import styles from '../styles/AddStyles';
+import styles from '../../styles/AddStyles';
 
 const AddCollabData = ({ navigation, route }) => {
     const { nombre, apellido } = route.params;

@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet } from 'react-native';
 
 import Screens from './src/screens/Screens.index';
+import AddScreens from './src/screens/add/Add.index';
 import AdminTabNavigator from './src/navigation/AdminTabNavigator';
 
 const Stack = createStackNavigator();
@@ -34,32 +35,32 @@ const App = () => {
         />
         <Stack.Screen
           name="AddCollabName"
-          component={Screens.AddCollabName}
+          component={AddScreens.AddCollabName}
           options={{ headerShown: false }}
         />
         <Stack.Screen
           name="AddCollabData"
-          component={Screens.AddCollabData}
+          component={AddScreens.AddCollabData}
           options={{ headerShown: false }}
         />
         <Stack.Screen
           name="AddCollabSpecial"
-          component={Screens.AddCollabSpecial}
+          component={AddScreens.AddCollabSpecial}
           options={{ headerShown: false }}
         />
         <Stack.Screen
           name="AddCraneName"
-          component={Screens.AddCraneName}
+          component={AddScreens.AddCraneName}
           options={{ headerShown: false }}
         />
         <Stack.Screen
           name="AddCraneWeight"
-          component={Screens.AddCraneWeight}
+          component={AddScreens.AddCraneWeight}
           options={{ headerShown: false }}
         />
         <Stack.Screen
           name="AddCraneData"
-          component={Screens.AddCraneData}
+          component={AddScreens.AddCraneData}
           options={{ headerShown: false }}
         />
         <Stack.Screen
