@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import GruaIllustration from '../components/UI/GruaIllustration';
+import GruaIllustration from '../components/cranes/UI/GruaIllustration';
 
 export default function GruaIzaje() {
   return (
