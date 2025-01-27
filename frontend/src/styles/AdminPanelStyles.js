@@ -68,30 +68,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
       },
-      /* Buscador */
-      searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 25,
-        borderWidth: 1,
-        backgroundColor: '#fff',
-        borderColor: '#ddd',
-        borderRadius: 30,
-        paddingHorizontal: 20,
-        paddingVertical: 4,
-        width: '80%',
-        alignSelf: 'center',
-      },
-      searchIcon: {
-        marginRight: 10,
-      },
-      searchInput: {
-        flex: 1,
-        height: 40,
-        fontSize: 18,
-        fontWeight: '600',
-        paddingVertical: 10,
-      },
       /* Botones selector de sección */
       buttonContainer: {
         flexDirection: 'row',

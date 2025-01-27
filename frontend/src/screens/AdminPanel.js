@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useFetchData } from '../hooks/useFetchData';
 import Logic from '../logic/logic.index';
@@ -7,13 +7,14 @@ import ModalsAdmin from '../components/admin/AdminBS/ModalAdmin.index';
 import Section from '../components/admin/sections/Section.index';
 import styles from '../styles/AdminPanelStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/Feather';
 import Header from '../components/Header';
-import Button from '../components/Button';  
+import Button from '../components/Button';
+import SearchInput from '../components/SearchInput';
 
 function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
+  const [activeTab, setActiveTab] = useState(null);
   const animations = useRef({});
 
   const [isAdmin, setIsAdmin] = useState(false);
@@ -39,7 +40,6 @@ function AdminPanel() {
   const { data: setupIzajes = [], refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
 
   const [selectedIcon, setSelectedIcon] = useState('home');
-
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -137,6 +137,10 @@ function AdminPanel() {
     ));
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
   const handleEditColaborador = async (colaborador) => {
     try {
       const updatedColaboradores = Logic.colaboradorLogic.editColaborador(colaboradoresState, colaborador);
@@ -211,17 +215,11 @@ function AdminPanel() {
       {/* Sección fija con título, buscador y botones */}
       <View style={styles.fixedHeader}>
         <Text style={styles.sectionTitle}>Panel de Administrador</Text>
-  
         {/* Input de búsqueda con icono */}
-        <View style={styles.searchContainer}>
-          <Icon name="search" size={20} color="#ddd" style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Buscar..."
-            value={searchQuery}
-            onChangeText={handleSearch}
-          />
-        </View>
+        <SearchInput 
+          value={searchQuery} 
+          onChangeText={handleSearch} 
+        />
   
         {/* Botones fijos con animación */}
         <View style={styles.buttonContainer}>
@@ -301,7 +299,7 @@ function AdminPanel() {
         setupIzaje={setupIzajeSeleccionado}
         onUpdate={handleEditSetupIzaje}
       />
-
+      
       {/* Contenido desplazable */}
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer}>
         {activeSection === 'Personal' && (
