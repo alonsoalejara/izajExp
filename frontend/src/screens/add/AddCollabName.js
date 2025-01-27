@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../../styles/AddStyles';
+import Button from '../../components/Button';
 
 const AddCollabName = ({ navigation }) => {
     const [nombre, setNombre] = useState('');
@@ -42,20 +43,19 @@ const AddCollabName = ({ navigation }) => {
             </View>
 
             {/* Botón Siguiente */}
-            <TouchableOpacity 
-                style={styles.button}
+            <Button
+                label="Siguiente"
                 onPress={handleNext}
-            >
-                <Text style={styles.buttonText}>Siguiente</Text>
-            </TouchableOpacity>
+                style={{ width: '100%', marginTop: 5, right: 55 }}
+            />
 
             {/* Botón Cancelar */}
-            <TouchableOpacity 
-                style={styles.cancelButton}
+            <Button
+                label="Cancelar inscripción"
                 onPress={() => navigation.goBack()}
-            >
-                <Text style={styles.cancelButtonText}>Cancelar inscripción</Text>
-            </TouchableOpacity>
+                isCancel={true}
+                style={{ backgroundColor: 'transparent', marginTop: 388, left: -12 }}
+            />
         </View>
     );
 };

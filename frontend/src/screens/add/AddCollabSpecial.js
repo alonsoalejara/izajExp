@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../styles/AddStyles';
 import getApiUrl from '../../utils/apiUrl';
+import Button from '../../components/Button';
 
 const AddCollabSpecial = ({ navigation, route }) => {
     const { nombre, apellido, rut, phone, email } = route.params;
@@ -107,13 +108,23 @@ const AddCollabSpecial = ({ navigation, route }) => {
                 </TouchableWithoutFeedback>
             </Modal>
 
-            <TouchableOpacity style={styles.button} onPress={handleFinalize}>
-                <Text style={styles.buttonText}>Finalizar</Text>
-            </TouchableOpacity>
+            {/* Botón Finalizar */}
+            <Button
+                label="Finalizar"
+                onPress={handleFinalize}
+                style={{ width: '100%', marginTop: 5, right: 55 }}
+            />
 
-            <TouchableOpacity style={styles.cancelButton} onPress={() => { navigation.pop(2); navigation.goBack(); }}>
-                <Text style={styles.cancelButtonText}>Cancelar inscripción</Text>
-            </TouchableOpacity>
+            {/* Botón Cancelar */}
+            <Button
+                label="Cancelar inscripción"
+                onPress={() => {
+                    navigation.pop(2);
+                    navigation.goBack();
+                }}
+                isCancel={true}
+                style={{ backgroundColor: 'transparent', marginTop: 395, left: -12 }}
+            />
         </View>
     );
 };

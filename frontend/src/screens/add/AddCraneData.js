@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from '../../styles/AddStyles';
 import getApiUrl from '../../utils/apiUrl';
+import Button from '../../components/Button';
 
 const AddCraneData = ({ route, navigation }) => {
     const { nombre, pesoEquipo, pesoGancho, capacidadLevante } = route.params;
@@ -82,17 +83,19 @@ const AddCraneData = ({ route, navigation }) => {
             />
 
             {/* Botón Finalizar */}
-            <TouchableOpacity 
-                style={styles.button}
+            <Button
+                label="Finalizar"
                 onPress={handleFinish}
-            >
-                <Text style={styles.buttonText}>Finalizar</Text>
-            </TouchableOpacity>
+                style={{ width: '100%', marginTop: 5, right: 55 }}
+            />
 
             {/* Botón Cancelar */}
-            <TouchableOpacity style={styles.cancelButton} onPress={() => { navigation.pop(2); navigation.goBack(); }}>
-                <Text style={styles.cancelButtonText}>Cancelar inscripción</Text>
-            </TouchableOpacity>
+            <Button
+                label="Cancelar inscripción"
+                onPress={() => navigation.goBack()}
+                isCancel={true}
+                style={{ backgroundColor: 'transparent', marginTop: 320, left: -12 }}
+            />
         </View>
     );
 };
