@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ImageBackground, Image, Alert } from 'react-native';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import TablasStyles from '../styles/TablasStyles';
 import Tables from '../components/tables/Table.index.js';
 import getApiUrl from '../utils/apiUrl';
-import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
 const axios = require('axios/dist/browser/axios.cjs');
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Button from '../components/Button';
+import Header from '../components/Header.js';
 
 const Tablas = ({ route, navigation }) => {
   const { eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete, grua, radioIzaje, radioMontaje, usuarioId } = route.params;
@@ -119,7 +120,7 @@ const Tablas = ({ route, navigation }) => {
         pesoTotal: pesoTotalCarga,
         radioTrabajoMax: Math.max(radioIzaje, radioMontaje),
         capacidadLevante: selectedGrua.capacidadLevante,
-        porcentajeUtilizacion: 0, // Valor fijo como 0
+        porcentajeUtilizacion: 0,
       },
     };
 
@@ -151,26 +152,7 @@ const Tablas = ({ route, navigation }) => {
   return (
     <View style={{ flex: 1 }}>
       {/* Sección superior con imagen, degradado y logo */}
-      <View style={TablasStyles.circleContainer}>
-        <ImageBackground
-          source={require('../../assets/grua-home.png')}
-          style={TablasStyles.background}
-          imageStyle={TablasStyles.image}
-        >
-          <Svg style={TablasStyles.gradient}>
-            <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
-              <Stop offset="80%" stopColor="white" stopOpacity="0.6" />
-              <Stop offset="70%" stopColor="red" stopOpacity="0.8" />
-            </LinearGradient>
-            <Rect width="100%" height="100%" fill="url(#grad1)" />
-          </Svg>
-          <Image
-            source={require('../../assets/EI-Montajes.png')}
-            style={TablasStyles.logo}
-            resizeMode="contain"
-          />
-        </ImageBackground>
-      </View>
+      <Header />
 
       <ScrollView style={TablasStyles.container}>
         <Text style={TablasStyles.title}>Tablas</Text>
@@ -197,16 +179,24 @@ const Tablas = ({ route, navigation }) => {
       </ScrollView>
 
       <View style={TablasStyles.buttonContainer}>
-        <TouchableOpacity style={TablasStyles.cancelButton} onPress={() => navigation.goBack()}>
-          <Text style={TablasStyles.cancelButtonText}>Volver</Text>
-        </TouchableOpacity>
+        {/* Usando el componente Button para Volver */}
+        <Button
+          label="Volver"
+          onPress={() => navigation.goBack()}
+          isCancel={true}
+          style={{          
+            backgroundColor: 'transparent', marginTop: 15, 
+            top: -6, height: '60%',
+            width: '45%', left: -49
+          }}
+        />
 
-        <TouchableOpacity
-          style={TablasStyles.button}
+        {/* Usando el componente Button para Guardar o Generar PDF */}
+        <Button
+          label={isSaved ? 'PDF' : 'Guardar'}
           onPress={isSaved ? () => navigation.navigate('GenerarPDF') : handleGuardar}
-        >
-          <Text style={TablasStyles.buttonText}>{isSaved ? 'PDF' : 'Guardar'}</Text>
-        </TouchableOpacity>
+          style={{ marginTop: 15, top: -6, height: '60%', width: '45%', left: -79 }}
+        />
       </View>
     </View>
   );

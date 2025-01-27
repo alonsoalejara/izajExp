@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../../styles/AdminSectionStyles';
 import getApiUrl from '../../../utils/apiUrl';
+import Button from '../../../components/Button';
 
 const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
     const [selectedSetup, setSelectedSetup] = useState(null);
@@ -82,19 +83,17 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
                                     <Text>No hay aparejos disponibles.</Text>
                                 )}
 
-                                <View style={styles.buttonContainerCard}>
-                                    <TouchableOpacity
-                                        style={styles.actionButton}
-                                        onPress={() => handleEdit(setup)}
-                                    >
-                                        <Text style={styles.actionButtonText}>Editar</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={styles.actionButton}
-                                        onPress={() => confirmDelete(setup._id)}
-                                    >
-                                        <Text style={styles.actionButtonText}>Eliminar</Text>
-                                    </TouchableOpacity>
+                                <View style={[styles.buttonContainerCard, { marginLeft: -120, top: 15, left: 10 }]}>
+                                <Button
+                                    label="Editar"
+                                    onPress={() => handleEdit(setup)}
+                                    style={[styles.button, { width: '30%', left: 40 }]}
+                                />
+                                <Button
+                                    label="Eliminar"
+                                    onPress={() => confirmDelete(setup._id)}
+                                    style={[styles.button, { width: '30%' }]}
+                                />
                                 </View>
                             </View>
                         )}

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ImageBackground, Alert } from 'react-native';
-import styles from '../styles/AdminProfileStyles';
+import styles from '../styles/ProfileStyles';
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { jwtDecode } from 'jwt-decode';
 import getApiUrl from '../utils/apiUrl';
+import Button from '../components/Button';
 
-const AdminProfile = () => {
+const Profile = () => {
   const navigation = useNavigation();
   const [user, setUser] = useState({
     username: '',
@@ -59,8 +60,6 @@ const AdminProfile = () => {
     fetchUserData();
   }, []);
   
-  
-
   const handleSignOut = () => {
     Alert.alert(
       "Cerrar sesión",
@@ -135,11 +134,10 @@ const AdminProfile = () => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleSignOut}>
-        <Text style={styles.buttonText}>Cerrar Sesión</Text>
-      </TouchableOpacity>
+      {/* Usamos el componente Button para cerrar sesión */}
+      <Button label="Cerrar Sesión" onPress={handleSignOut} />
     </View>
   );
 };
 
-export default AdminProfile;
+export default Profile;

@@ -47,7 +47,7 @@ export default StyleSheet.create({
     },
     logo: {
       position: 'absolute',
-      top: '25%',
+      top: '20%',
       left: '48%',
       transform: [{ translateX: -165 }],
       width: 330,
@@ -56,7 +56,7 @@ export default StyleSheet.create({
     },
     formContainer: {
       position: 'absolute',
-      top: '36%',
+      top: '30%',
       left: '10%',
       right: '10%',
       zIndex: 2,
@@ -88,20 +88,6 @@ export default StyleSheet.create({
       borderBottomColor: '#ddd',
       marginBottom: 0,
       marginTop: 13,
-    },
-    button: {
-      ...CommonStyles.button,
-      backgroundColor: 'red',
-      width: '100%',
-      borderRadius: 30,
-      marginTop: 50,
-      marginBottom: 15,
-    },
-    buttonText: {
-      color: 'white',
-      fontSize: 18,
-      fontWeight: 'bold',
-      textAlign: 'center',
     },
     registerText: {
       color: '#000',

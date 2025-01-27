@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ImageBackground, Image, Alert } from "react-native";
+import { View, Text, TextInput, ImageBackground, Image, Alert } from "react-native";
 import Svg, { LinearGradient, Stop, Rect } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from 'jwt-decode';
 import LoginStyles from "../styles/LoginStyles";
+import Button from "../components/Button"; // Importa el nuevo Button
 import getApiUrl from "../utils/apiUrl";
 
 export default function Login({ navigation }) {
@@ -113,9 +114,13 @@ export default function Login({ navigation }) {
           value={password}
           onChangeText={setPassword}
         />
-        <TouchableOpacity style={LoginStyles.button} onPress={handleLogin}>
-          <Text style={LoginStyles.buttonText}>Iniciar sesión</Text>
-        </TouchableOpacity>
+
+        {/* Botón de inicio de sesión */}
+        <Button
+          label="Iniciar sesión"
+          onPress={handleLogin}
+          style={[LoginStyles.button, { width: '85%', marginTop: 35 ,top: 0 ,marginLeft: -5 }]}
+        />
       </View>
     </View>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput, ImageBackground, Image, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useFetchData } from '../hooks/useFetchData';
 import Logic from '../logic/logic.index';
@@ -7,8 +7,9 @@ import ModalsAdmin from '../components/admin/AdminBS/ModalAdmin.index';
 import Section from '../components/admin/sections/Section.index';
 import styles from '../styles/AdminPanelStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
 import Icon from 'react-native-vector-icons/Feather';
+import Header from '../components/Header';
+import Button from '../components/Button';  
 
 function AdminPanel() {
   const navigation = useNavigation();
@@ -100,10 +101,19 @@ function AdminPanel() {
     }).start();
   };
 
-  const handlePressIcon = (icon) => {
-    setSelectedIcon(icon);
+  const getButtonLabel = (section) => {
+    switch (section) {
+      case 'Personal':
+        return 'Crear usuario';
+      case 'Gruas':
+        return 'Crear grúa';
+      case 'Planes':
+        return 'Crear plan';
+      default:
+        return 'Crear';
+    }
   };
-
+  
   const handleSearch = (text) => {
     setSearchQuery(text);
     if (!text) {
@@ -196,26 +206,7 @@ function AdminPanel() {
   return (
     <View style={styles.container}>
       {/* Sección superior fija con la imagen, logo y gradiente */}
-      <View style={styles.circleContainer}>
-        <ImageBackground
-          source={require('../../assets/grua-home.png')}
-          style={styles.background}
-          imageStyle={styles.image}
-        >
-          <Svg style={styles.gradient}>
-            <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
-              <Stop offset="80%" stopColor="white" stopOpacity="0.6" />
-              <Stop offset="70%" stopColor="red" stopOpacity="0.8" />
-            </LinearGradient>
-            <Rect width="100%" height="100%" fill="url(#grad1)" />
-          </Svg>
-          <Image
-            source={require('../../assets/EI-Montajes.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-        </ImageBackground>
-      </View>
+      <Header />
   
       {/* Sección fija con título, buscador y botones */}
       <View style={styles.fixedHeader}>
@@ -272,9 +263,9 @@ function AdminPanel() {
 
       {/* Contenedor para el botón "Crear" */}
       {(activeSection === 'Personal' || activeSection === 'Gruas') && (
-        <View style={styles.actionContainer}>
-          <TouchableOpacity
-            style={styles.actionButton}
+        <View style={styles.createButtonContainer}>
+          <Button
+            label={getButtonLabel(activeSection)}
             onPress={() => {
               if (activeSection === 'Personal') {
                 navigation.navigate('AddCollabName');
@@ -282,11 +273,8 @@ function AdminPanel() {
                 navigation.navigate('AddCraneName');
               }
             }}
-          >
-            <Text style={styles.actionButtonText}>
-              {activeSection === 'Personal' ? 'Crear usuario' : 'Crear grúa'}
-            </Text>
-          </TouchableOpacity>
+            style={{ width: '40%', left: -59 }}
+          />
         </View>
       )}
 

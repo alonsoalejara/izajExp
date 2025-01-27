@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../../styles/AdminSectionStyles'; 
 import getApiUrl from '../../../utils/apiUrl';
+import Button from '../../../components/Button';
 
 const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -73,19 +74,17 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
           </TouchableOpacity>
 
           {selectedCard === colaborador._id && (
-            <View style={styles.buttonContainerCard}>
-              <TouchableOpacity
-                style={styles.actionButton}
+            <View style={[styles.buttonContainerCard, { marginLeft: -120, top: 15, left: 10 }]}>
+              <Button
+                label="Editar"
                 onPress={() => handleEdit(colaborador)}
-              >
-                <Text style={styles.actionButtonText}>Editar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionButton}
+                style={[styles.button, { width: '30%', left: 40 }]}
+              />
+              <Button
+                label="Eliminar"
                 onPress={() => confirmDelete(colaborador._id)}
-              >
-                <Text style={styles.actionButtonText}>Eliminar</Text>
-              </TouchableOpacity>
+                style={[styles.button, { width: '30%' }]}
+              />
             </View>
           )}
         </View>

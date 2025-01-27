@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../../styles/AdminSectionStyles'; 
 import getApiUrl from '../../../utils/apiUrl';
+import Button from '../../../components/Button';
 
 const CraneSection = ({ gruas, handleEdit, setGruas }) => {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -64,19 +65,17 @@ const CraneSection = ({ gruas, handleEdit, setGruas }) => {
           </TouchableOpacity>
 
           {selectedCard === grua._id && (
-            <View style={styles.buttonContainerCard}>
-              <TouchableOpacity
-                style={styles.actionButton}
+            <View style={[styles.buttonContainerCard, { marginLeft: -120, top: 15, left: 10 }]}>
+              <Button
+                label="Editar"
                 onPress={() => handleEdit(grua)}
-              >
-                <Text style={styles.actionButtonText}>Editar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionButton}
+                style={[styles.button, { width: '30%', left: 40 }]}
+              />
+              <Button
+                label="Eliminar"
                 onPress={() => confirmDelete(grua._id)}
-              >
-                <Text style={styles.actionButtonText}>Eliminar</Text>
-              </TouchableOpacity>
+                style={[styles.button, { width: '30%' }]}
+              />
             </View>
           )}
         </View>

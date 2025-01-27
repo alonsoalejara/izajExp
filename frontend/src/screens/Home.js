@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ImageBackground, Image } from 'react-native';
+import { View, ImageBackground, Image, StyleSheet } from 'react-native';
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
+import Button from '../components/Button';
 import styles from '../styles/HomeStyles';
 
 export default function Home({ navigation }) {
@@ -27,9 +28,12 @@ export default function Home({ navigation }) {
           resizeMode="contain"
         />
 
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.buttonText}>Ingrese aquí</Text>
-        </TouchableOpacity>
+        {/* Botón de ingreso */}
+        <Button
+          label="Ingrese aquí"
+          onPress={() => navigation.navigate('Login')}
+          style={styles.customButton}
+        />
       </ImageBackground>
     </View>
   );

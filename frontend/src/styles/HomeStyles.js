@@ -35,16 +35,11 @@ const HomeStyles = StyleSheet.create({
     width: 500,
     height: 140,
   },
-  button: {
-    ...CommonStyles.button,
-    ...CommonStyles.buttonDanger,
+  customButton: {
     position: 'absolute',
-    bottom: 55,
-    paddingHorizontal: 100,
-    borderRadius: 30,
-  },
-  buttonText: {
-    ...CommonStyles.buttonText,
+    bottom: 20,
+    left: '50%',
+    transform: [{ translateX: -178 }],
   },
 });
 

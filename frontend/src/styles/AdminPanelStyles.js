@@ -122,31 +122,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'red',
       },
     /* Contenedor para botón Crear*/
-    actionContainer: {
-      backgroundColor: 'transparent',
+    createButtonContainer: {
+      width: '80%',
+      alignSelf: 'center',
       marginTop: 20,
-      marginBottom: 0,
-      paddingRight: 175,
-      alignItems: 'center',
       borderBottomWidth: 1,
       borderColor: '#ddd',
-      position: 'relative',
-    },   
-    actionButton: {
-      backgroundColor: '#ee0000',
-      paddingVertical: 12,
-      marginBottom: 15,
-      width: 130,
-      borderRadius: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-      minWidth: 100,
-    },
-    actionButtonText: {
-      color: '#fff',
-      fontSize: 14,
-      fontWeight: 'bold',
-      textAlign: 'center', 
     },
 });
 
