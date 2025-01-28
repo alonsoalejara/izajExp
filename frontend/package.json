@@ -42,6 +42,7 @@
     "react-native-screens": "~4.4.0",
     "react-native-svg": "15.8.0",
     "react-native-tab-view": "^4.0.5",
+    "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
     "react-navigator": "^0.0.0-0",
     "react-query": "^3.39.3"

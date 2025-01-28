@@ -7,6 +7,7 @@ const axios = require('axios/dist/browser/axios.cjs');
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../components/Button';
 import Header from '../components/Header.js';
+import Toast from 'react-native-toast-message';
 
 const Tablas = ({ route, navigation }) => {
   const { eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete, grua, radioIzaje, radioMontaje, usuarioId } = route.params;
@@ -98,9 +99,14 @@ const Tablas = ({ route, navigation }) => {
 
   const handleConfirmar = async () => {
     if (!currentUsuarioId) {
-      alert('No se encontró el usuario ID');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'No se encontró el usuario ID',
+      });
       return;
     }
+  
     const requestBody = {
       usuario: currentUsuarioId,
       aparejos: rows.map(row => ({
@@ -123,9 +129,7 @@ const Tablas = ({ route, navigation }) => {
         porcentajeUtilizacion: 0,
       },
     };
-
-    console.log('Datos a enviar:', requestBody);
-
+  
     const token = await AsyncStorage.getItem('accessToken');
     if (!token) {
       console.error('No se encontró token de autenticación');
@@ -142,10 +146,19 @@ const Tablas = ({ route, navigation }) => {
         },
       });
       setIsSaved(true);
+      Toast.show({
+        type: 'success',
+        text1: 'Plan de izaje guardado',
+        visibilityTime: 3000,
+      });
       console.log('Respuesta del servidor:', response.data);
     } catch (error) {
       console.error('Error al guardar el plan de izaje:', error.response ? error.response.data : error.message);
-      alert('Hubo un error al guardar el plan de izaje. Intenta nuevamente.');
+      Toast.show({
+        type: 'error',
+        text1: 'Error al guardar el plan de izaje',
+        visibilityTime: 3000,
+      });
     }
   };
 
@@ -153,16 +166,20 @@ const Tablas = ({ route, navigation }) => {
     <View style={{ flex: 1 }}>
       {/* Sección superior con imagen, degradado y logo */}
       <Header />
-
-      <ScrollView style={TablasStyles.container}>
+  
+      {/* Contenedor fijo para el título */}
+      <View style={TablasStyles.titleContainer}>
         <Text style={TablasStyles.title}>Tablas</Text>
-
+      </View>
+  
+      {/* Contenedor desplazable para el contenido */}
+      <ScrollView style={TablasStyles.container}>
         <Tables.AparejosTable
           rows={rows}
           totalPesoAparejos={totalPesoAparejos}
           grúaSeleccionada={grua}
         />
-
+  
         <Tables.CargaTable
           cargaRows={cargaRows}
           grúaSeleccionada={grua}
@@ -171,26 +188,26 @@ const Tablas = ({ route, navigation }) => {
           totalPesoAparejos={totalPesoAparejos}
           pesoTotalCarga={pesoTotalCarga}
         />
-
+  
         <Tables.GruaTable
           datosGrúaRows={datosGruaRows}
           grúaSeleccionada={grua}
         />
       </ScrollView>
-
+  
       <View style={TablasStyles.buttonContainer}>
         {/* Usando el componente Button para Volver */}
         <Button
           label="Volver"
           onPress={() => navigation.goBack()}
           isCancel={true}
-          style={{          
-            backgroundColor: 'transparent', marginTop: 15, 
+          style={{
+            backgroundColor: 'transparent', marginTop: 15,
             top: -6, height: '60%',
             width: '45%', left: -49
           }}
         />
-
+  
         {/* Usando el componente Button para Guardar o Generar PDF */}
         <Button
           label={isSaved ? 'PDF' : 'Guardar'}
@@ -200,6 +217,7 @@ const Tablas = ({ route, navigation }) => {
       </View>
     </View>
   );
+  
 };
 
 export default Tablas;

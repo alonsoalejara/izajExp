@@ -13,67 +13,23 @@ const TablasStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: 5,
-    paddingVertical: 130,
-  },
-  contentContainer: {
-    padding: 0,
-  },
-  // Estilos para la sección superior con imagen, degradado y logo
-  circleContainer: {
-    width: 600,
-    height: 550,
-    borderRadius: 150,
-    position: 'absolute',
-    bottom: '85.5%',
-    left: '37%',
-    transform: [{ translateX: -250 }],
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-    backgroundColor: 'transparent',
-    zIndex: 1,
-  },
-  background: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  image: {
-    width: '80%',
-    height: '80%',
-    top: 120,
-    left: 15,
-    resizeMode: 'cover',
-  },
-  gradient: {
-    position: 'absolute',
-    top: 50,
-    left: 112,
-    width: 555,
-    height: '100%',
-    zIndex: 0,
-  },
-  logo: {
-    position: 'absolute',
-    top: '84%',
-    left: '58.4%',
-    transform: [{ translateX: -165 }],
-    width: 200,
-    height: 80,
-    zIndex: 0,
+    paddingHorizontal: 25,
+    paddingVertical: 10,
   },
   /* Titulo de la pagina */
+  titleContainer: {
+    marginTop: 125,
+    height: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
   title: {
     fontSize: 24,
-    marginTop: 18,
-    marginBottom: 40,
-    color: '#333',
     fontWeight: 'bold',
-    textAlign: 'center',
+    color: '#000',
   },
   header: {
     marginBottom: 15,
@@ -85,7 +41,7 @@ const TablasStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
   },
-  cell: cellStyle(), // Estilo base para celdas
+  cell: cellStyle(),
   headerCell: {
     ...cellStyle(8, 'center', 16),
     backgroundColor: '#eaeaea',
@@ -98,7 +54,7 @@ const TablasStyles = StyleSheet.create({
   },
   totalColumn: {
     flex: 6.3,
-    backgroundColor: '#eaeaea',
+    backgroundColor: '#ccc',
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 14,
@@ -111,7 +67,7 @@ const TablasStyles = StyleSheet.create({
     paddingVertical: 10,
   },
   numberColumn: {
-    backgroundColor: '#cccccc',
+    backgroundColor: '#ddd',
     flex: 1,
     textAlign: 'right',
     fontWeight: 'bold',
@@ -119,7 +75,7 @@ const TablasStyles = StyleSheet.create({
     paddingVertical: 10,
   },
   fullRow: {
-    backgroundColor: '#eaeaea',
+    backgroundColor: '#ccc',
     paddingVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -138,7 +94,7 @@ const TablasStyles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     borderTopWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ddd',
   },
 });
 
