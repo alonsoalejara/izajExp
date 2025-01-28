@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
@@ -75,8 +75,8 @@ const SetupIzaje = () => {
         {/* Sección superior con imagen, degradado y logo */}
         <Header />
   
-        {/* Contenido desplazable */}
-        <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
+        {/* Contenido sin ScrollView */}
+        <View style={styles.container}>
             <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
   
           {/* Configurar Grúa */}
@@ -98,7 +98,7 @@ const SetupIzaje = () => {
   
           {/* Formulario de radios: Radio Izaje y Radio Montaje */}
           <View style={styles.inputWrapper}>
-            <Text style={styles.labelText}>Radio Izaje (metros)             Radio Montaje (metros)</Text>
+            <Text style={styles.labelText}>Radio Izaje (metros)           Radio Montaje (metros)</Text>
           </View>
   
           <View style={styles.inputContainer}>
@@ -107,20 +107,18 @@ const SetupIzaje = () => {
               value={radioIzaje}
               onChangeText={handleRadioIzajeChange}
               placeholder="Izaje"
-              style={{ width: 165 }}
             />
             <NumericInput
               label="Radio Montaje"
               value={radioMontaje}
               onChangeText={handleRadioMontajeChange}
               placeholder="Montaje"
-              style={{ width: 174 }}
             />
           </View>
   
           {/* Configurar Grillete */}
           <View style={styles.inputWrapper}>
-            <Text style={styles.labelText}>Configure grillete(s) (cantidad y tipo):</Text>
+            <Text style={styles.labelText}>Grillete: (cantidad y tipo)</Text>
           </View>
   
           <View style={styles.inputContainer}>
@@ -129,14 +127,12 @@ const SetupIzaje = () => {
               value={cantidadGrilletes}
               onChangeText={handleCantidadGrilletesChange}
               placeholder="Cantidad"
-              style={{ width: 130 }}
             />
             <ConfigButton
               label="Grillete"
-              value={tipoGrillete ? `Grillete de ${tipoGrillete}"` : "Seleccione Grillete"}
+              value={tipoGrillete ? `Grill. de ${tipoGrillete}"` : ""}
               onPress={() => openModal(setGrilleteModalVisible)}
-              width={190}
-              style={{ marginLeft: 20 }}
+              width={150}
             />
           </View>
   
@@ -148,23 +144,21 @@ const SetupIzaje = () => {
   
           {/* Configurar Maniobra */}
           <View style={styles.inputWrapper}>
-            <Text style={styles.labelText}>Configure maniobra(s) (cantidad y tipo):</Text>
+            <Text style={styles.labelText}>Maniobra: (cantidad y tipo):</Text>
           </View>
   
           <View style={[styles.inputContainer]}>
             <ConfigButton
               label="Cantidad"
-              value={cantidadManiobra ? `${cantidadManiobra}` : "Seleccione Cantidad"}
+              value={cantidadManiobra ? `${cantidadManiobra}` : ""}
               onPress={() => openModal(setCantidadModalVisible)}
-              width={160}
-              style={{ marginLeft: 10 }}
+              width={150}
             />
             <ConfigButton
               label="Tipo"
-              value={eslingaOEstrobo ? `${eslingaOEstrobo}` : "Seleccione Tipo"}
+              value={eslingaOEstrobo ? `${eslingaOEstrobo}` : ""}
               onPress={() => openModal(setManiobraModalVisible)}
-              width={180}
-              style={{ marginLeft: 30 }}
+              width={150}
             />
           </View>
   
@@ -184,9 +178,9 @@ const SetupIzaje = () => {
           <Button
             label="Confirmar Configuración"
             onPress={handleNavigateToTablas}
-            style={{ marginTop: 30 }}
+            style={{ marginTop: 51, left: -60, width: 330 }}
           />
-        </ScrollView>
+        </View>
       </View>
     </TouchableWithoutFeedback>
   );

@@ -5,7 +5,7 @@ const NumericInput = ({ value, onChangeText, placeholder, style }) => {
   return (
     <View style={[styles.inputWrapper, { marginBottom: 15 }, style]}>     
       <TextInput
-        stysle={styles.input}  
+        style={styles.input}  
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
@@ -19,27 +19,21 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 10,
-    paddingVertical: 10,
-    marginLeft: 14,
+    marginTop: 21,
   },
-  labelText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
+
   input: {
-    backgroundColor: '#fff',
-    width: 100,
-    marginLeft: -10,
-    paddingVertical: 20,
+    backgroundColor: 'transparent',
+    width: 150,
+    marginLeft: 0,
+    paddingVertical: 28,
     paddingLeft: 15,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#ddd',
     fontSize: 18,
+    color: '#000',
     textAlign: 'left',
-    textAlignVertical: 'center',
   },
 
 });

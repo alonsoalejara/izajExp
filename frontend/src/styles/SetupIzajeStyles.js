@@ -4,8 +4,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: 5,
-    paddingVertical: 130,
+    paddingHorizontal: 30,
+    paddingVertical: 120,
   },
   contentContainer: {
     padding: 0,
@@ -17,6 +17,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     marginBottom: 15,
+  },
+  labelText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+    marginTop: 20,
+    marginBottom: 0,
   },
   icon: {
     marginLeft: 10,
