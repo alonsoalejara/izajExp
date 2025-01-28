@@ -135,7 +135,7 @@ const Profile = () => {
       </View>
 
       {/* Usamos el componente Button para cerrar sesión */}
-      <Button label="Cerrar Sesión" onPress={handleSignOut} />
+      <Button label="Cerrar Sesión" onPress={handleSignOut} style={{ width: '88%', right: 30 }} />
     </View>
   );
 };

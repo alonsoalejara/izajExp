@@ -178,7 +178,7 @@ const SetupIzaje = () => {
           <Button
             label="Confirmar Configuración"
             onPress={handleNavigateToTablas}
-            style={{ marginTop: 51, left: -60, width: 330 }}
+            style={{ marginTop: 40, left: -60, width: 330 }}
           />
         </View>
       </View>
