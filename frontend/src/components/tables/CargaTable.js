@@ -1,82 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import getApiUrl from '../../utils/apiUrl';
+import React from 'react';
+import { View, Text, ActivityIndicator } from 'react-native';
+import { useFetchData } from '../../hooks/useFetchData';
+import useCargaData from '../../hooks/useCargaData';
 import TablasStyles from '../../styles/TablasStyles';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import CargaRow from '../CargaRow';
 
 const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga }) => {
-    const [cargaRows, setCargaRows] = useState([
-        { item: '1', descripcion: 'PESO DEL EQUIPO', valor: 'N/A' },
-        { item: '2', descripcion: 'PESO DE APAREJOS', valor: 'N/A' },
-        { item: '3', descripcion: 'PESO DEL GANCHO', valor: 'N/A' },
-        { item: '4', descripcion: 'PESO TOTAL', valor: 'N/A' },
-        { item: '5', descripcion: 'RADIO DE TRABAJO MÁX', valor: 'N/A' },
-        { item: '6', descripcion: 'CAPACIDAD DE LEVANTE', valor: 'N/A' },
-        { item: '7', descripcion: '% UTILIZACIÓN', valor: 'N/A' }
-    ]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchGruas = async () => {
-            try {
-                const accessToken = await AsyncStorage.getItem('accessToken');
-                if (!accessToken) {
-                    console.error('No se encontró el token de acceso');
-                    setLoading(false);
-                    return;
-                }
-
-                const response = await axios.get(getApiUrl('grua/'), {
-                    headers: { Authorization: `Bearer ${accessToken}` }
-                });
-
-                if (response.data.state === 'Success') {
-                    const gruaSeleccionadaData = response.data.data.find(grua => grua.nombre === grúaSeleccionada);
-
-                    if (gruaSeleccionadaData) {
-                        setCargaRows(prevRows => prevRows.map(row => {
-                            if (row.descripcion === 'PESO DEL EQUIPO') {
-                                return { ...row, valor: `${gruaSeleccionadaData.pesoEquipo} kg` };
-                            }
-                            if (row.descripcion === 'PESO DEL GANCHO') {
-                                return { ...row, valor: `${gruaSeleccionadaData.pesoGancho} kg` };
-                            }
-                            if (row.descripcion === 'CAPACIDAD DE LEVANTE') {
-                                return { ...row, valor: `${gruaSeleccionadaData.capacidadLevante} kg` };
-                            }
-                            if (row.descripcion === 'RADIO DE TRABAJO MÁX') {
-                                const radioMax = Math.max(radioIzaje, radioMontaje); 
-                                return { ...row, valor: `${radioMax} mts` };
-                            }
-                            if (row.descripcion === 'PESO DE APAREJOS') {
-                                return { ...row, valor: `${totalPesoAparejos} kg` };
-                            }
-                            if (row.descripcion === 'PESO TOTAL') {
-                                return { ...row, valor: `${pesoTotalCarga} kg` };
-                            }
-
-                            return row;
-                        }));
-                    }
-                }
-            } catch (error) {
-                console.error('Error al realizar la solicitud:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchGruas();
-    }, [grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga]);
+    const { data, isLoading } = useFetchData('grua/');
+    const cargaRows = useCargaData(data, grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga);
 
     const handleInfoPress = (descripcion) => {
-        // Aquí puedes definir qué hacer cuando el botón de información es presionado
         alert(`Información sobre: ${descripcion}`);
     };
 
-    if (loading) {
+    if (isLoading) {
         return <ActivityIndicator size="large" color="#0000ff" />;
     }
 
@@ -95,23 +32,7 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoApar
             </View>
 
             {cargaRows.map((row, index) => (
-                <View key={index} style={TablasStyles.row}>
-                    <Text style={[TablasStyles.cell, { flex: 1 }]}>{row.item}</Text>
-                    
-                    {/* Descripción con un contenedor para alinear el ícono al final */}
-                    <View style={[TablasStyles.cell, TablasStyles.descripcionColumn, { flex: 6, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
-                        <Text>{row.descripcion}</Text>
-                        
-                        {/* El ícono de información se coloca en el extremo derecho */}
-                        {['PESO DE APAREJOS', 'PESO TOTAL', 'RADIO DE TRABAJO MÁX', '% UTILIZACIÓN'].includes(row.descripcion) && (
-                            <TouchableOpacity onPress={() => handleInfoPress(row.descripcion)}>
-                                <Icon name="info-outline" size={22} color="#555" />
-                            </TouchableOpacity>
-                        )}
-                    </View>
-
-                    <Text style={[TablasStyles.cell, TablasStyles.valueColumn, { flex: 2.1 }]}>{row.valor}</Text>
-                </View>
+                <CargaRow key={index} row={row} onInfoPress={handleInfoPress} />
             ))}
         </View>
     );
