@@ -8,19 +8,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../components/Button';
 import Header from '../components/Header.js';
 import Toast from 'react-native-toast-message';
+import PDFGenerator from '../utils/PDFGenerator';
+import { generarPDF } from '../utils/PDFGenerator';
+import { gruaData } from '../data/gruaData';
 
 const Tablas = ({ route, navigation }) => {
   const { eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete, grua, radioIzaje, radioMontaje, usuarioId } = route.params;
   const [isSaved, setIsSaved] = useState(false);
   const [currentUsuarioId, setCurrentUsuarioId] = useState(null);
-
-  const gruaData = {
-    'Terex RT555': { pesoEquipo: 12000, pesoGancho: 450, capacidadLevante: 17800, largoPluma: 19.8, contrapeso: 6.4 },
-    'Grúa 2': { pesoEquipo: 10000, pesoGancho: 400, capacidadLevante: 16000, largoPluma: 20, contrapeso: 7 },
-    'Grúa 3': { pesoEquipo: 11000, pesoGancho: 420, capacidadLevante: 17000, largoPluma: 21, contrapeso: 8 },
-  };
-
-  const selectedGrua = gruaData[grua] || {};
+  const selectedGrua = gruaData[grua] || {}; 
 
   const rows = [
     {
@@ -106,7 +102,7 @@ const Tablas = ({ route, navigation }) => {
       });
       return;
     }
-  
+
     const requestBody = {
       usuario: currentUsuarioId,
       aparejos: rows.map(row => ({
@@ -129,7 +125,7 @@ const Tablas = ({ route, navigation }) => {
         porcentajeUtilizacion: 0,
       },
     };
-  
+
     const token = await AsyncStorage.getItem('accessToken');
     if (!token) {
       console.error('No se encontró token de autenticación');
@@ -164,22 +160,16 @@ const Tablas = ({ route, navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Sección superior con imagen, degradado y logo */}
       <Header />
-  
-      {/* Contenedor fijo para el título */}
       <View style={TablasStyles.titleContainer}>
         <Text style={TablasStyles.title}>Tablas</Text>
       </View>
-  
-      {/* Contenedor desplazable para el contenido */}
       <ScrollView style={TablasStyles.container}>
         <Tables.AparejosTable
           rows={rows}
           totalPesoAparejos={totalPesoAparejos}
           grúaSeleccionada={grua}
         />
-  
         <Tables.CargaTable
           cargaRows={cargaRows}
           grúaSeleccionada={grua}
@@ -188,15 +178,20 @@ const Tablas = ({ route, navigation }) => {
           totalPesoAparejos={totalPesoAparejos}
           pesoTotalCarga={pesoTotalCarga}
         />
-  
         <Tables.GruaTable
           datosGrúaRows={datosGruaRows}
           grúaSeleccionada={grua}
         />
+        {isSaved && (
+          <PDFGenerator
+            selectedGrua={grua}
+            totalPesoAparejos={totalPesoAparejos}
+            cargaRows={cargaRows}
+            datosGruaRows={datosGruaRows}
+          />
+        )}
       </ScrollView>
-  
       <View style={TablasStyles.buttonContainer}>
-        {/* Usando el componente Button para Volver */}
         <Button
           label="Volver"
           onPress={() => navigation.goBack()}
@@ -207,17 +202,17 @@ const Tablas = ({ route, navigation }) => {
             width: '45%', left: -49
           }}
         />
-  
-        {/* Usando el componente Button para Guardar o Generar PDF */}
         <Button
           label={isSaved ? 'PDF' : 'Guardar'}
-          onPress={isSaved ? () => navigation.navigate('GenerarPDF') : handleGuardar}
+          onPress={isSaved ? () => {
+            console.log('Generando PDF...');
+            generarPDF(selectedGrua, totalPesoAparejos, cargaRows, datosGruaRows);
+          } : handleGuardar}
           style={{ marginTop: 15, top: -6, height: '60%', width: '45%', left: -79 }}
         />
       </View>
     </View>
   );
-  
 };
 
 export default Tablas;
