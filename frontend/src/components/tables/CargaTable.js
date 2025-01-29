@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import getApiUrl from '../../utils/apiUrl';
 import TablasStyles from '../../styles/TablasStyles';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga }) => {
     const [cargaRows, setCargaRows] = useState([
@@ -70,6 +71,11 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoApar
         fetchGruas();
     }, [grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga]);
 
+    const handleInfoPress = (descripcion) => {
+        // Aquí puedes definir qué hacer cuando el botón de información es presionado
+        alert(`Información sobre: ${descripcion}`);
+    };
+
     if (loading) {
         return <ActivityIndicator size="large" color="#0000ff" />;
     }
@@ -91,7 +97,19 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoApar
             {cargaRows.map((row, index) => (
                 <View key={index} style={TablasStyles.row}>
                     <Text style={[TablasStyles.cell, { flex: 1 }]}>{row.item}</Text>
-                    <Text style={[TablasStyles.cell, TablasStyles.descripcionColumn, { flex: 6 }]}>{row.descripcion}</Text>
+                    
+                    {/* Descripción con un contenedor para alinear el ícono al final */}
+                    <View style={[TablasStyles.cell, TablasStyles.descripcionColumn, { flex: 6, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+                        <Text>{row.descripcion}</Text>
+                        
+                        {/* El ícono de información se coloca en el extremo derecho */}
+                        {['PESO DE APAREJOS', 'PESO TOTAL', 'RADIO DE TRABAJO MÁX', '% UTILIZACIÓN'].includes(row.descripcion) && (
+                            <TouchableOpacity onPress={() => handleInfoPress(row.descripcion)}>
+                                <Icon name="info-outline" size={22} color="#555" />
+                            </TouchableOpacity>
+                        )}
+                    </View>
+
                     <Text style={[TablasStyles.cell, TablasStyles.valueColumn, { flex: 2.1 }]}>{row.valor}</Text>
                 </View>
             ))}
