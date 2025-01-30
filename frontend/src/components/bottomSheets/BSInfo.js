@@ -39,22 +39,23 @@ const BSInfo = ({ isModalVisible, selectedData, setModalVisible }) => {
                 <View style={styles.overlay} />
             </TouchableWithoutFeedback>
             <Animated.View
-                style={[styles.bottomSheet, { height: bottomSheetHeight, transform: [{ translateY: positionY }] }]}
-            >
+                style={[styles.bottomSheet, { height: bottomSheetHeight, transform: [{ translateY: positionY }] }]}>
                 {/* Línea de arrastre */}
                 <View style={styles.dragLine}></View>
 
                 {/* Cabecera */}
                 <View style={styles.modalHeader}>
-                    <Text style={styles.modalTitle}>{selectedData.descripcion}</Text>
+                    <Text style={styles.modalTitle}>EXPLICACIÓN</Text>
                 </View>
 
                 <View style={styles.separatorLine}></View>
 
-                {/* Explicación */}
                 <View style={styles.content}>
-                    <Text style={styles.infoText}>Explicación: {selectedData.explicacion}</Text>
-                    <Text style={styles.infoText}>Valor: {selectedData.valor}</Text>
+                    <Text style={styles.infoTitle}>
+                        Valor: 
+                        <Text style={[styles.infoTitle, styles.redText]}> {selectedData.valor}</Text>
+                    </Text>
+                    <Text style={styles.infoText}>{selectedData.explicacion}</Text>
 
                     {/* Botón para cerrar */}
                     <TouchableOpacity onPress={closeBottomSheet} style={styles.closeButton}>

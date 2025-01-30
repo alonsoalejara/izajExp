@@ -57,17 +57,25 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   content: {
-    alignItems: 'center', // Centra el contenido
     paddingHorizontal: 20,
     justifyContent: 'center',
-    flex: 1,
   },
-  infoText: {
+  infoTitle: {
     fontSize: 20,
     fontWeight: '500',
     color: '#333',
-    textAlign: 'center',
-    marginBottom: 20, // Espaciado entre la información y el botón
+    textAlign: 'left',
+    marginBottom: 20,
+  },
+  infoText: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#333',
+    textAlign: 'left',
+    marginBottom: 20,
+  },
+  redText: {
+    color: '#ee0000',
   },
   closeButton: {
     backgroundColor: '#ff0000',

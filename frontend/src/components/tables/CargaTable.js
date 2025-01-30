@@ -17,11 +17,25 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoApar
         let explicacion = '';
 
         if (descripcion === 'PESO DE APAREJOS') {
-            explicacion = 'La cantidad se encuentra calculada en base a la tabla CUADRO APAREJOS GRÚA';
+            explicacion = (
+                <>
+                    La cantidad se encuentra calculada en base a la tabla <Text style={{ color: 'red' }}>CUADRO APAREJOS GRÚA</Text>
+                </>
+            );
         } else if (descripcion === 'PESO TOTAL') {
-            explicacion = 'Es la suma total de PESO DEL EQUIPO, PESO DE APAREJOS y PESO DEL GANCHO';
+            explicacion = (
+                <>
+                    Es la suma total de <Text style={{ color: 'red' }}>PESO DEL EQUIPO</Text>,{' '}
+                    <Text style={{ color: 'red' }}>PESO DE APAREJOS</Text> y <Text style={{ color: 'red' }}>PESO DEL GANCHO</Text>
+                </>
+            );
         } else if (descripcion === 'RADIO DE TRABAJO MÁX') {
-            explicacion = 'El radio de trabajo máximo es la comparación entre el radio de izaje y el radio de montaje. El reflejado en la tabla es el mayor de los dos radios.';
+            explicacion = (
+                <>
+                    Es el radio de mayor diametro registrado para el <Text style={{ color: 'red' }}>RADIO DE IZAJE</Text>{' '}
+                    y el <Text style={{ color: 'red' }}>RADIO DE MONTAJE.</Text>
+                </>
+            );
         } else if (descripcion === '% UTILIZACIÓN') {
             explicacion = 'Utilizacion del plan de izaje';
         } else {
