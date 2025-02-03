@@ -29,26 +29,32 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  dragLine: {
-    width: 40,
-    height: 5,
-    backgroundColor: '#888',
-    borderRadius: 2.5,
-    alignSelf: 'center',
-    marginVertical: 10,
-    marginBottom: 2,
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  valueContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 10,
   },
   modalHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
+    left: 20,
+    justifyContent: 'left',
+    paddingVertical: 30,
   },
   modalTitle: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: '700',
     color: '#333',
-    textAlign: 'center',
+    textAlign: 'left',
+    top: 35,
+    left: -20,
   },
   separatorLine: {
     height: 1,
@@ -65,12 +71,18 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#333',
     textAlign: 'left',
+    top: 30,
+    left: -3,
+    marginBottom: 20,
+  },
+  content: {
+    paddingHorizontal: 20,
     marginBottom: 20,
   },
   infoText: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#333',
+    color: '#999',
     textAlign: 'left',
     marginBottom: 20,
   },
@@ -83,11 +95,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 5,
   },
-  closeButtonText: {
-    color: '#fff',
+  extraInfoContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  extraInfoText: {
     fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
+    color: '#666',
+  },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    alignItems: 'center',
   },
 });
 

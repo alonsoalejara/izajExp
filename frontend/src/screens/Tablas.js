@@ -171,7 +171,7 @@ const Tablas = ({ route, navigation }) => {
           grúaSeleccionada={grua}
         />
         <Tables.CargaTable
-          cargaRows={cargaRows}
+          cargaRows={cargaRows || []}
           grúaSeleccionada={grua}
           radioIzaje={radioIzaje}
           radioMontaje={radioMontaje}

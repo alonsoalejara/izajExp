@@ -19,21 +19,22 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoApar
         if (descripcion === 'PESO DE APAREJOS') {
             explicacion = (
                 <>
-                    La cantidad se encuentra calculada en base a la tabla <Text style={{ color: 'red' }}>CUADRO APAREJOS GRÚA</Text>
+                    La cantidad se encuentra calculada en base a la tabla <Text style={{ color: 'red' }}>CUADRO APAREJOS</Text>
+                    , cuya información se encuentra en la primera tabla.
                 </>
             );
         } else if (descripcion === 'PESO TOTAL') {
             explicacion = (
                 <>
-                    Es la suma total de <Text style={{ color: 'red' }}>PESO DEL EQUIPO</Text>,{' '}
-                    <Text style={{ color: 'red' }}>PESO DE APAREJOS</Text> y <Text style={{ color: 'red' }}>PESO DEL GANCHO</Text>
+                    Es la suma total del <Text style={{ color: 'red' }}>peso del equipo</Text>,{' '}
+                    <Text style={{ color: 'red' }}>peso de aparejos</Text> y del <Text style={{ color: 'red' }}>peso del gancho</Text> de la grúa.
                 </>
             );
         } else if (descripcion === 'RADIO DE TRABAJO MÁX') {
             explicacion = (
                 <>
-                    Es el radio de mayor diametro registrado para el <Text style={{ color: 'red' }}>RADIO DE IZAJE</Text>{' '}
-                    y el <Text style={{ color: 'red' }}>RADIO DE MONTAJE.</Text>
+                    Es el radio de mayor diametro registrado para el <Text style={{ color: 'red' }}>radio de izaje</Text>{' '}
+                    y el <Text style={{ color: 'red' }}>radio de montaje.</Text>
                 </>
             );
         } else if (descripcion === '% UTILIZACIÓN') {

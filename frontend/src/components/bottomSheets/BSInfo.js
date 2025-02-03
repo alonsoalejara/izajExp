@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Animated, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Animated, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import Modal from 'react-native-modal';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../../styles/BSInfoStyles';
+import Button from '../Button';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -39,28 +41,39 @@ const BSInfo = ({ isModalVisible, selectedData, setModalVisible }) => {
                 <View style={styles.overlay} />
             </TouchableWithoutFeedback>
             <Animated.View
-                style={[styles.bottomSheet, { height: bottomSheetHeight, transform: [{ translateY: positionY }] }]}>
-                {/* Línea de arrastre */}
-                <View style={styles.dragLine}></View>
-
-                {/* Cabecera */}
-                <View style={styles.modalHeader}>
-                    <Text style={styles.modalTitle}>EXPLICACIÓN</Text>
+                style={[styles.bottomSheet, { height: bottomSheetHeight, transform: [{ translateY: positionY }] }]}
+            >
+                {/* Encabezado con flecha de cierre */}
+                <View style={styles.headerContainer}>
+                    <Icon name="angle-left" size={35} color="#333" style={styles.icon} onPress={closeBottomSheet} />
+                    <Text style={styles.modalTitle}>Explicación</Text>
                 </View>
 
-                <View style={styles.separatorLine}></View>
-
-                <View style={styles.content}>
+                {/* Sección de valor */}
+                <View style={styles.valueContainer}>
                     <Text style={styles.infoTitle}>
-                        Valor: 
-                        <Text style={[styles.infoTitle, styles.redText]}> {selectedData.valor}</Text>
+                        Valor: <Text style={[styles.infoTitle, styles.redText]}> {selectedData.valor}</Text>
                     </Text>
-                    <Text style={styles.infoText}>{selectedData.explicacion}</Text>
+                </View>
 
-                    {/* Botón para cerrar */}
-                    <TouchableOpacity onPress={closeBottomSheet} style={styles.closeButton}>
-                        <Text style={styles.closeButtonText}>Cerrar</Text>
-                    </TouchableOpacity>
+                <View style={styles.separatorLine} />
+
+                {/* Contenedor de la información principal */}
+                <View style={styles.content}>
+                    <Text style={styles.infoText}>{selectedData.explicacion}</Text>
+                </View>
+
+                {/* Contenedor extra para información adicional */}
+                <View style={styles.extraInfoContainer}>
+                    <Text style={styles.extraInfoText}>
+                        {selectedData.extraInfo ? selectedData.extraInfo : "No hay información adicional disponible."}
+                    </Text>
+                </View>
+
+                {/* Línea separadora y contenedor del botón */}
+                <View style={[styles.separatorLine, { top: 140}]} />
+                <View style={[styles.buttonContainer, { top: 130, left: -30 }]}>
+                    <Button label="Cerrar" onPress={closeBottomSheet} />
                 </View>
             </Animated.View>
         </Modal>
