@@ -98,13 +98,15 @@ const styles = StyleSheet.create({
   extraInfoContainer: {
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#f9f9f9',
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   extraInfoText: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#555',
+    textAlign: 'left',
   },
   buttonContainer: {
     paddingHorizontal: 20,

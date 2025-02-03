@@ -65,14 +65,16 @@ const BSInfo = ({ isModalVisible, selectedData, setModalVisible }) => {
 
                 {/* Contenedor extra para información adicional */}
                 <View style={styles.extraInfoContainer}>
-                    <Text style={styles.extraInfoText}>
-                        {selectedData.extraInfo ? selectedData.extraInfo : "No hay información adicional disponible."}
-                    </Text>
+                    {selectedData.extraInfo ? (
+                        <Text style={styles.extraInfoText}>{selectedData.extraInfo}</Text>
+                    ) : (
+                        <Text style={styles.extraInfoText}>No hay información adicional</Text>
+                    )}
                 </View>
 
                 {/* Línea separadora y contenedor del botón */}
-                <View style={[styles.separatorLine, { top: 140}]} />
-                <View style={[styles.buttonContainer, { top: 130, left: -30 }]}>
+                <View style={[styles.separatorLine, { top: 110}]} />
+                <View style={[styles.buttonContainer, { top: 100, left: -30 }]}>
                     <Button label="Cerrar" onPress={closeBottomSheet} />
                 </View>
             </Animated.View>
