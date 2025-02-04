@@ -2,7 +2,14 @@ import { View, Text } from 'react-native';
 import TablasStyles from '../../styles/TablasStyles';
 import CargaTable from './CargaTable';
 
-const AparejosTable = ({ rows, totalPesoAparejos, grúaSeleccionada }) => (
+const AparejosTable = ({ 
+  rows, 
+  totalPesoAparejos, 
+  grúaSeleccionada, 
+  radioIzaje, 
+  radioMontaje, 
+  pesoTotalCarga 
+}) => (
   <View>
     <View style={TablasStyles.table}>
       <View style={TablasStyles.fullRow}>
@@ -37,10 +44,10 @@ const AparejosTable = ({ rows, totalPesoAparejos, grúaSeleccionada }) => (
 
     <CargaTable 
       grúaSeleccionada={grúaSeleccionada} 
-      radioIzaje={null} 
-      radioMontaje={null} 
+      radioIzaje={radioIzaje} 
+      radioMontaje={radioMontaje} 
       totalPesoAparejos={totalPesoAparejos} 
-      pesoTotalCarga={null} 
+      pesoTotalCarga={pesoTotalCarga} 
       aparejosRows={rows}
     />
   </View>

@@ -166,16 +166,11 @@ const Tablas = ({ route, navigation }) => {
       </View>
       <ScrollView style={TablasStyles.container}>
         <Tables.AparejosTable
-          rows={rows}
+          rows={rows || []}
           totalPesoAparejos={totalPesoAparejos}
-          grúaSeleccionada={grua}
-        />
-        <Tables.CargaTable
-          cargaRows={cargaRows || []}
           grúaSeleccionada={grua}
           radioIzaje={radioIzaje}
           radioMontaje={radioMontaje}
-          totalPesoAparejos={totalPesoAparejos}
           pesoTotalCarga={pesoTotalCarga}
         />
         <Tables.GruaTable
