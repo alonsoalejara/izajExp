@@ -26,32 +26,73 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoApar
                 </>
             );
     
-            // Sumar los pesos totales
             const totalPesoAparejos = aparejosRows.reduce((total, item) => total + item.pesoTotal, 0);
     
             extraInfo = (
                 <View>
                     {aparejosRows.map((item, index) => (
-                        <Text key={index} style={styles.extraInfoText}>
-                            {item.descripcion} - <Text style={{ color: 'red' }}>{item.pesoUnitario} kg</Text> (Peso Unitario)
-                        </Text>
+                        <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>
+                                {item.descripcion}
+                            </Text>
+                            <Text style={{ color: 'red', textAlign: 'right', fontWeight: 'bold' }}>
+                                {item.pesoUnitario} kg x {item.cantidad}
+                            </Text>
+                        </View>
                     ))}
-                    {/* Mostrar el total de los pesos */}
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={[styles.extraInfoText, { fontWeight: 'bold' }]}>
-                            Total Peso Aparejos: <Text style={{ color: 'red' }}>{totalPesoAparejos.toFixed(2)} kg</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 40, marginBottom: 10 }}>
+                        <Text style={[styles.extraInfoText, { fontWeight: 'bold', textAlign: 'left' }]}>
+                            Total del peso de aparejos:
+                        </Text>
+                        <Text style={{ color: 'red', fontWeight: 'bold', textAlign: 'right', marginLeft: 50, top: 1 }}>
+                            {totalPesoAparejos.toFixed(2)} kg
                         </Text>
                     </View>
                 </View>
-            );
+            );            
         } else if (descripcion === 'PESO TOTAL') {
             explicacion = (
                 <>
                     Es la suma total del <Text style={{ color: 'red' }}>peso del equipo</Text>, 
-                    <Text style={{ color: 'red' }}>peso de aparejos</Text> y del <Text style={{ color: 'red' }}>peso del gancho</Text> de la grúa.
+                    <Text style={{ color: 'red' }}> peso de aparejos</Text> y del <Text style={{ color: 'red' }}>peso del gancho</Text> de la grúa.
                 </>
             );
-            extraInfo = 'Hola Mundo 2';
+        
+            extraInfo = (
+                <View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                        <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>PESO DEL EQUIPO:</Text>
+                        <Text style={{ color: 'red', textAlign: 'right', fontWeight: 'bold', marginLeft: 110 }}>
+                            {pesoTotalCarga && !isNaN(pesoTotalCarga) ? pesoTotalCarga.toFixed(0) : '0'} kg
+                        </Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                        <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>PESO DE APAREJOS:</Text>
+                        <Text style={{ color: 'red', textAlign: 'right', fontWeight: 'bold' }}>
+                            {totalPesoAparejos && !isNaN(totalPesoAparejos) ? totalPesoAparejos.toFixed(0) : '0'} kg
+                        </Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                        <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>PESO DEL GANCHO:</Text>
+                        <Text style={{ color: 'red', textAlign: 'right', fontWeight: 'bold' }}>
+                            {grúaSeleccionada && grúaSeleccionada.pesoGancho && !isNaN(grúaSeleccionada.pesoGancho)
+                                ? grúaSeleccionada.pesoGancho.toFixed(0)
+                                : '0'} kg
+                        </Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                        <Text style={[styles.extraInfoText, { fontWeight: 'bold', textAlign: 'left' }]}>Peso total:</Text>
+                        <Text style={{ color: 'red', fontWeight: 'bold', textAlign: 'right', fontSize: 16 }}>
+                            {((pesoTotalCarga && !isNaN(pesoTotalCarga) ? pesoTotalCarga : 0) +
+                              (totalPesoAparejos && !isNaN(totalPesoAparejos) ? totalPesoAparejos : 0) +
+                              (grúaSeleccionada && grúaSeleccionada.pesoGancho && !isNaN(grúaSeleccionada.pesoGancho) 
+                                  ? grúaSeleccionada.pesoGancho 
+                                  : 0)
+                            ).toFixed(0)} kg
+                        </Text>
+                    </View>
+                </View>
+            );
         } else if (descripcion === 'RADIO DE TRABAJO MÁX') {
             explicacion = (
                 <>

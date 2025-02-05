@@ -73,8 +73,8 @@ const BSInfo = ({ isModalVisible, selectedData, setModalVisible }) => {
                 </View>
 
                 {/* Línea separadora y contenedor del botón */}
-                <View style={[styles.separatorLine, { top: 110}]} />
-                <View style={[styles.buttonContainer, { top: 100, left: -30 }]}>
+                <View style={[styles.separatorLine, { top: 70}]} />
+                <View style={[styles.buttonContainer, { top: 60, left: -30 }]}>
                     <Button label="Cerrar" onPress={closeBottomSheet} />
                 </View>
             </Animated.View>
