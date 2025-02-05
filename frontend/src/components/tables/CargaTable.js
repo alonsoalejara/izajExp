@@ -35,7 +35,7 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoApar
                             <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>
                                 {item.descripcion}
                             </Text>
-                            <Text style={{ color: 'red', textAlign: 'right', fontWeight: 'bold' }}>
+                            <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500' }}>
                                 {item.pesoUnitario} kg x {item.cantidad}
                             </Text>
                         </View>
@@ -45,7 +45,7 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoApar
                             Total del peso de aparejos:
                         </Text>
                         <Text style={{ color: 'red', fontWeight: 'bold', textAlign: 'right', marginLeft: 50, top: 1 }}>
-                            {totalPesoAparejos.toFixed(2)} kg
+                            {totalPesoAparejos.toFixed(0)} kg
                         </Text>
                     </View>
                 </View>
@@ -62,19 +62,21 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoApar
                 <View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                         <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>PESO DEL EQUIPO:</Text>
-                        <Text style={{ color: 'red', textAlign: 'right', fontWeight: 'bold', marginLeft: 110 }}>
-                            {pesoTotalCarga && !isNaN(pesoTotalCarga) ? pesoTotalCarga.toFixed(0) : '0'} kg
+                        <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500', marginLeft: 110 }}>
+                            {grúaSeleccionada && grúaSeleccionada.pesoEquipo && !isNaN(grúaSeleccionada.pesoEquipo)
+                                ? grúaSeleccionada.pesoEquipo.toFixed(0)
+                                : '0'} kg
                         </Text>
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                         <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>PESO DE APAREJOS:</Text>
-                        <Text style={{ color: 'red', textAlign: 'right', fontWeight: 'bold' }}>
+                        <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500' }}>
                             {totalPesoAparejos && !isNaN(totalPesoAparejos) ? totalPesoAparejos.toFixed(0) : '0'} kg
                         </Text>
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                         <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>PESO DEL GANCHO:</Text>
-                        <Text style={{ color: 'red', textAlign: 'right', fontWeight: 'bold' }}>
+                        <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500' }}>
                             {grúaSeleccionada && grúaSeleccionada.pesoGancho && !isNaN(grúaSeleccionada.pesoGancho)
                                 ? grúaSeleccionada.pesoGancho.toFixed(0)
                                 : '0'} kg
@@ -83,25 +85,55 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoApar
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
                         <Text style={[styles.extraInfoText, { fontWeight: 'bold', textAlign: 'left' }]}>Peso total:</Text>
                         <Text style={{ color: 'red', fontWeight: 'bold', textAlign: 'right', fontSize: 16 }}>
-                            {((pesoTotalCarga && !isNaN(pesoTotalCarga) ? pesoTotalCarga : 0) +
-                              (totalPesoAparejos && !isNaN(totalPesoAparejos) ? totalPesoAparejos : 0) +
-                              (grúaSeleccionada && grúaSeleccionada.pesoGancho && !isNaN(grúaSeleccionada.pesoGancho) 
-                                  ? grúaSeleccionada.pesoGancho 
-                                  : 0)
+                            {(
+                                (grúaSeleccionada && grúaSeleccionada.pesoEquipo && !isNaN(grúaSeleccionada.pesoEquipo)
+                                    ? grúaSeleccionada.pesoEquipo : 0) +
+                                (totalPesoAparejos && !isNaN(totalPesoAparejos) ? totalPesoAparejos : 0) +
+                                (grúaSeleccionada && grúaSeleccionada.pesoGancho && !isNaN(grúaSeleccionada.pesoGancho)
+                                    ? grúaSeleccionada.pesoGancho : 0)
                             ).toFixed(0)} kg
                         </Text>
                     </View>
                 </View>
             );
         } else if (descripcion === 'RADIO DE TRABAJO MÁX') {
+            const radioIzaje = grúaSeleccionada?.radioIzaje || 0;
+            const radioMontaje = grúaSeleccionada?.radioMontaje || 0;
+            
+            const radioMaximo = Math.max(radioIzaje, radioMontaje);
+        
             explicacion = (
                 <>
                     Es el radio de mayor diámetro registrado para el <Text style={{ color: 'red' }}>radio de izaje</Text> 
-                    y el <Text style={{ color: 'red' }}>radio de montaje.</Text>
+                    y el <Text style={{ color: 'red' }}>radio de montaje.</Text> 
+                    El mayor de estos valores corresponde al <Text style={{ color: 'red' }}>RADIO DE TRABAJO MÁX</Text>.
                 </>
             );
-            extraInfo = 'Hola Mundo 3';
-        } else if (descripcion === '% UTILIZACIÓN') {
+        
+            extraInfo = (
+                <View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                        <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>RADIO DE IZAJE:</Text>
+                        <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500', marginLeft: 130 }}>
+                            {radioIzaje && !isNaN(radioIzaje) ? radioIzaje.toFixed(2) : '0'} metros
+                        </Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                        <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>RADIO DE MONTAJE:</Text>
+                        <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500' }}>
+                            {radioMontaje && !isNaN(radioMontaje) ? radioMontaje.toFixed(2) : '0'} metros
+                        </Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                        <Text style={[styles.extraInfoText, { fontWeight: 'bold', textAlign: 'left' }]}>RADIO DE TRABAJO MÁX:</Text>
+                        <Text style={{ color: 'red', fontWeight: 'bold', textAlign: 'right', fontSize: 16 }}>
+                            {radioMaximo && !isNaN(radioMaximo) ? radioMaximo.toFixed(2) : '0'} metros
+                        </Text>
+                    </View>
+                </View>
+            );
+        }
+         else if (descripcion === '% UTILIZACIÓN') {
             explicacion = 'Utilización del plan de izaje';
             extraInfo = 'Explicación no disponible';
         } else {
