@@ -7,15 +7,14 @@ import CargaRow from '../CargaRow';
 import BSInfo from '../bottomSheets/BSInfo';
 import handleInfoPress from '../../logic/handleInfoPress';
 
-const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga, aparejosRows }) => {
+const CargaTable = ({ selectedGrua, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga, aparejosRows }) => {
     const { data, isLoading } = useFetchData('grua/');
-    const cargaRows = useCargaData(data, grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga);
-
+    const cargaRows = useCargaData(data, selectedGrua, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga);
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedData, setSelectedData] = useState({ descripcion: '', valor: '', explicacion: '' });
 
     const handleInfo = (descripcion, valor) => {
-        const { explicacion, extraInfo } = handleInfoPress(descripcion, valor, aparejosRows, grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos);
+        const { explicacion, extraInfo } = handleInfoPress(descripcion, valor, aparejosRows, selectedGrua, radioIzaje, radioMontaje, totalPesoAparejos);
         setSelectedData({ descripcion, valor, explicacion, extraInfo });
         setModalVisible(true);
     };
@@ -28,7 +27,7 @@ const CargaTable = ({ grúaSeleccionada, radioIzaje, radioMontaje, totalPesoApar
         <View style={TablasStyles.table}>
             <View style={TablasStyles.fullRow}>
                 <Text style={TablasStyles.fullRowText}>
-                    {grúaSeleccionada ? `CUADRO CARGA GRÚA: ${grúaSeleccionada}` : 'CUADRO CARGA'}
+                    {selectedGrua && selectedGrua.nombre ? `CUADRO CARGA GRÚA: ${selectedGrua.nombre}` : 'CUADRO CARGA'}
                 </Text>
             </View>
 

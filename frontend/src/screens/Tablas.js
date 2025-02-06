@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import TablasStyles from '../styles/TablasStyles';
 import Tables from '../components/tables/Table.index.js';
@@ -8,13 +8,25 @@ import Header from '../components/Header.js';
 import Toast from 'react-native-toast-message';
 import PDFGenerator from '../utils/PDFGenerator';
 import { generarPDF } from '../utils/PDFGenerator';
-import { gruaData } from '../data/gruaData';
+import { useFetchData } from '../hooks/useFetchData';
 
 const Tablas = ({ route, navigation }) => {
   const { eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete, grua, radioIzaje, radioMontaje, usuarioId } = route.params;
+
+  // Usamos el hook useFetchData para obtener los datos de la grúa
+  const { data, isLoading, refetch } = useFetchData('grua');
+
   const [isSaved, setIsSaved] = useState(false);
   const [currentUsuarioId, setCurrentUsuarioId] = useState(null);
-  const selectedGrua = gruaData[grua] || {}; 
+
+  // Filtramos la grúa seleccionada usando el nombre
+  const selectedGrua = data.find(g => g.nombre === grua) || {};
+
+  useEffect(() => {
+    if (grua) {
+      refetch();
+    }
+  }, [grua]);
 
   const rows = [
     {
@@ -32,7 +44,6 @@ const Tablas = ({ route, navigation }) => {
       pesoTotal: cantidadGrilletes * 27,
     },
   ];
-
   const totalPesoAparejos = rows.reduce((total, row) => total + row.pesoTotal, 0);
   const pesoTotalCarga = (
     (typeof selectedGrua.pesoEquipo === 'number' ? selectedGrua.pesoEquipo : 0) +
@@ -104,25 +115,31 @@ const Tablas = ({ route, navigation }) => {
         <Text style={TablasStyles.title}>Tablas</Text>
       </View>
       <ScrollView style={TablasStyles.container}>
-        <Tables.AparejosTable
-          rows={rows || []}
-          totalPesoAparejos={totalPesoAparejos}
-          grúaSeleccionada={grua}
-          radioIzaje={radioIzaje}
-          radioMontaje={radioMontaje}
-          pesoTotalCarga={pesoTotalCarga}
-        />
-        <Tables.GruaTable
-          datosGrúaRows={datosGruaRows}
-          grúaSeleccionada={grua}
-        />
-        {isSaved && (
-          <PDFGenerator
-            selectedGrua={grua}
-            totalPesoAparejos={totalPesoAparejos}
-            cargaRows={cargaRows}
-            datosGruaRows={datosGruaRows}
-          />
+        {isLoading ? (
+          <Text>Cargando datos de la grúa...</Text>
+        ) : (
+          <>
+            <Tables.AparejosTable
+              rows={rows || []}
+              totalPesoAparejos={totalPesoAparejos}
+              selectedGrua={selectedGrua}
+              radioIzaje={radioIzaje}
+              radioMontaje={radioMontaje}
+              pesoTotalCarga={pesoTotalCarga}
+            />
+            <Tables.GruaTable
+              datosGrúaRows={datosGruaRows}
+              selectedGrua={selectedGrua}
+            />
+            {isSaved && (
+              <PDFGenerator
+                selectedGrua={selectedGrua}
+                totalPesoAparejos={totalPesoAparejos}
+                cargaRows={cargaRows}
+                datosGruaRows={datosGruaRows}
+              />
+            )}
+          </>
         )}
       </ScrollView>
       <View style={TablasStyles.buttonContainer}>

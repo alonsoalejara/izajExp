@@ -2,7 +2,9 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import styles from '../styles/BSInfoStyles';
 
-const handleInfoPress = (descripcion, valor, aparejosRows, grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos) => {
+const handleInfoPress = (descripcion, valor, aparejosRows, selectedGrua, radioIzaje, radioMontaje, totalPesoAparejos) => {
+    const radioIzajeNumero = parseFloat(radioIzaje) || 0;
+    const radioMontajeNumero = parseFloat(radioMontaje) || 0;    
     let explicacion = '';
     let extraInfo = null;
 
@@ -46,8 +48,8 @@ const handleInfoPress = (descripcion, valor, aparejosRows, grúaSeleccionada, ra
             <View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                     <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>PESO DEL EQUIPO:</Text>
-                    <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500', marginLeft: 110 }}>
-                        {grúaSeleccionada && grúaSeleccionada.pesoEquipo && !isNaN(grúaSeleccionada.pesoEquipo) ? grúaSeleccionada.pesoEquipo.toFixed(0) : '0'} kg
+                    <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500', marginLeft: 90 }}>
+                        {selectedGrua && selectedGrua.pesoEquipo && !isNaN(selectedGrua.pesoEquipo) ? selectedGrua.pesoEquipo.toFixed(0) : '0'} kg
                     </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
@@ -59,15 +61,15 @@ const handleInfoPress = (descripcion, valor, aparejosRows, grúaSeleccionada, ra
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                     <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>PESO DEL GANCHO:</Text>
                     <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500' }}>
-                        {grúaSeleccionada && grúaSeleccionada.pesoGancho && !isNaN(grúaSeleccionada.pesoGancho) ? grúaSeleccionada.pesoGancho.toFixed(0) : '0'} kg
+                        {selectedGrua && selectedGrua.pesoGancho && !isNaN(selectedGrua.pesoGancho) ? selectedGrua.pesoGancho.toFixed(0) : '0'} kg
                     </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
                     <Text style={[styles.extraInfoText, { fontWeight: 'bold', textAlign: 'left' }]}>Peso total:</Text>
                     <Text style={{ color: 'red', fontWeight: 'bold', textAlign: 'right', fontSize: 16 }}>
-                        {((grúaSeleccionada && grúaSeleccionada.pesoEquipo && !isNaN(grúaSeleccionada.pesoEquipo) ? grúaSeleccionada.pesoEquipo : 0) +
+                        {((selectedGrua && selectedGrua.pesoEquipo && !isNaN(selectedGrua.pesoEquipo) ? selectedGrua.pesoEquipo : 0) +
                             (totalPesoAparejos && !isNaN(totalPesoAparejos) ? totalPesoAparejos : 0) +
-                            (grúaSeleccionada && grúaSeleccionada.pesoGancho && !isNaN(grúaSeleccionada.pesoGancho) ? grúaSeleccionada.pesoGancho : 0))
+                            (selectedGrua && selectedGrua.pesoGancho && !isNaN(selectedGrua.pesoGancho) ? selectedGrua.pesoGancho : 0))
                             .toFixed(0)} kg
                     </Text>
                 </View>
@@ -88,14 +90,14 @@ const handleInfoPress = (descripcion, valor, aparejosRows, grúaSeleccionada, ra
             <View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                     <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>RADIO DE IZAJE:</Text>
-                    <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500', marginLeft: 130 }}>
-                        {typeof radioIzaje === 'number' && !isNaN(radioIzaje) ? radioIzaje.toFixed(0) : '0'} metros
+                    <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500', marginLeft: 90 }}>
+                        {radioIzajeNumero.toFixed(0)} metros
                     </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                     <Text style={[styles.extraInfoText, { textAlign: 'left' }]}>RADIO DE MONTAJE:</Text>
                     <Text style={{ color: 'red', textAlign: 'right', fontWeight: '500' }}>
-                        {typeof radioMontaje === 'number' && !isNaN(radioMontaje) ? radioMontaje.toFixed(0) : '0'} metros
+                        {radioMontajeNumero.toFixed(0)} metros
                     </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>

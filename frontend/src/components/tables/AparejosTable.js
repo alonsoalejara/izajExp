@@ -5,7 +5,7 @@ import CargaTable from './CargaTable';
 const AparejosTable = ({ 
   rows, 
   totalPesoAparejos, 
-  grúaSeleccionada, 
+  selectedGrua, 
   radioIzaje, 
   radioMontaje, 
   pesoTotalCarga 
@@ -14,7 +14,7 @@ const AparejosTable = ({
     <View style={TablasStyles.table}>
       <View style={TablasStyles.fullRow}>
         <Text style={[TablasStyles.fullRowText, TablasStyles.titleText]}>
-          {grúaSeleccionada ? `CUADRO APAREJOS GRÚA: ${grúaSeleccionada}` : 'CUADRO APAREJOS'}
+          {selectedGrua ? `CUADRO APAREJOS GRÚA: ${selectedGrua}` : 'CUADRO APAREJOS'}
         </Text>
       </View>
 
@@ -38,12 +38,14 @@ const AparejosTable = ({
 
       <View style={TablasStyles.row}>
         <Text style={TablasStyles.totalColumn}>Total Peso Aparejos</Text>
-        <Text style={[TablasStyles.numberColumn, { padding: 3 }]}>{totalPesoAparejos} kg</Text>
+        <Text style={[TablasStyles.numberColumn, { padding: 3 }]}>
+          {totalPesoAparejos !== undefined ? `${totalPesoAparejos} kg` : '0 kg'}
+        </Text>
       </View>
     </View>
 
     <CargaTable 
-      grúaSeleccionada={grúaSeleccionada} 
+      selectedGrua={selectedGrua} 
       radioIzaje={radioIzaje} 
       radioMontaje={radioMontaje} 
       totalPesoAparejos={totalPesoAparejos} 

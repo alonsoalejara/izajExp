@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const useCargaData = (data, grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga) => {
+const useCargaData = (data, selectedGrua, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga) => {
     const [cargaRows, setCargaRows] = useState([
         { item: '1', descripcion: 'PESO DEL EQUIPO', valor: 'N/A' },
         { item: '2', descripcion: 'PESO DE APAREJOS', valor: 'N/A' },
@@ -14,7 +14,8 @@ const useCargaData = (data, grúaSeleccionada, radioIzaje, radioMontaje, totalPe
     useEffect(() => {
         const processData = () => {
             if (data && data.length > 0) {
-                const gruaSeleccionadaData = data.find(grua => grua.nombre === grúaSeleccionada);
+                const gruaSeleccionadaData = data.find(grua => grua.nombre === selectedGrua.nombre);
+                
                 if (gruaSeleccionadaData) {
                     setCargaRows(prevRows => prevRows.map(row => {
                         switch(row.descripcion) {
@@ -37,10 +38,9 @@ const useCargaData = (data, grúaSeleccionada, radioIzaje, radioMontaje, totalPe
                     }));
                 }
             }
-        };
-
+        };                    
         processData();
-    }, [data, grúaSeleccionada, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga]);
+    }, [data, selectedGrua, radioIzaje, radioMontaje, totalPesoAparejos, pesoTotalCarga]);
 
     return cargaRows;
 };

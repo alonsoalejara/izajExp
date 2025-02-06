@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 
-const useGruaData = (data, grúaSeleccionada) => {
+const useGruaData = (data, selectedGrua) => {
     return useMemo(() => {
-        if (!data || !grúaSeleccionada) return [];
+        if (!data || !selectedGrua) return [];
 
-        const gruaSeleccionadaData = data.find(grua => grua.nombre === grúaSeleccionada);
+        const gruaSeleccionadaData = data.find(grua => grua.nombre === selectedGrua);
 
         if (!gruaSeleccionadaData) return [];
 
@@ -12,7 +12,7 @@ const useGruaData = (data, grúaSeleccionada) => {
             { item: '1', descripcion: 'LARGO PLUMA', valor: `${gruaSeleccionadaData.largoPluma} m` },
             { item: '2', descripcion: 'CONTRAPESO', valor: `${gruaSeleccionadaData.contrapeso} kg` }
         ];
-    }, [data, grúaSeleccionada]);
+    }, [data, selectedGrua]);
 };
 
 export default useGruaData;

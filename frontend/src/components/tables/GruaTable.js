@@ -4,9 +4,9 @@ import { useFetchData } from '../../hooks/useFetchData';
 import useGruaData from '../../hooks/useGruaData';
 import TablasStyles from '../../styles/TablasStyles';
 
-const GruaTable = ({ grúaSeleccionada }) => {
+const GruaTable = ({ selectedGrua }) => {
     const { data, isLoading } = useFetchData('grua/');
-    const datosGrúaRows = useGruaData(data, grúaSeleccionada);
+    const datosGrúaRows = useGruaData(data, selectedGrua);
 
     if (isLoading) {
         return <ActivityIndicator size="large" color="#0000ff" />;
@@ -16,7 +16,7 @@ const GruaTable = ({ grúaSeleccionada }) => {
         <View style={TablasStyles.table}>
             <View style={TablasStyles.fullRow}>
                 <Text style={TablasStyles.fullRowText}>
-                    {grúaSeleccionada ? `CUADRO DATOS GRÚA: ${grúaSeleccionada}` : 'CUADRO DATOS GRÚA'}
+                    {selectedGrua ? `CUADRO DATOS GRÚA: ${selectedGrua}` : 'CUADRO DATOS GRÚA'}
                 </Text>
             </View>
 
