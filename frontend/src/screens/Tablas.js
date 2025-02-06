@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import TablasStyles from '../styles/TablasStyles';
 import Tables from '../components/tables/Table.index.js';
-import getApiUrl from '../utils/apiUrl';
-const axios = require('axios/dist/browser/axios.cjs');
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { savePlan } from '../utils/savePlanHelper';
 import Button from '../components/Button';
 import Header from '../components/Header.js';
 import Toast from 'react-native-toast-message';
@@ -57,23 +55,6 @@ const Tablas = ({ route, navigation }) => {
     { item: '2', descripcion: 'CONTRAPESO', valor: `${selectedGrua.contrapeso || 0} ton` },
   ];
 
-  useEffect(() => {
-    const fetchUsuarioId = async () => {
-      try {
-        const id = await AsyncStorage.getItem('usuarioId');
-        if (id) {
-          setCurrentUsuarioId(id);
-        } else {
-          console.log('No se encontró el usuarioId en AsyncStorage');
-        }
-      } catch (error) {
-        console.error('Error al obtener el usuarioId de AsyncStorage:', error);
-      }
-    };
-
-    fetchUsuarioId();
-  }, []);
-
   const handleGuardar = () => {
     Alert.alert(
       'Confirmar',
@@ -103,44 +84,9 @@ const Tablas = ({ route, navigation }) => {
       return;
     }
 
-    const requestBody = {
-      usuario: currentUsuarioId,
-      aparejos: rows.map(row => ({
-        descripcion: row.descripcion,
-        cantidad: row.cantidad,
-        pesoUnitario: row.pesoUnitario,
-        pesoTotal: row.pesoTotal,
-      })),
-      datos: {
-        largoPluma: selectedGrua.largoPluma,
-        contrapeso: selectedGrua.contrapeso,
-      },
-      cargas: {
-        pesoEquipo: selectedGrua.pesoEquipo,
-        pesoAparejos: totalPesoAparejos,
-        pesoGancho: selectedGrua.pesoGancho,
-        pesoTotal: pesoTotalCarga,
-        radioTrabajoMax: Math.max(radioIzaje, radioMontaje),
-        capacidadLevante: selectedGrua.capacidadLevante,
-        porcentajeUtilizacion: 0,
-      },
-    };
+    const response = await savePlan(rows, selectedGrua, radioIzaje, radioMontaje);
 
-    const token = await AsyncStorage.getItem('accessToken');
-    if (!token) {
-      console.error('No se encontró token de autenticación');
-      alert('No estás autenticado');
-      return;
-    }
-
-    try {
-      const apiUrl = getApiUrl('setupIzaje');
-      const response = await axios.post(apiUrl, requestBody, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-      });
+    if (response) {
       setIsSaved(true);
       Toast.show({
         type: 'success',
@@ -148,13 +94,6 @@ const Tablas = ({ route, navigation }) => {
         visibilityTime: 3000,
       });
       console.log('Respuesta del servidor:', response.data);
-    } catch (error) {
-      console.error('Error al guardar el plan de izaje:', error.response ? error.response.data : error.message);
-      Toast.show({
-        type: 'error',
-        text1: 'Error al guardar el plan de izaje',
-        visibilityTime: 3000,
-      });
     }
   };
 
