@@ -107,6 +107,7 @@ const Tablas = ({ route, navigation }) => {
       console.log('Respuesta del servidor:', response.data);
     }
   };
+  console.log(selectedGrua); // Verifica qué contiene selectedGrua
 
   return (
     <View style={{ flex: 1 }}>

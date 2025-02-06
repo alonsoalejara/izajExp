@@ -14,7 +14,7 @@ const AparejosTable = ({
     <View style={TablasStyles.table}>
       <View style={TablasStyles.fullRow}>
         <Text style={[TablasStyles.fullRowText, TablasStyles.titleText]}>
-          {selectedGrua ? `CUADRO APAREJOS GRÚA: ${selectedGrua}` : 'CUADRO APAREJOS'}
+          {selectedGrua ? `CUADRO APAREJOS GRÚA: ${selectedGrua.nombre}` : 'CUADRO APAREJOS'}
         </Text>
       </View>
 

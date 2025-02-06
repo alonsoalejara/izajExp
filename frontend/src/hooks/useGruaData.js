@@ -5,6 +5,8 @@ const useGruaData = (data, selectedGrua) => {
         if (!data || !selectedGrua) return [];
 
         const gruaSeleccionadaData = data.find(grua => grua.nombre === selectedGrua);
+        console.log(gruaSeleccionadaData); // Verifica qué contiene la grúa seleccionada
+
 
         if (!gruaSeleccionadaData) return [];
 
