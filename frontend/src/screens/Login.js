@@ -4,7 +4,7 @@ import Svg, { LinearGradient, Stop, Rect } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from 'jwt-decode';
 import LoginStyles from "../styles/LoginStyles";
-import Button from "../components/Button"; // Importa el nuevo Button
+import Button from "../components/Button";
 import getApiUrl from "../utils/apiUrl";
 
 export default function Login({ navigation }) {

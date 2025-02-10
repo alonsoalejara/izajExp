@@ -2,25 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import TablasStyles from '../styles/TablasStyles';
 import Tables from '../components/tables/Table.index.js';
-import { savePlan } from '../utils/savePlanHelper';
 import Button from '../components/Button';
 import Header from '../components/Header.js';
 import Toast from 'react-native-toast-message';
 import PDFGenerator from '../utils/PDFGenerator';
 import { generarPDF } from '../utils/PDFGenerator';
 import { useFetchData } from '../hooks/useFetchData';
+import getApiUrl from '../utils/apiUrl';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tablas = ({ route, navigation }) => {
   const { eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete, grua, radioIzaje, radioMontaje, usuarioId } = route.params;
-
-  // Usamos el hook useFetchData para obtener los datos de la grúa
   const { data, isLoading, refetch } = useFetchData('grua');
-
   const [isSaved, setIsSaved] = useState(false);
   const [currentUsuarioId, setCurrentUsuarioId] = useState(null);
-
-  // Filtramos la grúa seleccionada usando el nombre
   const selectedGrua = data.find(g => g.nombre === grua) || {};
+
+  console.log("route.params:", route.params);
+  console.log("usuarioId recibido:", usuarioId);
 
   useEffect(() => {
     if (grua) {
@@ -44,13 +43,14 @@ const Tablas = ({ route, navigation }) => {
       pesoTotal: cantidadGrilletes * 27,
     },
   ];
+
   const totalPesoAparejos = rows.reduce((total, row) => total + row.pesoTotal, 0);
+
   const pesoTotalCarga = (
     (typeof selectedGrua.pesoEquipo === 'number' ? selectedGrua.pesoEquipo : 0) +
     (typeof totalPesoAparejos === 'number' ? totalPesoAparejos : 0) +
     (typeof selectedGrua.pesoGancho === 'number' ? selectedGrua.pesoGancho : 0)
   );
-
   const cargaRows = [
     { item: '1', descripcion: 'PESO DEL EQUIPO', valor: `${selectedGrua.pesoEquipo || 0} kg` },
     { item: '2', descripcion: 'PESO DE APAREJOS', valor: `${totalPesoAparejos} kg` },
@@ -86,7 +86,9 @@ const Tablas = ({ route, navigation }) => {
   };
 
   const handleConfirmar = async () => {
-    if (!currentUsuarioId) {
+    console.log("Ejecutando handleConfirmar...");
+  
+    if (!usuarioId) {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -94,20 +96,78 @@ const Tablas = ({ route, navigation }) => {
       });
       return;
     }
+  
+    const planData = {
+      usuario: usuarioId,
+      aparejos: rows.map(row => ({
+        descripcion: row.descripcion,
+        cantidad: row.cantidad,
+        pesoUnitario: row.pesoUnitario,
+        pesoTotal: row.pesoTotal,
+      })),
+      datos: {
+        largoPluma: selectedGrua.largoPluma,
+        contrapeso: selectedGrua.contrapeso,
+      },
+      cargas: {
+        pesoEquipo: selectedGrua.pesoEquipo,
+        pesoAparejos: totalPesoAparejos,
+        pesoGancho: selectedGrua.pesoGancho,
+        pesoTotal: pesoTotalCarga,
+        radioTrabajoMax: Math.max(radioIzaje, radioMontaje),
+        capacidadLevante: selectedGrua.capacidadLevante,
+        porcentajeUtilizacion: 0,
+      },
+    };  
 
-    const response = await savePlan(rows, selectedGrua, radioIzaje, radioMontaje);
-
-    if (response) {
-      setIsSaved(true);
-      Toast.show({
-        type: 'success',
-        text1: 'Plan de izaje guardado',
-        visibilityTime: 3000,
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      
+      if (!accessToken) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'No se encontró un token de acceso.',
+        });
+        return;
+      }
+  
+      const response = await fetch(getApiUrl('setupIzaje'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(planData),
       });
-      console.log('Respuesta del servidor:', response.data);
+  
+      console.log("Solicitud enviada...");
+  
+      const data = await response.json();
+      if (response.ok) {
+        setIsSaved(true);
+        Toast.show({
+          type: 'success',
+          text1: 'Plan de izaje guardado',
+          visibilityTime: 3000,
+        });
+        console.log('Respuesta del servidor:', data);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error al guardar',
+          text2: data.message,
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Hubo un error',
+        text2: 'No se pudo guardar el plan de izaje.',
+      });
     }
-  };
-  console.log(selectedGrua); // Verifica qué contiene selectedGrua
+  };  
 
   return (
     <View style={{ flex: 1 }}>

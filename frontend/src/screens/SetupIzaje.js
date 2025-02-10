@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Header from '../components/Header';
@@ -21,6 +22,23 @@ const SetupIzaje = () => {
   const [radioMontaje, setRadioMontaje] = useState('');
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState('');
+  const [usuarioId, setUsuarioId] = useState(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const storedUsuarioId = await AsyncStorage.getItem('usuarioId');
+        if (storedUsuarioId) {
+          setUsuarioId(storedUsuarioId);
+        } else {
+          console.warn("No se encontró el usuarioId en AsyncStorage");
+        }
+      } catch (error) {
+        console.error("Error al obtener usuarioId:", error);
+      }
+    };
+    fetchUserId();
+  }, []);
 
   const openModal = (setModalVisible) => {
     setModalVisible(true);
@@ -55,7 +73,8 @@ const SetupIzaje = () => {
   };
 
   const handleNavigateToTablas = async () => {
-    if (!grua || !cantidadGrilletes || !tipoGrillete || !eslingaOEstrobo || !cantidadManiobra) {
+    if (!grua || !cantidadGrilletes || !tipoGrillete || !eslingaOEstrobo || !cantidadManiobra || !usuarioId) {
+      Alert.alert('Error', 'Por favor, complete todos los campos y asegúrese de estar autenticado');
       return;
     }
     navigation.navigate('Tablas', {
@@ -66,41 +85,41 @@ const SetupIzaje = () => {
       cantidadGrilletes: cantidadGrilletes,
       radioIzaje: radioIzaje,
       radioMontaje: radioMontaje,
+      usuarioId: usuarioId,
     });
   };
-
+  
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
         {/* Sección superior con imagen, degradado y logo */}
         <Header />
-  
-        {/* Contenido sin ScrollView */}
+
         <View style={styles.container}>
-            <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
-  
+          <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
+
           {/* Configurar Grúa */}
           <View style={styles.inputWrapper}>
             <Text style={styles.labelText}>Seleccione grúa:</Text>
           </View>
-  
+
           <ConfigButton
             label="Configurar Grúa"
             value={grua}
             onPress={() => openModal(setGruaModalVisible)}
           />
-  
+
           <BS.BSGrua
             isVisible={isGruaModalVisible}
             onClose={() => setGruaModalVisible(false)}
             onSelect={handleGruaSelect}
           />
-  
+
           {/* Formulario de radios: Radio Izaje y Radio Montaje */}
           <View style={styles.inputWrapper}>
             <Text style={styles.labelText}>Radio Izaje (metros)           Radio Montaje (metros)</Text>
           </View>
-  
+
           <View style={styles.inputContainer}>
             <NumericInput
               label="Radio Izaje"
@@ -115,12 +134,12 @@ const SetupIzaje = () => {
               placeholder="Montaje"
             />
           </View>
-  
+
           {/* Configurar Grillete */}
           <View style={styles.inputWrapper}>
             <Text style={styles.labelText}>Grillete: (cantidad y tipo)</Text>
           </View>
-  
+
           <View style={styles.inputContainer}>
             <NumericInput
               label="Cantidad"
@@ -135,18 +154,18 @@ const SetupIzaje = () => {
               width={150}
             />
           </View>
-  
+
           <BS.BSGrillete
             isVisible={isGrilleteModalVisible}
             onClose={() => setGrilleteModalVisible(false)}
             onSelect={handleTipoGrilleteSelect}
           />
-  
+
           {/* Configurar Maniobra */}
           <View style={styles.inputWrapper}>
             <Text style={styles.labelText}>Maniobra: (cantidad y tipo):</Text>
           </View>
-  
+
           <View style={[styles.inputContainer]}>
             <ConfigButton
               label="Cantidad"
@@ -161,20 +180,19 @@ const SetupIzaje = () => {
               width={150}
             />
           </View>
-  
+
           <BS.BSCantidad
             isVisible={isCantidadModalVisible}
             onClose={() => setCantidadModalVisible(false)}
             onSelect={handleCantidadManiobraSelect}
           />
-  
+
           <BS.BSManiobra
             isVisible={isManiobraModalVisible}
             onClose={() => setManiobraModalVisible(false)}
             onSelect={handleTipoManiobraSelect}
           />
-  
-          {/* Botón para confirmar configuración */}
+
           <Button
             label="Confirmar Configuración"
             onPress={handleNavigateToTablas}
