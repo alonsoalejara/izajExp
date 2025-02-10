@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { generarPDF } from '../utils/PDFGenerator';
+import { useFetchData } from '../hooks/useFetchData';
 import TablasStyles from '../styles/TablasStyles';
 import Tables from '../components/tables/Table.index.js';
 import Button from '../components/Button';
 import Header from '../components/Header.js';
 import Toast from 'react-native-toast-message';
 import PDFGenerator from '../utils/PDFGenerator';
-import { generarPDF } from '../utils/PDFGenerator';
-import { useFetchData } from '../hooks/useFetchData';
 import getApiUrl from '../utils/apiUrl';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tablas = ({ route, navigation }) => {
   const { eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete, grua, radioIzaje, radioMontaje, usuarioId } = route.params;
   const { data, isLoading, refetch } = useFetchData('grua');
   const [isSaved, setIsSaved] = useState(false);
-  const [currentUsuarioId, setCurrentUsuarioId] = useState(null);
   const selectedGrua = data.find(g => g.nombre === grua) || {};
-
-  console.log("route.params:", route.params);
-  console.log("usuarioId recibido:", usuarioId);
 
   useEffect(() => {
     if (grua) {
@@ -86,8 +82,6 @@ const Tablas = ({ route, navigation }) => {
   };
 
   const handleConfirmar = async () => {
-    console.log("Ejecutando handleConfirmar...");
-  
     if (!usuarioId) {
       Toast.show({
         type: 'error',
@@ -140,9 +134,7 @@ const Tablas = ({ route, navigation }) => {
         },
         body: JSON.stringify(planData),
       });
-  
-      console.log("Solicitud enviada...");
-  
+    
       const data = await response.json();
       if (response.ok) {
         setIsSaved(true);
