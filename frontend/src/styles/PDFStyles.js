@@ -49,7 +49,7 @@ export const estilosPDF = `
         grid-template-columns: 30% 30%;
         grid-template-rows: 40vh 40vh;
         grid-gap: 15px 20px;
-        margin-top: -420px;
+        margin-top: -494px;
         justify-items: start;
         align-items: start;
         width: 100%;
