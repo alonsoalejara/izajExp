@@ -210,7 +210,7 @@ const Tablas = ({ route, navigation }) => {
           label={isSaved ? 'PDF' : 'Guardar'}
           onPress={isSaved ? () => {
             console.log('Generando PDF...');
-            generarPDF(selectedGrua, totalPesoAparejos, cargaRows, datosGruaRows);
+            generarPDF(selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows);
           } : handleGuardar}
           style={{ marginTop: 15, top: -6, height: '60%', width: '45%', left: -79 }}
         />

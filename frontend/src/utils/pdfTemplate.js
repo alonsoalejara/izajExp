@@ -1,6 +1,6 @@
 import { estilosPDF } from '../styles/PDFStyles';
 
-export const generarHTML = (totalPesoAparejos, cargaRows, datosGrúaRows, base64Imagen) => {
+export const generarHTML = (rows, totalPesoAparejos, cargaRows, datosGrúaRows, base64Imagen) => {
     return `
       <!DOCTYPE html>
       <html lang="en">
@@ -24,9 +24,18 @@ export const generarHTML = (totalPesoAparejos, cargaRows, datosGrúaRows, base64
                     </tr>
                 </thead>
                 <tbody>
+                    ${rows.map(row => ` 
+                      <tr> 
+                        <td>${row.item}</td> 
+                        <td>${row.descripcion}</td> 
+                        <td>${row.cantidad}</td> 
+                        <td>${row.pesoUnitario} kg</td> 
+                        <td>${row.pesoTotal} kg</td> 
+                      </tr> 
+                    `).join('')}
                     <tr>
-                        <td colspan="4" style="font-weight: bold; text-align: right;">Total Peso Aparejos:</td>
-                        <td>${totalPesoAparejos} kg</td>
+                        <td colspan="4" style="font-weight: bold;">Total Peso Aparejos</td>
+                        <td style="font-weight: bold;">${totalPesoAparejos} kg</td>
                     </tr>
                 </tbody>
             </table>

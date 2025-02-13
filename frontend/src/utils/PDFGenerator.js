@@ -6,7 +6,7 @@ import TablasStyles from '../styles/TablasStyles';
 import { convertirImagenABase64 } from './pdfUtils';
 import { generarHTML } from './pdfTemplate';
 
-export const generarPDF = async (selectedGrua, totalPesoAparejos, cargaRows, datosGruaRows) => {
+export const generarPDF = async (selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows) => {
   console.log('Generando PDF con los siguientes datos:');
   console.log('selectedGrua:', selectedGrua);
   console.log('totalPesoAparejos:', totalPesoAparejos);
@@ -16,7 +16,7 @@ export const generarPDF = async (selectedGrua, totalPesoAparejos, cargaRows, dat
   const base64Imagen = await convertirImagenABase64(require('../../assets/EI-Montajes.png'));
   const imagenBase64 = `data:image/png;base64,${base64Imagen}`;
 
-  const htmlContent = generarHTML(totalPesoAparejos, cargaRows, datosGruaRows, imagenBase64);
+  const htmlContent = generarHTML(rows, totalPesoAparejos, cargaRows, datosGruaRows, imagenBase64);
 
   try {
     const { uri } = await printToFileAsync({ html: htmlContent });
@@ -26,13 +26,13 @@ export const generarPDF = async (selectedGrua, totalPesoAparejos, cargaRows, dat
   }
 };
 
-const PDFGenerator = ({ selectedGrua, totalPesoAparejos, cargaRows, datosGruaRows, isSaved }) => {
+const PDFGenerator = ({ selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows, isSaved }) => {
   return (
     <View style={{ alignItems: 'center', marginTop: 15 }}>
       {isSaved && (
         <TouchableOpacity
           style={TablasStyles.smallButton}
-          onPress={() => generarPDF(selectedGrua, totalPesoAparejos, cargaRows, datosGruaRows)}
+          onPress={() => generarPDF(selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows)}
         >
           <Text style={TablasStyles.buttonText}>Generar PDF</Text>
         </TouchableOpacity>
