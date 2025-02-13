@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        marginTop: -15,
         marginBottom: -20,
         width: '100%',
       },       
@@ -85,6 +86,7 @@ const styles = StyleSheet.create({
         height: 80,
         borderRadius: 45,
         overflow: 'hidden',
+        top: 20,
         backgroundColor: '#ff8383',
       },
       profileImage: {

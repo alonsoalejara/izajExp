@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../../styles/AdminSectionStyles'; 
 import getApiUrl from '../../../utils/apiUrl';
@@ -56,21 +56,18 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
       {colaboradoresFiltrados.map((colaborador, index) => (
         <View key={colaborador._id || `colaborador-${index}`} style={styles.card}>
           <TouchableOpacity onPress={() => handleCardPress(colaborador._id)}>
-            <Text style={styles.cardTitle}>
-              {colaborador.nombre} {colaborador.apellido}
-            </Text>
-            <Text style={styles.cardDetail}>
-              <Text style={styles.labelText}>RUT: </Text>{colaborador.rut}
-            </Text>
-            <Text style={styles.cardDetail}>
-              <Text style={styles.labelText}>Teléfono: </Text>{colaborador.phone}
-            </Text>
-            <Text style={styles.cardDetail}>
-              <Text style={styles.labelText}>Especialidad: </Text>{colaborador.specialty}
-            </Text>
-            <Text style={styles.cardDetail}>
-              <Text style={styles.labelText}>Email: </Text>{colaborador.email}
-            </Text>
+            {/* Contenedor del título y la imagen */}
+            <View style={styles.titleContainer}>
+              <Text style={[styles.cardTitle, { fontSize: 22 }]}>{colaborador.nombre} {colaborador.apellido}</Text>
+              <View style={styles.profileCircle}>
+                <Image source={require('../../../../assets/blank-user-image.png')} style={[styles.profileImage, { top: 6 }]} />
+              </View>            
+            </View>
+
+            <Text style={styles.cardDetail}><Text style={styles.labelText}>RUT: </Text>{colaborador.rut}</Text>
+            <Text style={styles.cardDetail}><Text style={styles.labelText}>Teléfono: </Text>{colaborador.phone}</Text>
+            <Text style={styles.cardDetail}><Text style={styles.labelText}>Especialidad: </Text>{colaborador.specialty}</Text>
+            <Text style={styles.cardDetail}><Text style={styles.labelText}>Email: </Text>{colaborador.email}</Text>
           </TouchableOpacity>
 
           {selectedCard === colaborador._id && (
