@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, ImageBackground, Alert } from 'react-native';
+import { View, Text, Image, ImageBackground, Alert } from 'react-native';
 import styles from '../styles/ProfileStyles';
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -68,22 +68,54 @@ const Profile = () => {
         {
           text: "Cancelar",
           onPress: () => console.log("Cancelado"),
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "Confirmar",
           onPress: async () => {
             try {
-              await AsyncStorage.removeItem('accessToken');
-              navigation.navigate('Home');
+              const accessToken = await AsyncStorage.getItem("accessToken");
+  
+              if (accessToken) {
+                const decodedToken = jwtDecode(accessToken);
+  
+                const email = decodedToken.email;
+                const password = decodedToken.password;
+  
+                const apiUrl = getApiUrl('auth/logout');
+                const response = await fetch(apiUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    email: email,
+                    password: password,
+                  }),
+                });
+  
+                if (!response.ok) {
+                  throw new Error('Error al cerrar sesión');
+                }
+  
+                await AsyncStorage.removeItem('accessToken');
+                await AsyncStorage.removeItem('usuarioId');
+                await AsyncStorage.removeItem('roles');
+  
+                navigation.navigate('Login');
+              } else {
+                Alert.alert('Error', 'No se encontró el token de acceso');
+              }
             } catch (error) {
               console.error('Error al cerrar sesión:', error);
+              Alert.alert('Error', 'Hubo un problema al cerrar sesión');
             }
-          }
-        }
+          },
+        },
       ]
     );
-  };
+  };  
+  
 
   return (
     <View style={styles.container}>
