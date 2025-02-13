@@ -24,7 +24,10 @@ export const generarHTML = (totalPesoAparejos, cargaRows, datosGrúaRows, base64
                     </tr>
                 </thead>
                 <tbody>
-                    ${totalPesoAparejos}
+                    <tr>
+                        <td colspan="4" style="font-weight: bold; text-align: right;">Total Peso Aparejos:</td>
+                        <td>${totalPesoAparejos} kg</td>
+                    </tr>
                 </tbody>
             </table>
 
