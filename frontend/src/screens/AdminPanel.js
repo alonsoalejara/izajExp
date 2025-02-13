@@ -19,7 +19,6 @@ function AdminPanel() {
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
-  const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
   const [setupIzajeSeleccionado, setSetupIzajeSeleccionado] = useState(null);
 
   const [colaboradoresState, setColaboradoresState] = useState(colaboradores || []);
@@ -32,7 +31,6 @@ function AdminPanel() {
   const [originalSetupsState, setOriginalSetupsState] = useState(setupIzajes || []);
 
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
-  const [isModalEditarGruaVisible, setIsModalEditarGruaVisible] = useState(false);
   const [isModalEditarSetupIzajeVisible, setIsModalEditarSetupIzajeVisible] = useState(false);
 
   const { data: colaboradores = [], refetch: refetchColaboradores } = useFetchData('user');
@@ -163,17 +161,6 @@ function AdminPanel() {
     }
   };
 
-  const handleEditGrua = async (grua) => {
-    try {
-      const updatedGruas = Logic.gruaLogic.editGrua(gruasState, grua);
-      setGruasState(updatedGruas);
-      refetchGruas();
-      setIsModalEditarGruaVisible(false);
-    } catch (error) {
-      console.error('Error al editar grúa:', error);
-    }
-  };
-
   const handleDeleteGrua = async (id) => {
     try {
       await Logic.gruaLogic.deleteGrua(id);
@@ -260,15 +247,13 @@ function AdminPanel() {
       </View>
 
       {/* Contenedor para el botón "Crear" */}
-      {(activeSection === 'Personal' || activeSection === 'Gruas') && (
+      {(activeSection === 'Personal') && (
         <View style={styles.createButtonContainer}>
           <Button
             label={getButtonLabel(activeSection)}
             onPress={() => {
               if (activeSection === 'Personal') {
                 navigation.navigate('AddCollabName');
-              } else if (activeSection === 'Gruas') {
-                navigation.navigate('AddCraneName');
               }
             }}
             style={{ width: '40%', left: -59 }}
@@ -282,14 +267,6 @@ function AdminPanel() {
         onClose={() => setIsModalEditarColaboradorVisible(false)}
         colaborador={colaboradorSeleccionado}
         onUpdate={handleEditColaborador}
-      />
-
-      {/* Modal para editar grúa */}
-      <ModalsAdmin.ModalEditCrane
-        isVisible={isModalEditarGruaVisible}
-        onClose={() => setIsModalEditarGruaVisible(false)}
-        grua={gruaSeleccionada}
-        onUpdate={handleEditGrua}
       />
 
       {/* Modal para editar plan de izaje */}

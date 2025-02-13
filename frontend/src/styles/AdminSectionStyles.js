@@ -72,6 +72,29 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 10,
       },
+      /* Titulo */
+      titleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: -20,
+        width: '100%',
+      },       
+      profileCircle: {
+        width: 80,
+        height: 80,
+        borderRadius: 45,
+        overflow: 'hidden',
+        backgroundColor: '#ff8383',
+      },
+      profileImage: {
+        width: '70%', 
+        height: '70%',
+        left: 12,
+        top: 11, 
+        resizeMode: 'cover',
+      },
+      
 });
 
 export default styles;
