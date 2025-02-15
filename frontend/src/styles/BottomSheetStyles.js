@@ -190,10 +190,15 @@ const BottomSheetStyles = StyleSheet.create({
   },
   inputTop: {
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderColor: '#ddd',
+  },
+  inputMiddle: {
+    borderBottomWidth: 0.3,
+    borderColor: '#ddd',
   },
   inputBottom: {
-    // Sin borde inferior, ya que es el último input
+    borderTopWidth: 0.5,
+    borderColor: '#ddd',
   },
   inputLabel: {
     position: "absolute",
@@ -210,6 +215,8 @@ const BottomSheetStyles = StyleSheet.create({
   inputLabelFloating: {
     fontSize: 16,
     color: '#666',
+    top: 10,
+    left: 15,
   },
   input: {
     flex: 1,
@@ -240,6 +247,74 @@ const BottomSheetStyles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     fontWeight: "600",
+  },
+  /* Picker */
+  modalBackground: {
+    position: 'absolute', 
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'transparent',
+    height: '65%',
+  },
+  pickerBackground: {
+    position: 'absolute',
+    bottom: -330,
+    left: 0,
+    right: 0,
+    backgroundColor: '#cccccc',
+    height: 330,
+    justifyContent: 'flex-start',
+  },
+  picker: {
+      position: 'absolute',
+      width: '100%',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: '#cccccc',
+      height: 330,
+  },
+  specialityOutput: {
+    height: 55,
+    top: 20,
+    left: 20,
+    width: '90%',
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 11,
+    marginTop: 0,
+    marginBottom: 20,
+    marginRight: 6,
+    paddingLeft: 10,
+    backgroundColor: '#fff',
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#333',
+    justifyContent: 'flex-end',
+    alignItems: 'left',
+  },
+  specialitySubtitle: {
+      height: 55,
+      width: '100%',
+      borderRadius: 11,
+      marginBottom: -36,
+      marginRight: 48,
+      paddingLeft: -10,
+      backgroundColor: 'transparent',
+      fontSize: 16,
+      fontWeight: '500',
+      color: '#aaa',
+      justifyContent: 'center',
+      alignItems: 'left',
+  },
+
+  specialityText: {
+    fontSize: 18,
+    fontWeight: '400',
+    color: '#000',
+    marginBottom: 10,
+    textAlign: 'left',
   },
 });
 

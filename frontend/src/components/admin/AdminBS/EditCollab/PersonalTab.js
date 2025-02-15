@@ -1,14 +1,54 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../../../../styles/BottomSheetStyles';
 
 const PersonalTab = ({ rut, setRut, email, setEmail, phone, setTelefono, onBack }) => {
+  const [localRut, setLocalRut] = useState(rut);
+  const [localEmail, setLocalEmail] = useState(email);
+  const [localPhone, setLocalPhone] = useState(phone);
+
+  const [isFocusedRut, setIsFocusedRut] = useState(false);
+  const [isFocusedEmail, setIsFocusedEmail] = useState(false);
+  const [isFocusedPhone, setIsFocusedPhone] = useState(false);
+
+  const aplicarCambios = () => {
+    Alert.alert(
+      'Confirmar cambios',
+      '¿Estás seguro de que deseas aplicar los cambios?',
+      [
+        {
+          text: 'Cancelar',
+          onPress: () => console.log('Cancelado'),
+          style: 'cancel',
+        },
+        {
+          text: 'Confirmar',
+          onPress: () => {
+            setRut(localRut);
+            setEmail(localEmail);
+            setTelefono(localPhone);
+            console.log('Cambios aplicados');
+            onBack();
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const handleBack = () => {
+    setLocalRut(rut);
+    setLocalEmail(email);
+    setLocalPhone(phone);
+    onBack();
+  };
+
   return (
     <>
       <View style={styles.modalHeader}>
-        <TouchableOpacity onPress={onBack}>
-          <Icon name="keyboard-arrow-left" size={30} color="#000" />
+        <TouchableOpacity onPress={handleBack}>
+          <Icon name="keyboard-arrow-left" size={40} color="#000" />
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
@@ -16,18 +56,54 @@ const PersonalTab = ({ rut, setRut, email, setEmail, phone, setTelefono, onBack 
       </View>
       <View style={styles.roundedInputContainer}>
         <View style={[styles.inputWrapper, styles.inputTop]}>
-          <Text style={styles.inputLabel}>RUT</Text>
-          <TextInput style={styles.input} value={rut} onChangeText={setRut} />
+          {(isFocusedRut || localRut !== '') && (
+            <Text style={styles.inputLabelFloating}>RUT</Text>
+          )}
+          <TextInput
+            style={styles.input}
+            value={localRut}
+            onChangeText={setLocalRut}
+            onFocus={() => setIsFocusedRut(true)}
+            onBlur={() => setIsFocusedRut(false)}
+            placeholder={!isFocusedRut && localRut === '' ? 'RUT' : ''}
+            placeholderTextColor="#888"
+          />
         </View>
-        <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Correo Electrónico</Text>
-          <TextInput style={styles.input} value={email} onChangeText={setEmail} />
+
+        <View style={[styles.inputWrapper, styles.inputMiddle]}>
+          {(isFocusedEmail || localEmail !== '') && (
+            <Text style={styles.inputLabelFloating}>Correo Electrónico</Text>
+          )}
+          <TextInput
+            style={styles.input}
+            value={localEmail}
+            onChangeText={setLocalEmail}
+            onFocus={() => setIsFocusedEmail(true)}
+            onBlur={() => setIsFocusedEmail(false)}
+            placeholder={!isFocusedEmail && localEmail === '' ? 'Correo Electrónico' : ''}
+            placeholderTextColor="#888"
+          />
         </View>
+
         <View style={[styles.inputWrapper, styles.inputBottom]}>
-          <Text style={styles.inputLabel}>Teléfono</Text>
-          <TextInput style={styles.input} value={phone} onChangeText={setTelefono} />
+          {(isFocusedPhone || localPhone !== '') && (
+            <Text style={styles.inputLabelFloating}>Teléfono</Text>
+          )}
+          <TextInput
+            style={styles.input}
+            value={localPhone}
+            onChangeText={setLocalPhone}
+            onFocus={() => setIsFocusedPhone(true)}
+            onBlur={() => setIsFocusedPhone(false)}
+            placeholder={!isFocusedPhone && localPhone === '' ? 'Teléfono' : ''}
+            placeholderTextColor="#888"
+          />
         </View>
       </View>
+
+      <TouchableOpacity style={[styles.button, { bottom: 60 }]} onPress={aplicarCambios}>
+        <Text style={styles.buttonText}>Aplicar cambios</Text>
+      </TouchableOpacity>
     </>
   );
 };
