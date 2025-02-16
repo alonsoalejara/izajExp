@@ -1,33 +1,39 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useUpdateData } from '../../../../hooks/useUpdateData'; 
 import styles from '../../../../styles/BottomSheetStyles';
 
-const NameTab = ({ nombre, setNombre, apellido, setApellido, onBack }) => {
+const NameTab = ({ id, nombre, setNombre, apellido, setApellido, rut, email, phone, specialty, onBack }) => {
   const [localNombre, setLocalNombre] = useState(nombre);
   const [localApellido, setLocalApellido] = useState(apellido);
-
-  const [isFocusedNombre, setIsFocusedNombre] = useState(false);
-  const [isFocusedApellido, setIsFocusedApellido] = useState(false);
+  const { updateData, isUpdating } = useUpdateData(`user/${id}`);
 
   const aplicarCambios = () => {
     Alert.alert(
       'Confirmar cambios',
       '¿Estás seguro de que deseas aplicar los cambios?',
       [
-        {
-          text: 'Cancelar',
-          onPress: () => console.log('Cancelado'),
-          style: 'cancel',
-        },
+        { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Confirmar',
-          onPress: () => {
-            setNombre(localNombre);
-            setApellido(localApellido);
-            console.log('Cambios aplicados');
-            onBack();
-          },
+          onPress: async () => {
+            const success = await updateData({ 
+              nombre: localNombre, 
+              apellido: localApellido, 
+              rut, 
+              email, 
+              phone, 
+              specialty,
+              roles: ["user"]
+            });
+
+            if (success) {
+              setNombre(localNombre);
+              setApellido(localApellido);
+              onBack();
+            }
+          }
         },
       ],
       { cancelable: false }
@@ -52,38 +58,30 @@ const NameTab = ({ nombre, setNombre, apellido, setApellido, onBack }) => {
       </View>
       <View style={styles.roundedInputContainer}>
         <View style={[styles.inputWrapper, styles.inputTop]}>
-          {(isFocusedNombre || localNombre !== '') && (
-            <Text style={styles.inputLabelFloating}>Nombre</Text>
-          )}
+          <Text style={styles.inputLabelFloating}>Nombre</Text>
           <TextInput
             style={styles.input}
             value={localNombre}
             onChangeText={setLocalNombre}
-            onFocus={() => setIsFocusedNombre(true)}
-            onBlur={() => setIsFocusedNombre(false)}
-            placeholder={!isFocusedNombre && localNombre === '' ? 'Nombre' : ''}
+            placeholder="Nombre"
             placeholderTextColor="#888"
             top={0}
           />
         </View>
         <View style={[styles.inputWrapper, styles.inputBottom]}>
-          {(isFocusedApellido || localApellido !== '') && (
-            <Text style={styles.inputLabelFloating}>Apellido</Text>
-          )}
+          <Text style={styles.inputLabelFloating}>Apellido</Text>
           <TextInput
             style={styles.input}
             value={localApellido}
             onChangeText={setLocalApellido}
-            onFocus={() => setIsFocusedApellido(true)}
-            onBlur={() => setIsFocusedApellido(false)}
-            placeholder={!isFocusedApellido && localApellido === '' ? 'Apellido' : ''}
+            placeholder="Apellido"
             placeholderTextColor="#888"
             top={0}
           />
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={aplicarCambios}>
-        <Text style={styles.buttonText}>Aplicar cambios</Text>
+      <TouchableOpacity style={styles.button} onPress={aplicarCambios} disabled={isUpdating}>
+        <Text style={styles.buttonText}>{isUpdating ? 'Guardando...' : 'Aplicar cambios'}</Text>
       </TouchableOpacity>
     </>
   );

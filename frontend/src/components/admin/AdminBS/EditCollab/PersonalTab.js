@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../../../../styles/BottomSheetStyles';
 
-const PersonalTab = ({ rut, setRut, email, setEmail, phone, setTelefono, onBack }) => {
+const PersonalTab = ({ id, nombre, apellido, rut, setRut, email, setEmail, phone, setTelefono, specialty, onBack }) => {
   const [localRut, setLocalRut] = useState(rut);
   const [localEmail, setLocalEmail] = useState(email);
   const [localPhone, setLocalPhone] = useState(phone);
@@ -67,6 +67,7 @@ const PersonalTab = ({ rut, setRut, email, setEmail, phone, setTelefono, onBack 
             onBlur={() => setIsFocusedRut(false)}
             placeholder={!isFocusedRut && localRut === '' ? 'RUT' : ''}
             placeholderTextColor="#888"
+            top={2}
           />
         </View>
 
@@ -82,6 +83,7 @@ const PersonalTab = ({ rut, setRut, email, setEmail, phone, setTelefono, onBack 
             onBlur={() => setIsFocusedEmail(false)}
             placeholder={!isFocusedEmail && localEmail === '' ? 'Correo Electrónico' : ''}
             placeholderTextColor="#888"
+            top={2}
           />
         </View>
 
@@ -97,6 +99,7 @@ const PersonalTab = ({ rut, setRut, email, setEmail, phone, setTelefono, onBack 
             onBlur={() => setIsFocusedPhone(false)}
             placeholder={!isFocusedPhone && localPhone === '' ? 'Teléfono' : ''}
             placeholderTextColor="#888"
+            top={2}
           />
         </View>
       </View>

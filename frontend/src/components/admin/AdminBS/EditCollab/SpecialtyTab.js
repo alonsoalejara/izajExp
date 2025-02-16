@@ -9,7 +9,7 @@ const SpecialtyTab = ({ specialty, setEspecialidad, onBack }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const handleBack = () => {
-    setLocalSpecialty(specialty); // Reset to original specialty if user cancels
+    setLocalSpecialty(specialty);
     onBack();
   };
 
@@ -80,7 +80,7 @@ const SpecialtyTab = ({ specialty, setEspecialidad, onBack }) => {
       </Modal>
 
       {/* Botón para aplicar los cambios */}
-      <TouchableOpacity style={styles.button} onPress={aplicarCambios}>
+      <TouchableOpacity style={[styles.button, { top: 50 }]} onPress={aplicarCambios}>
         <Text style={styles.buttonText}>Aplicar cambios</Text>
       </TouchableOpacity>
     </>

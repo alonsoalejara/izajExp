@@ -7,6 +7,7 @@ import EditCollab from './EditCollab/EditCollab.index';
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
+  const [id, setId] = useState('');
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [rut, setRut] = useState('');
@@ -18,6 +19,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
 
   useEffect(() => {
     if (colaborador) {
+      setId(colaborador._id || ''); 
       setNombre(colaborador.nombre || '');
       setApellido(colaborador.apellido || '');
       setRut(colaborador.rut || '');
@@ -38,20 +40,29 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
 
         {activeTab === 'NameTab' ? (
           <EditCollab.NameTab
+            id={id}
             nombre={nombre}
             setNombre={setNombre}
             apellido={apellido}
             setApellido={setApellido}
+            rut={rut}
+            email={email}
+            phone={phone}
+            specialty={specialty}
             onBack={() => setActiveTab(null)}
           />
         ) : activeTab === 'PersonalTab' ? (
           <EditCollab.PersonalTab
+            id={id}
+            nombre={nombre}
+            apellido={apellido}
             rut={rut}
             setRut={setRut}
             email={email}
             setEmail={setEmail}
             phone={phone}
             setTelefono={setTelefono}
+            specialty={specialty}
             onBack={() => setActiveTab(null)}
           />
         ) : activeTab === 'SpecialtyTab' ? ( 
