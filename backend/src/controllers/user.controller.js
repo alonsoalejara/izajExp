@@ -25,7 +25,6 @@ async function createUser(req, res) {
     const { error: bodyError } = userBodySchema.validate(body);
     if (bodyError) return respondError(req, res, 400, bodyError.message);
 
-    // Asegurarte de que 'roles' sea un array
     const roles = Array.isArray(body.roles) ? body.roles : [];
 
     const [newUser, userError] = await UserService.createUser({
