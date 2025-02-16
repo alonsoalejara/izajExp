@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useUpdateData } from '../../../../hooks/useUpdateData';
 import styles from '../../../../styles/BottomSheetStyles';
 
-const SpecialtyTab = ({ specialty, setEspecialidad, onBack }) => {
+const SpecialtyTab = ({ id, nombre, apellido, rut, email, phone, specialty, setEspecialidad, onBack }) => {
   const [localSpecialty, setLocalSpecialty] = useState(specialty);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const { updateData, isUpdating } = useUpdateData(`user/${id}`);
 
   const handleBack = () => {
     setLocalSpecialty(specialty);
@@ -25,10 +27,24 @@ const SpecialtyTab = ({ specialty, setEspecialidad, onBack }) => {
         },
         {
           text: 'Confirmar',
-          onPress: () => {
-            setEspecialidad(localSpecialty);
-            console.log('Cambios aplicados');
-            onBack();
+          onPress: async () => {
+            const success = await updateData({
+              nombre, 
+              apellido,
+              rut, 
+              email, 
+              phone, 
+              specialty: localSpecialty,
+              roles: ["user"]
+            });
+
+            if (success) {
+              setEspecialidad(localSpecialty);
+              console.log('Cambios aplicados');
+              onBack();
+            } else {
+              console.log('Hubo un error al aplicar los cambios');
+            }
           },
         },
       ],
@@ -80,8 +96,12 @@ const SpecialtyTab = ({ specialty, setEspecialidad, onBack }) => {
       </Modal>
 
       {/* Botón para aplicar los cambios */}
-      <TouchableOpacity style={[styles.button, { top: 50 }]} onPress={aplicarCambios}>
-        <Text style={styles.buttonText}>Aplicar cambios</Text>
+      <TouchableOpacity
+        style={[styles.button, { top: 50 }]}
+        onPress={aplicarCambios}
+        disabled={isUpdating}
+      >
+        <Text style={styles.buttonText}>{isUpdating ? 'Guardando...' : 'Aplicar cambios'}</Text>
       </TouchableOpacity>
     </>
   );

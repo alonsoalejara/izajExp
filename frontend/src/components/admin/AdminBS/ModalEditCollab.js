@@ -67,6 +67,12 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
           />
         ) : activeTab === 'SpecialtyTab' ? ( 
           <EditCollab.SpecialtyTab
+            id={id}
+            nombre={nombre}
+            apellido={apellido}
+            rut={rut}
+            email={email}
+            phone={phone}
             specialty={specialty}
             setEspecialidad={setEspecialidad}
             onBack={() => setActiveTab(null)}

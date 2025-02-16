@@ -19,16 +19,6 @@ const PersonalTab = ({ id, nombre, apellido, rut, setRut, email, setEmail, phone
         {
           text: 'Confirmar',
           onPress: async () => {
-            console.log('Datos a actualizar:', { 
-              nombre, 
-              apellido, 
-              rut: localRut, 
-              email: localEmail, 
-              phone: localPhone, 
-              specialty,
-              roles: ["user"]
-            });
-  
             const success = await updateData({ 
               nombre, 
               apellido, 
