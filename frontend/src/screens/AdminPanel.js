@@ -268,14 +268,6 @@ function AdminPanel() {
         colaborador={colaboradorSeleccionado}
         onUpdate={handleEditColaborador}
       />
-
-      {/* Modal para editar plan de izaje */}
-      <ModalsAdmin.ModalEditSetupIzaje
-        isVisible={isModalEditarSetupIzajeVisible}
-        onClose={() => setIsModalEditarSetupIzajeVisible(false)}
-        setupIzaje={setupIzajeSeleccionado}
-        onUpdate={handleEditSetupIzaje}
-      />
       
       {/* Contenido desplazable */}
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer}>

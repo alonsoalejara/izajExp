@@ -4,9 +4,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../../styles/AdminSectionStyles';
 import getApiUrl from '../../../utils/apiUrl';
 import Button from '../../../components/Button';
+import { generarPDF } from '../../../utils/PDFGenerator'; 
 
-const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
+const SetupIzajeSection = ({ setupIzaje = [], setSetups }) => {
     const [selectedSetup, setSelectedSetup] = useState(null);
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Meses empiezan desde 0
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        
+        return `${day}-${month}-${year} a las ${hours}:${minutes} hrs`;
+    };
 
     const confirmDelete = (_id) => {
         Alert.alert(
@@ -45,20 +57,65 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
         }
     };
 
+    const handleSharePdf = (_id) => {
+        const setup = setupIzaje.find(item => item._id === _id);
+    
+        if (setup) {
+            const rows = setup.aparejos || [];
+            const totalPesoAparejos = rows.reduce((acc, aparejo) => acc + (aparejo.pesoUnitario * aparejo.cantidad), 0);
+            
+            // Aquí se utiliza el 'cargaRows' correcto con la lógica que proporcionaste
+            const pesoTotalCarga = totalPesoAparejos + (setup.datos?.pesoEquipo || 0) + (setup.datos?.pesoGancho || 0) + (setup.datos?.pesoHerramientas || 0);
+            const radioIzaje = setup.datos?.radioIzaje || 0; // Suponiendo que esto es parte de setup.datos
+            const radioMontaje = setup.datos?.radioMontaje || 0; // Lo mismo para esto
+    
+            // Se asegura de que el 'item' se enumere correctamente
+            const cargaRows = [
+                { item: '1', descripcion: 'PESO DEL EQUIPO', valor: `${setup.datos?.pesoEquipo || 0} kg` },
+                { item: '2', descripcion: 'PESO DE APAREJOS', valor: `${totalPesoAparejos} kg` },
+                { item: '3', descripcion: 'PESO GANCHO', valor: `${setup.datos?.pesoGancho || 0} kg` },
+                { item: '4', descripcion: 'PESO TOTAL', valor: `${pesoTotalCarga} kg` },
+                { item: '5', descripcion: 'RADIO DE TRABAJO MAXIMO', valor: `${Math.max(radioIzaje, radioMontaje)} mts` },
+                { item: '6', descripcion: 'CAPACIDAD DE LEVANTE', valor: `${setup.datos?.capacidadLevante || 0} kg` },
+                { item: '7', descripcion: '% DE UTILIZACIÓN', valor: '' }, // Este campo puede necesitar un cálculo si es necesario
+            ];
+    
+            // Datos adicionales de la grúa, si es necesario
+            const datosGruaRows = [
+                { item: '1', descripcion: 'Largo de Pluma', valor: setup.datos?.largoPluma },
+                { item: '2', descripcion: 'Contrapeso', valor: setup.datos?.contrapeso },
+            ];
+    
+            // Asegurando que los aparejos se enumeren correctamente
+            const aparecerosWithItem = rows.map((aparejo, index) => ({
+                item: (index + 1).toString(), // Esto asigna el número de ítem correctamente
+                descripcion: aparejo.descripcion,
+                valor: `${aparejo.pesoUnitario * aparejo.cantidad} kg`, // Ejemplo de valor, ajusta según sea necesario
+            }));
+            console.log('Aparejos:', setup.aparejos);
+
+            // Aquí se llama a la función para generar el PDF con los datos que ya están ajustados
+            generarPDF(setup, aparecerosWithItem, totalPesoAparejos, cargaRows, datosGruaRows);
+        }
+    };
+    
+    
+
     return (
         <View style={styles.section}>
             {(setupIzaje && Array.isArray(setupIzaje) && setupIzaje.length > 0) ? (
                 setupIzaje.map((setup) => (
                     <View key={setup._id} style={styles.card}>
                         <TouchableOpacity onPress={() => setSelectedSetup(selectedSetup === setup._id ? null : setup._id)}>
-                            <Text style={styles.cardTitle}>Plan</Text>
-                            <Text style={styles.cardDetail}>
-                                <Text style={styles.labelText}>
-                                    Responsable: {setup.usuario.nombre && setup.usuario.apellido
-                                        ? `${setup.usuario.nombre} ${setup.usuario.apellido}`
-                                        : 'No disponible'}
+                            <Text style={[styles.cardTitle, { fontWeight: '400' }]}>Responsable: {setup.usuario.nombre && setup.usuario.apellido
+                                ? `${setup.usuario.nombre} ${setup.usuario.apellido}`
+                                : 'No disponible'}</Text>
+                            <View>
+                                <Text style={[styles.labelText, { fontWeight: '400', fontSize: 16 , color: '#777' }]} >
+                                    Fecha de planificación:
                                 </Text>
-                            </Text>
+                                <Text style={[styles.cardDetail, { fontWeight: '400', color: '#777' }]}>{setup.createdAt ? formatDate(setup.createdAt) : 'No disponible'}</Text>
+                            </View>
                         </TouchableOpacity>
                         {selectedSetup === setup._id && (
                             <View style={styles.cardExpandedDetails}>
@@ -83,17 +140,17 @@ const SetupIzajeSection = ({ setupIzaje = [], handleEdit, setSetups }) => {
                                     <Text>No hay aparejos disponibles.</Text>
                                 )}
 
-                                <View style={[styles.buttonContainerCard, { marginLeft: -120, top: 15, left: 10 }]}>
-                                <Button
-                                    label="Editar"
-                                    onPress={() => handleEdit(setup)}
-                                    style={[styles.button, { width: '30%', left: 40 }]}
-                                />
-                                <Button
-                                    label="Eliminar"
-                                    onPress={() => confirmDelete(setup._id)}
-                                    style={[styles.button, { width: '30%' }]}
-                                />
+                                {/* Contenedor para los botones */}
+                                <View style={[styles.buttonContainerCard, { right: 60, marginTop: 15, marginBottom: -15 }]}>
+                                    <Button
+                                        label="Compartir PDF"
+                                        onPress={() => handleSharePdf(setup._id)}
+                                        style={[styles.button, { width: '48%', marginRight: -40}]}/>
+                                    <Button
+                                        label="Eliminar"
+                                        onPress={() => confirmDelete(setup._id)}
+                                        isCancel={true}
+                                        style={[styles.button, { width: '48%', backgroundColor: 'transparent' }]}/>
                                 </View>
                             </View>
                         )}
