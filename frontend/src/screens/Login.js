@@ -52,10 +52,8 @@ export default function Login({ navigation }) {
 
                         // ✅ Navegación basada en el rol
                         const role = roles[0];
-                        if (role === "user") {
-                            navigation.navigate("SetupIzaje");
-                        } else if (role === "admin") {
-                            navigation.navigate("AdminTabs");
+                        if (role === "user" || role === "admin") {
+                          navigation.navigate("Tabs");
                         } else {
                             Alert.alert("Error", "Rol de usuario no reconocido");
                         }
