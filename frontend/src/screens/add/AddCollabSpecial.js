@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../styles/AddStyles';
 import getApiUrl from '../../utils/apiUrl';
-import Button from '../../components/Button';
+import Components from '../../components/Components.index';
 
 const AddCollabSpecial = ({ navigation, route }) => {
     const { nombre, apellido, rut, phone, email } = route.params;
@@ -109,14 +109,14 @@ const AddCollabSpecial = ({ navigation, route }) => {
             </Modal>
 
             {/* Botón Finalizar */}
-            <Button
+            <Components.Button
                 label="Finalizar"
                 onPress={handleFinalize}
                 style={{ width: '100%', marginTop: 5, right: 55 }}
             />
 
             {/* Botón Cancelar */}
-            <Button
+            <Components.Button
                 label="Cancelar inscripción"
                 onPress={() => {
                     navigation.pop(2);

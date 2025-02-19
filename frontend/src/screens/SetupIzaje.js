@@ -4,10 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
-import Header from '../components/Header';
-import ConfigButton from '../components/ConfigButton';
-import NumericInput from '../components/NumericInput';
-import Button from '../components/Button';
+import Components from '../components/Components.index';
 
 const SetupIzaje = () => {
   const navigation = useNavigation();
@@ -93,7 +90,7 @@ const SetupIzaje = () => {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
         {/* Sección superior con imagen, degradado y logo */}
-        <Header />
+        <Components.Header />
 
         <View style={styles.container}>
           <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
@@ -103,7 +100,7 @@ const SetupIzaje = () => {
             <Text style={styles.labelText}>Seleccione grúa:</Text>
           </View>
 
-          <ConfigButton
+          <Components.ConfigButton
             label="Configurar Grúa"
             value={grua}
             onPress={() => openModal(setGruaModalVisible)}
@@ -121,13 +118,13 @@ const SetupIzaje = () => {
           </View>
 
           <View style={styles.inputContainer}>
-            <NumericInput
+            <Components.NumericInput
               label="Radio Izaje"
               value={radioIzaje}
               onChangeText={handleRadioIzajeChange}
               placeholder="Izaje"
             />
-            <NumericInput
+            <Components.NumericInput
               label="Radio Montaje"
               value={radioMontaje}
               onChangeText={handleRadioMontajeChange}
@@ -141,13 +138,13 @@ const SetupIzaje = () => {
           </View>
 
           <View style={styles.inputContainer}>
-            <NumericInput
+            <Components.NumericInput
               label="Cantidad"
               value={cantidadGrilletes}
               onChangeText={handleCantidadGrilletesChange}
               placeholder="Cantidad"
             />
-            <ConfigButton
+            <Components.ConfigButton
               label="Grillete"
               value={tipoGrillete ? `Grill. de ${tipoGrillete}"` : ""}
               onPress={() => openModal(setGrilleteModalVisible)}
@@ -167,13 +164,13 @@ const SetupIzaje = () => {
           </View>
 
           <View style={[styles.inputContainer]}>
-            <ConfigButton
+            <Components.ConfigButton
               label="Cantidad"
               value={cantidadManiobra ? `${cantidadManiobra}` : ""}
               onPress={() => openModal(setCantidadModalVisible)}
               width={150}
             />
-            <ConfigButton
+            <Components.ConfigButton
               label="Tipo"
               value={eslingaOEstrobo ? `${eslingaOEstrobo}` : ""}
               onPress={() => openModal(setManiobraModalVisible)}
@@ -193,7 +190,7 @@ const SetupIzaje = () => {
             onSelect={handleTipoManiobraSelect}
           />
 
-          <Button
+          <Components.Button
             label="Confirmar Configuración"
             onPress={handleNavigateToTablas}
             style={{ marginTop: 40, left: -60, width: 330 }}

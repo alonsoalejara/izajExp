@@ -3,7 +3,7 @@ import { View, Text, Animated, Dimensions, TouchableWithoutFeedback } from 'reac
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../../styles/BSInfoStyles';
-import Button from '../Button';
+import Components from '../Components.index';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -75,7 +75,7 @@ const BSInfo = ({ isModalVisible, selectedData, setModalVisible }) => {
                 {/* Línea separadora y contenedor del botón */}
                 <View style={[styles.separatorLine, { top: 70}]} />
                 <View style={[styles.buttonContainer, { top: 60, left: -30 }]}>
-                    <Button label="Cerrar" onPress={closeBottomSheet} />
+                    <Components.Button label="Cerrar" onPress={closeBottomSheet} />
                 </View>
             </Animated.View>
         </Modal>

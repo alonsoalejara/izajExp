@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { jwtDecode } from 'jwt-decode';
 import getApiUrl from '../utils/apiUrl';
-import Button from '../components/Button';
+import Components from '../components/Components.index';
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -167,7 +167,7 @@ const Profile = () => {
       </View>
 
       {/* Usamos el componente Button para cerrar sesión */}
-      <Button label="Cerrar Sesión" onPress={handleSignOut} style={{ width: '88%', right: 30 }} />
+      <Components.Button label="Cerrar Sesión" onPress={handleSignOut} style={{ width: '88%', right: 30 }} />
     </View>
   );
 };

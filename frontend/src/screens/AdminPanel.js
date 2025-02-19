@@ -2,14 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useFetchData } from '../hooks/useFetchData';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Logic from '../logic/logic.index';
+import Components from '../components/Components.index';
 import ModalsAdmin from '../components/admin/AdminBS/ModalAdmin.index';
 import Section from '../components/admin/sections/Section.index';
 import styles from '../styles/AdminPanelStyles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Header from '../components/Header';
-import Button from '../components/Button';
-import SearchInput from '../components/SearchInput';
 
 function AdminPanel() {
   const navigation = useNavigation();
@@ -197,13 +195,13 @@ function AdminPanel() {
   return (
     <View style={styles.container}>
       {/* Sección superior fija con la imagen, logo y gradiente */}
-      <Header />
+      <Components.Header />
   
       {/* Sección fija con título, buscador y botones */}
       <View style={styles.fixedHeader}>
         <Text style={styles.sectionTitle}>Panel de Administrador</Text>
         {/* Input de búsqueda con icono */}
-        <SearchInput 
+        <Components.SearchInput 
           value={searchQuery} 
           onChangeText={handleSearch} 
         />
@@ -249,7 +247,7 @@ function AdminPanel() {
       {/* Contenedor para el botón "Crear" */}
       {(activeSection === 'Personal') && (
         <View style={styles.createButtonContainer}>
-          <Button
+          <Components.Button
             label={getButtonLabel(activeSection)}
             onPress={() => {
               if (activeSection === 'Personal') {

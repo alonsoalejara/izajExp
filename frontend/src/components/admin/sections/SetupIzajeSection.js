@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../../styles/AdminSectionStyles';
 import getApiUrl from '../../../utils/apiUrl';
-import Button from '../../../components/Button';
+import Components from '../../../components/Components.index';
 import { generarPDF } from '../../../utils/PDFGenerator'; 
 
 const SetupIzajeSection = ({ setupIzaje = [], setSetups }) => {
@@ -142,11 +142,11 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups }) => {
 
                                 {/* Contenedor para los botones */}
                                 <View style={[styles.buttonContainerCard, { right: 60, marginTop: 15, marginBottom: -15 }]}>
-                                    <Button
+                                    <Components.Button
                                         label="Compartir PDF"
                                         onPress={() => handleSharePdf(setup._id)}
                                         style={[styles.button, { width: '48%', marginRight: -40}]}/>
-                                    <Button
+                                    <Components.Button
                                         label="Eliminar"
                                         onPress={() => confirmDelete(setup._id)}
                                         isCancel={true}

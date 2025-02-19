@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../../styles/AddStyles';
-import Button from '../../components/Button';
+import Components from '../../components/Components.index';
 
 const AddCollabData = ({ navigation, route }) => {
     const { nombre, apellido } = route.params;
@@ -55,14 +55,14 @@ const AddCollabData = ({ navigation, route }) => {
             />
 
             {/* Botón Siguiente */}
-            <Button
+            <Components.Button
                 label="Siguiente"
                 onPress={handleNext}
                 style={{ width: '100%', marginTop: 5, right: 55 }}
             />
 
             {/* Botón Cancelar */}
-            <Button
+            <Components.Button
                 label="Cancelar inscripción"
                 onPress={() => {
                     navigation.pop(1);
