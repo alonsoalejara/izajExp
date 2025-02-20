@@ -4,7 +4,7 @@ import Svg, { LinearGradient, Stop, Rect } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from 'jwt-decode';
 import LoginStyles from "../styles/LoginStyles";
-import Button from "../components/Button";
+import Components from "../components/Components.index";
 import getApiUrl from "../utils/apiUrl";
 
 export default function Login({ navigation }) {
@@ -114,7 +114,7 @@ export default function Login({ navigation }) {
         />
 
         {/* Botón de inicio de sesión */}
-        <Button
+        <Components.Button
           label="Iniciar sesión"
           onPress={handleLogin}
           style={[LoginStyles.button, { width: '85%', marginTop: 35 ,top: 0 ,marginLeft: -5 }]}

@@ -4,9 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { generarPDF } from '../utils/PDFGenerator';
 import { useFetchData } from '../hooks/useFetchData';
 import TablasStyles from '../styles/TablasStyles';
+import Components from '../components/Components.index.js';
 import Tables from '../components/tables/Table.index.js';
-import Button from '../components/Button';
-import Header from '../components/Header.js';
 import Toast from 'react-native-toast-message';
 import PDFGenerator from '../utils/PDFGenerator';
 import getApiUrl from '../utils/apiUrl';
@@ -163,7 +162,7 @@ const Tablas = ({ route, navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Header />
+      <Components.Header />
       <View style={TablasStyles.titleContainer}>
         <Text style={TablasStyles.title}>Tablas</Text>
       </View>
@@ -196,7 +195,7 @@ const Tablas = ({ route, navigation }) => {
         )}
       </ScrollView>
       <View style={TablasStyles.buttonContainer}>
-        <Button
+        <Components.Button
           label="Volver"
           onPress={() => navigation.goBack()}
           isCancel={true}
@@ -206,7 +205,7 @@ const Tablas = ({ route, navigation }) => {
             width: '45%', left: -49
           }}
         />
-        <Button
+        <Components.Button
           label={isSaved ? 'PDF' : 'Guardar'}
           onPress={isSaved ? () => {
             console.log('Generando PDF...');

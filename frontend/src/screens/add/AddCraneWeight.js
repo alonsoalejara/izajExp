@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from '../../styles/AddStyles';
-import Button from '../../components/Button';
+import Components from '../../components/Components.index';
 
 const AddCraneWeight = ({ navigation, route }) => {
     const { nombre } = route.params;
@@ -59,14 +59,14 @@ const AddCraneWeight = ({ navigation, route }) => {
             />
 
             {/* Botón Siguiente */}
-            <Button
+            <Components.Button
                 label="Siguiente"
                 onPress={handleNext}
                 style={{ width: '100%', marginTop: 5, right: 55 }}
             />
 
             {/* Botón Cancelar */}
-            <Button
+            <Components.Button
                 label="Cancelar inscripción"
                 onPress={() => navigation.goBack()}
                 isCancel={true}

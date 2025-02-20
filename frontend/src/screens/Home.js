@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, ImageBackground, Image, StyleSheet } from 'react-native';
+import { View, ImageBackground, Image } from 'react-native';
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
-import Button from '../components/Button';
+import Components from '../components/Components.index';
 import styles from '../styles/HomeStyles';
 
 export default function Home({ navigation }) {
@@ -29,7 +29,7 @@ export default function Home({ navigation }) {
         />
 
         {/* Botón de ingreso */}
-        <Button
+        <Components.Button
           label="Ingrese aquí"
           onPress={() => navigation.navigate('Login')}
           style={styles.customButton}
