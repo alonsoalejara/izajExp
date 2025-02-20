@@ -5,7 +5,7 @@ import { handleError } from "../utils/errorHandler.js";
 
 async function getSetupIzajes() {
   try {
-    const setups = await SetupIzaje.find().populate('usuario', 'nombre apellido email').exec();
+    const setups = await SetupIzaje.find().populate('usuario', 'nombre apellido email specialty').exec();
     if (!setups) return [null, "No se encontraron configuraciones de izaje"];
     return [setups, null];
   } catch (error) {
@@ -34,7 +34,7 @@ async function createSetupIzaje(setupIzajeData) {
 
 async function getSetupIzajeById(id) {
   try {
-    const setupIzaje = await SetupIzaje.findById(id).populate('usuario', 'nombre apellido email').exec();
+    const setupIzaje = await SetupIzaje.findById(id).populate('usuario', 'nombre apellido email specialty').exec();
     if (!setupIzaje) return [null, "La configuración de izaje no existe"];
     return [setupIzaje, null];
   } catch (error) {

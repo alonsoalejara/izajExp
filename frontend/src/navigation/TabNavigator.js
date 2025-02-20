@@ -17,11 +17,10 @@ function TabNavigator() {
     const fetchUserRoles = async () => {
       try {
         const rolesString = await AsyncStorage.getItem('roles');
-        console.log('Roles recuperados desde AsyncStorage:', rolesString); // 🔍 Debugging
 
         if (rolesString) {
           const rolesArray = JSON.parse(rolesString);
-          setUserRoles(rolesArray.map(role => role.trim().toLowerCase())); // Normaliza los valores
+          setUserRoles(rolesArray.map(role => role.trim().toLowerCase()));
         }
       } catch (error) {
         console.error('Error obteniendo los roles del usuario:', error);
