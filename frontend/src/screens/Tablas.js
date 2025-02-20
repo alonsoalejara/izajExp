@@ -9,6 +9,7 @@ import Tables from '../components/tables/Table.index.js';
 import Toast from 'react-native-toast-message';
 import PDFGenerator from '../utils/PDFGenerator';
 import getApiUrl from '../utils/apiUrl';
+import { getRows, getTotalPesoAparejos, getCargaRows, getDatosGruaRows } from '../utils/planIzajeUtils';
 
 const Tablas = ({ route, navigation }) => {
   const { eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete, grua, radioIzaje, radioMontaje, usuarioId } = route.params;
@@ -22,44 +23,10 @@ const Tablas = ({ route, navigation }) => {
     }
   }, [grua]);
 
-  const rows = [
-    {
-      item: '1',
-      descripcion: `${eslingaOEstrobo.toUpperCase()}`,
-      cantidad: cantidadManiobra,
-      pesoUnitario: 27,
-      pesoTotal: cantidadManiobra * 27,
-    },
-    {
-      item: '2',
-      descripcion: `Grillete ${tipoGrillete}"`.toUpperCase(),
-      cantidad: cantidadGrilletes,
-      pesoUnitario: 27,
-      pesoTotal: cantidadGrilletes * 27,
-    },
-  ];
-
-  const totalPesoAparejos = rows.reduce((total, row) => total + row.pesoTotal, 0);
-
-  const pesoTotalCarga = (
-    (typeof selectedGrua.pesoEquipo === 'number' ? selectedGrua.pesoEquipo : 0) +
-    (typeof totalPesoAparejos === 'number' ? totalPesoAparejos : 0) +
-    (typeof selectedGrua.pesoGancho === 'number' ? selectedGrua.pesoGancho : 0)
-  );
-  const cargaRows = [
-    { item: '1', descripcion: 'PESO DEL EQUIPO', valor: `${selectedGrua.pesoEquipo || 0} kg` },
-    { item: '2', descripcion: 'PESO DE APAREJOS', valor: `${totalPesoAparejos} kg` },
-    { item: '3', descripcion: 'PESO GANCHO', valor: `${selectedGrua.pesoGancho || 0} kg` },
-    { item: '4', descripcion: 'PESO TOTAL', valor: `${pesoTotalCarga} kg` },
-    { item: '5', descripcion: 'RADIO DE TRABAJO MAXIMO', valor: `${Math.max(radioIzaje, radioMontaje)} mts` },
-    { item: '6', descripcion: 'CAPACIDAD DE LEVANTE', valor: `${selectedGrua.capacidadLevante || 0} kg` },
-    { item: '7', descripcion: '% DE UTILIZACIÓN', valor: '' },
-  ];
-
-  const datosGruaRows = [
-    { item: '1', descripcion: 'LARGO PLUMA', valor: `${selectedGrua.largoPluma || 0} mts` },
-    { item: '2', descripcion: 'CONTRAPESO', valor: `${selectedGrua.contrapeso || 0} ton` },
-  ];
+  const rows = getRows(eslingaOEstrobo, cantidadManiobra, cantidadGrilletes, tipoGrillete);
+  const totalPesoAparejos = getTotalPesoAparejos(rows);
+  const cargaRows = getCargaRows(selectedGrua, totalPesoAparejos, radioIzaje, radioMontaje);
+  const datosGruaRows = getDatosGruaRows(selectedGrua);
 
   const handleGuardar = () => {
     Alert.alert(
@@ -172,12 +139,12 @@ const Tablas = ({ route, navigation }) => {
         ) : (
           <>
             <Tables.AparejosTable
-              rows={rows || []}
+              rows={rows}
               totalPesoAparejos={totalPesoAparejos}
               selectedGrua={selectedGrua}
               radioIzaje={radioIzaje}
               radioMontaje={radioMontaje}
-              pesoTotalCarga={pesoTotalCarga}
+              pesoTotalCarga={cargaRows[3].valor}
             />
             <Tables.GruaTable
               datosGrúaRows={datosGruaRows}
