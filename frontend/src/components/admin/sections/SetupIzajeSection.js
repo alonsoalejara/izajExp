@@ -64,23 +64,23 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups }) => {
             const rows = setup.aparejos || [];
             const totalPesoAparejos = rows.reduce((acc, aparejo) => acc + (aparejo.pesoUnitario * aparejo.cantidad), 0);
             
-            const pesoTotalCarga = totalPesoAparejos + (setup.datos?.pesoEquipo || 0) + (setup.datos?.pesoGancho || 0) + (setup.datos?.pesoHerramientas || 0);
+            const pesoTotalCarga = totalPesoAparejos + (setup.datos?.pesoEquipo || 0) + (setup.datos?.pesoGancho || 0);
             const radioIzaje = setup.datos?.radioIzaje || 0;
             const radioMontaje = setup.datos?.radioMontaje || 0;
     
             const cargaRows = [
-                { item: '1', descripcion: 'PESO DEL EQUIPO', valor: `${setup.datos?.pesoEquipo || 0} kg` },
-                { item: '2', descripcion: 'PESO DE APAREJOS', valor: `${totalPesoAparejos} kg` },
-                { item: '3', descripcion: 'PESO GANCHO', valor: `${setup.datos?.pesoGancho || 0} kg` },
-                { item: '4', descripcion: 'PESO TOTAL', valor: `${pesoTotalCarga} kg` },
-                { item: '5', descripcion: 'RADIO DE TRABAJO MAXIMO', valor: `${Math.max(radioIzaje, radioMontaje)} mts` },
-                { item: '6', descripcion: 'CAPACIDAD DE LEVANTE', valor: `${setup.datos?.capacidadLevante || 0} kg` },
+                { item: '1', descripcion: 'PESO DEL EQUIPO', valor: setup.datos?.pesoEquipo ? `${setup.datos.pesoEquipo} kg` : 'No disponible' },
+                { item: '2', descripcion: 'PESO DE APAREJOS', valor: totalPesoAparejos ? `${totalPesoAparejos} kg` : 'No disponible' },
+                { item: '3', descripcion: 'PESO GANCHO', valor: setup.datos?.pesoGancho ? `${setup.datos.pesoGancho} kg` : 'No disponible' },
+                { item: '4', descripcion: 'PESO TOTAL', valor: pesoTotalCarga ? `${pesoTotalCarga} kg` : 'No disponible' },
+                { item: '5', descripcion: 'RADIO DE TRABAJO MÁXIMO', valor: (radioIzaje || radioMontaje) ? `${Math.max(radioIzaje, radioMontaje)} mts` : 'No disponible' },
+                { item: '6', descripcion: 'CAPACIDAD DE LEVANTE', valor: setup.datos?.capacidadLevante ? `${setup.datos.capacidadLevante} kg` : 'No disponible' },
                 { item: '7', descripcion: '% DE UTILIZACIÓN', valor: '' },
-            ];
+            ];          
     
             const datosGruaRows = [
-                { item: '1', descripcion: 'Largo de Pluma', valor: setup.datos?.largoPluma },
-                { item: '2', descripcion: 'Contrapeso', valor: setup.datos?.contrapeso },
+                { item: '1', descripcion: 'Largo de Pluma', valor: setup.datos?.largoPluma ? `${setup.datos.largoPluma} m` : 'No disponible' },
+                { item: '2', descripcion: 'Contrapeso', valor: setup.datos?.contrapeso ? `${setup.datos.contrapeso} m` : 'No disponible' },
             ];
     
             const aparecerosWithItem = rows.map((aparejo, index) => ({
@@ -88,6 +88,13 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups }) => {
                 descripcion: aparejo.descripcion,
                 valor: `${aparejo.pesoUnitario * aparejo.cantidad} kg`,
             }));
+            
+            console.log('SetupIzajeSection.js: Enviando datos a PDFGenerator:');
+            console.log('SetupIzajeSection.js: setup:', setup);
+            console.log('SetupIzajeSection.js: aparecerosWithItem:', aparecerosWithItem);
+            console.log('SetupIzajeSection.js: totalPesoAparejos:', totalPesoAparejos);
+            console.log('SetupIzajeSection.js: cargaRows:', cargaRows);
+            console.log('SetupIzajeSection.js: datosGruaRows:', datosGruaRows);
 
             generarPDF(setup, aparecerosWithItem, totalPesoAparejos, cargaRows, datosGruaRows);
         }
