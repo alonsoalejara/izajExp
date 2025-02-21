@@ -5,7 +5,7 @@ import SetupIzajeSection from "./SetupIzajeSection";
 const Section = {
     CollabSection,
     CraneSection,
-    SetupIzajeSection
+    SetupIzajeSection,
 };
 
 export default Section;

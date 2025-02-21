@@ -1,34 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, ImageBackground, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Image, ImageBackground, TouchableOpacity, Animated } from 'react-native';
 import styles from '../styles/ProfileStyles';
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { jwtDecode } from 'jwt-decode';
 import getApiUrl from '../utils/apiUrl';
 import Components from '../components/Components.index';
+import Section from '../components/admin/sections/Section.index';
 
 const Profile = () => {
   const navigation = useNavigation();
-  const [user, setUser] = useState({
-    username: '',
-    nombre: 'No disponible',
-    apellido: '',
-    rut: 'No disponible',
-    phone: 'No disponible',
-    specialty: 'No disponible',
-    email: 'No disponible',
-    profileImage: require('../../assets/blank-user-image.png'),
+  const [user, setUser] = useState(null);
+  const [selectedButton, setSelectedButton] = useState('MisDatos');
+
+  const animations = useRef({
+    MisDatos: new Animated.Value(0),
+    MisPlanes: new Animated.Value(0),
   });
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const token = await AsyncStorage.getItem('accessToken');
-  
         if (token) {
-          const decodedToken = jwtDecode(token);  
+          const decodedToken = jwtDecode(token);
           const userId = decodedToken.id;
           const url = getApiUrl(`user/${userId}`);
           const response = await fetch(url, {
@@ -38,88 +34,48 @@ const Profile = () => {
               'Authorization': `Bearer ${token}`,
             },
           });
-          const data = await response.json();  
+          const data = await response.json();
           if (data && data.data) {
-            setUser({
-              username: data.data.username || '',
-              nombre: data.data.nombre || (data.data.username ? '' : 'No disponible'),
-              apellido: data.data.apellido || '',
-              rut: data.data.rut || 'No disponible',
-              phone: data.data.phone || 'No disponible',
-              specialty: data.data.specialty || 'No disponible',
-              email: data.data.email || 'No disponible',
-              profileImage: data.data.profileImage || require('../../assets/blank-user-image.png'),
-            });
+            setUser(data.data);
           }
         }
       } catch (error) {
         console.error('Error al obtener los datos del usuario:', error);
       }
     };
-  
+
     fetchUserData();
   }, []);
+
+  const handlePressButton = (button) => {
+    setSelectedButton(button);
   
-  const handleSignOut = () => {
-    Alert.alert(
-      "Cerrar sesión",
-      "¿Estás seguro de que deseas cerrar sesión?",
-      [
-        {
-          text: "Cancelar",
-          onPress: () => console.log("Cancelado"),
-          style: "cancel",
-        },
-        {
-          text: "Confirmar",
-          onPress: async () => {
-            try {
-              const accessToken = await AsyncStorage.getItem("accessToken");
+    const otherButton = button === 'MisDatos' ? 'MisPlanes' : 'MisDatos';
+    Animated.timing(animations.current[otherButton], {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
   
-              if (accessToken) {
-                const decodedToken = jwtDecode(accessToken);
+    Animated.timing(animations.current[button], {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
   
-                const email = decodedToken.email;
-                const password = decodedToken.password;
-  
-                const apiUrl = getApiUrl('auth/logout');
-                const response = await fetch(apiUrl, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    email: email,
-                    password: password,
-                  }),
-                });
-  
-                if (!response.ok) {
-                  throw new Error('Error al cerrar sesión');
-                }
-  
-                await AsyncStorage.removeItem('accessToken');
-                await AsyncStorage.removeItem('usuarioId');
-                await AsyncStorage.removeItem('roles');
-  
-                navigation.navigate('Login');
-              } else {
-                Alert.alert('Error', 'No se encontró el token de acceso');
-              }
-            } catch (error) {
-              console.error('Error al cerrar sesión:', error);
-              Alert.alert('Error', 'Hubo un problema al cerrar sesión');
-            }
-          },
-        },
-      ]
-    );
-  };  
-  
+
+  const handleSignOut = async () => {
+    try {
+      await AsyncStorage.removeItem('accessToken');
+      navigation.replace('Login');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      {/* Sección superior fija con la imagen, logo y gradiente */}
       <View style={styles.circleContainer}>
         <ImageBackground
           source={require('../../assets/grua-home.png')}
@@ -137,37 +93,52 @@ const Profile = () => {
         </ImageBackground>
       </View>
 
-      {/* Imagen de perfil fuera del contenedor */}
-      <Image source={user.profileImage} style={styles.profileImage} />
+      <Image
+        source={user?.profileImage || require('../../assets/blank-user-image.png')}
+        style={styles.profileImage}
+      />
 
-      {/* Contenedor agrupado */}
-      <View style={styles.userInfoContainer}>
-        <View>
-          <View style={styles.infoContainer}>
-            <Icon name="person-2" size={30} color="#ff0000" style={styles.icon} />
-            <Text style={styles.value}>{user.username} {user.nombre} {user.apellido || ''}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Icon name="credit-card" size={30} color="#ff0000" style={styles.icon} />
-            <Text style={styles.value}>{user.rut}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Icon name="email" size={32} color="#ff0000" style={styles.icon} />
-            <Text style={styles.value}>{user.email}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Icon name="grade" size={30} color="#ff0000" style={styles.icon} />
-            <Text style={styles.value}>{user.specialty}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Icon name="phone-iphone" size={30} color="#ff0000" style={styles.icon} />
-            <Text style={styles.value}>{user.phone}</Text>
-          </View>
-        </View>
+      <View style={styles.userButtonsContainer}>
+        {['MisDatos', 'MisPlanes'].map((section) => (
+          <TouchableOpacity
+            key={section}
+            style={[styles.userButton, selectedButton === section && { color: 'red' }]}
+            onPress={() => handlePressButton(section)}
+          >
+            <Text style={[styles.userButtonText, selectedButton === section && { color: 'red' }]}>
+              {section === 'MisDatos' ? 'Mis Datos' : 'Mis Planes'}
+            </Text>
+            <Animated.View
+              style={[
+                styles.line,
+                {
+                  width: animations.current[section].interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0%', '100%'],
+                  }),
+                  transform: [
+                    {
+                      translateX: animations.current[section].interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 0],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            />
+          </TouchableOpacity>
+        ))}
       </View>
 
-      {/* Usamos el componente Button para cerrar sesión */}
-      <Components.Button label="Cerrar Sesión" onPress={handleSignOut} style={{ width: '88%', right: 30 }} />
+      {/* Sección dinámica según la pestaña seleccionada */}
+      {selectedButton === 'MisDatos' && <Components.UserDataSection user={user} />}
+      {selectedButton === 'MisPlanes' && <Section.SetupIzajeSection />}
+
+      {/* Botón de cerrar sesión */}
+      <View style={styles.logoutContainer}>
+        <Components.Button label="Cerrar Sesión" onPress={handleSignOut} style={styles.logoutButton} />
+      </View>
     </View>
   );
 };
