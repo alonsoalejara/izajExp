@@ -69,14 +69,14 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups }) => {
             const radioMontaje = setup.datos?.radioMontaje || 0;
     
             const cargaRows = [
-                { item: '1', descripcion: 'PESO DEL EQUIPO', valor: setup.datos?.pesoEquipo ? `${setup.datos.pesoEquipo} kg` : 'No disponible' },
+                { item: '1', descripcion: 'PESO DEL EQUIPO', valor: setup.cargas?.pesoEquipo ? `${setup.cargas.pesoEquipo} kg` : 'No disponible' },
                 { item: '2', descripcion: 'PESO DE APAREJOS', valor: totalPesoAparejos ? `${totalPesoAparejos} kg` : 'No disponible' },
-                { item: '3', descripcion: 'PESO GANCHO', valor: setup.datos?.pesoGancho ? `${setup.datos.pesoGancho} kg` : 'No disponible' },
+                { item: '3', descripcion: 'PESO GANCHO', valor: setup.cargas?.pesoGancho ? `${setup.cargas.pesoGancho} kg` : 'No disponible' },
                 { item: '4', descripcion: 'PESO TOTAL', valor: pesoTotalCarga ? `${pesoTotalCarga} kg` : 'No disponible' },
-                { item: '5', descripcion: 'RADIO DE TRABAJO MÁXIMO', valor: (radioIzaje || radioMontaje) ? `${Math.max(radioIzaje, radioMontaje)} mts` : 'No disponible' },
-                { item: '6', descripcion: 'CAPACIDAD DE LEVANTE', valor: setup.datos?.capacidadLevante ? `${setup.datos.capacidadLevante} kg` : 'No disponible' },
-                { item: '7', descripcion: '% DE UTILIZACIÓN', valor: '' },
-            ];          
+                { item: '5', descripcion: 'RADIO DE TRABAJO MÁXIMO', valor: setup.cargas?.radioTrabajoMax ? `${setup.cargas.radioTrabajoMax} mts` : 'No disponible' },
+                { item: '6', descripcion: 'CAPACIDAD DE LEVANTE', valor: setup.cargas?.capacidadLevante ? `${setup.cargas.capacidadLevante} kg` : 'No disponible' },
+                { item: '7', descripcion: '% DE UTILIZACIÓN', valor: 'No disponible' },
+            ];                     
     
             const datosGruaRows = [
                 { item: '1', descripcion: 'Largo de Pluma', valor: setup.datos?.largoPluma ? `${setup.datos.largoPluma} m` : 'No disponible' },
