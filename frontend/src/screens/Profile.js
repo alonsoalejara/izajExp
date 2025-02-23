@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, ImageBackground, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, Image, ImageBackground, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import styles from '../styles/ProfileStyles';
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,6 +13,33 @@ const Profile = () => {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
   const [selectedButton, setSelectedButton] = useState('MisDatos');
+  const [setupIzaje, setSetups] = useState([]);
+
+  useEffect(() => {
+    const fetchSetups = async () => {
+      try {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (!token) return;
+
+        const response = await fetch(getApiUrl('setupIzaje'), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        if (data && data.data) {
+          setSetups(data.data);
+        }
+      } catch (error) {
+        console.error('Error al obtener los planes de izaje:', error);
+      }
+    };
+
+    fetchSetups();
+  }, []);
 
   const animations = useRef({
     MisDatos: new Animated.Value(0),
@@ -63,7 +90,6 @@ const Profile = () => {
       useNativeDriver: false,
     }).start();
   };
-  
 
   const handleSignOut = async () => {
     try {
@@ -131,14 +157,29 @@ const Profile = () => {
         ))}
       </View>
 
-      {/* Sección dinámica según la pestaña seleccionada */}
-      {selectedButton === 'MisDatos' && <Components.UserDataSection user={user} />}
-      {selectedButton === 'MisPlanes' && <Section.SetupIzajeSection />}
+      {/* Sección  */}
+      {selectedButton === 'MisDatos' && (
+        <View style={[styles.userDataContainer, { top: -20 }]}>
+          <Text style={styles.userName}>{user?.name}</Text>
+          <Text style={styles.userEmail}>{user?.email}</Text>
+          <Components.UserDataSection user={user} />
+        </View>
+      )}
+
+      {selectedButton === 'MisPlanes' && (
+        <View style={{ top: 300, flex: 1 }}>
+          <ScrollView contentContainerStyle={{ paddingBottom: 310 }}>
+            <Section.SetupIzajeSection setupIzaje={setupIzaje} setSetups={setSetups} />
+          </ScrollView>
+        </View>
+      )}
 
       {/* Botón de cerrar sesión */}
-      <View style={styles.logoutContainer}>
-        <Components.Button label="Cerrar Sesión" onPress={handleSignOut} style={styles.logoutButton} />
-      </View>
+      {selectedButton === 'MisDatos' && (
+        <View style={[styles.logoutContainer, { flex: 0, top: -30 }]}>
+          <Components.Button label="Cerrar Sesión" onPress={handleSignOut} style={styles.logoutButton} />
+        </View>
+      )}
     </View>
   );
 };
