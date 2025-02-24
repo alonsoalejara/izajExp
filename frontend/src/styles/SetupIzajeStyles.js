@@ -5,10 +5,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingHorizontal: 30,
-    paddingVertical: 120,
+    bottom: 0,
   },
   contentContainer: {
     padding: 0,
+  },
+  titleContainer: {
+    backgroundColor: 'white',
+    marginTop: 100,
+    top: 15,
+    marginVertical: 0,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd'
   },
   sectionTitle: {
     fontSize: 25,
