@@ -12,12 +12,10 @@ import styles from '../styles/AdminPanelStyles';
 function AdminPanel() {
   const navigation = useNavigation();
   const [activeSection, setActiveSection] = useState(null);
-  const [activeTab, setActiveTab] = useState(null);
   const animations = useRef({});
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
-  const [setupIzajeSeleccionado, setSetupIzajeSeleccionado] = useState(null);
 
   const [colaboradoresState, setColaboradoresState] = useState(colaboradores || []);
   const [gruasState, setGruasState] = useState(gruas || []);
@@ -29,13 +27,10 @@ function AdminPanel() {
   const [originalSetupsState, setOriginalSetupsState] = useState(setupIzajes || []);
 
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
-  const [isModalEditarSetupIzajeVisible, setIsModalEditarSetupIzajeVisible] = useState(false);
 
   const { data: colaboradores = [], refetch: refetchColaboradores } = useFetchData('user');
   const { data: gruas = [], refetch: refetchGruas } = useFetchData('grua');
   const { data: setupIzajes = [], refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
-
-  const [selectedIcon, setSelectedIcon] = useState('home');
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -170,17 +165,6 @@ function AdminPanel() {
     }
   };
 
-  const handleEditSetupIzaje = async (setup) => {
-    try {
-      const updatedSetups = Logic.setupIzajeLogic.editSetupIzaje(setupsState, setup);
-      setSetupsState(updatedSetups);
-      refetchSetupIzajes();
-      setIsModalEditarSetupIzajeVisible(false);
-    } catch (error) {
-      console.error('Error al editar setup de izaje:', error);
-    }
-  };
-
   const handleDeleteSetupIzaje = async (id) => {
     try {
       await Logic.setupIzajeLogic.deleteSetupIzaje(id);
@@ -208,7 +192,7 @@ function AdminPanel() {
   
         {/* Botones fijos con animación */}
         <View style={styles.buttonContainer}>
-          {['Personal', 'Gruas', 'Planes'].map((section) => {
+          {['Personal', 'Gruas', 'Planes', 'Datos'].map((section) => {
             if (!animations.current[section]) {
               animations.current[section] = new Animated.Value(0);
             }
@@ -304,6 +288,9 @@ function AdminPanel() {
             setSetups={setSetupsState}
           />
         )}
+
+        {activeSection === 'Datos' && <Section.DataSection />}
+
       </ScrollView>
 
     </View>
