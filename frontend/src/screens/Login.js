@@ -12,65 +12,87 @@ export default function Login({ navigation }) {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
+    console.log("📌 Iniciando handleLogin...");
+    console.log("📧 Email ingresado:", email);
+    console.log("🔑 Password ingresado:", password);
+
     if (email && password) {
         try {
             const apiUrl = getApiUrl("auth/login");
+            console.log("🌍 Conectando a API en:", apiUrl);
+
             const response = await fetch(apiUrl, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             });
 
+            console.log("🔄 Respuesta recibida. Estado HTTP:", response.status);
             const data = await response.json();
+            console.log("📨 Datos de la API:", JSON.stringify(data, null, 2));
 
             if (response.ok) {
                 if (data && data.data) {
                     const { accessToken, refreshToken, roles } = data.data;
 
                     if (accessToken) {
+                        console.log("✅ Token recibido:", accessToken);
                         await AsyncStorage.setItem("accessToken", accessToken);
 
-                        // ✅ Decodificar el token y extraer el usuarioId
-                        const decodedToken = jwtDecode(accessToken);
-                        const usuarioId = decodedToken.id;
-
-                        if (usuarioId) {
-                            await AsyncStorage.setItem("usuarioId", usuarioId.toString());
-                        } else {
-                            console.warn("No se pudo extraer el usuarioId del token.");
+                        // Decodificar el token
+                        try {
+                            const decodedToken = jwtDecode(accessToken);
+                            console.log("🔍 Token decodificado:", decodedToken);
+                            
+                            const usuarioId = decodedToken.id;
+                            if (usuarioId) {
+                                console.log("✅ usuarioId extraído:", usuarioId);
+                                await AsyncStorage.setItem("usuarioId", usuarioId.toString());
+                            } else {
+                                console.warn("⚠️ No se pudo extraer el usuarioId.");
+                            }
+                        } catch (decodeError) {
+                            console.error("❌ Error al decodificar el token:", decodeError);
                         }
 
                         if (refreshToken) {
+                            console.log("🔄 Guardando refreshToken...");
                             await AsyncStorage.setItem("refreshToken", refreshToken);
                         }
 
                         if (Array.isArray(roles) && roles.length > 0) {
+                            console.log("📌 Roles recibidos:", roles);
                             await AsyncStorage.setItem("roles", JSON.stringify(roles));
                         }
 
-                        // ✅ Navegación basada en el rol
+                        // Navegación basada en el rol
                         const role = roles[0];
+                        console.log("🛤️ Role del usuario:", role);
                         if (role === "user" || role === "admin") {
-                          navigation.navigate("Tabs");
+                            console.log("✅ Redirigiendo a Tabs...");
+                            navigation.navigate("Tabs");
                         } else {
+                            console.warn("⚠️ Rol de usuario no reconocido");
                             Alert.alert("Error", "Rol de usuario no reconocido");
                         }
                     } else {
+                        console.error("❌ Tokens de autenticación no recibidos correctamente");
                         Alert.alert("Error", "Tokens de autenticación no recibidos correctamente");
                     }
                 } else {
+                    console.error("❌ Error en la respuesta: datos no disponibles");
                     Alert.alert("Error", "Error en la respuesta del servidor: datos no disponibles");
                 }
             } else {
+                console.error("❌ Error HTTP:", response.status);
                 Alert.alert("Error", data.message || "Error al iniciar sesión");
             }
         } catch (error) {
-            console.error("Error al autenticar:", error);
+            console.error("❌ Error en la conexión:", error);
             Alert.alert("Error", "Error en la conexión con el servidor");
         }
     } else {
+        console.warn("⚠️ Campos vacíos en login");
         Alert.alert("Error", "Por favor, ingrese ambos campos");
     }
   };
@@ -117,7 +139,7 @@ export default function Login({ navigation }) {
         <Components.Button
           label="Iniciar sesión"
           onPress={handleLogin}
-          style={[LoginStyles.button, { width: '85%', marginTop: 35 ,top: 0 ,marginLeft: -5 }]}
+          style={[LoginStyles.button, { width: '85%', marginTop: 35, top: 0, marginLeft: -5 }]}
         />
       </View>
     </View>

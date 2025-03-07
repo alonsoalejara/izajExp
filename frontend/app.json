@@ -16,6 +16,8 @@
       "supportsTablet": true
     },
     "android": {
+      "permissions": ["INTERNET"],
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -37,6 +39,7 @@
       "eas": {
         "projectId": "aa196964-4634-458c-b448-48a3e45a6c4d"
       }
-    }
+    },
+    "owner": "alonsoalejara"
   }
 }
