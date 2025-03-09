@@ -3,15 +3,18 @@ import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Components from '../components/Components.index';
 import styles from '../styles/SetupIzajeStyles';
+import BS from '../components/bottomSheets/BS.index';
 
 const SetupCarga = () => {
   const navigation = useNavigation();
   const [forma, setForma] = useState('');
   const [material, setMaterial] = useState('');
+  const [isFormaVisible, setIsFormaVisible] = useState(false);
+  const [isMaterialVisible, setIsMaterialVisible] = useState(false);
 
   const handleNavigateToTablas = () => {
     navigation.navigate('Tablas');
-  }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -30,6 +33,7 @@ const SetupCarga = () => {
           <Components.ConfigButton
             label="Configurar Forma"
             value={forma}
+            onPress={() => setIsFormaVisible(true)}
           />
 
           {/* Seleccionar Material */}
@@ -40,6 +44,7 @@ const SetupCarga = () => {
           <Components.ConfigButton
             label="Configurar Material"
             value={material}
+            onPress={() => setIsMaterialVisible(true)}
           />
 
           <Components.Button
@@ -48,6 +53,18 @@ const SetupCarga = () => {
             style={{ marginTop: 280, marginBottom: 20, width: 330, left: -60 }}
           />
         </View>
+
+        <BS.BSForma
+          isVisible={isFormaVisible}
+          onClose={() => setIsFormaVisible(false)}
+          onSelect={(selectedForma) => setForma(selectedForma)}
+        />
+
+        <BS.BSMaterial
+          isVisible={isMaterialVisible}
+          onClose={() => setIsMaterialVisible(false)}
+          onSelect={(selectedMaterial) => setMaterial(selectedMaterial)}
+        />
       </View>
     </TouchableWithoutFeedback>
   );
