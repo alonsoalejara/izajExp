@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, ImageBackground, TouchableOpacity, Animated, ScrollView } from 'react-native';
+import { View, Text, Image, ImageBackground, TouchableOpacity, Animated, ScrollView, Alert } from 'react-native';
 import styles from '../styles/ProfileStyles';
 import Svg, { LinearGradient, Stop, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -92,12 +92,27 @@ const Profile = () => {
   };
 
   const handleSignOut = async () => {
-    try {
-      await AsyncStorage.removeItem('accessToken');
-      navigation.replace('Login');
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-    }
+    Alert.alert(
+      "Cerrar Sesión",
+      "¿Estás seguro de que deseas cerrar sesión?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Sí",
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem('accessToken');
+              navigation.replace('Login');
+            } catch (error) {
+              console.error('Error al cerrar sesión:', error);
+            }
+          }
+        }
+      ]
+    );
   };
 
   return (

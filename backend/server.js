@@ -8,7 +8,6 @@ import { setupDB } from "./src/config/db.config.js";
 import { handleFatalError, handleError } from "./src/utils/errorHandler.js";
 import { createUsers } from "./src/config/initialSetup.js";
 
-
 async function setupServer() {
   try {
     const server = express();
@@ -23,7 +22,6 @@ async function setupServer() {
       next();
     });
     
-
     server.listen(PORT, "0.0.0.0", () => {
       console.log(`=> Server running in ${HOST}:${PORT}/api`);
     });
