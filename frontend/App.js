@@ -65,6 +65,16 @@ const App = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="SetupAparejos"
+            component={Screens.SetupAparejos}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SetupCarga"
+            component={Screens.SetupCarga}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="Tablas"
             component={Screens.Tablas}
             options={{ headerShown: false }}
