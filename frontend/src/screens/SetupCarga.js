@@ -1,20 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Components from '../components/Components.index';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 
 const SetupCarga = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+
+  const { setupIzajeData, setupAparejosData } = route.params || {};
+
   const [forma, setForma] = useState('');
   const [material, setMaterial] = useState('');
   const [isFormaVisible, setIsFormaVisible] = useState(false);
   const [isMaterialVisible, setIsMaterialVisible] = useState(false);
 
   const handleNavigateToTablas = () => {
-    navigation.navigate('Tablas');
+    console.log('-1. setupIzajeData:', setupIzajeData);
+    console.log('-1. setupIzajeData.grua:', setupIzajeData?.grua);
+
+    navigation.navigate('Tablas', {
+      eslingaOEstrobo: setupAparejosData?.eslingaOEstrobo,
+      cantidadManiobra: setupAparejosData?.cantidadManiobra,
+      cantidadGrilletes: setupAparejosData?.cantidadGrilletes,
+      tipoGrillete: setupAparejosData?.tipoGrillete,
+      grua: setupIzajeData?.grua,
+      radioIzaje: setupIzajeData?.radioIzaje,
+      radioMontaje: setupIzajeData?.radioMontaje,
+      usuarioId: setupIzajeData?.usuarioId,
+      forma,
+      material
+    });
   };
+  
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

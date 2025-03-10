@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
@@ -9,6 +10,7 @@ const SetupAparejos = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { usuarioId } = route.params || {};
+  const [setupIzajeData, setSetupIzajeData] = useState(null);
 
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
@@ -22,9 +24,36 @@ const SetupAparejos = () => {
     setModalVisible(true);
   };
 
+  useEffect(() => {
+    const fetchSetupIzajeData = async () => {
+      try {
+        const data = await AsyncStorage.getItem('setupIzajeData');
+        if (data) {
+          setSetupIzajeData(JSON.parse(data));
+        }
+      } catch (error) {
+        console.error("Error al recuperar datos de SetupIzaje:", error);
+      }
+    };
+    fetchSetupIzajeData();
+  }, []);
+
   const handleNavigateToSetupCarga = () => {
-    navigation.navigate('SetupCarga');
+    console.log('-2. setupIzajeData:', setupIzajeData);
+    console.log('-2. setupIzajeData.grua:', setupIzajeData?.grua);
+    const setupAparejosData = {
+      cantidadManiobra,
+      eslingaOEstrobo,
+      cantidadGrilletes,
+      tipoGrillete
+    };
+  
+    navigation.navigate('SetupCarga', {
+      setupIzajeData,
+      setupAparejosData
+    });
   };
+  
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

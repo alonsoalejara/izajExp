@@ -34,10 +34,20 @@ const SetupIzaje = () => {
     setModalVisible(true);
   };
 
-  const handleNavigateToSetupAparejos = () => {
-    navigation.navigate('SetupAparejos');
+  const handleNavigateToSetupAparejos = async () => {
+    try {
+      await AsyncStorage.setItem('setupIzajeData', JSON.stringify({
+        grua,
+        radioIzaje,
+        radioMontaje,
+        usuarioId
+      }));
+      navigation.navigate('SetupAparejos');
+    } catch (error) {
+      console.error("Error al guardar datos en AsyncStorage:", error);
+    }
   };
-
+  
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
