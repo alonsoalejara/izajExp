@@ -17,9 +17,19 @@ const SetupCarga = () => {
   const [isMaterialVisible, setIsMaterialVisible] = useState(false);
 
   const handleNavigateToTablas = () => {
-    console.log('-1. setupIzajeData:', setupIzajeData);
-    console.log('-1. setupIzajeData.grua:', setupIzajeData?.grua);
-
+    console.log('SetupCarga: Datos enviados a Tablas:', {
+      eslingaOEstrobo: setupAparejosData?.eslingaOEstrobo,
+      cantidadManiobra: setupAparejosData?.cantidadManiobra,
+      cantidadGrilletes: setupAparejosData?.cantidadGrilletes,
+      tipoGrillete: setupAparejosData?.tipoGrillete,
+      grua: setupIzajeData?.grua,
+      radioIzaje: setupIzajeData?.radioIzaje,
+      radioMontaje: setupIzajeData?.radioMontaje,
+      usuarioId: setupIzajeData?.usuarioId,
+      forma,
+      material
+    });
+  
     navigation.navigate('Tablas', {
       eslingaOEstrobo: setupAparejosData?.eslingaOEstrobo,
       cantidadManiobra: setupAparejosData?.cantidadManiobra,
@@ -34,7 +44,6 @@ const SetupCarga = () => {
     });
   };
   
-
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>

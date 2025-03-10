@@ -1,101 +1,71 @@
 import { StyleSheet } from 'react-native';
 
-const cellStyle = (padding = 4.5, textAlign = 'center', fontSize = 12.7) => ({
-  padding,
-  borderWidth: 1,
-  borderColor: '#ccc',
-  textAlign,
-  backgroundColor: '#fff',
-  fontSize,
-});
-
-const TablasStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 25,
-    paddingVertical: 10,
-  },
-  /* Titulo de la pagina */
+const styles = StyleSheet.create({
   titleContainer: {
-    marginTop: 125,
-    height: 70,
-    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    top: 133,
+    marginVertical: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#000',
   },
-  header: {
-    marginBottom: 15,
-    alignItems: 'center',
+  // Titulo de cada tabla
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+    marginVertical: 10,
   },
-  table: {
-    marginBottom: 20,
+  // Contenedor de todas las tablas
+  tableContainer: {
+    backgroundColor: '#fff',
+    top: 50,
+    marginHorizontal: 0,
+    marginVertical: 95,
+  },
+  // Contenedor de cada tabla
+  tableSection: {
+    marginVertical: 10,
+    marginHorizontal: 20,
+  },
+  // Header de tabla
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#dd0000',
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  headerText: {
+    flex: 1,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    color: '#fff',
   },
   row: {
     flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    paddingVertical: 8,
   },
-  cell: cellStyle(),
-  headerCell: {
-    ...cellStyle(8, 'center', 16),
-    backgroundColor: '#eaeaea',
-    fontWeight: 'bold',
-  },
-  descripcionColumn: {
-    flex: 4.8,
-    paddingLeft: 7,
-    textAlign: 'left',
-  },
-  totalColumn: {
-    flex: 6.3,
-    backgroundColor: '#ccc',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 14,
-    paddingVertical: 10,
-  },
-  valueColumn: {
-    flex: 1.5,
-    textAlign: 'right',
-    fontSize: 13,
-    paddingVertical: 10,
-  },
-  numberColumn: {
-    backgroundColor: '#ddd',
+  cell: {
     flex: 1,
-    textAlign: 'right',
-    fontWeight: 'bold',
-    fontSize: 13,
-    paddingVertical: 10,
+    textAlign: 'center',
   },
-  fullRow: {
-    backgroundColor: '#ccc',
-    paddingVertical: 10,
+  buttonContainer: {
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    bottom: 40,
+    right: 30,
+    marginHorizontal: 30,
+    marginVertical: 20,
+    gap: -35,
   },
-  fullRowText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  /* Botones */
-  buttonContainer: {
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    height: 80,
-    width: '100%',
-    alignSelf: 'center',
-    borderTopWidth: 1,
-    borderColor: '#ddd',
+  button: {
+    width: '45%',
+    backgroundColor: '#ee0000',
   },
 });
 
-export default TablasStyles;
+export default styles;

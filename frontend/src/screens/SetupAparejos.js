@@ -39,8 +39,6 @@ const SetupAparejos = () => {
   }, []);
 
   const handleNavigateToSetupCarga = () => {
-    console.log('-2. setupIzajeData:', setupIzajeData);
-    console.log('-2. setupIzajeData.grua:', setupIzajeData?.grua);
     const setupAparejosData = {
       cantidadManiobra,
       eslingaOEstrobo,
