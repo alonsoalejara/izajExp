@@ -8,7 +8,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const BSCantidad = ({ isVisible, onClose, onSelect }) => {
   const [cantidadSeleccionada, setCantidadSeleccionada] = useState(null);
-  const bottomSheetHeight = SCREEN_HEIGHT * 0.35;
+  const bottomSheetHeight = SCREEN_HEIGHT * 0.4;
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   const handleSelectCantidad = (cantidad) => {

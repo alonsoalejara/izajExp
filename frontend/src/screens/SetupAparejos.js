@@ -121,9 +121,9 @@ const SetupAparejos = () => {
           />
 
           <Components.Button
-            label="Continuar"
+            label="Continuar a Carga"
             onPress={handleNavigateToSetupCarga}
-            style={{ marginTop: 280, marginBottom: 20, width: 330, left: -60 }}
+            style={{ marginTop: 20, marginBottom: 20, width: 330, left: -60 }}
           />
         </View>
       </View>

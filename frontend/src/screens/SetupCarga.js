@@ -78,7 +78,7 @@ const SetupCarga = () => {
           <Components.Button
             label="Continuar"
             onPress={handleNavigateToTablas}
-            style={{ marginTop: 280, marginBottom: 20, width: 330, left: -60 }}
+            style={{ marginTop: 20, marginBottom: 20, width: 330, left: -60 }}
           />
         </View>
 

@@ -97,7 +97,7 @@ const SetupIzaje = () => {
           <Components.Button
             label="Configurar Aparejos"
             onPress={handleNavigateToSetupAparejos}
-            style={{ marginTop: 280, marginBottom: 20, width: 330, left: -60 }}
+            style={{ marginTop: 10, marginBottom: 10, width: 330, left: -60 }}
           />
         </View>
       </View>

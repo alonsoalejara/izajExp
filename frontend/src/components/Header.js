@@ -36,8 +36,8 @@ const Header = () => {
     gradient: {
       position: 'absolute',
       top: 50,
-      left: 112,
-      width: 555,
+      left: 100,
+      width: 565,
       height: '100%',
       zIndex: 0,
     },
