@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
@@ -36,70 +36,78 @@ const SetupIzaje = () => {
 
   const handleNavigateToSetupAparejos = async () => {
     try {
-      await AsyncStorage.setItem('setupIzajeData', JSON.stringify({
+      const data = {
         grua,
         radioIzaje,
         radioMontaje,
-        usuarioId
-      }));
-      navigation.navigate('SetupAparejos');
+        usuarioId,
+      };
+      await AsyncStorage.setItem('setupIzajeData', JSON.stringify(data));
+        navigation.navigate('SetupAparejos', {
+        setupIzajeData: data,
+      });
     } catch (error) {
       console.error("Error al guardar datos en AsyncStorage:", error);
     }
   };
-  
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
         <Components.Header />
-        <View style={styles.titleContainer}>
-          <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
-        </View>
 
-        <View style={[styles.container, { flexGrow: 1 }]}>
-          {/* Configurar Grúa */}
-          <View style={styles.inputWrapper}>
-            <Text style={styles.labelText}>Seleccione grúa:</Text>
+        <ScrollView contentContainerStyle={{ flexGrow: 2, height: 1000 }}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
           </View>
 
-          <Components.ConfigButton
-            label="Configurar Grúa"
-            value={grua?.nombre || 'Seleccionar grúa'}
-            onPress={() => openModal(setGruaModalVisible)}
-          />
+          <View style={styles.container}>
+            {/* Configurar Grúa */}
+            <View style={styles.inputWrapper}>
+              <Text style={styles.labelText}>Seleccione grúa:</Text>
+            </View>
 
-          <BS.BSGrua
-            isVisible={isGruaModalVisible}
-            onClose={() => setGruaModalVisible(false)}
-            onSelect={setGrua}
-          />
-
-          {/* Formulario de radios */}
-          <View style={styles.inputWrapper}>
-            <Text style={styles.labelText}>Radio Izaje (metros)           Radio Montaje (metros)</Text>
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Components.NumericInput
-              label="Radio Izaje"
-              value={radioIzaje}
-              onChangeText={setRadioIzaje}
-              placeholder="Izaje"
+            <Components.ConfigButton
+              label="Configurar Grúa"
+              value={grua?.nombre || 'Seleccionar grúa'}
+              onPress={() => openModal(setGruaModalVisible)}
             />
-            <Components.NumericInput
-              label="Radio Montaje"
-              value={radioMontaje}
-              onChangeText={setRadioMontaje}
-              placeholder="Montaje"
+
+            <BS.BSGrua
+              isVisible={isGruaModalVisible}
+              onClose={() => setGruaModalVisible(false)}
+              onSelect={setGrua}
+            />
+
+            {/* Formulario de radios */}
+            <View style={styles.inputWrapper}>
+              <Text style={styles.labelText}>
+                Radio Izaje (metros)           Radio Montaje (metros)
+              </Text>
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Components.NumericInput
+                label="Radio Izaje"
+                value={radioIzaje}
+                onChangeText={setRadioIzaje}
+                placeholder="Izaje"
+              />
+              <Components.NumericInput
+                label="Radio Montaje"
+                value={radioMontaje}
+                onChangeText={setRadioMontaje}
+                placeholder="Montaje"
+              />
+            </View>
+
+            <Components.Button
+              label="Configurar Aparejos"
+              onPress={handleNavigateToSetupAparejos}
+              style={{ marginTop: 10, marginBottom: 10, width: 330, left: -60 }}
             />
           </View>
-
-          <Components.Button
-            label="Configurar Aparejos"
-            onPress={handleNavigateToSetupAparejos}
-            style={{ marginTop: 10, marginBottom: 10, width: 330, left: -60 }}
-          />
-        </View>
+        </ScrollView>
       </View>
     </TouchableWithoutFeedback>
   );
