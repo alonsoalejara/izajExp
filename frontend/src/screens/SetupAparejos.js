@@ -6,7 +6,6 @@ import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
 import GruaIllustration from '../components/cranes/UI/GruaIllustration';
-import Estrobo from '../components/cranes/rigging/strobe/Estrobo';
 
 const SetupAparejos = () => {
   const navigation = useNavigation();
@@ -122,25 +121,29 @@ const SetupAparejos = () => {
               onSelect={setEslingaOEstrobo}
             />
 
-            <Components.Button
-              label="Continuar a Carga"
-              onPress={handleNavigateToSetupCarga}
-              style={{ marginTop: 20, marginBottom: 30, width: 330, left: -60 }}
-            />
+            <View style={[styles.buttonContainer, { right: 40 }]}>
+              {/* Botón Volver */}
+              <Components.Button
+                label="Volver"
+                onPress={() => navigation.goBack()}
+                isCancel={true}
+                style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]} // Ajuste en el margen entre los botones
+              />
+
+              {/* Botón Continuar */}
+              <Components.Button
+                label="Continuar"
+                onPress={handleNavigateToSetupCarga}
+                style={[styles.button, { width: '50%', right: 45 }]} // Ajuste en el margen entre los botones
+              />
+            </View>
 
             {/* Mostrar la grúa seleccionada */}
-            {setupIzajeData && setupIzajeData.grua ? (
-              <View style={styles.inputWrapper}>
-                <Text style={styles.labelText}>
-                  Grúa seleccionada: {setupIzajeData.grua.nombre}
-                </Text>
+            {setupIzajeData && setupIzajeData.grua && setupIzajeData.grua.nombre === "Terex RT555" ? (
+              <View style={{ alignItems: 'center', marginTop: 460, marginBottom: -50 }}>
+                <GruaIllustration />
               </View>
             ) : null}
-
-            {/* Mostrar la ilustración de la grúa */}
-            <View style={{ alignItems: 'center', marginTop: 460, marginBottom: -50 }}>
-              <GruaIllustration />
-            </View>
           </View>
         </ScrollView>
       </View>

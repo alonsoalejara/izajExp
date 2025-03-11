@@ -75,11 +75,22 @@ const SetupCarga = () => {
             onPress={() => setIsMaterialVisible(true)}
           />
 
-          <Components.Button
-            label="Continuar"
-            onPress={handleNavigateToTablas}
-            style={{ marginTop: 20, marginBottom: 20, width: 330, left: -60 }}
-          />
+            <View style={[styles.buttonContainer, { right: 40 }]}>
+              {/* Botón Volver */}
+              <Components.Button
+                label="Volver"
+                onPress={() => navigation.goBack()}
+                isCancel={true}
+                style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]} // Ajuste en el margen entre los botones
+              />
+
+              {/* Botón Continuar */}
+              <Components.Button
+                label="Continuar"
+                onPress={handleNavigateToTablas}
+                style={[styles.button, { width: '50%', right: 45 }]} // Ajuste en el margen entre los botones
+              />
+            </View>
         </View>
 
         <BS.BSForma

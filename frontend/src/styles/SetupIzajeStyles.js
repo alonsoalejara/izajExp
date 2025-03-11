@@ -45,6 +45,13 @@ const styles = StyleSheet.create({
     marginTop: -5,
     height: 80,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10, 
+    marginVertical: 20,
+  }
 });
 
 export default styles;
