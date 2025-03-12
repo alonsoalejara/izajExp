@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 21,
+    width: '50%'
   },
 
   input: {
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     backgroundColor: '#fff',
     color: '#333',
+    flex: 1,
     width: 150,
     paddingLeft: 10,
     textAlignVertical: 'center',

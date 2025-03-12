@@ -1,6 +1,11 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
+  // Iconos
+  icon: {
+    marginLeft: 10,
+  },
+  // Contenedores
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -19,6 +24,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ddd'
   },
+  inputContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: -5,
+    height: 80,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10, 
+    marginVertical: 20,
+  },
+  // Titulos y textos
   sectionTitle: {
     fontSize: 25,
     color: '#333',
@@ -34,24 +54,25 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 0,
   },
-  icon: {
-    marginLeft: 10,
-  },
-  // Contenedor
-  inputContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: -5,
-    height: 80,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+  // Visualización de forma para SetupCarga.js
+  shapeContainer: {
     alignItems: 'center',
-    marginHorizontal: 10, 
-    marginVertical: 20,
-  }
+    justifyContent: 'center',
+    marginTop: 20,
+    borderWidth: 1,
+  },
+
+  visualizationContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: '#ddd',
+  },
+
+  
+
 });
 
 export default styles;
