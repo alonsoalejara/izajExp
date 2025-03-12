@@ -70,8 +70,8 @@ const App = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="SetupCarga"
-            component={Screens.SetupCarga}
+            name="SetupGrua"
+            component={Screens.SetupGrua}
             options={{ headerShown: false }}
           />
           <Stack.Screen

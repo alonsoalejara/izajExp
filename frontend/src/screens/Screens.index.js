@@ -1,7 +1,7 @@
 import Home from './Home';
 import Login from './Login';
 import Profile from './Profile';
-import SetupIzaje from './SetupIzaje';
+import SetupGrua from './SetupGrua';
 import SetupAparejos from './SetupAparejos';
 import SetupCarga from './SetupCarga';
 import GruaIzaje from './GruaIzaje';
@@ -12,7 +12,7 @@ const Screens = {
   Home,
   Login,
   Profile,
-  SetupIzaje,
+  SetupGrua,
   SetupAparejos,
   SetupCarga,
   GruaIzaje,

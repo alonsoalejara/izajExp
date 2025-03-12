@@ -11,7 +11,7 @@ const SetupAparejos = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { usuarioId } = route.params || {};
-  const [setupIzajeData, setSetupIzajeData] = useState(null);
+  const [setupGruaData, setSetupGruaData] = useState(null);
 
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
@@ -26,17 +26,17 @@ const SetupAparejos = () => {
   };
 
   useEffect(() => {
-    const fetchSetupIzajeData = async () => {
+    const fetchSetupGruaData = async () => {
       try {
-        const data = await AsyncStorage.getItem('setupIzajeData');
+        const data = await AsyncStorage.getItem('setupGruaData');
         if (data) {
-          setSetupIzajeData(JSON.parse(data));
+          setSetupGruaData(JSON.parse(data));
         }
       } catch (error) {
-        console.error("Error al recuperar datos de SetupIzaje:", error);
+        console.error("Error al recuperar datos de SetupGrua:", error);
       }
     };
-    fetchSetupIzajeData();
+    fetchSetupGruaData();
   }, []);
 
   const handleNavigateToSetupCarga = () => {
@@ -47,8 +47,8 @@ const SetupAparejos = () => {
       tipoGrillete
     };
   
-    navigation.navigate('SetupCarga', {
-      setupIzajeData,
+    navigation.navigate('Tablas', {
+      setupGruaData,
       setupAparejosData
     });
   };
@@ -139,7 +139,7 @@ const SetupAparejos = () => {
             </View>
 
             {/* Mostrar la grúa seleccionada */}
-            {setupIzajeData && setupIzajeData.grua && setupIzajeData.grua.nombre === "Terex RT555" ? (
+            {setupGruaData && setupGruaData.grua && setupGruaData.grua.nombre === "Terex RT555" ? (
               <View style={{ alignItems: 'center', marginTop: 460, marginBottom: -50 }}>
                 <GruaIllustration />
               </View>

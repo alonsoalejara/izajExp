@@ -9,12 +9,16 @@ const SetupCarga = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const { setupIzajeData, setupAparejosData } = route.params || {};
+  const { setupGruaData, setupAparejosData } = route.params || {};
 
   const [forma, setForma] = useState('');
   const [material, setMaterial] = useState('');
   const [isFormaVisible, setIsFormaVisible] = useState(false);
   const [isMaterialVisible, setIsMaterialVisible] = useState(false);
+
+  const handleNavigateToSetupGrua = () => {
+    navigation.navigate('SetupGrua');
+  };
 
   const handleNavigateToTablas = () => {
     console.log('SetupCarga: Datos enviados a Tablas:', {
@@ -22,34 +26,34 @@ const SetupCarga = () => {
       cantidadManiobra: setupAparejosData?.cantidadManiobra,
       cantidadGrilletes: setupAparejosData?.cantidadGrilletes,
       tipoGrillete: setupAparejosData?.tipoGrillete,
-      grua: setupIzajeData?.grua,
-      radioIzaje: setupIzajeData?.radioIzaje,
-      radioMontaje: setupIzajeData?.radioMontaje,
-      usuarioId: setupIzajeData?.usuarioId,
+      grua: setupGruaData?.grua,
+      radioIzaje: setupGruaData?.radioIzaje,
+      radioMontaje: setupGruaData?.radioMontaje,
+      usuarioId: setupGruaData?.usuarioId,
       forma,
       material
     });
-  
+
     navigation.navigate('Tablas', {
       eslingaOEstrobo: setupAparejosData?.eslingaOEstrobo,
       cantidadManiobra: setupAparejosData?.cantidadManiobra,
       cantidadGrilletes: setupAparejosData?.cantidadGrilletes,
       tipoGrillete: setupAparejosData?.tipoGrillete,
-      grua: setupIzajeData?.grua,
-      radioIzaje: setupIzajeData?.radioIzaje,
-      radioMontaje: setupIzajeData?.radioMontaje,
-      usuarioId: setupIzajeData?.usuarioId,
+      grua: setupGruaData?.grua,
+      radioIzaje: setupGruaData?.radioIzaje,
+      radioMontaje: setupGruaData?.radioMontaje,
+      usuarioId: setupGruaData?.usuarioId,
       forma,
       material
     });
   };
-  
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
         <Components.Header />
         <View style={styles.titleContainer}>
-          <Text style={styles.sectionTitle}>Configurar Carga</Text>
+          <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
         </View>
 
         <View style={[styles.container, { flexGrow: 1 }]}>
@@ -75,22 +79,12 @@ const SetupCarga = () => {
             onPress={() => setIsMaterialVisible(true)}
           />
 
-            <View style={[styles.buttonContainer, { right: 40 }]}>
-              {/* Botón Volver */}
-              <Components.Button
-                label="Volver"
-                onPress={() => navigation.goBack()}
-                isCancel={true}
-                style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]} // Ajuste en el margen entre los botones
-              />
-
-              {/* Botón Continuar */}
-              <Components.Button
-                label="Continuar"
-                onPress={handleNavigateToTablas}
-                style={[styles.button, { width: '50%', right: 45 }]} // Ajuste en el margen entre los botones
-              />
-            </View>
+          {/* Botón Continuar */}
+          <Components.Button
+            label="Continuar"
+            onPress={handleNavigateToSetupGrua}
+            style={{ marginTop: 30, marginBottom: 30, width: 330, left: -60 }}
+          />
         </View>
 
         <BS.BSForma

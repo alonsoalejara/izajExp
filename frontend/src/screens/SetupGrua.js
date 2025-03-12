@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,12 +6,12 @@ import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
 
-const SetupIzaje = () => {
+const SetupGrua = () => {
   const navigation = useNavigation();
   const [isGruaModalVisible, setGruaModalVisible] = useState(false);
   const [grua, setGrua] = useState('');
-  const [radioIzaje, setRadioIzaje] = useState('');
-  const [radioMontaje, setRadioMontaje] = useState('');
+  const [largoPluma, setLargoPluma] = useState('');
+  const [anguloInclinacion, setAnguloInclinacion] = useState('');
   const [usuarioId, setUsuarioId] = useState(null);
 
   useEffect(() => {
@@ -38,18 +38,20 @@ const SetupIzaje = () => {
     try {
       const data = {
         grua,
-        radioIzaje,
-        radioMontaje,
+        largoPluma,
+        anguloInclinacion,
         usuarioId,
       };
-      await AsyncStorage.setItem('setupIzajeData', JSON.stringify(data));
-        navigation.navigate('SetupAparejos', {
-        setupIzajeData: data,
+      await AsyncStorage.setItem('setupGruaData', JSON.stringify(data));
+      navigation.navigate('SetupAparejos', {
+        setupGruaData: data,
       });
     } catch (error) {
       console.error("Error al guardar datos en AsyncStorage:", error);
     }
   };
+
+  const isInputsDisabled = !grua; // Si no hay grúa seleccionada, los inputs están deshabilitados
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -58,7 +60,7 @@ const SetupIzaje = () => {
 
         <ScrollView contentContainerStyle={{ flexGrow: 2, height: 1000 }}>
           <View style={styles.titleContainer}>
-            <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
+            <Text style={styles.sectionTitle}>Configurar grúa</Text>
           </View>
 
           <View style={styles.container}>
@@ -79,33 +81,58 @@ const SetupIzaje = () => {
               onSelect={setGrua}
             />
 
-            {/* Formulario de radios */}
+            {/* Formulario de Largo de Pluma y Ángulo de Inclinación */}
             <View style={styles.inputWrapper}>
-              <Text style={styles.labelText}>
-                Radio Izaje (metros)           Radio Montaje (metros)
-              </Text>
+              <Text style={styles.labelText}>Ingrese los siguientes datos para la maniobra:</Text>
             </View>
 
             <View style={styles.inputContainer}>
+              {/* Componente personalizado para el largo de pluma */}
               <Components.NumericInput
-                label="Radio Izaje"
-                value={radioIzaje}
-                onChangeText={setRadioIzaje}
-                placeholder="Izaje"
+                label="Largo de pluma"
+                value={largoPluma}
+                onChangeText={setLargoPluma}
+                placeholder="Largo pluma (m.)"
+                onEndEditing={() => {
+                  if (largoPluma && !largoPluma.includes('m')) {
+                    setLargoPluma(largoPluma + ' m');
+                  }
+                }}
+                editable={!isInputsDisabled}
               />
+
+              {/* Componente personalizado para el ángulo de inclinación */}
               <Components.NumericInput
-                label="Radio Montaje"
-                value={radioMontaje}
-                onChangeText={setRadioMontaje}
-                placeholder="Montaje"
+                label="Ángulo de inclinación"
+                value={anguloInclinacion}
+                onChangeText={setAnguloInclinacion}
+                placeholder="Ángulo (°)"
+                onEndEditing={() => {
+                  if (anguloInclinacion && !anguloInclinacion.includes('°')) {
+                    setAnguloInclinacion(anguloInclinacion + '°');
+                  }
+                }}
+                editable={!isInputsDisabled} 
+              />
+            </View>
+            <View style={[styles.buttonContainer, { right: 40 }]}>
+              {/* Botón Volver */}
+              <Components.Button
+                label="Volver"
+                onPress={() => navigation.goBack()}
+                isCancel={true}
+                style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]} // Ajuste en el margen entre los botones
+              />
+
+              {/* Botón Continuar */}
+              <Components.Button
+                label="Continuar"
+                onPress={handleNavigateToSetupAparejos}
+                style={[styles.button, { width: '50%', right: 45 }]} // Ajuste en el margen entre los botones
               />
             </View>
 
-            <Components.Button
-              label="Configurar Aparejos"
-              onPress={handleNavigateToSetupAparejos}
-              style={{ marginTop: 10, marginBottom: 10, width: 330, left: -60 }}
-            />
+
           </View>
         </ScrollView>
       </View>
@@ -113,4 +140,4 @@ const SetupIzaje = () => {
   );
 };
 
-export default SetupIzaje;
+export default SetupGrua;

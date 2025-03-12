@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AdminPanel from '../screens/AdminPanel';
-import SetupIzaje from '../screens/SetupIzaje';
+import SetupCarga from '../screens/SetupCarga';
 import Profile from '../screens/Profile';
 import { ActivityIndicator, View } from 'react-native';
 
@@ -76,7 +76,7 @@ function TabNavigator() {
         console.log('Acceso denegado a AdminPanel. Roles actuales:', userRoles)
       )}
       
-      <Tab.Screen name="Settings" component={SetupIzaje} />
+      <Tab.Screen name="Settings" component={SetupCarga} />
     </Tab.Navigator>
   );
 }
