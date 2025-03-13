@@ -15,6 +15,7 @@ const SetupCarga = () => {
   const [alto, setAlto] = useState('');
   const [forma, setForma] = useState('');
   const [isFormaVisible, setIsFormaVisible] = useState(false);
+
   const [carga, setCarga] = useState({
     peso: '',
     largo: '',
@@ -34,9 +35,17 @@ const SetupCarga = () => {
   };
 
   const validateInputs = () => {
-    const newErrors = validateCarga(peso, largo, ancho, alto);
+    const newErrors = validateCarga(peso, largo, ancho, alto, forma);
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return Object.keys(newErrors).length === 0; 
+  };
+
+  const handleButtonPress = () => {
+    if (validateInputs()) {
+      setIsFormaVisible(true);
+    } else {
+      console.log('Existen errores de validación');
+    }
   };
 
   const handleNavigateToSetupGrua = () => {
@@ -76,7 +85,6 @@ const SetupCarga = () => {
     }
   };
 
-
   const largoLabel = forma === 'Círculo' ? 'diámetro' : forma === 'Cuadrado' ? 'lado' : 'largo';
   const largoPlaceholder = forma === 'Círculo' ? 'Diámetro' : forma === 'Cuadrado' ? 'Lado' : 'Largo';
 
@@ -91,27 +99,23 @@ const SetupCarga = () => {
           </View>
 
           <View style={[styles.container, { flexGrow: 1 }]}>
-            <Text style={[styles.labelText, { marginTop: 15, marginBottom: 10 }]}>Visualización de forma:</Text>
-            <View style={styles.visualizationContainer}>
-              <RenderForma
-                forma={carga.forma}
-                dimensiones={{
-                  largo: carga.largo,
-                  ancho: carga.ancho,
-                  profundidad: carga.alto,
-                }}
-              />
-            </View>
-
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>Seleccione forma:</Text>
             </View>
 
+            {errors.forma && (
+              <Text style={[styles.errorText, { marginTop: -17, left: -0.4 }]}>{errors.forma}</Text>
+            )}
             <Components.ConfigButton
               label="Configurar Forma"
               value={forma}
               onPress={() => setIsFormaVisible(true)}
+              style={[
+                { width: 315 },
+                errors.forma && { borderColor: 'red', borderWidth: 3, borderRadius: 10 },
+              ]}
             />
+
 
             <Text style={styles.labelText}>Ingrese el peso (kg) y el {largoLabel} (m) de la carga:</Text>
             <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
@@ -125,17 +129,19 @@ const SetupCarga = () => {
                   }}
                   placeholder="Peso de carga"
                   onEndEditing={() => {
-                    // Eliminar cualquier instancia de "k" sola o con espacios
-                    let cleanedValue = peso.replace(/\s*k$/, '').replace('k', '');
-                  
-                    // Si el valor no contiene "kg", se agrega al final.
-                    if (cleanedValue && !cleanedValue.includes('kg')) {
-                      const valueWithUnit = cleanedValue + ' kg';
-                      setPeso(valueWithUnit);
-                      handleInputChange('peso', valueWithUnit);
+                    let cleanedValue = peso.replace(/\s*k$/, '').replace('k', '').trim();
+                    if (cleanedValue.includes('kg')) {
+                      cleanedValue = cleanedValue.replace(/\s*kg.*$/, ' kg');
                     }
+                    if (cleanedValue && !cleanedValue.includes('kg')) {
+                      cleanedValue = cleanedValue + ' kg';
+                    }
+                    if (!/^(\d+(\.\d*)?)?$/.test(cleanedValue.replace(' kg', '').trim())) {
+                      cleanedValue = '';
+                    }
+                    setPeso(cleanedValue);
+                    handleInputChange('peso', cleanedValue);
                   }}
-                
                   editable={!!forma}
                   style={[
                     { width: 150 },
@@ -150,15 +156,24 @@ const SetupCarga = () => {
                   value={largo}
                   onChangeText={(value) => {
                     setLargo(value);
-                    handleInputChange('largo', value); 
+                    handleInputChange('largo', value);
                   }}
                   placeholder={largoPlaceholder}
                   onEndEditing={() => {
-                    if (largo && !largo.includes('m')) {
-                      setLargo(largo + ' m');
-                      handleInputChange('largo', largo + ' m');
+                    let cleanedValue = largo.replace(/\s*m$/, '').trim();
+                    if (cleanedValue.includes('m')) {
+                      cleanedValue = cleanedValue.replace(/\s*m.*$/, ' m');
                     }
-                  }}                
+                    if (cleanedValue && !cleanedValue.includes('m')) {
+                      cleanedValue = cleanedValue + ' m';
+                    }
+                    if (!/^(\d+(\.\d*)?)?$/.test(cleanedValue.replace(' m', '').trim())) {
+                      cleanedValue = '';
+                    }
+                    setLargo(cleanedValue);
+                    handleInputChange('largo', cleanedValue);
+                  }}
+                  
                   editable={!!forma}
                   style={[
                     { width: 150 },
@@ -182,11 +197,19 @@ const SetupCarga = () => {
                       }}
                       placeholder="Ancho"
                       onEndEditing={() => {
-                        if (ancho && !ancho.includes('m')) {
-                          setAncho(ancho + ' m');
-                          handleInputChange('ancho', ancho + ' m');
+                        let cleanedValue = ancho.replace(/\s*m$/, '').trim();
+                        if (cleanedValue.includes('m')) {
+                          cleanedValue = cleanedValue.replace(/\s*m.*$/, ' m');
                         }
-                      }}                  
+                        if (cleanedValue && !cleanedValue.includes('m')) {
+                          cleanedValue = cleanedValue + ' m';
+                        }
+                        if (!/^(\d+(\.\d*)?)?$/.test(cleanedValue.replace(' m', '').trim())) {
+                          cleanedValue = '';
+                        }
+                        setAncho(cleanedValue);
+                        handleInputChange('ancho', cleanedValue);
+                      }}
                       editable={!!forma}
                       style={[
                         { width: 150 },
@@ -205,11 +228,19 @@ const SetupCarga = () => {
                       }}
                       placeholder="Alto"
                       onEndEditing={() => {
-                        if (alto && !alto.includes('m')) {
-                          setAlto(alto + ' m');
-                          handleInputChange('alto', alto + ' m');
+                        let cleanedValue = alto.replace(/\s*m$/, '').trim();
+                        if (cleanedValue.includes('m')) {
+                          cleanedValue = cleanedValue.replace(/\s*m.*$/, ' m');
                         }
-                      }}                  
+                        if (cleanedValue && !cleanedValue.includes('m')) {
+                          cleanedValue = cleanedValue + ' m';
+                        }
+                        if (!/^(\d+(\.\d*)?)?$/.test(cleanedValue.replace(' m', '').trim())) {
+                          cleanedValue = '';
+                        }
+                        setAlto(cleanedValue);
+                        handleInputChange('alto', cleanedValue);
+                      }}
                       editable={!!forma}
                       style={[
                         { width: 150 },
@@ -226,6 +257,18 @@ const SetupCarga = () => {
               onPress={handleNavigateToSetupGrua}
               style={{ marginTop: 30, marginBottom: 30, width: 330, left: -60 }}
             />
+
+            <Text style={[styles.labelText, { marginTop: 15, marginBottom: 10 }]}>Visualización de forma:</Text>
+            <View style={styles.visualizationContainer}>
+              <RenderForma
+                forma={carga.forma}
+                dimensiones={{
+                  largo: carga.largo,
+                  ancho: carga.ancho,
+                  profundidad: carga.alto,
+                }}
+              />
+            </View>
           </View>
 
           <BS.BSForma

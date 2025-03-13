@@ -2,13 +2,14 @@ import React from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const ConfigButton = ({ label, value, onPress, width, align }) => {
+const ConfigButton = ({ label, value, onPress, width, align, style }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
       style={[
         styles.inputButton,
         { width: width || 'auto', alignSelf: align || 'flex-start' },
+        style // <-- Agregamos la prop style aquí para fusionarla
       ]}
     >
       <View style={styles.inputButtonContent}>
