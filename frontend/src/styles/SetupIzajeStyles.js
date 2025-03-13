@@ -62,7 +62,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 
-  visualizationContainer: {
+  visualizationCargaContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: '#ddd',
+  },
+  visualizationGruaContainer: {
+    marginTop: 20,
+    flex: 0,
+    width: '100%',
+    height: 430,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',

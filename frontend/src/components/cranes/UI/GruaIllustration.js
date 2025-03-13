@@ -20,7 +20,7 @@ export default function GruaIllustration() {
           style={[
             styles.box,
             {
-              transform: [{ scale: 0.3 }],
+              transform: [{ scale: 0.5 }],
             },
           ]}
         >
@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
   box: {
     height: 200,
     width: 200,
-    top: 230,
-    left: 0,
+    top: 340,
+    left: -10,
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',

@@ -2,26 +2,19 @@ import React from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const ConfigButton = ({ label, value, onPress, width, align, style }) => {
+const ConfigButton = ({ placeholder, value, onPress, disabled, width, align, style }) => {
   return (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={!disabled ? onPress : null} 
       style={[
         styles.inputButton,
         { width: width || 'auto', alignSelf: align || 'flex-start' },
-        style // <-- Agregamos la prop style aquí para fusionarla
+        style,
       ]}
     >
       <View style={styles.inputButtonContent}>
-        <Text
-          style={[
-            styles.inputButtonText,
-            { color: value ? '#000' : '#ccc' },
-          ]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {value || label}
+        <Text style={[styles.value, !value && styles.placeholder]}>
+          {value || placeholder}
         </Text>
         <Icon name="caret-down" size={20} color="#ccc" style={styles.icon} />
       </View>
@@ -57,6 +50,16 @@ const styles = {
   },
   icon: {
     marginLeft: 10,
+  },
+  value: {
+    fontSize: 18,
+    color: '#333',
+    flex: 1,
+  },
+  placeholder: {
+    fontSize: 18,
+    color: '#bbb',
+    flex: 1,
   },
 };
 

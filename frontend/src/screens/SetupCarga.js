@@ -105,8 +105,8 @@ const SetupCarga = () => {
               <Text style={[styles.errorText, { marginTop: -17, left: -0.4 }]}>{errors.forma}</Text>
             )}
             <Components.ConfigButton
-              label="Configurar Forma"
-              value={forma}
+              placeholder="Configurar Forma"
+              value={forma || ''}
               onPress={() => setIsFormaVisible(true)}
               style={[
                 { width: 315 },
@@ -257,7 +257,7 @@ const SetupCarga = () => {
             />
 
             <Text style={[styles.labelText, { marginTop: 15, marginBottom: 10 }]}>Visualización de forma:</Text>
-            <View style={styles.visualizationContainer}>
+            <View style={styles.visualizationCargaContainer}>
               <RenderForma
                 forma={carga.forma}
                 dimensiones={{
