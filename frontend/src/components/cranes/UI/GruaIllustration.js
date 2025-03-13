@@ -1,9 +1,8 @@
-import React from 'react';
+import React from 'react'; 
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import RT555 from '../../cranes/RT555/RT555.index';
 
-// Componente de los cables de la grúa
 function CablesGrua() {
   return (
     <View style={styles.cablesContainer}>
@@ -21,9 +20,7 @@ export default function GruaIllustration() {
           style={[
             styles.box,
             {
-              transform: [{ scale: 0.4 }],
-              top: -200, // Ajusta la posición vertical aquí
-              left: 11, // Ajusta la posición horizontal aquí
+              transform: [{ scale: 0.3 }],
             },
           ]}
         >
@@ -31,7 +28,7 @@ export default function GruaIllustration() {
             <RT555.BaseGrua />
             <RT555.RuedasGrua />
             <CablesGrua />
-            <RT555.BrazoGrua />
+            <RT555.Boom />
             <RT555.CabinaGrua />
             <RT555.GanchoGrua />
           </View>
@@ -41,7 +38,6 @@ export default function GruaIllustration() {
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -51,6 +47,8 @@ const styles = StyleSheet.create({
   box: {
     height: 200,
     width: 200,
+    top: 230,
+    left: 0,
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
@@ -61,6 +59,7 @@ const styles = StyleSheet.create({
   cablesContainer: {
     position: 'absolute',
     left: 16,
+    bottom: 0,
   },
   cable: {
     width: 1.5,

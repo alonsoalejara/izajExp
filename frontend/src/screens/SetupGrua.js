@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
+import GruaIllustration from '../components/cranes/UI/GruaIllustration';
 
 const SetupGrua = () => {
   const navigation = useNavigation();
@@ -117,7 +118,7 @@ const SetupGrua = () => {
             </View>
 
             <View style={styles.visualizationContainer}>
-                <Text>Hola mundo</Text>
+              <GruaIllustration />
             </View>
 
             <View style={[styles.buttonContainer, { right: 40 }]}>
@@ -126,14 +127,14 @@ const SetupGrua = () => {
                 label="Volver"
                 onPress={() => navigation.goBack()}
                 isCancel={true}
-                style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]} // Ajuste en el margen entre los botones
+                style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
               />
 
               {/* Botón Continuar */}
               <Components.Button
                 label="Continuar"
                 onPress={handleNavigateToSetupAparejos}
-                style={[styles.button, { width: '50%', right: 45 }]} // Ajuste en el margen entre los botones
+                style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>
 
