@@ -40,15 +40,13 @@ const SetupCarga = () => {
     return Object.keys(newErrors).length === 0; 
   };
 
-  const handleButtonPress = () => {
-    if (validateInputs()) {
-      setIsFormaVisible(true);
-    } else {
-      console.log('Existen errores de validación');
-    }
-  };
-
   const handleNavigateToSetupGrua = () => {
+      const pesoNum = parseFloat(peso.replace(/\s*kg$/, '').trim()); 
+      const largoNum = parseFloat(largo.replace(/\s*m$/, '').trim());
+      const anchoNum = parseFloat(ancho.replace(/\s*m$/, '').trim());
+      const altoNum = parseFloat(alto.replace(/\s*m$/, '').trim());
+
+    console.log("Datos que se están pasando a SetupGrua:", { ...carga, peso: pesoNum, largo: largoNum, ancho: anchoNum, alto: altoNum });
     if (largo === ancho && ancho === alto && largo !== '') {
       Alert.alert(
         "Dimensiones de un cubo detectadas",
@@ -255,7 +253,7 @@ const SetupCarga = () => {
             <Components.Button
               label="Continuar"
               onPress={handleNavigateToSetupGrua}
-              style={{ marginTop: 30, marginBottom: 30, width: 330, left: -60 }}
+              style={{ marginTop: 15, marginBottom: 0, width: 330, left: -60 }}
             />
 
             <Text style={[styles.labelText, { marginTop: 15, marginBottom: 10 }]}>Visualización de forma:</Text>
