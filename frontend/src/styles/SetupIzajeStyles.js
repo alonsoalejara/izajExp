@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: -5,
+    marginTop: 3,
     height: 80,
   },
   buttonContainer: {
@@ -70,9 +70,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: '#ddd',
   },
-
-  
-
+  // Errores
+  inputField: {
+    width: 150,
+    marginBottom: 5, // Espacio entre el error y el input
+  },
+  errorText: {
+    top: 13,
+    left: 1,
+    color: 'red',
+    fontSize: 16,
+    marginBottom: 3, // Espacio entre el error y el input
+  },
 });
 
 export default styles;
