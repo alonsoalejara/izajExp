@@ -115,6 +115,11 @@ const SetupGrua = () => {
                 editable={!isInputsDisabled} 
               />
             </View>
+
+            <View style={styles.visualizationContainer}>
+                <Text>Hola mundo</Text>
+            </View>
+
             <View style={[styles.buttonContainer, { right: 40 }]}>
               {/* Botón Volver */}
               <Components.Button
