@@ -8,13 +8,15 @@ import Components from '../components/Components.index';
 import GruaIllustration from '../components/cranes/UI/GruaIllustration';
 import RenderGrid from '../utils/render/renderGrid';
 import { getGridContainerStyle } from '../utils/gridStyles';
-import { getGruaIllustrationStyle } from '../utils/gruaStyles';  
+import { getGruaIllustrationStyle } from '../utils/gruaStyles'; 
+import validationCrane from '../utils/validation/validationCrane';
 
 const SetupGrua = () => {
   const navigation = useNavigation();
   const [isGruaModalVisible, setGruaModalVisible] = useState(false);
   const [isLargoPlumaModalVisible, setLargoPlumaModalVisible] = useState(false);
   const [grua, setGrua] = useState('');
+  const [errorGrua, setErrorGrua] = useState('');
   const [largoPluma, setLargoPluma] = useState('');
   const [anguloInclinacion, setAnguloInclinacion] = useState('');
   const [usuarioId, setUsuarioId] = useState(null);
@@ -40,6 +42,12 @@ const SetupGrua = () => {
   };
 
   const handleNavigateToSetupAparejos = async () => {
+    if (!grua) {
+      setErrorGrua("Debe seleccionar una grúa antes de continuar.");
+      return;
+    }
+    setErrorGrua(''); // Limpiar el error si ya seleccionó una grúa
+  
     try {
       const data = {
         grua,
@@ -72,17 +80,22 @@ const SetupGrua = () => {
               <Text style={styles.labelText}>Seleccione grúa:</Text>
             </View>
 
+            {errorGrua ? <Text style={[styles.errorText, { marginTop: -16 }]}>{errorGrua}</Text> : null}
             <Components.ConfigButton
               label="Configurar Grúa"
               value={grua?.nombre || ''}
               placeholder="Seleccionar grúa"
               onPress={() => openModal(setGruaModalVisible)}
+              style={[
+                errorGrua && { borderColor: 'red', borderWidth: 3, borderRadius: 10 },
+              ]}
             />
             <BS.BSGrua
               isVisible={isGruaModalVisible}
               onClose={() => setGruaModalVisible(false)}
               onSelect={(selectedGrua) => {
                 setGrua(selectedGrua);
+                setErrorGrua('');
                 
                 if (selectedGrua.nombre === "Terex RT555") {
                   setLargoPluma("10.5 m");
