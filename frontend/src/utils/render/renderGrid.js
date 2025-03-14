@@ -7,7 +7,7 @@ const RenderGrid = () => {
   const squareSize = 30; // Tamaño de cada cuadrado
 
   // Los valores específicos para el eje Y (invertidos)
-  const initialYValues = [33.5, 26.9, 24.3, 19.8, 15.2, 10.6];
+  const initialYValues = [33.5, 26.9, 24.3, 19.8, 15.2, 10.5];
 
   // Crear la cuadrícula
   const squares = [];
@@ -55,7 +55,7 @@ const RenderGrid = () => {
       topPosition -= 93; // Mueve 19.8 hacia arriba
     } else if (value === 15.2) {
       topPosition -= 108; // Mueve 15.2 hacia abajo
-    } else if (value === 10.6) {
+    } else if (value === 10.5) {
       topPosition -= 123; // Mueve 10.6 hacia arriba
     }
 
