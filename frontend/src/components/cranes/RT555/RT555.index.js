@@ -1,7 +1,7 @@
 import RuedasGrua from './RuedasGrua';
 import GanchoGrua from './GanchoGrua';
 import CabinaGrua from './CabinaGrua';
-import Boom from './boom/boom.index';
+import Boom from './boom/Boom.index';
 import BaseGrua from './BaseGrua';
 
 const RT555 = {
