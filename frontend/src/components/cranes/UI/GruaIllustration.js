@@ -3,18 +3,11 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import RT555 from '../../cranes/RT555/RT555.index';
 
-export default function GruaIllustration() {
+export default function GruaIllustration({ style }) {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <View
-          style={[
-            styles.box,
-            {
-              transform: [{ scale: 0.20 }],
-            },
-          ]}
-        >
+        <View style={[styles.box, style]}>
           <View style={styles.gruaContainer}>
             <RT555.BaseGrua />
             <RT555.RuedasGrua />

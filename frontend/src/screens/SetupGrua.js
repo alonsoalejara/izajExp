@@ -8,6 +8,7 @@ import Components from '../components/Components.index';
 import GruaIllustration from '../components/cranes/UI/GruaIllustration';
 import RenderGrid from '../utils/render/renderGrid';
 import { getGridContainerStyle } from '../utils/gridStyles';
+import { getGruaIllustrationStyle } from '../utils/gruaStyles';  
 
 const SetupGrua = () => {
   const navigation = useNavigation();
@@ -147,14 +148,12 @@ const SetupGrua = () => {
             <View style={styles.visualizationGruaContainer}>
               {grua?.nombre === "Terex RT555" ? (
                 <View style={{ flex: 1, position: 'relative' }}>
-                  {/* Cuadrícula en el fondo */}
+                  {/* Render del grid */}
                   <View style={getGridContainerStyle(largoPluma)}>
                     <RenderGrid />
                   </View>
-                  {/* Ilustración de la grúa superpuesta */}
-                  <View style={styles.gruaOverlay}>
-                    <GruaIllustration />
-                  </View>
+                  {/* Render de la ilustración con estilo propio */}
+                  <GruaIllustration style={getGruaIllustrationStyle(largoPluma)} />
                 </View>
               ) : (
                 <Text style={styles.labelText}>No disponible</Text>

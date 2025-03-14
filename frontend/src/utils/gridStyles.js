@@ -13,7 +13,7 @@ export const getGridContainerStyle = (largoPluma) => {
       case '10.5 m':
         return { position: 'absolute', top: -130, left: -120, right: 0, bottom: 0, transform: [{ scale: 2.1 }] };
       default:
-        return { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, transform: [{ scale: 1 }] };
+        return { position: 'absolute', top: -130, left: -120, right: 0, bottom: 0, transform: [{ scale: 2.1 }] };
     }
   };
   
