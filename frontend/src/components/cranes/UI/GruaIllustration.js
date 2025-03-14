@@ -3,15 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import RT555 from '../../cranes/RT555/RT555.index';
 
-function CablesGrua() {
-  return (
-    <View style={styles.cablesContainer}>
-      <View style={styles.cable} />
-      <View style={[styles.cable, { left: -376 }]} />
-    </View>
-  );
-}
-
 export default function GruaIllustration() {
   return (
     <SafeAreaProvider>
@@ -20,14 +11,13 @@ export default function GruaIllustration() {
           style={[
             styles.box,
             {
-              transform: [{ scale: 0.5 }],
+              transform: [{ scale: 0.20 }],
             },
           ]}
         >
           <View style={styles.gruaContainer}>
             <RT555.BaseGrua />
             <RT555.RuedasGrua />
-            <CablesGrua />
             <RT555.Boom />
             <RT555.CabinaGrua />
             <RT555.GanchoGrua />
@@ -47,26 +37,13 @@ const styles = StyleSheet.create({
   box: {
     height: 200,
     width: 200,
-    top: 340,
-    left: -10,
+    top: 268,
+    left: 30,
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
   },
   gruaContainer: {
     position: 'relative',
-  },
-  cablesContainer: {
-    position: 'absolute',
-    left: 16,
-    bottom: 0,
-  },
-  cable: {
-    width: 1.5,
-    height: 200,
-    backgroundColor: '#0000aa',
-    position: 'absolute',
-    left: -364,
-    bottom: 630,
   },
 });

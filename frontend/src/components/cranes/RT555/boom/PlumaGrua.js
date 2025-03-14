@@ -5,8 +5,8 @@ import StyledView from '../../UI/StyledView';
 const PlumaGrua = () => (
   <View style={styles.container}>
     <StyledView
-      width={730}
-      height={18}
+      width={1680}
+      height={25}
       backgroundColor="#ffcc00"
       borderWidth={1.1}
       borderColor="#000"
@@ -17,11 +17,11 @@ const PlumaGrua = () => (
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 438,
-    right: 1,
+    bottom: 900,
+    right: 40,
     width: 400,
     height: 100,
-    transform: [{ rotate: '62deg' }],
+    transform: [{ rotate: '75deg' }],
     alignItems: 'center',
   },
 });

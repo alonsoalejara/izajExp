@@ -74,13 +74,31 @@ const styles = StyleSheet.create({
     marginTop: 20,
     flex: 0,
     width: '100%',
-    height: 430,
+    height: 400,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',
     borderWidth: 1,
     borderRadius: 10,
     borderColor: '#ddd',
+    overflow: 'hidden',
+  },
+  // Render de plano cartesiano
+  gridContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  gruaOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   // Errores
   inputField: {

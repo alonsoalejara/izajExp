@@ -1,14 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
 import PlumaGrua from './PlumaGrua';
-import RuedasPluma from './RuedasPluma';
-import GuardaCableado from './Guardacableado';
+import CableStorage from './cableStorage/cableStorage.index';
 
 const Boom = () => (
   <View>
     <PlumaGrua />
-    <RuedasPluma />
-    <GuardaCableado />
+    <CableStorage />
   </View>
 );
 
