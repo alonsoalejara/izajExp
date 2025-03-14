@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Alert, ScrollView } from 'react-native';
-import { generarPDF } from '../utils/PDFGenerator';
+import { generarPDF } from '../utils/PDF/PDFGenerator';
 import styles from '../styles/TablasStyles.js';
 import Components from '../components/Components.index.js';
 import { obtenerDatosTablas } from '../data/tablasData';

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
-import TablasStyles from '../styles/TablasStyles';
+import TablasStyles from '../../styles/TablasStyles';
 import { convertirImagenABase64 } from './pdfUtils';
 import { generarHTML } from './pdfTemplate';
 
@@ -11,7 +11,7 @@ export const generarPDF = async (selectedGrua, rows, totalPesoAparejos, cargaRow
   console.log('PDFGenerator.js: selectedGrua:', selectedGrua);
   console.log('PDFGenerator.js: rows:', rows);
 
-  const base64Imagen = await convertirImagenABase64(require('../../assets/EI-Montajes.png'));
+  const base64Imagen = await convertirImagenABase64(require('../../../assets/EI-Montajes.png'));
   const imagenBase64 = `data:image/png;base64,${base64Imagen}`;
 
   const htmlContent = generarHTML(rows, totalPesoAparejos, cargaRows, datosGruaRows, imagenBase64);

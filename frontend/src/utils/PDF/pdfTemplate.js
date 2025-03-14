@@ -1,4 +1,4 @@
-import { estilosPDF } from '../styles/PDFStyles';
+import { estilosPDF } from '../../styles/PDFStyles';
 
 export const generarHTML = (rows, totalPesoAparejos, cargaRows, datosGrúaRows, base64Imagen) => {
     return `

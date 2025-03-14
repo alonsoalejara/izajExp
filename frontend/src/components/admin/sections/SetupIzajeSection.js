@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../../styles/AdminSectionStyles';
 import getApiUrl from '../../../utils/apiUrl';
 import Components from '../../../components/Components.index';
-import { generarPDF } from '../../../utils/PDFGenerator'; 
+import { generarPDF } from '../../../utils/PDF/PDFGenerator'; 
 
 const SetupIzajeSection = ({ setupIzaje = [], setSetups }) => {
     const [selectedSetup, setSelectedSetup] = useState(null);

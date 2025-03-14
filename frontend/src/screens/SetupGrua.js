@@ -6,7 +6,7 @@ import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
 import GruaIllustration from '../components/cranes/UI/GruaIllustration';
-import RenderGrid from '../utils/renderGrid';
+import RenderGrid from '../utils/render/renderGrid';
 
 const SetupGrua = () => {
   const navigation = useNavigation();

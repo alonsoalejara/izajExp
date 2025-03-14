@@ -4,8 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import Components from '../components/Components.index';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
-import RenderForma from '../utils/renderForma';
-import { validateCarga } from '../utils/validateCarga';
+import RenderForma from '../utils/render/renderForma';
+import { validateCarga } from '../utils/validation/validateCarga';
 
 const SetupCarga = () => {
   const navigation = useNavigation();
