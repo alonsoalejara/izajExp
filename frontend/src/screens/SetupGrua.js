@@ -83,9 +83,12 @@ const SetupGrua = () => {
               onClose={() => setGruaModalVisible(false)}
               onSelect={(selectedGrua) => {
                 setGrua(selectedGrua);
+                
                 if (selectedGrua.nombre === "Terex RT555") {
+                  setLargoPluma("10.5 m");
                   setAnguloInclinacion("67°");
                 } else {
+                  setLargoPluma("");
                   setAnguloInclinacion("");
                 }
               }}
@@ -114,7 +117,31 @@ const SetupGrua = () => {
               <Components.NumericInput
                 label="Ángulo de inclinación"
                 value={anguloInclinacion}
-                onChangeText={setAnguloInclinacion}
+                onChangeText={(text) => {
+                  // Eliminar el símbolo de grados si existe
+                  let cleanedValue = text.replace('°', '').trim();
+
+                  // Aseguramos que el valor esté dentro del rango de 10° a 75°
+                  if (cleanedValue) {
+                    let numValue = parseInt(cleanedValue, 10);
+
+                    // Si el valor es menor que 10, lo ajustamos a 10
+                    if (numValue < 10) {
+                      numValue = 10;
+                    }
+
+                    // Si el valor es mayor que 75, lo ajustamos a 75
+                    if (numValue > 75) {
+                      numValue = 75;
+                    }
+
+                    // Asignamos el valor ajustado y le añadimos el símbolo de grados
+                    setAnguloInclinacion(`${numValue}°`);
+                  } else {
+                    // Si no hay valor, lo dejamos vacío
+                    setAnguloInclinacion('');
+                  }
+                }}
                 placeholder="Ángulo (°)"
                 onEndEditing={() => {
                   if (anguloInclinacion && !anguloInclinacion.includes('°')) {
@@ -122,8 +149,11 @@ const SetupGrua = () => {
                   }
                 }}
                 editable={!isInputsDisabled} 
-                style={{ width: 150 }}
+                style={{ width: 150, height: 59, top: 10 }}
+                showControls={true}
+                showClearButton={false}
               />
+
             </View>
 
             <View style={[styles.buttonContainer, { right: 40, marginTop: 15, marginBottom: -20 }]}>              
@@ -146,7 +176,9 @@ const SetupGrua = () => {
             </View>
 
             <View style={styles.visualizationGruaContainer}>
-              {grua?.nombre === "Terex RT555" ? (
+              {!grua ? (
+                <Text style={[styles.labelText, { color: '#ccc'}]}>Debe seleccionar una grúa para visualizar.</Text>
+              ) : grua.nombre === "Terex RT555" ? (
                 <View style={{ flex: 1, position: 'relative' }}>
                   {/* Render del grid */}
                   <View style={getGridContainerStyle(largoPluma)}>
