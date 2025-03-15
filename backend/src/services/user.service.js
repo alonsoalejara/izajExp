@@ -16,7 +16,7 @@ async function getUsers() {
 
 async function createUser(user) {
   try {
-    const { nombre, apellido, rut, phone, specialty, email, roles, password } = user;
+    const { nombre, apellido, rut, phone, position, specialty, email, roles, password } = user;
 
     const userFound = await User.findOne({ email });
     if (userFound) return [null, "El usuario ya existe"];
@@ -33,6 +33,7 @@ async function createUser(user) {
       apellido: user.apellido,
       rut: user.rut,
       phone: user.phone,
+      position: user.position,
       specialty: user.specialty,
       email: user.email,
       password: encryptedPassword,
@@ -61,14 +62,14 @@ async function updateUser(id, user) {
     const userFound = await User.findById(id);
     if (!userFound) return [null, "El usuario no existe"];
 
-    const { nombre, apellido, rut, email, roles, phone, specialty } = user;
+    const { nombre, apellido, rut, email, roles, phone, position, specialty } = user;
 
     const validRoles = roles.filter(role => Object.values(ROLES).includes(role));
     if (validRoles.length === 0) return [null, "El rol no existe"];
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { nombre, apellido, rut, email, roles: validRoles, phone, specialty },
+      { nombre, apellido, rut, email, roles: validRoles, phone, position, specialty },
       { new: true }
     );
 

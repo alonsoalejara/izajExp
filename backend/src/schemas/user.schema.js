@@ -27,6 +27,11 @@ const userBodySchema = Joi.object({
     "any.required": "El teléfono es obligatorio.",
     "string.base": "El teléfono debe ser de tipo string.",
   }),
+  position: Joi.string().required().messages({
+    "string.empty": "El cargo no puede estar vacío.",
+    "any.required": "El cargo es obligatorio.",
+    "string.base": "El cargo debe ser de tipo string.",
+  }),
   specialty: Joi.string().required().messages({
     "string.empty": "La especialidad no puede estar vacía.",
     "any.required": "La especialidad es obligatoria.",

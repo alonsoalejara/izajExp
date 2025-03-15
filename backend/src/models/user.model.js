@@ -44,6 +44,14 @@ const userSchema = new Schema(
       required: [true, 'El teléfono es obligatorio'],
       match: [/^\+569\d{8}$/, 'El teléfono debe seguir el formato +569 seguido de 8 dígitos'],
     },
+    position: {
+      type: String,
+      required: [true, 'El cargo es obligatorio'],
+      enum: {
+        values: ['Jefe Área', 'Capataz', 'Supervisor'],
+        message: 'El cargo debe ser una de las siguientes: Estructura, Obras Civiles, Piping, Mecánica, Eléctrica',
+      },
+    },
     specialty: {
       type: String,
       required: [true, 'La especialidad es obligatoria'],
