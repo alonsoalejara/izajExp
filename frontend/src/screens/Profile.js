@@ -174,24 +174,36 @@ const Profile = () => {
 
       {/* Sección  */}
       {selectedButton === 'MisDatos' && (
-        <View style={[styles.userDataContainer, { top: -20 }]}>
+        <View style={[styles.userDataContainer, { top: -33 }]}>
           <Text style={styles.userName}>{user?.name}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
           <Components.UserDataSection user={user} />
+          <View style={styles.logoutContainer}>
+            <Components.Button 
+              label="Cerrar Sesión" 
+              onPress={handleSignOut} 
+              style={[styles.logoutButton, { top: -28 }]} 
+            />
+          </View>
         </View>
       )}
 
       {selectedButton === 'MisPlanes' && (
         <View style={{ top: 300, flex: 1 }}>
           <ScrollView contentContainerStyle={{ paddingBottom: 310 }}>
-            <Section.SetupIzajeSection setupIzaje={setupIzaje} setSetups={setSetups} />
+            <Section.SetupIzajeSection
+              setupIzaje={setupIzaje}
+              setSetups={setSetups}
+              currentUser={user}
+              isAdminPanel={false}
+            />
           </ScrollView>
         </View>
       )}
 
       {/* Botón de cerrar sesión */}
       {selectedButton === 'MisDatos' && (
-        <View style={[styles.logoutContainer, { flex: 0, top: -30 }]}>
+        <View style={[styles.logoutContainer, { flex: 1, top: 300 }]}>
           <Components.Button label="Cerrar Sesión" onPress={handleSignOut} style={styles.logoutButton} />
         </View>
       )}

@@ -29,7 +29,6 @@ export default function Login({ navigation }) {
 
             console.log("🔄 Respuesta recibida. Estado HTTP:", response.status);
             const data = await response.json();
-            console.log("📨 Datos de la API:", JSON.stringify(data, null, 2));
 
             if (response.ok) {
                 if (data && data.data) {

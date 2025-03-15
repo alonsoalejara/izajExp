@@ -286,6 +286,7 @@ function AdminPanel() {
             }}
             handleDelete={handleDeleteSetupIzaje}
             setSetups={setSetupsState}
+            isAdminPanel={true}
           />
         )}
 
