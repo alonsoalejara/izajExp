@@ -2,7 +2,7 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Tabla from '../components/Tabla';
+import Components from '../components/Components.index';
 
 const CollabTablas = ({ route }) => {
   const { setup } = route.params;
@@ -19,7 +19,7 @@ const CollabTablas = ({ route }) => {
       
       <ScrollView style={styles.scrollContainer}>
         {/* Información general del plan en tabla */}
-        <Tabla
+        <Components.Tabla
           titulo="Información General"
           data={[
             { descripcion: 'Supervisor', cantidad: `${setup.usuario?.nombre} ${setup.usuario?.apellido}` },
@@ -29,7 +29,7 @@ const CollabTablas = ({ route }) => {
         />
 
         {/* Datos del plan de izaje */}
-        <Tabla
+        <Components.Tabla
           titulo="Datos del Plan de Izaje"
           data={[
             { descripcion: 'Largo de Pluma (m)', cantidad: setup.datos?.largoPluma },
@@ -38,7 +38,7 @@ const CollabTablas = ({ route }) => {
         />
 
         {/* Cargas */}
-        <Tabla
+        <Components.Tabla
           titulo="Cargas"
           data={[
             { descripcion: 'Peso del Equipo (kg)', cantidad: setup.cargas?.pesoEquipo },
@@ -52,7 +52,7 @@ const CollabTablas = ({ route }) => {
         />
 
         {/* Aparejos */}
-        <Tabla
+        <Components.Tabla
           titulo="Aparejos"
           data={setup.aparejos?.map((aparejo, index) => ({
             descripcion: aparejo.descripcion,
@@ -61,6 +61,9 @@ const CollabTablas = ({ route }) => {
             pesoTotal: aparejo.pesoTotal
           })) || []}
         />
+
+        {/* Botones */}
+        <Components.Button label="Enviar PDF" style={[styles.button, { width: '90%', marginTop: 20, marginBottom: 20, left: -37 }]}></Components.Button>
       </ScrollView>
     </View>
   );
@@ -75,7 +78,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 0,
     marginTop: 30,
-    marginBottom: 50,
+    marginBottom: 60,
   },
   title: {
     fontSize: 22,
