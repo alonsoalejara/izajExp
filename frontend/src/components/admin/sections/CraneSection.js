@@ -3,13 +3,16 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import styles from '../../../styles/AdminSectionStyles';
 
 const CraneSection = ({ gruas }) => {
+  // Filtrar solo la grúa que queremos mostrar
+  const gruasFiltradas = gruas.filter(grua => grua.nombre === "Terex RT555");
+
   return (
     <View style={styles.section}>
-      {gruas.map((grua, index) => (
+      {gruasFiltradas.map((grua, index) => (
         <View key={grua._id || `grua-${index}`} style={styles.card}>
           <TouchableOpacity>
             <View style={styles.titleContainer}>
-              <Text style={[styles.cardTitle,{ fontSize: 22 }]}>{grua.nombre}</Text>
+              <Text style={[styles.cardTitle, { fontSize: 22 }]}>{grua.nombre}</Text>
               <View style={styles.profileCircle}>
                 <Image source={require('../../../../assets/blank-crane-image.png')} style={styles.profileImage} />
               </View>            
