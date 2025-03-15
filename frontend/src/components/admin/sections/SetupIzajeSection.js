@@ -137,12 +137,22 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPan
                             <View style={styles.cardExpandedDetails}>
 
                                 {/* Botones para compartir PDF y eliminar */}
-                                <View style={[styles.buttonContainerCard, { marginLeft: -110, marginTop: -3, marginBottom: -160, bottom: 0, top: 15, left: -5 }]}>
-                                <Components.Button
+                                <View style={[
+                                    styles.buttonContainerCard, 
+                                    { 
+                                        marginLeft: -110, 
+                                        marginTop: isAdminPanel ? -3 : 2, 
+                                        marginBottom: isAdminPanel ? -160 : -100,
+                                        bottom: 0, 
+                                        top: 15, 
+                                        left: -5 
+                                    }
+                                    ]}>
+                                    <Components.Button
                                         label="Ver"
                                         onPress={() => console.log('Ver presionado')}
                                         isCancel={true}
-                                        style={[styles.button, { backgroundColor: 'trasparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
+                                        style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
                                     />
                                     <Components.Button
                                         label="Editar"
@@ -151,14 +161,14 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPan
                                         style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
                                     />
                                     {isAdminPanel && (
-                                    <Components.Button
+                                        <Components.Button
                                         label="Eliminar"
                                         onPress={() => console.log('Eliminar presionado')}
                                         isCancel={true}
                                         style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
-                                    />
+                                        />
                                     )}
-                                </View>
+                                    </View>
                             </View>
                         )}
                     </View>

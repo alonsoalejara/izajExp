@@ -183,8 +183,12 @@ const Profile = () => {
 
       {selectedButton === 'MisPlanes' && (
         <View style={{ top: 300, flex: 1 }}>
-          <ScrollView contentContainerStyle={{ paddingBottom: 310 }}>
-            <Section.SetupIzajeSection setupIzaje={setupIzaje} setSetups={setSetups} />
+          <ScrollView contentContainerStyle={{ paddingBottom: 310, marginBottom: 20 }}>
+            <Section.SetupIzajeSection 
+              setupIzaje={setupIzaje} 
+              setSetups={setSetups} 
+              currentUser={user}
+            />
           </ScrollView>
         </View>
       )}
