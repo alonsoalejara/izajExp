@@ -238,7 +238,7 @@ function AdminPanel() {
                 navigation.navigate('AddCollabName');
               }
             }}
-            style={{ width: '40%', left: -59 }}
+            style={{ width: '100%', left: -59 }}
           />
         </View>
       )}

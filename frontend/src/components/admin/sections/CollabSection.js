@@ -4,8 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../../styles/AdminSectionStyles'; 
 import getApiUrl from '../../../utils/apiUrl';
 import Components from '../../../components/Components.index';
+import { useNavigation } from '@react-navigation/native';
 
 const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
+  const navigation = useNavigation();
   const [selectedCard, setSelectedCard] = useState(null);
 
   const handleCardPress = (_id) => {
@@ -49,38 +51,62 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
     }
   };
 
+  // Filtramos para excluir a usuarios con rol "admin"
   const colaboradoresFiltrados = colaboradores.filter(colaborador => !colaborador.roles.includes('admin'));
 
   return (
     <View style={styles.section}>
       {colaboradoresFiltrados.map((colaborador, index) => (
-        <View key={colaborador._id || `colaborador-${index}`} style={styles.card}>
+        <View key={colaborador._id || `colaborador-${index}`} style={[styles.card, { marginBottom: 10 }]}>
           <TouchableOpacity onPress={() => handleCardPress(colaborador._id)}>
-            {/* Contenedor del título y la imagen */}
             <View style={styles.titleContainer}>
-              <Text style={[styles.cardTitle, { fontSize: 22 }]}>{colaborador.nombre} {colaborador.apellido}</Text>
+              <Text style={[styles.cardTitle, { fontSize: 22 }]}>
+                {colaborador.nombre} {colaborador.apellido} 
+              </Text>
               <View style={styles.profileCircle}>
-                <Image source={require('../../../../assets/blank-user-image.png')} style={[styles.profileImage, { top: 6 }]} />
+                <Image 
+                  source={require('../../../../assets/blank-user-image.png')} 
+                  style={[styles.profileImage, { top: 6 }]} 
+                />
               </View>            
             </View>
-
-            <Text style={styles.cardDetail}><Text style={styles.labelText}>RUT: </Text>{colaborador.rut}</Text>
-            <Text style={styles.cardDetail}><Text style={styles.labelText}>Teléfono: </Text>{colaborador.phone}</Text>
-            <Text style={styles.cardDetail}><Text style={styles.labelText}>Especialidad: </Text>{colaborador.specialty}</Text>
-            <Text style={styles.cardDetail}><Text style={styles.labelText}>Email: </Text>{colaborador.email}</Text>
+            <Text style={styles.cardDetail}>
+              <Text style={styles.labelText}>RUT: </Text>{colaborador.rut}
+            </Text>
+            <Text style={styles.cardDetail}>
+              <Text style={styles.labelText}>Teléfono: </Text>{colaborador.phone}
+            </Text>
+            <Text style={styles.cardDetail}>
+              <Text style={styles.labelText}>Especialidad: </Text>{colaborador.specialty}
+            </Text>
+            <Text style={styles.cardDetail}>
+              <Text style={styles.labelText}>Email: </Text>{colaborador.email}
+            </Text>
           </TouchableOpacity>
 
           {selectedCard === colaborador._id && (
-            <View style={[styles.buttonContainerCard, { marginLeft: -120, top: 15, left: 10 }]}>
+            <View style={[styles.buttonContainerCard, { marginLeft: -110, marginTop: -10, marginBottom: -70, bottom: 0, top: 15, left: 0 }]}>
+              {/* Botón "Ver": envía los datos del colaborador y la bandera fromCollab */}
+              <Components.Button
+                label="Ver"
+                onPress={() => {
+                  console.log('Datos pasados a CollabProfile:', colaborador);
+                  navigation.push('CollabProfile', { userData: colaborador, fromCollab: true });
+                }}
+                isCancel={true}
+                style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '42%', marginHorizontal: -53 }]}
+              />
               <Components.Button
                 label="Editar"
                 onPress={() => handleEdit(colaborador)}
-                style={[styles.button, { width: '30%', left: 40 }]}
+                isCancel={true}
+                style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '42%', marginHorizontal: -53 }]}
               />
               <Components.Button
                 label="Eliminar"
                 onPress={() => confirmDelete(colaborador._id)}
-                style={[styles.button, { width: '30%' }]}
+                isCancel={true}
+                style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '42%', marginHorizontal: -53 }]}
               />
             </View>
           )}

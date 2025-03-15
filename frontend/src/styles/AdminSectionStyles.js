@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         marginTop: 10,
+        paddingBottom: 55,
         marginLeft: 37,
       },
       contentContainer: {
@@ -27,7 +28,8 @@ const styles = StyleSheet.create({
       buttonContainerCard: {
         flexDirection: 'row',
         marginTop: 10,
-        justifyContent: 'space-around',
+        justifyContent: 'center', // Centra los botones en lugar de separarlos
+        gap: 0, // Espaciado entre botones (opcional)
       },
       actionButton: {
         width: 120,
