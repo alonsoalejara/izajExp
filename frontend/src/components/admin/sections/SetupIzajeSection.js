@@ -113,71 +113,50 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPan
                 filteredSetups.map((setup) => (
                     <View key={setup._id} style={styles.card}>
                         <TouchableOpacity onPress={() => setSelectedSetup(selectedSetup === setup._id ? null : setup._id)}>
-                            <Text style={[styles.cardTitle, { fontWeight: '400' }]}>
-                                Responsable: {setup.usuario.nombre && setup.usuario.apellido
-                                    ? `${setup.usuario.nombre} ${setup.usuario.apellido}`
-                                    : 'No disponible'}
+                            <Text style={[styles.cardTitle, { fontWeight: '700' }]}>
+                                Supervisor: <Text style={{ fontWeight: '400' }}>
+                                    {setup.usuario.nombre && setup.usuario.apellido
+                                        ? `${setup.usuario.nombre} ${setup.usuario.apellido}`
+                                        : 'No disponible'}
+                                </Text>
                             </Text>
-                            <Text style={[styles.cardDetail, { fontWeight: '400', color: '#777' }]}>
-                                Especialidad: {setup.usuario.specialty || 'No disponible'}
+                            <Text style={[styles.cardDetail, { fontWeight: '700', color: '#777' }]}>
+                                Especialidad: <Text style={{ fontWeight: '400' }}>
+                                    {setup.usuario.specialty || 'No disponible'}
+                                </Text>
                             </Text>
                             <View>
-                                <Text style={[styles.labelText, { fontWeight: '400', fontSize: 16, color: '#777' }]}>
-                                    Fecha de planificación:
-                                </Text>
-                                <Text style={[styles.cardDetail, { fontWeight: '400', color: '#777' }]}>
-                                    {setup.createdAt ? formatDate(setup.createdAt) : 'No disponible'}
+                                <Text style={[styles.labelText, { top: 8, fontWeight: 'bold', fontSize: 16, color: '#777' }]}>
+                                    Fecha: <Text style={{ fontWeight: '400' }}>
+                                        {setup.createdAt ? formatDate(setup.createdAt) : 'No disponible'}
+                                    </Text>
                                 </Text>
                             </View>
                         </TouchableOpacity>
                         {selectedSetup === setup._id && (
                             <View style={styles.cardExpandedDetails}>
-                                <Text style={[styles.cardSubtitle, { fontSize: 18, fontWeight: '400' }]}>Datos de grúa:</Text>
-                                <Text style={styles.cardDetail}>
-                                    <Text style={[styles.labelText, { fontWeight: '400' }]}>Largo de Pluma: </Text>
-                                    {setup.datos ? setup.datos.largoPluma : 'No disponible'} m
-                                </Text>
-                                <Text style={styles.cardDetail}>
-                                    <Text style={[styles.labelText, { fontWeight: '400' }]}>Contrapeso: </Text>
-                                    {setup.datos ? setup.datos.contrapeso : 'No disponible'} toneladas
-                                </Text>
-
-                                <Text style={[styles.cardSubtitle, { fontSize: 18, fontWeight: '400' }]}>Aparejos:</Text>
-                                {setup.aparejos && setup.aparejos.length > 0 ? (
-                                    setup.aparejos.map((aparejo, index) => (
-                                        <View key={index} style={styles.cardItem}>
-                                            <Text style={styles.cardDetail}>
-                                                <Text style={[styles.labelText, { fontWeight: '400' }]}>Descripción: </Text>
-                                                {aparejo.descripcion || 'No disponible'}
-                                            </Text>
-                                            <Text style={styles.cardDetail}>
-                                                <Text style={[styles.labelText, { fontWeight: '400' }]}>Cantidad: </Text>
-                                                {aparejo.cantidad || 'No disponible'}
-                                            </Text>
-                                            <Text style={styles.cardDetail}>
-                                                <Text style={[styles.labelText, { fontWeight: '400' }]}>Peso Unitario: </Text>
-                                                {aparejo.pesoUnitario || 'No disponible'} kg
-                                            </Text>
-                                        </View>
-                                    ))
-                                ) : (
-                                    <Text>No hay aparejos disponibles.</Text>
-                                )}
 
                                 {/* Botones para compartir PDF y eliminar */}
-                                <View style={[styles.buttonContainerCard, { right: 60, marginTop: 15, marginBottom: -15 }]}>
+                                <View style={[styles.buttonContainerCard, { marginLeft: -110, marginTop: -3, marginBottom: -160, bottom: 0, top: 15, left: -5 }]}>
+                                <Components.Button
+                                        label="Ver"
+                                        onPress={() => console.log('Ver presionado')}
+                                        isCancel={true}
+                                        style={[styles.button, { backgroundColor: 'trasparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
+                                    />
                                     <Components.Button
-                                        label="Compartir PDF"
-                                        onPress={() => handleSharePdf(setup._id)}
-                                        style={[styles.button, { width: '48%', marginRight: -40 }]}
+                                        label="Editar"
+                                        onPress={() => console.log('Editar presionado')}
+                                        isCancel={true}
+                                        style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
                                     />
                                     {isAdminPanel && (
-                                        <Components.Button
-                                            label="Eliminar"
-                                            onPress={() => confirmDelete(setup._id)}
-                                            isCancel={true}
-                                            style={[styles.button, { width: '48%', backgroundColor: 'transparent' }]}
-                                        />
+                                    <Components.Button
+                                        label="Eliminar"
+                                        onPress={() => console.log('Eliminar presionado')}
+                                        isCancel={true}
+                                        style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
+                                    />
                                     )}
                                 </View>
                             </View>
