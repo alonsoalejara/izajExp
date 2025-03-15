@@ -8,6 +8,7 @@ import GruaIzaje from './GruaIzaje';
 import Tablas from './Tablas';
 import AdminPanel from './AdminPanel';
 import CollabProfile from './CollabProfile';
+import CollabTablas from './CollabTablas';
 
 const Screens = {
   Home,
@@ -20,6 +21,7 @@ const Screens = {
   GruaIzaje,
   AdminPanel,
   Tablas,
+  CollabTablas,
 };
 
 export default Screens;

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../../styles/AdminSectionStyles';
 import getApiUrl from '../../../utils/apiUrl';
 import Components from '../../../components/Components.index';
 
 const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPanel, buttonContainerStyle }) => {
+  const navigation = useNavigation();
   const [selectedSetup, setSelectedSetup] = useState(null);
   const filteredSetups = currentUser
     ? setupIzaje.filter(setup => setup.usuario._id === currentUser._id)
@@ -47,8 +49,7 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPan
       });
       if (response.ok) {
         alert('Plan de izaje eliminado con éxito');
-        const updatedSetups = setupIzaje.filter((setup) => setup._id !== _id);
-        setSetups(updatedSetups);
+        setSetups((prevSetups) => prevSetups.filter((setup) => setup._id !== _id));
       } else {
         alert('Error al eliminar el plan de izaje');
       }
@@ -89,11 +90,11 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPan
                   styles.buttonContainerCard,
                   buttonContainerStyle
                     ? buttonContainerStyle
-                    : { marginLeft: -110, marginTop: isAdminPanel ? -3 : 2, marginBottom: isAdminPanel ? -160 : -100, bottom: 0, top: 15, left: -5 }
+                    : { marginLeft: -110, marginTop: isAdminPanel ? -3 : 2, marginBottom: isAdminPanel ? -130 : -80, paddingBottom: 55, bottom: 0, top: 15, left: -5 }
                 ]}>
                   <Components.Button
                     label="Ver"
-                    onPress={() => console.log('Ver presionado')}
+                    onPress={() => navigation.navigate('CollabTablas', { setup })}
                     isCancel={true}
                     style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
                   />
@@ -106,7 +107,7 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPan
                   {isAdminPanel && (
                     <Components.Button
                       label="Eliminar"
-                      onPress={() => console.log('Eliminar presionado')}
+                      onPress={() => confirmDelete(setup._id)}
                       isCancel={true}
                       style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
                     />

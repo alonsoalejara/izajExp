@@ -84,6 +84,11 @@ const App = () => {
             component={Screens.CollabProfile}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="CollabTablas"
+            component={Screens.CollabTablas}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
       <Toast config={toastConfig} />

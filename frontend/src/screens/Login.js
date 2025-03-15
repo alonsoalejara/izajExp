@@ -35,17 +35,13 @@ export default function Login({ navigation }) {
                     const { accessToken, refreshToken, roles } = data.data;
 
                     if (accessToken) {
-                        console.log("✅ Token recibido:", accessToken);
                         await AsyncStorage.setItem("accessToken", accessToken);
 
                         // Decodificar el token
                         try {
-                            const decodedToken = jwtDecode(accessToken);
-                            console.log("🔍 Token decodificado:", decodedToken);
-                            
+                            const decodedToken = jwtDecode(accessToken);                            
                             const usuarioId = decodedToken.id;
                             if (usuarioId) {
-                                console.log("✅ usuarioId extraído:", usuarioId);
                                 await AsyncStorage.setItem("usuarioId", usuarioId.toString());
                             } else {
                                 console.warn("⚠️ No se pudo extraer el usuarioId.");
