@@ -4,9 +4,11 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useUpdateData } from '../../../../hooks/useUpdateData'; 
 import styles from '../../../../styles/BottomSheetStyles';
 
-const NameTab = ({ id, nombre, setNombre, apellido, setApellido, rut, email, phone, specialty, onBack }) => {
+const NameTab = ({ id, nombre, setNombre, apellido, setApellido, rut, email, phone, position, specialty, onBack }) => {
+  console.log("Props recibidos en NameTab:", JSON.stringify({ id, nombre, apellido, rut, email, phone, position, specialty }, null, 2));
   const [localNombre, setLocalNombre] = useState(nombre);
   const [localApellido, setLocalApellido] = useState(apellido);
+  
   const { updateData, isUpdating } = useUpdateData(`user/${id}`);
 
   const aplicarCambios = () => {
@@ -18,16 +20,21 @@ const NameTab = ({ id, nombre, setNombre, apellido, setApellido, rut, email, pho
         {
           text: 'Confirmar',
           onPress: async () => {
-            const success = await updateData({ 
+            const payload = { 
               nombre: localNombre, 
-              apellido: localApellido, 
+              apellido: localApellido,
               rut, 
               email, 
-              phone, 
-              specialty,
-              roles: ["user"]
-            });
-
+              phone,
+              position,
+              specialty, 
+              roles: ["USER"] // Asegúrate de usar el formato esperado (en mayúsculas)
+            };
+  
+            console.log("Payload a actualizar:", JSON.stringify(payload, null, 2));
+  
+            const success = await updateData(payload);
+  
             if (success) {
               setNombre(localNombre);
               setApellido(localApellido);
@@ -39,6 +46,7 @@ const NameTab = ({ id, nombre, setNombre, apellido, setApellido, rut, email, pho
       { cancelable: false }
     );
   };
+  
 
   const handleBack = () => {
     setLocalNombre(nombre);
@@ -65,7 +73,6 @@ const NameTab = ({ id, nombre, setNombre, apellido, setApellido, rut, email, pho
             onChangeText={setLocalNombre}
             placeholder="Nombre"
             placeholderTextColor="#888"
-            top={0}
           />
         </View>
         <View style={[styles.inputWrapper, styles.inputBottom]}>
@@ -80,6 +87,7 @@ const NameTab = ({ id, nombre, setNombre, apellido, setApellido, rut, email, pho
           />
         </View>
       </View>
+      {/* Si deseas mostrar o editar el cargo, puedes agregar otro input o selector para position */}
       <TouchableOpacity style={styles.button} onPress={aplicarCambios} disabled={isUpdating}>
         <Text style={styles.buttonText}>{isUpdating ? 'Guardando...' : 'Aplicar cambios'}</Text>
       </TouchableOpacity>

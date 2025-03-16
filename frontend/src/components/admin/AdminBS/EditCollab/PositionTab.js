@@ -5,13 +5,13 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useUpdateData } from '../../../../hooks/useUpdateData';
 import styles from '../../../../styles/BottomSheetStyles';
 
-const SpecialtyTab = ({ id, nombre, apellido, rut, email, phone, position, specialty, setEspecialidad, onBack }) => {
-  const [localSpecialty, setLocalSpecialty] = useState(specialty);
+const PositionTab = ({ id, nombre, apellido, rut, email, phone, position, setPosition, specialty, onBack }) => {
+  const [localPosition, setLocalPosition] = useState(position);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { updateData, isUpdating } = useUpdateData(`user/${id}`);
 
   const handleBack = () => {
-    setLocalSpecialty(specialty);
+    setLocalPosition(position);
     onBack();
   };
 
@@ -29,18 +29,18 @@ const SpecialtyTab = ({ id, nombre, apellido, rut, email, phone, position, speci
           text: 'Confirmar',
           onPress: async () => {
             const success = await updateData({
-              nombre, 
+              nombre,
               apellido,
-              rut, 
-              email, 
-              phone, 
-              position,
-              specialty: localSpecialty,
+              rut,
+              email,
+              phone,
+              position: localPosition,
+              specialty,
               roles: ["USER"]
             });
 
             if (success) {
-              setEspecialidad(localSpecialty);
+              setPosition(localPosition);
               console.log('Cambios aplicados');
               onBack();
             } else {
@@ -61,13 +61,13 @@ const SpecialtyTab = ({ id, nombre, apellido, rut, email, phone, position, speci
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
-        <Text style={[styles.titleText, { right: 25 }]}>Especialidad</Text>
+        <Text style={[styles.titleText, { right: 54 }]}>Cargo</Text>
       </View>
 
       {/* Botón para abrir el modal con el Picker */}
       <TouchableOpacity style={styles.specialityOutput} onPress={() => setIsModalVisible(true)}>
-        <Text style={styles.specialitySubtitle}>Especialidad:</Text>
-        <Text style={styles.specialityText}>{localSpecialty || 'Seleccionar especialidad'}</Text>
+        <Text style={styles.specialitySubtitle}>Cargo:</Text>
+        <Text style={styles.specialityText}>{localPosition || 'Seleccionar cargo'}</Text>
       </TouchableOpacity>
 
       {/* Modal con el Picker */}
@@ -81,15 +81,13 @@ const SpecialtyTab = ({ id, nombre, apellido, rut, email, phone, position, speci
           <View style={styles.modalBackground}>
             <View style={styles.pickerBackground}>
               <Picker
-                selectedValue={localSpecialty}
-                onValueChange={setLocalSpecialty}
+                selectedValue={localPosition}
+                onValueChange={setLocalPosition}
                 style={styles.picker}
               >
-                <Picker.Item label="Estructura" value="Estructura" />
-                <Picker.Item label="Piping" value="Piping" />
-                <Picker.Item label="Obras Civiles" value="Obras Civiles" />
-                <Picker.Item label="Mecánica" value="Mecánica" />
-                <Picker.Item label="Eléctrica" value="Eléctrica" />
+                <Picker.Item label="Jefe Área" value="Jefe Área" />
+                <Picker.Item label="Capataz" value="Capataz" />
+                <Picker.Item label="Supervisor" value="Supervisor" />
               </Picker>
             </View>
           </View>
@@ -108,4 +106,4 @@ const SpecialtyTab = ({ id, nombre, apellido, rut, email, phone, position, speci
   );
 };
 
-export default SpecialtyTab;
+export default PositionTab;

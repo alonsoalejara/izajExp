@@ -175,7 +175,7 @@ const BottomSheetStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     overflow: 'hidden',
-    top: 20,
+    top: 10,
     width: '87%',
     alignSelf: 'center',
     backgroundColor: '#fff',
@@ -190,15 +190,19 @@ const BottomSheetStyles = StyleSheet.create({
   },
   inputTop: {
     borderBottomWidth: 1,
+    top: 0,
+    height: 75,
     borderColor: '#ddd',
   },
   inputMiddle: {
     borderBottomWidth: 0.3,
     borderColor: '#ddd',
+    height: 75,
   },
   inputBottom: {
     borderTopWidth: 0.5,
     borderColor: '#ddd',
+    height: 75,
   },
   inputLabel: {
     position: "absolute",
@@ -213,6 +217,7 @@ const BottomSheetStyles = StyleSheet.create({
     color: '#aaa',
   },
   inputLabelFloating: {
+    marginTop: -2,
     fontSize: 16,
     color: '#666',
     top: 10,
@@ -221,10 +226,10 @@ const BottomSheetStyles = StyleSheet.create({
   input: {
     flex: 1,
     padding: 22,
-    top: 7,
-    marginLeft: -7,
+    top: 0,
+    marginLeft: -8,
     borderRadius: 5,
-    fontSize: 17,
+    fontSize: 20,
     fontWeight: "500",
     color: "#000",
   },
@@ -234,7 +239,7 @@ const BottomSheetStyles = StyleSheet.create({
   },
   /* Botones de acción */
   button: {
-    marginTop: 325,
+    top: 270,
     backgroundColor: "#ff0000",
     paddingVertical: 15,
     paddingHorizontal: 20,

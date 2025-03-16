@@ -32,10 +32,10 @@ async function createUser(user) {
       nombre: user.nombre,
       apellido: user.apellido,
       rut: user.rut,
+      email: user.email,
       phone: user.phone,
       position: user.position,
       specialty: user.specialty,
-      email: user.email,
       password: encryptedPassword,
       roles: validRoles, 
     });
@@ -69,7 +69,7 @@ async function updateUser(id, user) {
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { nombre, apellido, rut, email, roles: validRoles, phone, position, specialty },
+      { nombre, apellido, rut, email, phone, position, specialty, roles: validRoles},
       { new: true }
     );
 

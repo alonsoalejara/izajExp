@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useUpdateData } from '../../../../hooks/useUpdateData';
 import styles from '../../../../styles/BottomSheetStyles';
 
-const PersonalTab = ({ id, nombre, apellido, rut, setRut, email, setEmail, phone, setTelefono, specialty, onBack }) => {
+const PersonalTab = ({ id, nombre, apellido, rut, setRut, email, setEmail, phone, setTelefono, position, specialty, onBack }) => {
   const [localRut, setLocalRut] = useState(rut);
   const [localEmail, setLocalEmail] = useState(email);
   const [localPhone, setLocalPhone] = useState(phone);
@@ -24,9 +24,10 @@ const PersonalTab = ({ id, nombre, apellido, rut, setRut, email, setEmail, phone
               apellido, 
               rut: localRut, 
               email: localEmail, 
-              phone: localPhone, 
+              phone: localPhone,
+              position, 
               specialty,
-              roles: ["user"]
+              roles: ["USER"]
             });
   
             if (success) {
@@ -97,7 +98,7 @@ const PersonalTab = ({ id, nombre, apellido, rut, setRut, email, setEmail, phone
         </View>
       </View>
 
-      <TouchableOpacity style={[styles.button, { bottom: 60 }]} onPress={aplicarCambios} disabled={isUpdating}>
+      <TouchableOpacity style={[styles.button, { top: 190 }]} onPress={aplicarCambios} disabled={isUpdating}>
         <Text style={styles.buttonText}>{isUpdating ? 'Guardando...' : 'Aplicar cambios'}</Text>
       </TouchableOpacity>
     </>

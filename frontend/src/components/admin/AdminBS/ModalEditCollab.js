@@ -13,6 +13,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
   const [rut, setRut] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setTelefono] = useState('');
+  const [position, setCargo] = useState('');
   const [specialty, setEspecialidad] = useState('');
   const [activeTab, setActiveTab] = useState(null); 
   const translateY = useRef(new Animated.Value(0)).current;
@@ -25,6 +26,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
       setRut(colaborador.rut || '');
       setEmail(colaborador.email || '');
       setTelefono(colaborador.phone || '');
+      setCargo(colaborador.position || '');
       setEspecialidad(colaborador.specialty || '');
     }
   }, [colaborador]);
@@ -48,6 +50,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
             rut={rut}
             email={email}
             phone={phone}
+            position={position}
             specialty={specialty}
             onBack={() => setActiveTab(null)}
           />
@@ -62,6 +65,7 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
             setEmail={setEmail}
             phone={phone}
             setTelefono={setTelefono}
+            position={position}
             specialty={specialty}
             onBack={() => setActiveTab(null)}
           />
@@ -75,6 +79,21 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
             phone={phone}
             specialty={specialty}
             setEspecialidad={setEspecialidad}
+            position={position}
+            setCargo={setCargo}
+            onBack={() => setActiveTab(null)}
+          />
+        ) : activeTab === 'PositionTab' ? ( 
+          <EditCollab.PositionTab
+            id={id}
+            nombre={nombre}
+            apellido={apellido}
+            rut={rut}
+            email={email}
+            phone={phone}
+            specialty={specialty}
+            position={position}
+            setCargo={setCargo}
             onBack={() => setActiveTab(null)}
           />
         ) : (
@@ -114,6 +133,16 @@ const ModalEditColaborador = ({ isVisible, onClose, colaborador }) => {
               >
                 <View style={styles.buttonContent}>
                   <Text style={styles.actionButtonText}>Datos personales</Text>
+                  <Icon name="chevron-right" size={24} color="#333" />
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[styles.actionButton, styles.bottomButton]} 
+                onPress={() => setActiveTab('PositionTab')}
+              >
+                <View style={styles.buttonContent}>
+                  <Text style={styles.actionButtonText}>Cargo</Text>
                   <Icon name="chevron-right" size={24} color="#333" />
                 </View>
               </TouchableOpacity>
