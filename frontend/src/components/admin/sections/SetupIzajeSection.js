@@ -9,8 +9,10 @@ import Components from '../../../components/Components.index';
 const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPanel, buttonContainerStyle }) => {
   const navigation = useNavigation();
   const [selectedSetup, setSelectedSetup] = useState(null);
+  
+  // Filtramos verificando que setup.usuario exista
   const filteredSetups = currentUser
-    ? setupIzaje.filter(setup => setup.usuario._id === currentUser._id)
+    ? setupIzaje.filter(setup => setup.usuario && setup.usuario._id === currentUser._id)
     : setupIzaje;
 
   const formatDate = (dateString) => {
@@ -66,14 +68,14 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPan
             <TouchableOpacity onPress={() => setSelectedSetup(selectedSetup === setup._id ? null : setup._id)}>
               <Text style={[styles.cardTitle, { fontWeight: '700' }]}>
                 Supervisor: <Text style={{ fontWeight: '400' }}>
-                  {setup.usuario.nombre && setup.usuario.apellido
+                  {setup.usuario?.nombre && setup.usuario?.apellido
                     ? `${setup.usuario.nombre} ${setup.usuario.apellido}`
                     : 'No disponible'}
                 </Text>
               </Text>
               <Text style={[styles.cardDetail, { fontWeight: '700', color: '#777' }]}>
                 Especialidad: <Text style={{ fontWeight: '400' }}>
-                  {setup.usuario.specialty || 'No disponible'}
+                  {setup.usuario?.specialty || 'No disponible'}
                 </Text>
               </Text>
               <View>
@@ -90,7 +92,7 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPan
                   styles.buttonContainerCard,
                   buttonContainerStyle
                     ? buttonContainerStyle
-                    : { marginLeft: -110, marginTop: isAdminPanel ? -3 : 2, marginBottom: isAdminPanel ? -130 : -80, paddingBottom: 55, bottom: 0, top: 15, left: -5 }
+                    : { marginLeft: -110, marginTop: isAdminPanel ? -3 : 2, marginBottom: isAdminPanel ? -90 : -80, paddingBottom: 55, bottom: 0, top: 15, left: -5 }
                 ]}>
                   <Components.Button
                     label="Ver"

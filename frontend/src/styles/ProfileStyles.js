@@ -69,8 +69,8 @@ const styles = StyleSheet.create({
   },
   userInfoContainer: {
     backgroundColor: 'transparent',
-    marginTop: 280,
-    padding: 20,
+    marginTop: 290,
+    paddingHorizontal: 30,
   },
   infoContainer: {
     flexDirection: 'row',
@@ -78,18 +78,19 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
-    paddingBottom: 10,
   },
   value: {
     color: '#000',
-    fontSize: 18,
+    fontSize: 16,
     textAlign: 'left',
     flex: 1,
     flexShrink: 1,
     overflow: 'hidden',
+    bottom: 10,
   },
   icon: {
     marginRight: 20,
+    bottom: 10,
   },
   button: {
     backgroundColor: '#ee0000',

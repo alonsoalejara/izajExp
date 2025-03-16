@@ -11,9 +11,10 @@ const UserDataSection = () => {
     username: '',
     nombre: 'No disponible',
     apellido: '',
+    position: 'No disponible',
+    specialty: 'No disponible',
     rut: 'No disponible',
     phone: 'No disponible',
-    specialty: 'No disponible',
     email: 'No disponible',
   });
 
@@ -38,9 +39,10 @@ const UserDataSection = () => {
               username: data.data.username || '',
               nombre: data.data.nombre || (data.data.username ? '' : 'No disponible'),
               apellido: data.data.apellido || '',
+              position: data.data.position || 'No disponible',
+              specialty: data.data.specialty || 'No disponible',
               rut: data.data.rut || 'No disponible',
               phone: data.data.phone || 'No disponible',
-              specialty: data.data.specialty || 'No disponible',
               email: data.data.email || 'No disponible',
             });
           }
@@ -60,16 +62,20 @@ const UserDataSection = () => {
           <Text style={styles.value}>{user.username} {user.nombre} {user.apellido || ''}</Text>
         </View>
         <View style={styles.infoContainer}>
+          <Icon name="workspace-premium" size={25} color="#ff0000" style={styles.icon} />
+          <Text style={styles.value}>{user.position}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Icon name="work" size={25} color="#ff0000" style={styles.icon} />
+          <Text style={styles.value}>{user.specialty}</Text>
+        </View>
+        <View style={styles.infoContainer}>
           <Icon name="credit-card" size={25} color="#ff0000" style={styles.icon} />
           <Text style={styles.value}>{user.rut}</Text>
         </View>
         <View style={styles.infoContainer}>
           <Icon name="email" size={26} color="#ff0000" style={styles.icon} />
           <Text style={styles.value}>{user.email}</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Icon name="grade" size={25} color="#ff0000" style={styles.icon} />
-          <Text style={styles.value}>{user.specialty}</Text>
         </View>
         <View style={styles.infoContainer}>
           <Icon name="phone-iphone" size={25} color="#ff0000" style={styles.icon} />

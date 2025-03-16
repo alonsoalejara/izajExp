@@ -195,7 +195,7 @@ const Profile = () => {
 
       {/* Botón de cerrar sesión */}
       {selectedButton === 'MisDatos' && (
-        <View style={[styles.logoutContainer, { flex: 0, top: -30 }]}>
+        <View style={[styles.logoutContainer, { flex: 0, top: -20 }]}>
           <Components.Button label="Cerrar Sesión" onPress={handleSignOut} style={styles.logoutButton} />
         </View>
       )}
