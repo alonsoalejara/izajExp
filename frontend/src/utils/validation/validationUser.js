@@ -49,7 +49,7 @@ const validationUser = {
         if (text === '') {
             setRutError('');
         } else if (!rutPattern.test(text)) {
-            setRutError('El RUT no tiene el formato correcto (ej: 12345678-K)');
+            setRutError('Usar formato XXXXXXXX-X');
         } else {
             setRutError('');
         }

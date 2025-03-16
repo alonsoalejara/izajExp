@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, Modal, TouchableWithoutFeedbac
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import getApiUrl from '../utils/apiUrl';
 import styles from '../styles/ProfileStyles';
 import Components from '../components/Components.index';
 import validationUser from '../utils/validation/validationUser';
@@ -38,15 +40,35 @@ const EditCollab = () => {
   const handleSave = () => {
     let hasError = false;
   
-    // Validaciones finales
+    // Validación de Nombre
     if (!nombre.trim() || nombre.startsWith(' ')) {
       setNombreError('El nombre no puede estar vacío ni iniciar con espacios.');
       hasError = true;
+    } else {
+      const namePattern = /^[A-Za-záéíóúÁÉÍÓÚüÜñÑ,\s-]+$/;
+      if (!namePattern.test(nombre.trim())) {
+        setNombreError('No se aceptan números o caracteres especiales.');
+        hasError = true;
+      } else {
+        setNombreError('');
+      }
     }
+  
+    // Validación de Apellido
     if (!apellido.trim() || apellido.startsWith(' ')) {
       setApellidoError('El apellido no puede estar vacío ni iniciar con espacios.');
       hasError = true;
+    } else {
+      const lastNamePattern = /^[A-Za-záéíóúÁÉÍÓÚüÜñÑ,\s-]+$/;
+      if (!lastNamePattern.test(apellido.trim())) {
+        setApellidoError('No se aceptan números o caracteres especiales.');
+        hasError = true;
+      } else {
+        setApellidoError('');
+      }
     }
+  
+    // Validación de Cargo y Especialidad
     if (!position) {
       setPositionError('El cargo es requerido.');
       hasError = true;
@@ -59,6 +81,7 @@ const EditCollab = () => {
     } else {
       setSpecialtyError('');
     }
+  
     // Validación de RUT
     const rutPattern = /^\d{7,8}-[0-9Kk]{1}$/;
     if (!rutPattern.test(rut)) {
@@ -67,7 +90,8 @@ const EditCollab = () => {
     } else {
       setRutError('');
     }
-    // Validación de teléfono
+  
+    // Validación de Teléfono
     const phonePattern = /^\+569\d{8}$/;
     if (!phonePattern.test(phone)) {
       setPhoneError('Usar formato +569XXXXXXXX');
@@ -75,7 +99,8 @@ const EditCollab = () => {
     } else {
       setPhoneError('');
     }
-    // Validación de email
+  
+    // Validación de Email
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!emailPattern.test(email)) {
       setEmailError('El correo electrónico no tiene el formato correcto');
@@ -94,10 +119,47 @@ const EditCollab = () => {
         { text: "Cancelar", style: "cancel" },
         {
           text: "Guardar",
-          onPress: () => {
-            // Aquí iría la lógica para actualizar los datos vía API
-            Alert.alert("Éxito", "Cambios guardados correctamente");
-            navigation.goBack();
+          onPress: async () => {
+            try {
+              // Preparar los datos finales para enviar
+              const finalData = {
+                nombre,
+                apellido,
+                rut,
+                phone,
+                email,
+                position,
+                specialty,
+                roles: position === "Jefe Área" ? ['admin'] : ['user'],
+              };
+  
+              const accessToken = await AsyncStorage.getItem('accessToken');
+              if (!accessToken) {
+                Alert.alert("Error", "No autorizado. Por favor, inicie sesión nuevamente.");
+                return;
+              }
+  
+              // Realizar petición PUT para actualizar el colaborador
+              const response = await fetch(getApiUrl(`user/${userData._id}`), {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify(finalData),
+              });
+  
+              const data = await response.json();
+              if (response.ok) {
+                Alert.alert("Éxito", "Cambios guardados correctamente");
+                navigation.goBack();
+              } else {
+                Alert.alert("Error", `Error al guardar: ${data.message}`);
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              Alert.alert("Error", "Hubo un error al guardar el colaborador.");
+            }
           },
         },
       ]
@@ -113,7 +175,7 @@ const EditCollab = () => {
         </TouchableOpacity>
         <Text style={{ fontSize: 24, fontWeight: 'bold', marginLeft: 66 }}>Editar usuario</Text>
       </View>
-
+  
       {/* Input: Nombre */}
       <View style={{ marginBottom: 10, paddingHorizontal: 20 }}>
         {nombreError ? <Text style={styles.errorText}>{nombreError}</Text> : null}
@@ -127,7 +189,7 @@ const EditCollab = () => {
           />
         </View>
       </View>
-
+  
       {/* Input: Apellido */}
       <View style={{ marginBottom: 10, paddingHorizontal: 20 }}>
         {apellidoError ? <Text style={styles.errorText}>{apellidoError}</Text> : null}
@@ -141,7 +203,7 @@ const EditCollab = () => {
           />
         </View>
       </View>
-
+  
       {/* Input: RUT */}
       <View style={{ marginBottom: 10, paddingHorizontal: 20 }}>
         {rutError ? <Text style={styles.errorText}>{rutError}</Text> : null}
@@ -155,7 +217,7 @@ const EditCollab = () => {
           />
         </View>
       </View>
-
+  
       {/* Input: Teléfono */}
       <View style={{ marginBottom: 10, paddingHorizontal: 20 }}>
         {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
@@ -170,7 +232,7 @@ const EditCollab = () => {
           />
         </View>
       </View>
-
+  
       {/* Input: Correo electrónico */}
       <View style={{ marginBottom: 10, paddingHorizontal: 20 }}>
         {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
@@ -185,7 +247,7 @@ const EditCollab = () => {
           />
         </View>
       </View>
-
+  
       {/* Container para ambos Pickers */}
       <View style={{ marginTop: -30, marginBottom: 10, paddingHorizontal: 0 }}>
         {/* Picker: Cargo */}
@@ -199,7 +261,7 @@ const EditCollab = () => {
             <Text style={styles.specialityText}>{position ? position : "Seleccionar cargo"}</Text>
           </TouchableOpacity>
         </View>
-
+  
         {/* Picker: Especialidad */}
         <View style={{ marginBottom: 10 }}>
           {specialtyError ? <Text style={styles.errorText}>{specialtyError}</Text> : null}
@@ -212,7 +274,7 @@ const EditCollab = () => {
           </TouchableOpacity>
         </View>
       </View>
-
+  
       {/* Modal para Cargo */}
       <Modal
         animationType="slide"
@@ -240,7 +302,7 @@ const EditCollab = () => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-
+  
       {/* Modal para Especialidad */}
       <Modal
         animationType="slide"
@@ -270,7 +332,7 @@ const EditCollab = () => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-
+  
       {/* Botón de Guardar */}
       <TouchableOpacity onPress={handleSave} style={[styles.userButton, { marginTop: -10, left: -13, width: '102%' }]}>
         <Components.Button label="Guardar" onPress={handleSave} style={styles.logoutButton} />

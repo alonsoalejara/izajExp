@@ -215,6 +215,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'left',
   },
+  // Errores
+  inputField: {
+    marginBottom: 5,
+  },
+  errorText: {
+    marginTop: -16,
+    color: 'red',
+    fontSize: 16,
+  },
 });
 
 export default styles;
