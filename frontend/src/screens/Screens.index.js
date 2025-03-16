@@ -9,6 +9,7 @@ import Tablas from './Tablas';
 import AdminPanel from './AdminPanel';
 import CollabProfile from './CollabProfile';
 import CollabTablas from './CollabTablas';
+import EditCollab from './EditCollab';
 
 const Screens = {
   Home,
@@ -22,6 +23,7 @@ const Screens = {
   AdminPanel,
   Tablas,
   CollabTablas,
+  EditCollab,
 };
 
 export default Screens;

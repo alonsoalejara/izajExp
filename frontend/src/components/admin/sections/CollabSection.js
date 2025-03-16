@@ -99,7 +99,7 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
                 <>
                   <Components.Button
                     label="Editar"
-                    onPress={() => handleEdit(colaborador)}
+                    onPress={() => navigation.push('EditCollab', { userData: colaborador })}
                     isCancel={true}
                     style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '52%', marginHorizontal: -53 }]}
                   />
