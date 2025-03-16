@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     },
     input: {
       height: 55,
-      width: '48%',
+      width: '100%',
       borderColor: '#bbb',
       borderWidth: 1,
       borderRadius: 11,
@@ -154,6 +154,19 @@ const styles = StyleSheet.create({
         right: 0,
         backgroundColor: '#cccccc',
         height: 330,
+    },
+    // Error styles
+    errorText: {
+      color: 'red',
+      fontSize: 14,
+      marginBottom: 5,
+      marginTop: -15,
+    },
+    errorInput: {
+      borderColor: 'red',
+      borderWidth: 1,
+      borderRadius: 10,
+      marginBottom: 30,
     },
   });
   

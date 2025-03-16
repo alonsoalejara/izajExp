@@ -8,125 +8,170 @@ import getApiUrl from '../../utils/apiUrl';
 import Components from '../../components/Components.index';
 
 const AddCollabSpecial = ({ navigation, route }) => {
-    const { nombre, apellido, rut, phone, email } = route.params;
-    const [specialty, setSpecialty] = useState('');
-    const [modalVisible, setModalVisible] = useState(false);
-    const [specialtyError, setSpecialtyError] = useState('');
+  const { nombre, apellido, rut, phone, email } = route.params;
+  const [position, setPosition] = useState('');
+  const [specialty, setSpecialty] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalPositionVisible, setModalPositionVisible] = useState(false);
+  const [specialtyError, setSpecialtyError] = useState('');
+  const [positionError, setPositionError] = useState('');
 
-    const handlePickerChange = (itemValue) => {
-        setSpecialty(itemValue);
+  const handlePickerChange = (itemValue) => {
+    setSpecialty(itemValue);
+    if (itemValue) setSpecialtyError('');
+  };
+
+  const handlePositionChange = (itemValue) => {
+    setPosition(itemValue);
+    if (itemValue) setPositionError('');
+  };
+
+  const generarPassword = () => {
+    return `${nombre.charAt(0).toUpperCase()}${apellido.charAt(0).toUpperCase()}${rut.replace('-', '').substring(0, 4)}`;
+  };
+
+  const handleFinalize = async () => {
+    if (!position) {
+      setPositionError('Por favor, seleccione un cargo.');
+      return;
+    }
+    if (!specialty) {
+      setSpecialtyError('Por favor, seleccione una especialidad.');
+      return;
+    }
+
+    const finalData = {
+      nombre,
+      apellido,
+      rut,
+      phone,
+      position,
+      specialty,
+      email,
+      roles: position === "Jefe Área" ? ['admin'] : ['user'],
+      password: generarPassword(),
     };
 
-    const generarPassword = () => {
-        return `${nombre.charAt(0).toUpperCase()}${apellido.charAt(0).toUpperCase()}${rut.replace('-', '').substring(0, 4)}`;
-    };
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      if (!accessToken) {
+        alert('No autorizado. Por favor, inicie sesión nuevamente.');
+        return;
+      }
 
-    const handleFinalize = async () => {
-        if (!specialty) {
-            setSpecialtyError('Por favor, seleccione una especialidad.');
-            return;
-        }
+      const response = await fetch(getApiUrl('user/'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(finalData),
+      });
 
-        const finalData = {
-            nombre,
-            apellido,
-            rut,
-            phone,
-            specialty,
-            email,
-            roles: ['user'],
-            password: generarPassword(),
-        };
+      const data = await response.json();
+      if (response.ok) {
+        alert('Colaborador creado exitosamente.');
+        navigation.pop(3);
+      } else {
+        alert(`Error al guardar: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Hubo un error al guardar el colaborador.');
+    }
+  };
 
-        try {
-            const accessToken = await AsyncStorage.getItem('accessToken');
-            if (!accessToken) {
-                alert('No autorizado. Por favor, inicie sesión nuevamente.');
-                return;
-            }
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Icon name="keyboard-arrow-left" size={30} color="#000" />
+      </TouchableOpacity>
 
-            const response = await fetch(getApiUrl('user/'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify(finalData),
-            });
+      <Text style={styles.title}>¿Cuál será su cargo y especialidad?</Text>
+      <Text style={styles.subtitle}>Selecciona un cargo y especialidad.</Text>
+      {positionError ? <Text style={styles.errorText}>{positionError}</Text> : null}
+      <TouchableOpacity 
+        style={[styles.specialityOutput, positionError ? styles.errorInput : {}]} 
+        onPress={() => setModalPositionVisible(true)}
+      >
+        <Text style={styles.specialitySubtitle}>Cargo del colaborador:</Text>
+        <Text style={styles.specialityText}>{position ? position : "Seleccionar cargo"}</Text>
+      </TouchableOpacity>
 
-            const data = await response.json();
-            if (response.ok) {
-                alert('Colaborador creado exitosamente.');
-                navigation.pop(2);
-            } else {
-                alert(`Error al guardar: ${data.message}`);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Hubo un error al guardar el colaborador.');
-        }
-    };
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalPositionVisible}
+        onRequestClose={() => setModalPositionVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalPositionVisible(false)}>
+          <View style={styles.modalBackground}>
+            <View style={styles.pickerBackground}>
+              <Picker
+                selectedValue={position}
+                onValueChange={handlePositionChange}
+                style={styles.picker}
+              >
+                <Picker.Item label="Jefe Área" value="Jefe Área" />
+                <Picker.Item label="Capataz" value="Capataz" />
+                <Picker.Item label="Supervisor" value="Supervisor" />
+              </Picker>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
 
-    return (
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="keyboard-arrow-left" size={30} color="#000" />
-            </TouchableOpacity>
+      {specialtyError ? <Text style={styles.errorText}>{specialtyError}</Text> : null}
+      <TouchableOpacity 
+        style={[styles.specialityOutput, specialtyError ? styles.errorInput : {}]} 
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.specialitySubtitle}>Especialidad del colaborador:</Text>
+        <Text style={styles.specialityText}>{specialty ? specialty : "Seleccionar especialidad"}</Text>
+      </TouchableOpacity>
 
-            <Text style={styles.title}>¿Cuál será su especialidad?</Text>
-            <Text style={styles.subtitle}>Selecciona una especialidad. Estas son las especialidades que actualmente tenemos.</Text>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+          <View style={styles.modalBackground}>
+            <View style={styles.pickerBackground}>
+              <Picker
+                selectedValue={specialty}
+                onValueChange={handlePickerChange}
+                style={styles.picker}
+              >
+                <Picker.Item label="Estructura" value="Estructura" />
+                <Picker.Item label="Piping" value="Piping" />
+                <Picker.Item label="Obras Civiles" value="Obras Civiles" />
+                <Picker.Item label="Mecánica" value="Mecánica" />
+                <Picker.Item label="Eléctrica" value="Eléctrica" />
+              </Picker>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
 
-            <TouchableOpacity style={styles.specialityOutput} onPress={() => setModalVisible(true)}>
-                <Text style={styles.specialitySubtitle}>Especialidad del colaborador:</Text>
-                <Text style={styles.specialityText}>{specialty ? specialty : "Seleccionar especialidad"}</Text>
-            </TouchableOpacity>
+      <Components.Button
+        label="Finalizar"
+        onPress={handleFinalize}
+        style={{ width: '100%', marginTop: 5, right: 55 }}
+      />
 
-            {specialtyError ? <Text style={styles.errorText}>{specialtyError}</Text> : null}
-
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                    <View style={styles.modalBackground}>
-                        <View style={styles.pickerBackground}>
-                            <Picker
-                                selectedValue={specialty}
-                                onValueChange={handlePickerChange}
-                                style={styles.picker}
-                            >
-                                <Picker.Item label="Estructura" value="Estructura" />
-                                <Picker.Item label="Piping" value="Piping" />
-                                <Picker.Item label="Obras Civiles" value="Obras Civiles" />
-                                <Picker.Item label="Mecánica" value="Mecánica" />
-                                <Picker.Item label="Eléctrica" value="Eléctrica" />
-                            </Picker>
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
-
-            {/* Botón Finalizar */}
-            <Components.Button
-                label="Finalizar"
-                onPress={handleFinalize}
-                style={{ width: '100%', marginTop: 5, right: 55 }}
-            />
-
-            {/* Botón Cancelar */}
-            <Components.Button
-                label="Cancelar inscripción"
-                onPress={() => {
-                    navigation.pop(2);
-                    navigation.goBack();
-                }}
-                isCancel={true}
-                style={{ backgroundColor: 'transparent', marginTop: 395, left: -12 }}
-            />
-        </View>
-    );
+      <Components.Button
+        label="Cancelar inscripción"
+        onPress={() => {
+          navigation.pop(2);
+          navigation.goBack();
+        }}
+        isCancel={true}
+        style={{ backgroundColor: 'transparent', marginTop: 395, left: -12 }}
+      />
+    </View>
+  );
 };
 
 export default AddCollabSpecial;

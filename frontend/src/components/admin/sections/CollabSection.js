@@ -51,13 +51,14 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
     }
   };
 
-  // Filtramos para excluir a usuarios con rol "admin"
-  const colaboradoresFiltrados = colaboradores.filter(colaborador => !colaborador.roles.includes('admin'));
+  const colaboradoresFiltrados = colaboradores.filter(colaborador => 
+    !["admin", "admin2", "user"].includes(colaborador.username)
+  );
 
   return (
     <View style={styles.section}>
       {colaboradoresFiltrados.map((colaborador, index) => (
-        <View key={colaborador._id || `colaborador-${index}`} style={[styles.card, { marginBottom: 10 }]}>
+        <View key={colaborador._id || `colaborador-${index}`} style={[styles.card, { marginBottom: 10, top: -35 }]}>
           <TouchableOpacity onPress={() => handleCardPress(colaborador._id)}>
             <View style={styles.titleContainer}>
               <Text style={[styles.cardTitle, { fontSize: 22 }]}>
@@ -74,19 +75,16 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
               <Text style={styles.labelText}>RUT: </Text>{colaborador.rut}
             </Text>
             <Text style={styles.cardDetail}>
-              <Text style={styles.labelText}>Teléfono: </Text>{colaborador.phone}
+              <Text style={styles.labelText}>Cargo: </Text>{colaborador.position}
             </Text>
             <Text style={styles.cardDetail}>
               <Text style={styles.labelText}>Especialidad: </Text>{colaborador.specialty}
             </Text>
-            <Text style={styles.cardDetail}>
-              <Text style={styles.labelText}>Email: </Text>{colaborador.email}
-            </Text>
           </TouchableOpacity>
 
           {selectedCard === colaborador._id && (
-            <View style={[styles.buttonContainerCard, { marginLeft: -110, marginTop: -10, marginBottom: -70, bottom: 0, top: 15, left: 0 }]}>
-              {/* Botón "Ver": envía los datos del colaborador y la bandera fromCollab */}
+            <View style={[styles.buttonContainerCard, { marginLeft: -110, marginTop: -10, marginBottom: -70, bottom: 0, top: 20, left: 0 }]}>
+              {/* Botón "Ver" se muestra siempre */}
               <Components.Button
                 label="Ver"
                 onPress={() => {
@@ -94,20 +92,25 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
                   navigation.push('CollabProfile', { userData: colaborador, fromCollab: true });
                 }}
                 isCancel={true}
-                style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '42%', marginHorizontal: -53 }]}
+                style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '52%', marginHorizontal: -53 }]}
               />
-              <Components.Button
-                label="Editar"
-                onPress={() => handleEdit(colaborador)}
-                isCancel={true}
-                style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '42%', marginHorizontal: -53 }]}
-              />
-              <Components.Button
-                label="Eliminar"
-                onPress={() => confirmDelete(colaborador._id)}
-                isCancel={true}
-                style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '42%', marginHorizontal: -53 }]}
-              />
+              {/* Si el usuario NO tiene rol 'admin', se muestran Editar y Eliminar */}
+              {!(colaborador.roles && colaborador.roles.includes('admin')) && (
+                <>
+                  <Components.Button
+                    label="Editar"
+                    onPress={() => handleEdit(colaborador)}
+                    isCancel={true}
+                    style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '52%', marginHorizontal: -53 }]}
+                  />
+                  <Components.Button
+                    label="Eliminar"
+                    onPress={() => confirmDelete(colaborador._id)}
+                    isCancel={true}
+                    style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '52%', marginHorizontal: -53 }]}
+                  />
+                </>
+              )}
             </View>
           )}
         </View>

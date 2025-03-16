@@ -61,7 +61,7 @@ const validationUser = {
         if (text === '') {
             setTelefonoError('');
         } else if (!telefonoPattern.test(text)) {
-            setTelefonoError('Debe tener el formato +569XXXXXXXX');
+            setTelefonoError('Usar formato +569XXXXXXXX');
         } else {
             setTelefonoError('');
         }

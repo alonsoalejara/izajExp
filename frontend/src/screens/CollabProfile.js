@@ -141,6 +141,14 @@ const CollabProfile = () => {
             </Text>
           </View>
           <View style={styles.infoContainer}>
+            <Icon name="workspace-premium" size={24} color="#ee0000" style={styles.icon} />
+            <Text style={styles.value}>{userData?.position}</Text>
+          </View>
+          <View style={styles.infoContainer}>
+            <Icon name="work" size={24} color="#ee0000" style={styles.icon} />
+            <Text style={styles.value}>{userData?.specialty}</Text>
+          </View>
+          <View style={styles.infoContainer}>
             <Icon name="fingerprint" size={24} color="#ee0000" style={styles.icon} />
             <Text style={styles.value}>{userData?.rut}</Text>
           </View>
@@ -148,10 +156,7 @@ const CollabProfile = () => {
             <Icon name="phone" size={24} color="#ee0000" style={styles.icon} />
             <Text style={styles.value}>{userData?.phone}</Text>
           </View>
-          <View style={styles.infoContainer}>
-            <Icon name="work" size={24} color="#ee0000" style={styles.icon} />
-            <Text style={styles.value}>{userData?.specialty}</Text>
-          </View>
+
           <View style={styles.infoContainer}>
             <Icon name="email" size={24} color="#ee0000" style={styles.icon} />
             <Text style={styles.value}>{userData?.email}</Text>
