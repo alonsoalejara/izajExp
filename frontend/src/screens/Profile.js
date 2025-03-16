@@ -174,7 +174,7 @@ const Profile = () => {
 
       {/* Sección  */}
       {selectedButton === 'MisDatos' && (
-        <View style={[styles.userDataContainer, { top: -20 }]}>
+        <View style={[styles.userDataContainer, { top: -25 }]}>
           <Text style={styles.userName}>{user?.name}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
           <Components.UserDataSection user={user} />
@@ -195,7 +195,7 @@ const Profile = () => {
 
       {/* Botón de cerrar sesión */}
       {selectedButton === 'MisDatos' && (
-        <View style={[styles.logoutContainer, { flex: 0, top: -20 }]}>
+        <View style={[styles.logoutContainer, { flex: 0, top: -40 }]}>
           <Components.Button label="Cerrar Sesión" onPress={handleSignOut} style={styles.logoutButton} />
         </View>
       )}
