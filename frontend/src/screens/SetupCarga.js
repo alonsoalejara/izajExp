@@ -10,9 +10,9 @@ import { validateCarga } from '../utils/validation/validateCarga';
 const SetupCarga = () => {
   const navigation = useNavigation();
   const [peso, setPeso] = useState('');
-  const [largo, setLargo] = useState('');
   const [ancho, setAncho] = useState('');
-  const [alto, setAlto] = useState('');
+  const [largo, setLargo] = useState('');
+  const [altura, setAltura] = useState('');
   const [forma, setForma] = useState('');
   const [isFormaVisible, setIsFormaVisible] = useState(false);
 
@@ -35,19 +35,19 @@ const SetupCarga = () => {
   };
 
   const validateInputs = () => {
-    const newErrors = validateCarga(peso, largo, ancho, alto, forma);
+    const newErrors = validateCarga(peso, largo, ancho, altura, forma);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0; 
   };
 
   const handleNavigateToSetupGrua = () => {
-      const pesoNum = parseFloat(peso.replace(/\s*kg$/, '').trim()); 
-      const largoNum = parseFloat(largo.replace(/\s*m$/, '').trim());
-      const anchoNum = parseFloat(ancho.replace(/\s*m$/, '').trim());
-      const altoNum = parseFloat(alto.replace(/\s*m$/, '').trim());
+    const pesoNum = parseFloat(peso.replace(/\s*kg$/, '').trim());
+    const largoNum = parseFloat(largo.replace(/\s*m$/, '').trim());
+    const anchoNum = parseFloat(ancho.replace(/\s*m$/, '').trim());
+    const alturaNum = parseFloat(altura.replace(/\s*m$/, '').trim());
 
-    console.log("Datos que se están pasando a SetupGrua:", { ...carga, peso: pesoNum, largo: largoNum, ancho: anchoNum, alto: altoNum });
-    if (largo === ancho && ancho === alto && largo !== '') {
+    console.log("Datos que se están pasando a SetupGrua:", { ...carga, peso: pesoNum, largo: largoNum, ancho: anchoNum, alto: alturaNum });
+    if (largo === ancho && ancho === altura && largo !== '') {
       Alert.alert(
         "Dimensiones de un cubo detectadas",
         "Las dimensiones ingresadas corresponden a un cubo. ¿Desea cambiar la forma a 'Cuadrado'?",
@@ -55,7 +55,6 @@ const SetupCarga = () => {
           {
             text: "No",
             onPress: () => {
-              // Continúa con la navegación si el usuario no desea cambiar
               if (validateInputs()) {
                 navigation.navigate('SetupGrua');
               }
@@ -65,7 +64,6 @@ const SetupCarga = () => {
           {
             text: "Sí",
             onPress: () => {
-              // Cambia la forma a "Cuadrado" y continua
               setForma("Cuadrado");
               handleInputChange('forma', "Cuadrado");
               if (validateInputs()) {
@@ -76,15 +74,14 @@ const SetupCarga = () => {
         ]
       );
     } else {
-      // Continúa con la navegación si las dimensiones no son iguales
       if (validateInputs()) {
         navigation.navigate('SetupGrua');
       }
     }
   };
 
-  const largoLabel = forma === 'Círculo' ? 'diámetro' : forma === 'Cuadrado' ? 'lado' : 'largo';
-  const largoPlaceholder = forma === 'Círculo' ? 'Diámetro' : forma === 'Cuadrado' ? 'Lado' : 'Largo';
+  const altoLabel = forma === 'Círculo' ? 'diámetro' : forma === 'Cuadrado' ? 'lado' : 'alto';
+  const altoPlaceholder = forma === 'Círculo' ? 'Diámetro' : forma === 'Cuadrado' ? 'Lado' : 'Alto';
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -114,8 +111,7 @@ const SetupCarga = () => {
               ]}
             />
 
-
-            <Text style={styles.labelText}>Ingrese el peso (kg) y el {largoLabel} (m) de la carga:</Text>
+            <Text style={styles.labelText}>Ingrese el peso (kg) y el {altoLabel} (mm) de la carga:</Text>
             <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
               <View style={styles.inputField}>
                 {errors.peso && <Text style={styles.errorText}>{errors.peso}</Text>}
@@ -149,29 +145,28 @@ const SetupCarga = () => {
               </View>
 
               <View style={styles.inputField}>
-                {errors.largo && <Text style={styles.errorText}>{errors.largo}</Text>}
+                {errors.altura && <Text style={styles.errorText}>{errors.altura}</Text>}
                 <Components.NumericInput
-                  value={largo}
+                  value={altura}
                   onChangeText={(value) => {
-                    setLargo(value);
-                    handleInputChange('largo', value);
+                    setAltura(value);
+                    handleInputChange('alto', value);
                   }}
-                  placeholder={largoPlaceholder}
+                  placeholder={altoPlaceholder}
                   onEndEditing={() => {
-                    let cleanedValue = largo.replace(/\s*m$/, '').trim();
-                    if (cleanedValue.includes('m')) {
-                      cleanedValue = cleanedValue.replace(/\s*m.*$/, ' m');
+                    let cleanedValue = altura.replace(/\s*m$/, '').trim();
+                    if (cleanedValue.includes('mm')) {
+                      cleanedValue = cleanedValue.replace(/\s*m.*$/, ' mm');
                     }
-                    if (cleanedValue && !cleanedValue.includes('m')) {
-                      cleanedValue = cleanedValue + ' m';
+                    if (cleanedValue && !cleanedValue.includes('mm')) {
+                      cleanedValue = cleanedValue + ' mm';
                     }
-                    if (!/^(\d+(\.\d*)?)?$/.test(cleanedValue.replace(' m', '').trim())) {
+                    if (!/^(\d+(\.\d*)?)?$/.test(cleanedValue.replace(' mm', '').trim())) {
                       cleanedValue = '';
                     }
-                    setLargo(cleanedValue);
-                    handleInputChange('largo', cleanedValue);
+                    setAltura(cleanedValue);
+                    handleInputChange('alto', cleanedValue);
                   }}
-                  
                   editable={!!forma}
                   style={[
                     { width: 150 },
@@ -183,8 +178,39 @@ const SetupCarga = () => {
 
             {forma !== 'Círculo' && forma !== 'Cuadrado' && (
               <>
-                <Text style={styles.labelText}>Ingrese el ancho (m) y profundidad (m):</Text>
+                <Text style={styles.labelText}>Ingrese el largo (mm) y ancho (mm):</Text>
                 <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
+                  <View style={styles.inputField}>
+                    {errors.largo && <Text style={styles.errorText}>{errors.largo}</Text>}
+                    <Components.NumericInput
+                      value={largo}
+                      onChangeText={(value) => {
+                        setLargo(value);
+                        handleInputChange('largo', value);
+                      }}
+                      placeholder="Largo"
+                      onEndEditing={() => {
+                        let cleanedValue = largo.replace(/\s*m$/, '').trim();
+                        if (cleanedValue.includes('mm')) {
+                          cleanedValue = cleanedValue.replace(/\s*m.*$/, ' mm');
+                        }
+                        if (cleanedValue && !cleanedValue.includes('mm')) {
+                          cleanedValue = cleanedValue + ' mm';
+                        }
+                        if (!/^(\d+(\.\d*)?)?$/.test(cleanedValue.replace(' mm', '').trim())) {
+                          cleanedValue = '';
+                        }
+                        setLargo(cleanedValue);
+                        handleInputChange('ancho', cleanedValue);
+                      }}
+                      editable={!!forma}
+                      style={[
+                        { width: 150 },
+                        errors.largo && { borderColor: 'red', top: -10, borderWidth: 3, borderRadius: 13 },
+                      ]}
+                    />
+                  </View>
+
                   <View style={styles.inputField}>
                     {errors.ancho && <Text style={styles.errorText}>{errors.ancho}</Text>}
                     <Components.NumericInput
@@ -196,13 +222,13 @@ const SetupCarga = () => {
                       placeholder="Ancho"
                       onEndEditing={() => {
                         let cleanedValue = ancho.replace(/\s*m$/, '').trim();
-                        if (cleanedValue.includes('m')) {
-                          cleanedValue = cleanedValue.replace(/\s*m.*$/, ' m');
+                        if (cleanedValue.includes('mm')) {
+                          cleanedValue = cleanedValue.replace(/\s*m.*$/, ' mm');
                         }
-                        if (cleanedValue && !cleanedValue.includes('m')) {
-                          cleanedValue = cleanedValue + ' m';
+                        if (cleanedValue && !cleanedValue.includes('mm')) {
+                          cleanedValue = cleanedValue + ' mm';
                         }
-                        if (!/^(\d+(\.\d*)?)?$/.test(cleanedValue.replace(' m', '').trim())) {
+                        if (!/^(\d+(\.\d*)?)?$/.test(cleanedValue.replace(' mm', '').trim())) {
                           cleanedValue = '';
                         }
                         setAncho(cleanedValue);
@@ -212,37 +238,6 @@ const SetupCarga = () => {
                       style={[
                         { width: 150 },
                         errors.ancho && { borderColor: 'red', top: -10, borderWidth: 3, borderRadius: 13 },
-                      ]}
-                    />
-                  </View>
-
-                  <View style={styles.inputField}>
-                    {errors.alto && <Text style={styles.errorText}>{errors.alto}</Text>}
-                    <Components.NumericInput
-                      value={alto}
-                      onChangeText={(value) => {
-                        setAlto(value);
-                        handleInputChange('alto', value);
-                      }}
-                      placeholder="Alto"
-                      onEndEditing={() => {
-                        let cleanedValue = alto.replace(/\s*m$/, '').trim();
-                        if (cleanedValue.includes('m')) {
-                          cleanedValue = cleanedValue.replace(/\s*m.*$/, ' m');
-                        }
-                        if (cleanedValue && !cleanedValue.includes('m')) {
-                          cleanedValue = cleanedValue + ' m';
-                        }
-                        if (!/^(\d+(\.\d*)?)?$/.test(cleanedValue.replace(' m', '').trim())) {
-                          cleanedValue = '';
-                        }
-                        setAlto(cleanedValue);
-                        handleInputChange('alto', cleanedValue);
-                      }}
-                      editable={!!forma}
-                      style={[
-                        { width: 150 },
-                        errors.alto && { borderColor: 'red', top: -10, borderWidth: 3, borderRadius: 13 },
                       ]}
                     />
                   </View>
