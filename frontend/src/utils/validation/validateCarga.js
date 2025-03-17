@@ -22,7 +22,7 @@ export const validateCarga = (peso, largo, ancho, alto, forma) => {
   const cleanedAncho = removeUnits(ancho);
   const cleanedAlto = removeUnits(alto);
 
-  // Validación para campos vacíos y formato para peso
+  // Validación para el peso (siempre requerido)
   if (!peso) {
     newErrors.peso = 'Campo obligatorio';
   } else {
@@ -37,23 +37,37 @@ export const validateCarga = (peso, largo, ancho, alto, forma) => {
     }
   }
 
-  // Validación para largo (siempre requerido)
-  if (!largo) {
-    newErrors.largo = 'Campo obligatorio';
+  // Validación para el alto (siempre se muestra, aunque cambia el label según la forma)
+  if (!alto) {
+    newErrors.alto = 'Campo obligatorio';
   } else {
-    if (invalidFormatRegex.test(cleanedLargo)) {
-      newErrors.largo = 'Formato inválido';
-    } else if (!decimalRegex.test(cleanedLargo)) {
-      newErrors.largo = 'Max. un decimal';
-    } else if (isZero(cleanedLargo)) {
-      newErrors.largo = 'No puede ser 0';
-    } else if (startsWithZeroRegex.test(cleanedLargo)) {
-      newErrors.largo = '0 inválido al inicio';
+    if (invalidFormatRegex.test(cleanedAlto)) {
+      newErrors.alto = 'Formato inválido';
+    } else if (!decimalRegex.test(cleanedAlto)) {
+      newErrors.alto = 'Max. un decimal';
+    } else if (isZero(cleanedAlto)) {
+      newErrors.alto = 'No puede ser 0';
+    } else if (startsWithZeroRegex.test(cleanedAlto)) {
+      newErrors.alto = '0 inválido al inicio';
     }
   }
 
-  // Validar ancho y alto solo si la forma NO es Círculo ni Cuadrado
+  // Validar largo y ancho solo si la forma NO es Círculo ni Cuadrado
   if (forma !== 'Círculo' && forma !== 'Cuadrado') {
+    if (!largo) {
+      newErrors.largo = 'Campo obligatorio';
+    } else {
+      if (invalidFormatRegex.test(cleanedLargo)) {
+        newErrors.largo = 'Formato inválido';
+      } else if (!decimalRegex.test(cleanedLargo)) {
+        newErrors.largo = 'Max. un decimal';
+      } else if (isZero(cleanedLargo)) {
+        newErrors.largo = 'No puede ser 0';
+      } else if (startsWithZeroRegex.test(cleanedLargo)) {
+        newErrors.largo = '0 inválido al inicio';
+      }
+    }
+
     if (!ancho) {
       newErrors.ancho = 'Campo obligatorio';
     } else {
@@ -61,24 +75,10 @@ export const validateCarga = (peso, largo, ancho, alto, forma) => {
         newErrors.ancho = 'Formato inválido';
       } else if (!decimalRegex.test(cleanedAncho)) {
         newErrors.ancho = 'Max. un decimal';
-      } else if (startsWithZeroRegex.test(cleanedAncho)) {
-        newErrors.ancho = 'No puede ser 0';
       } else if (isZero(cleanedAncho)) {
+        newErrors.ancho = 'No puede ser 0';
+      } else if (startsWithZeroRegex.test(cleanedAncho)) {
         newErrors.ancho = '0 inválido al inicio';
-      }
-    }
-
-    if (!alto) {
-      newErrors.alto = 'Campo obligatorio';
-    } else {
-      if (invalidFormatRegex.test(cleanedAlto)) {
-        newErrors.alto = 'Formato inválido';
-      } else if (!decimalRegex.test(cleanedAlto)) {
-        newErrors.alto = 'Max. un decimal';
-      } else if (isZero(cleanedAlto)) {
-        newErrors.alto = '0 inválido al inicio';
-      } else if (startsWithZeroRegex.test(cleanedAlto)) {
-        newErrors.alto = 'No puede ser 0';
       }
     }
   }

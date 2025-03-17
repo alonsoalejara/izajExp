@@ -145,7 +145,7 @@ const SetupCarga = () => {
               </View>
 
               <View style={styles.inputField}>
-                {errors.altura && <Text style={styles.errorText}>{errors.altura}</Text>}
+                {errors.alto && <Text style={styles.errorText}>{errors.alto}</Text>}
                 <Components.NumericInput
                   value={altura}
                   onChangeText={(value) => {
@@ -170,7 +170,7 @@ const SetupCarga = () => {
                   editable={!!forma}
                   style={[
                     { width: 150 },
-                    errors.largo && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 },
+                    errors.alto && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 },
                   ]}
                 />
               </View>
