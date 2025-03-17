@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';  
 import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
@@ -10,10 +10,12 @@ import RenderGrid from '../utils/render/renderGrid';
 import { getGridContainerStyle } from '../utils/gridStyles';
 import { getGruaIllustrationStyle } from '../utils/gruaStyles';
 import { getAlturaType } from '../logic/alturaLogic';
-import validationCrane from '../utils/validation/validationCrane';
+import { validateSetupGrua } from '../utils/validation/validationCrane';
 
 const SetupGrua = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const setupCargaData = route.params?.setupCargaData || {};
   const [isGruaModalVisible, setGruaModalVisible] = useState(false);
   const [isLargoPlumaModalVisible, setLargoPlumaModalVisible] = useState(false);
   const [grua, setGrua] = useState('');
@@ -43,28 +45,33 @@ const SetupGrua = () => {
   };
 
   const handleNavigateToSetupAparejos = async () => {
-    if (!grua) {
-      setErrorGrua("Debe seleccionar una grúa antes de continuar.");
+    const errors = validateSetupGrua(grua);
+    if (Object.keys(errors).length > 0) {
+      setErrorGrua(errors.grua || '');
       return;
     }
-    setErrorGrua(''); // Limpiar el error si ya seleccionó una grúa
+  
+    setErrorGrua('');
   
     try {
-      const data = {
+      const setupGruaData = {
         grua,
         largoPluma,
         anguloInclinacion,
         usuarioId,
       };
-      await AsyncStorage.setItem('setupGruaData', JSON.stringify(data));
-      navigation.navigate('SetupAparejos', {
-        setupGruaData: data,
+  
+      await AsyncStorage.setItem('setupGruaData', JSON.stringify(setupGruaData));
+  
+      navigation.navigate('SetupAparejos', { 
+        setupGruaData, 
+        setupCargaData 
       });
     } catch (error) {
       console.error("Error al guardar datos en AsyncStorage:", error);
     }
   };
-
+  
   const isInputsDisabled = !grua; 
 
   return (
@@ -100,7 +107,7 @@ const SetupGrua = () => {
                 
                 if (selectedGrua.nombre === "Terex RT555") {
                   setLargoPluma("10.5 m");
-                  setAnguloInclinacion("67°");
+                  setAnguloInclinacion("75°");
                 } else {
                   setLargoPluma("");
                   setAnguloInclinacion("");

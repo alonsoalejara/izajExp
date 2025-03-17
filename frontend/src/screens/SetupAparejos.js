@@ -10,9 +10,9 @@ import GruaIllustration from '../components/cranes/UI/GruaIllustration';
 const SetupAparejos = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { usuarioId } = route.params || {};
-  const [setupGruaData, setSetupGruaData] = useState(null);
-
+  const [setupGruaData, setSetupGruaData] = useState({});
+  const setupCargaData = route.params?.setupCargaData || {};
+  const { usuarioId } = route.params || {};  
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
@@ -20,6 +20,10 @@ const SetupAparejos = () => {
   const [eslingaOEstrobo, setEslingaOEstrobo] = useState('');
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState('');
+
+  console.log("Datos recibidos en SetupAparejos:");
+  console.log("SetupGruaData:", setupGruaData);
+  console.log("SetupCargaData:", setupCargaData);
 
   const openModal = (setModalVisible) => {
     setModalVisible(true);

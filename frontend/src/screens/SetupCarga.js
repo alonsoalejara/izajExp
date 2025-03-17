@@ -42,11 +42,20 @@ const SetupCarga = () => {
 
   const handleNavigateToSetupGrua = () => {
     const pesoNum = parseFloat(peso.replace(/\s*kg$/, '').trim());
-    const largoNum = parseFloat(largo.replace(/\s*m$/, '').trim());
-    const anchoNum = parseFloat(ancho.replace(/\s*m$/, '').trim());
     const alturaNum = parseFloat(altura.replace(/\s*m$/, '').trim());
+    let largoNum, anchoNum;
+
+    // Si la forma es Cuadrado o Círculo, usamos el alto para largo y ancho
+    if (forma === 'Cuadrado' || forma === 'Círculo') {
+      largoNum = alturaNum;
+      anchoNum = alturaNum;
+    } else {
+      largoNum = parseFloat(largo.replace(/\s*m$/, '').trim());
+      anchoNum = parseFloat(ancho.replace(/\s*m$/, '').trim());
+    }
 
     console.log("Datos que se están pasando a SetupGrua:", { ...carga, peso: pesoNum, largo: largoNum, ancho: anchoNum, alto: alturaNum });
+    
     if (largo === ancho && ancho === altura && largo !== '') {
       Alert.alert(
         "Dimensiones de un cubo detectadas",
@@ -201,7 +210,8 @@ const SetupCarga = () => {
                           cleanedValue = '';
                         }
                         setLargo(cleanedValue);
-                        handleInputChange('ancho', cleanedValue);
+                        // CORRECCIÓN: Se debe actualizar 'largo', no 'ancho'
+                        handleInputChange('largo', cleanedValue);
                       }}
                       editable={!!forma}
                       style={[
