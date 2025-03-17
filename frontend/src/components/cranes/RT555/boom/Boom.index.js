@@ -5,8 +5,8 @@ import CableStorage from './cableStorage/cableStorage.index';
 
 const Boom = () => (
   <View>
-    <PlumaGrua />
-    <CableStorage />
+    <PlumaGrua alturaType="altura10" />
+    <CableStorage alturaType="altura10" />
   </View>
 );
 
