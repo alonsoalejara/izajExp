@@ -8,7 +8,8 @@ import Components from '../components/Components.index';
 import GruaIllustration from '../components/cranes/UI/GruaIllustration';
 import RenderGrid from '../utils/render/renderGrid';
 import { getGridContainerStyle } from '../utils/gridStyles';
-import { getGruaIllustrationStyle } from '../utils/gruaStyles'; 
+import { getGruaIllustrationStyle } from '../utils/gruaStyles';
+import { getAlturaType } from '../logic/alturaLogic';
 import validationCrane from '../utils/validation/validationCrane';
 
 const SetupGrua = () => {
@@ -190,15 +191,20 @@ const SetupGrua = () => {
 
             <View style={styles.visualizationGruaContainer}>
               {!grua ? (
-                <Text style={[styles.labelText, { color: '#ccc'}]}>Debe seleccionar una grúa para visualizar.</Text>
+                <Text style={[styles.labelText, { color: '#ccc'}]}>
+                  Debe seleccionar una grúa para visualizar.
+                </Text>
               ) : grua.nombre === "Terex RT555" ? (
                 <View style={{ flex: 1, position: 'relative' }}>
                   {/* Render del grid */}
                   <View style={getGridContainerStyle(largoPluma)}>
                     <RenderGrid />
                   </View>
-                  {/* Render de la ilustración con estilo propio */}
-                  <GruaIllustration style={getGruaIllustrationStyle(largoPluma)} />
+                  {/* Render de la ilustración con estilo propio y alturaType */}
+                  <GruaIllustration 
+                    alturaType={getAlturaType(largoPluma)} 
+                    style={getGruaIllustrationStyle(largoPluma)} 
+                  />
                 </View>
               ) : (
                 <Text style={styles.labelText}>No disponible</Text>
