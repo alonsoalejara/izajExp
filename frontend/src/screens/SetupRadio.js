@@ -13,6 +13,8 @@ const SetupRadio = () => {
   const [radioIzaje, setRadioIzaje] = useState('');
   const [radioMontaje, setRadioMontaje] = useState('');
 
+  const pesoCarga = setupCargaData?.peso || 'No disponible';
+
   const handleContinue = async () => {
     const setupRadioData = {
       radioIzaje,
@@ -58,23 +60,35 @@ const SetupRadio = () => {
 
             {/* Tabla de carga */}
             <View>
-                <Text style={[styles.labelText, { top: 220}]}>Tabla de carga Terex RT555:</Text>
-                <Image
-                    source={require('../../assets/rt555-load-chart.png')}
-                    style={{
-                        borderRadius: 20,
-                        borderWidth: 4,
-                        borderColor: '#000',
-                        width: 1000,
-                        height: 670, 
-                        left: -340, 
-                        transform: [{ scale: 0.33 }]
-                    }}
-                />
+              <Text style={[styles.labelText, { top: 220 }]}>Tabla de carga Terex RT555:</Text>
+              <Image
+                source={require('../../assets/rt555-load-chart.png')}
+                style={{
+                  borderRadius: 20,
+                  borderWidth: 4,
+                  borderColor: '#000',
+                  width: 1000,
+                  height: 670,
+                  left: -340,
+                  transform: [{ scale: 0.33 }],
+                }}
+              />
             </View>
 
+            {/* Mostrar el peso de la carga y los radios ingresados */}
+            <View style={{ top: -700 }}>
+              <Text style={styles.labelText}>
+                Peso de la carga: {pesoCarga} kg
+              </Text>
+              <Text style={styles.labelText}>
+                Radio de izaje: {radioIzaje ? `${radioIzaje} m` : ''}
+              </Text>
+              <Text style={styles.labelText}>
+                Radio de montaje: {radioMontaje ? `${radioMontaje} m` : ''}
+              </Text>
+            </View>
 
-            <View style={[styles.buttonContainer, { top: -550, left: -50 }]}>
+            <View style={[styles.buttonContainer, { top: -650, left: -50 }]}>
               <Components.Button
                 label="Volver"
                 onPress={() => navigation.goBack()}
