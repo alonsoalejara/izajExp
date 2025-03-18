@@ -30,18 +30,23 @@ const dimensionsMap = {
   },
 };
 
-const PlumaGrua = ({ alturaType = 'altura10' }) => {
-  const { arm, container } = dimensionsMap[alturaType] || dimensionsMap.altura10;
+const PlumaGrua = ({ alturaType = 'altura10', inclinacion = 75 }) => {
+  // Si alturaType es "sinDimensiones", no se aplican las dimensiones mapeadas
+  const dimensions = (alturaType !== "sinDimensiones")
+    ? (dimensionsMap[alturaType] || dimensionsMap.altura10)
+    : { arm: null, container: {} };
 
   return (
-    <View style={[styles.container, container]}>
-      <StyledView
-        width={arm.width}
-        height={arm.height}
-        backgroundColor="#ffcc00"
-        borderWidth={1.1}
-        borderColor="#000"
-      />
+    <View style={[styles.container, dimensions.container, { transform: [{ rotate: `${inclinacion}deg` }] }]}>
+      {dimensions.arm ? (
+        <StyledView
+          width={dimensions.arm.width}
+          height={dimensions.arm.height}
+          backgroundColor="#ffcc00"
+          borderWidth={1.1}
+          borderColor="#000"
+        />
+      ) : null}
     </View>
   );
 };
@@ -51,10 +56,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 400,
     height: 100,
-    transform: [{ rotate: '75deg' }],
     alignItems: 'center',
   },
 });
 
 export default PlumaGrua;
-

@@ -3,7 +3,7 @@ export const getGridContainerStyle = (largoPluma) => {
       case '33.5 m':
         return { position: 'absolute', top: 20, left: 15, right: 0, bottom: 0, transform: [{ scale: 0.86 }] };
       case '26.9 m':
-        return { position: 'absolute', top: -12, left: 4, right: 0, bottom: 0, transform: [{ scale: 1.001 }] };
+        return { position: 'absolute', top: 3, left: 13, right: 0, bottom: 0, transform: [{ scale: 0.95 }] };
       case '24.3 m':
         return { position: 'absolute', top: -30, left: -10, right: 0, bottom: 0, transform: [{ scale: 1.15 }] };
       case '19.8 m':

@@ -3,7 +3,7 @@ export const getGruaIllustrationStyle = (largoPluma) => {
     case '33.5 m':
       return { position: 'absolute', top: 264, left: 23, transform: [{ scale: 0.175 }] };
     case '26.9 m':
-      return { position: 'absolute', top: 256, left: 28, transform: [{ scale: 0.19 }] };
+      return { position: 'absolute', top: 262, left: 34, transform: [{ scale: 0.19 }] };
     case '24.3 m':
       return { position: 'absolute', top: 262, left: 36, transform: [{ scale: 0.24 }] };
     case '19.8 m':

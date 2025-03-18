@@ -166,8 +166,11 @@ const SetupGrua = () => {
                   <View style={getGridContainerStyle(largoPluma)}>
                     <RenderGrid />
                   </View>
+                  {/* Si el ángulo es 75° se aplica la dimensión calculada; de lo contrario se pasa "sinDimensiones"
+                      y se envía además el valor numérico de la inclinación */}
                   <GruaIllustration 
-                    alturaType={getAlturaType(largoPluma)}
+                    alturaType={anguloInclinacion === "75°" ? getAlturaType(largoPluma) : "sinDimensiones"}
+                    inclinacion={parseInt(anguloInclinacion, 10)}
                     style={getGruaIllustrationStyle(largoPluma)}
                   />
                 </View>
