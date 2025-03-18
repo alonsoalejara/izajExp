@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
@@ -8,7 +8,6 @@ import Components from '../components/Components.index';
 const SetupRadio = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  // Recibimos los datos que vinieron de SetupGrua (y SetupCarga si existen)
   const { setupGruaData, setupCargaData } = route.params || {};
 
   const [radioIzaje, setRadioIzaje] = useState('');
@@ -20,9 +19,9 @@ const SetupRadio = () => {
       radioMontaje,
     };
     await AsyncStorage.setItem('setupRadioData', JSON.stringify(setupRadioData));
-    // Navega a la siguiente pantalla (ajusta 'NextScreen' según tu ruta)
     navigation.navigate('NextScreen', { setupGruaData, setupCargaData, setupRadioData });
   };
+
   console.log('Datos recibidos en SetupRadio:', route.params);
 
   return (
@@ -31,12 +30,12 @@ const SetupRadio = () => {
         <Components.Header />
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={styles.titleContainer}>
-            <Text style={styles.sectionTitle}>Configurar Radios (metros)</Text>
+            <Text style={styles.sectionTitle}>Configurar Radios</Text>
           </View>
           <View style={styles.container}>
             <View style={styles.inputContainer}>
               <View>
-                <Text style={styles.labelText}>Ingrese el r. de izaje:</Text>
+                <Text style={styles.labelText}>Radio de izaje (m):</Text>
                 <Components.NumericInput
                   value={radioIzaje}
                   onChangeText={setRadioIzaje}
@@ -46,7 +45,7 @@ const SetupRadio = () => {
                 />
               </View>
               <View>
-                <Text style={styles.labelText}>Ingrese el r. de montaje:</Text>
+                <Text style={styles.labelText}>Radio de montaje (m):</Text>
                 <Components.NumericInput
                   value={radioMontaje}
                   onChangeText={setRadioMontaje}
@@ -56,7 +55,26 @@ const SetupRadio = () => {
                 />
               </View>
             </View>
-            <View style={[styles.buttonContainer, { top: 430, left: -50}]}>
+
+            {/* Tabla de carga */}
+            <View>
+                <Text style={[styles.labelText, { top: 220}]}>Tabla de carga Terex RT555:</Text>
+                <Image
+                    source={require('../../assets/rt555-load-chart.png')}
+                    style={{
+                        borderRadius: 20,
+                        borderWidth: 4,
+                        borderColor: '#000',
+                        width: 1000,
+                        height: 670, 
+                        left: -340, 
+                        transform: [{ scale: 0.33 }]
+                    }}
+                />
+            </View>
+
+
+            <View style={[styles.buttonContainer, { top: -550, left: -50 }]}>
               <Components.Button
                 label="Volver"
                 onPress={() => navigation.goBack()}
