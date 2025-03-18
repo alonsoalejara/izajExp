@@ -45,7 +45,8 @@ const SetupGrua = () => {
     setModalVisible(true);
   };
 
-  const handleNavigateToSetupAparejos = async () => {
+  // Función modificada para navegar hacia SetupRadio
+  const handleNavigateToSetupRadio = async () => {
     const errors = validateSetupGrua(grua);
     if (Object.keys(errors).length > 0) {
       setErrorGrua(errors.grua || '');
@@ -59,7 +60,7 @@ const SetupGrua = () => {
       usuarioId,
     };
     await AsyncStorage.setItem('setupGruaData', JSON.stringify(setupGruaData));
-    navigation.navigate('SetupAparejos', { setupGruaData, setupCargaData });
+    navigation.navigate('SetupRadio', { setupGruaData, setupCargaData });
   };
 
   const isInputsDisabled = !grua; 
@@ -151,7 +152,7 @@ const SetupGrua = () => {
               />
               <Components.Button
                 label="Continuar"
-                onPress={handleNavigateToSetupAparejos}
+                onPress={handleNavigateToSetupRadio}
                 style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>
@@ -160,16 +161,16 @@ const SetupGrua = () => {
             </View>
             <View style={styles.visualizationGruaContainer}>
               {!grua ? (
-                <Text style={[styles.labelText, { color: '#ccc'}]}>Debe seleccionar una grúa para visualizar.</Text>
+                <Text style={[styles.labelText, { color: '#ccc'}]}>
+                  Debe seleccionar una grúa para visualizar.
+                </Text>
               ) : grua.nombre === "Terex RT555" ? (
                 <View style={{ flex: 1, position: 'relative' }}>
                   <View style={getGridContainerStyle(largoPluma)}>
                     <RenderGrid />
                   </View>
-                  {/* Si el ángulo es 75° se aplica la dimensión calculada; de lo contrario se pasa "sinDimensiones"
-                      y se envía además el valor numérico de la inclinación */}
                   <GruaIllustration 
-                    alturaType={anguloInclinacion === "75°" ? getAlturaType(largoPluma) : getAlturaType(largoPluma)}
+                    alturaType={getAlturaType(largoPluma)}
                     inclinacion={parseInt(anguloInclinacion, 10)}
                     style={getGruaIllustrationStyle(largoPluma)}
                   />

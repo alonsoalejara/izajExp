@@ -2,6 +2,7 @@ import Home from './Home';
 import Login from './Login';
 import Profile from './Profile';
 import SetupGrua from './SetupGrua';
+import SetupRadio from './SetupRadio';
 import SetupAparejos from './SetupAparejos';
 import SetupCarga from './SetupCarga';
 import GruaIzaje from './GruaIzaje';
@@ -17,6 +18,7 @@ const Screens = {
   Profile,
   CollabProfile,
   SetupGrua,
+  SetupRadio,
   SetupAparejos,
   SetupCarga,
   GruaIzaje,
