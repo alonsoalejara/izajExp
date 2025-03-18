@@ -46,17 +46,17 @@ const RenderGrid = () => {
 
     // Usamos if-else para mover cada valor por separado
     if (value === 33.5) {
-      topPosition -= 15; // Mueve 33.5 hacia abajo
+      topPosition -= 5; // Mueve 33.5 hacia abajo
     } else if (value === 26.9) {
-      topPosition -= 35; // Mueve 26.9 hacia arriba
+      topPosition -= 20; // Mueve 26.9 hacia arriba
     } else if (value === 24.3) {
-      topPosition -= 50; // Mueve 24.3 hacia abajo
+      topPosition -= 36; // Mueve 24.3 hacia abajo
     } else if (value === 19.8) {
-      topPosition -= 93; // Mueve 19.8 hacia arriba
+      topPosition -= 80; // Mueve 19.8 hacia arriba
     } else if (value === 15.2) {
-      topPosition -= 110; // Mueve 15.2 hacia abajo
+      topPosition -= 95; // Mueve 15.2 hacia abajo
     } else if (value === 10.5) {
-      topPosition -= 123; // Mueve 10.6 hacia arriba
+      topPosition -= 110; // Mueve 10.6 hacia arriba
     }
 
     axisY.push(

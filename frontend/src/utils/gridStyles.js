@@ -1,7 +1,7 @@
 export const getGridContainerStyle = (largoPluma) => {
     switch (largoPluma) {
       case '33.5 m':
-        return { position: 'absolute', top: 20, left: 15, right: 0, bottom: 0, transform: [{ scale: 0.86 }] };
+        return { position: 'absolute', top: 20, left: 15, right: 0, bottom: 0, transform: [{ scale: 0.84 }] };
       case '26.9 m':
         return { position: 'absolute', top: 3, left: 13, right: 0, bottom: 0, transform: [{ scale: 0.95 }] };
       case '24.3 m':

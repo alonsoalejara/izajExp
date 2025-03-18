@@ -1,7 +1,7 @@
 export const getGruaIllustrationStyle = (largoPluma) => {
   switch (largoPluma) {
     case '33.5 m':
-      return { position: 'absolute', top: 264, left: 23, transform: [{ scale: 0.175 }] };
+      return { position: 'absolute', top: 260, left: 20, transform: [{ scale: 0.166 }] };
     case '26.9 m':
       return { position: 'absolute', top: 262, left: 34, transform: [{ scale: 0.19 }] };
     case '24.3 m':
