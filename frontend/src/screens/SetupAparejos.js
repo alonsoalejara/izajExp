@@ -11,8 +11,7 @@ const SetupAparejos = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const [setupGruaData, setSetupGruaData] = useState({});
-  const setupCargaData = route.params?.setupCargaData || {};
-  const { usuarioId } = route.params || {};  
+  const [setupCargaData, setSetupCargaData] = useState({});
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
@@ -41,7 +40,11 @@ const SetupAparejos = () => {
       }
     };
     fetchSetupGruaData();
-  }, []);
+
+    if (route.params?.setupCargaData) {
+      setSetupCargaData(route.params.setupCargaData);
+    }
+  }, [route.params]);
 
   const handleNavigateToSetupCarga = () => {
     const setupAparejosData = {
@@ -50,7 +53,6 @@ const SetupAparejos = () => {
       cantidadGrilletes,
       tipoGrillete
     };
-  
     navigation.navigate('Tablas', {
       setupGruaData,
       setupAparejosData
@@ -61,17 +63,14 @@ const SetupAparejos = () => {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
         <Components.Header />
-        <ScrollView contentContainerStyle={{ flexGrow: 2, heigh: 1000 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 2, height: 1000 }}>
           <View style={styles.titleContainer}>
             <Text style={styles.sectionTitle}>Configuración de aparejos</Text>
           </View>
-
           <View style={styles.container}>
-            {/* Configurar Maniobra */}
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>Maniobra: (cantidad y tipo)</Text>
             </View>
-
             <View style={styles.inputContainer}>
               <Components.ConfigButton
                 label="Cantidad"
@@ -86,12 +85,9 @@ const SetupAparejos = () => {
                 width={150}
               />
             </View>
-
-            {/* Configurar Grillete */}
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>Grillete: (cantidad y tipo)</Text>
             </View>
-
             <View style={styles.inputContainer}>
               <Components.NumericInput
                 label="Cantidad"
@@ -106,43 +102,34 @@ const SetupAparejos = () => {
                 width={150}
               />
             </View>
-
             <BS.BSGrillete
               isVisible={isGrilleteModalVisible}
               onClose={() => setGrilleteModalVisible(false)}
               onSelect={setTipoGrillete}
             />
-
             <BS.BSCantidad
               isVisible={isCantidadModalVisible}
               onClose={() => setCantidadModalVisible(false)}
               onSelect={setCantidadManiobra}
             />
-
             <BS.BSManiobra
               isVisible={isManiobraModalVisible}
               onClose={() => setManiobraModalVisible(false)}
               onSelect={setEslingaOEstrobo}
             />
-
             <View style={[styles.buttonContainer, { right: 40 }]}>
-              {/* Botón Volver */}
               <Components.Button
                 label="Volver"
                 onPress={() => navigation.goBack()}
                 isCancel={true}
-                style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]} // Ajuste en el margen entre los botones
+                style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
               />
-
-              {/* Botón Continuar */}
               <Components.Button
                 label="Continuar"
                 onPress={handleNavigateToSetupCarga}
-                style={[styles.button, { width: '50%', right: 45 }]} // Ajuste en el margen entre los botones
+                style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>
-
-            {/* Mostrar la grúa seleccionada */}
             {setupGruaData && setupGruaData.grua && setupGruaData.grua.nombre === "Terex RT555" ? (
               <View style={{ alignItems: 'center', marginTop: 460, marginBottom: -50 }}>
                 <GruaIllustration />

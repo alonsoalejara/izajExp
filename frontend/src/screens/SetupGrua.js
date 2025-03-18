@@ -15,7 +15,8 @@ import { validateSetupGrua } from '../utils/validation/validationCrane';
 const SetupGrua = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const setupCargaData = route.params?.setupCargaData || {};
+  const initialCargaData = route.params?.setupCargaData;
+  const [setupCargaData, setSetupCargaData] = useState(initialCargaData || {});
   const [isGruaModalVisible, setGruaModalVisible] = useState(false);
   const [isLargoPlumaModalVisible, setLargoPlumaModalVisible] = useState(false);
   const [grua, setGrua] = useState('');
@@ -50,28 +51,17 @@ const SetupGrua = () => {
       setErrorGrua(errors.grua || '');
       return;
     }
-  
     setErrorGrua('');
-  
-    try {
-      const setupGruaData = {
-        grua,
-        largoPluma,
-        anguloInclinacion,
-        usuarioId,
-      };
-  
-      await AsyncStorage.setItem('setupGruaData', JSON.stringify(setupGruaData));
-  
-      navigation.navigate('SetupAparejos', { 
-        setupGruaData, 
-        setupCargaData 
-      });
-    } catch (error) {
-      console.error("Error al guardar datos en AsyncStorage:", error);
-    }
+    const setupGruaData = {
+      grua,
+      largoPluma,
+      anguloInclinacion,
+      usuarioId,
+    };
+    await AsyncStorage.setItem('setupGruaData', JSON.stringify(setupGruaData));
+    navigation.navigate('SetupAparejos', { setupGruaData, setupCargaData });
   };
-  
+
   const isInputsDisabled = !grua; 
 
   return (
@@ -82,21 +72,17 @@ const SetupGrua = () => {
           <View style={styles.titleContainer}>
             <Text style={styles.sectionTitle}>Configurar grúa</Text>
           </View>
-
           <View style={styles.container}>
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>Seleccione grúa:</Text>
             </View>
-
             {errorGrua ? <Text style={[styles.errorText, { marginTop: -16 }]}>{errorGrua}</Text> : null}
             <Components.ConfigButton
               label="Configurar Grúa"
               value={grua?.nombre || ''}
               placeholder="Seleccionar grúa"
               onPress={() => openModal(setGruaModalVisible)}
-              style={[
-                errorGrua && { borderColor: 'red', borderWidth: 3, borderRadius: 10 },
-              ]}
+              style={[ errorGrua && { borderColor: 'red', borderWidth: 3, borderRadius: 10 } ]}
             />
             <BS.BSGrua
               isVisible={isGruaModalVisible}
@@ -104,7 +90,6 @@ const SetupGrua = () => {
               onSelect={(selectedGrua) => {
                 setGrua(selectedGrua);
                 setErrorGrua('');
-                
                 if (selectedGrua.nombre === "Terex RT555") {
                   setLargoPluma("10.5 m");
                   setAnguloInclinacion("75°");
@@ -114,12 +99,10 @@ const SetupGrua = () => {
                 }
               }}
             />
-
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>Ingrese los siguientes datos para la maniobra:</Text>
             </View>
-
-            <View style={[styles.inputContainer, { flexDirection: 'row', marginTop: -3 }]}>              
+            <View style={[styles.inputContainer, { flexDirection: 'row', marginTop: -3 }]}>
               <Components.ConfigButton
                 label="Largo de pluma"
                 value={largoPluma || ''}
@@ -128,38 +111,22 @@ const SetupGrua = () => {
                 style={{ height: 60, width: 150, top: 7 }}
                 disabled={isInputsDisabled}
               />
-
               <BS.BSLargoPluma
                 isVisible={isLargoPlumaModalVisible}
                 onClose={() => setLargoPlumaModalVisible(false)}
                 onSelect={(selectedLargoPluma) => setLargoPluma(selectedLargoPluma)}
               />
-              
               <Components.NumericInput
                 label="Ángulo de inclinación"
                 value={anguloInclinacion}
                 onChangeText={(text) => {
-                  // Eliminar el símbolo de grados si existe
                   let cleanedValue = text.replace('°', '').trim();
-
-                  // Aseguramos que el valor esté dentro del rango de 10° a 75°
                   if (cleanedValue) {
                     let numValue = parseInt(cleanedValue, 10);
-
-                    // Si el valor es menor que 10, lo ajustamos a 10
-                    if (numValue < 10) {
-                      numValue = 10;
-                    }
-
-                    // Si el valor es mayor que 75, lo ajustamos a 75
-                    if (numValue > 75) {
-                      numValue = 75;
-                    }
-
-                    // Asignamos el valor ajustado y le añadimos el símbolo de grados
+                    if (numValue < 10) numValue = 10;
+                    if (numValue > 75) numValue = 75;
                     setAnguloInclinacion(`${numValue}°`);
                   } else {
-                    // Si no hay valor, lo dejamos vacío
                     setAnguloInclinacion('');
                   }
                 }}
@@ -169,55 +136,45 @@ const SetupGrua = () => {
                     setAnguloInclinacion(anguloInclinacion + '°');
                   }
                 }}
-                editable={!isInputsDisabled} 
+                editable={!isInputsDisabled}
                 style={{ width: 150, height: 59, top: 10 }}
                 showControls={true}
                 showClearButton={false}
               />
-
             </View>
-
-            <View style={[styles.buttonContainer, { right: 40, marginTop: 15, marginBottom: -20 }]}>              
+            <View style={[styles.buttonContainer, { right: 40, marginTop: 15, marginBottom: -20 }]}>
               <Components.Button
                 label="Volver"
                 onPress={() => navigation.goBack()}
                 isCancel={true}
                 style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
               />
-              
               <Components.Button
                 label="Continuar"
                 onPress={handleNavigateToSetupAparejos}
                 style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>
-
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>Visualización de la grúa:</Text>
             </View>
-
             <View style={styles.visualizationGruaContainer}>
               {!grua ? (
-                <Text style={[styles.labelText, { color: '#ccc'}]}>
-                  Debe seleccionar una grúa para visualizar.
-                </Text>
+                <Text style={[styles.labelText, { color: '#ccc'}]}>Debe seleccionar una grúa para visualizar.</Text>
               ) : grua.nombre === "Terex RT555" ? (
                 <View style={{ flex: 1, position: 'relative' }}>
-                  {/* Render del grid */}
                   <View style={getGridContainerStyle(largoPluma)}>
                     <RenderGrid />
                   </View>
-                  {/* Render de la ilustración con estilo propio y alturaType */}
                   <GruaIllustration 
-                    alturaType={getAlturaType(largoPluma)} 
-                    style={getGruaIllustrationStyle(largoPluma)} 
+                    alturaType={getAlturaType(largoPluma)}
+                    style={getGruaIllustrationStyle(largoPluma)}
                   />
                 </View>
               ) : (
                 <Text style={styles.labelText}>No disponible</Text>
               )}
             </View>
-
           </View>
         </ScrollView>
       </View>
