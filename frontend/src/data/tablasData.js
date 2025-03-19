@@ -2,27 +2,32 @@ import { grilleteOptions } from '../data/grilleteData';
 import { maniobraOptions } from '../data/maniobraData';
 
 export const obtenerDatosTablas = (datosRecibidos) => {
-  const radioMaximo = Math.max(datosRecibidos.radioIzaje, datosRecibidos.radioMontaje);
+  // Convertir a número si las propiedades vienen como cadenas
+  const radioIzaje = parseFloat(datosRecibidos.radioIzaje) || 0;
+  const radioMontaje = parseFloat(datosRecibidos.radioMontaje) || 0;
+  const radioMaximo = Math.max(radioIzaje, radioMontaje);
 
-  // Buscar peso unitario de la eslinga o estrobo
+  // Buscar el peso unitario según la eslinga o estrobo seleccionado
   const pesoManiobra = maniobraOptions.find(m => m.label === datosRecibidos.eslingaOEstrobo)?.peso || 0;
-  const pesoTotalManiobra = pesoManiobra * (datosRecibidos.cantidadManiobra || 0);
+  const cantidadManiobra = parseFloat(datosRecibidos.cantidadManiobra) || 0;
+  const pesoTotalManiobra = pesoManiobra * cantidadManiobra;
 
-  // Buscar peso unitario del grillete
+  // Buscar el peso unitario del grillete
   const pesoGrillete = grilleteOptions.find(g => g.pulgada === datosRecibidos.tipoGrillete)?.peso || 0;
-  const pesoTotalGrillete = pesoGrillete * (datosRecibidos.cantidadGrilletes || 0);
+  const cantidadGrilletes = parseFloat(datosRecibidos.cantidadGrilletes) || 0;
+  const pesoTotalGrillete = pesoGrillete * cantidadGrilletes;
 
   // 📌 Tabla Peso Aparejos
   const datosTablaPesoAparejos = [
     {
       descripcion: datosRecibidos.eslingaOEstrobo,
-      cantidad: datosRecibidos.cantidadManiobra || 0,
+      cantidad: cantidadManiobra,
       pesoUnitario: `${pesoManiobra} kg`,
       pesoTotal: pesoTotalManiobra,
     },
     {
       descripcion: `Grillete de ${datosRecibidos.tipoGrillete}"`,
-      cantidad: datosRecibidos.cantidadGrilletes || 0,
+      cantidad: cantidadGrilletes,
       pesoUnitario: `${pesoGrillete} kg`,
       pesoTotal: pesoTotalGrillete,
     },
@@ -41,13 +46,14 @@ export const obtenerDatosTablas = (datosRecibidos) => {
     { descripcion: 'Peso total', cantidad: { valor: pesoTotal, unidad: 'kg' } },
     { descripcion: 'Radio de trabajo máximo', cantidad: { valor: radioMaximo, unidad: 'm' } },
     { descripcion: 'Capacidad de levante', cantidad: { valor: datosRecibidos.grua?.capacidadLevante || 0, unidad: 'kg' } },
-    { descripcion: '% Utilización', cantidad: 'N/A'},
+    { descripcion: '% Utilización', cantidad: 'N/A' },
   ];
 
-  // 📌 Tabla Datos Grúa
+  // 📌 Tabla Datos de la Grúa
   const datosTablaGrua = [
     { descripcion: 'Grúa', cantidad: datosRecibidos.grua?.nombre || 'N/A' },
-    { descripcion: 'Largo de pluma', cantidad: { valor: datosRecibidos.grua?.largoPluma || 0, unidad: 'm' } },
+    { descripcion: 'Largo de pluma', cantidad: datosRecibidos.largoPluma || 'N/A' },
+    { descripcion: 'Grado de inclinación', cantidad: datosRecibidos.anguloInclinacion || 'N/A' },
     { descripcion: 'Contrapeso', cantidad: { valor: datosRecibidos.grua?.contrapeso || 0, unidad: 'ton' } },
   ];
 

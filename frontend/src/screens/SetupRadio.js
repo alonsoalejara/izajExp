@@ -20,8 +20,13 @@ const SetupRadio = () => {
       radioIzaje,
       radioMontaje,
     };
+
     await AsyncStorage.setItem('setupRadioData', JSON.stringify(setupRadioData));
-    navigation.navigate('NextScreen', { setupGruaData, setupCargaData, setupRadioData });
+    navigation.navigate('SetupAparejos', { 
+      setupGruaData, 
+      setupCargaData, 
+      setupRadioData 
+    });
   };
 
   console.log('Datos recibidos en SetupRadio:', route.params);
@@ -57,25 +62,22 @@ const SetupRadio = () => {
                 />
               </View>
             </View>
-
-            {/* Tabla de carga */}
             <View>
-              <Text style={[styles.labelText, { top: 220 }]}>Tabla de carga Terex RT555:</Text>
+              <Text style={[styles.labelText, { top: 255, left: -8 }]}>Tabla de carga Terex RT555:</Text>
               <Image
                 source={require('../../assets/rt555-load-chart.png')}
                 style={{
                   borderRadius: 20,
                   borderWidth: 4,
                   borderColor: '#000',
+                  top: 40,
                   width: 1000,
                   height: 670,
                   left: -340,
-                  transform: [{ scale: 0.33 }],
+                  transform: [{ scale: 0.34 }],
                 }}
               />
             </View>
-
-            {/* Mostrar el peso de la carga y los radios ingresados */}
             <View style={{ top: -700 }}>
               <Text style={styles.labelText}>
                 Peso de la carga: {pesoCarga} kg
@@ -87,8 +89,7 @@ const SetupRadio = () => {
                 Radio de montaje: {radioMontaje ? `${radioMontaje} m` : ''}
               </Text>
             </View>
-
-            <View style={[styles.buttonContainer, { top: -650, left: -50 }]}>
+            <View style={[styles.buttonContainer, { top: -650, left: -50, marginBottom: -300 }]}>
               <Components.Button
                 label="Volver"
                 onPress={() => navigation.goBack()}

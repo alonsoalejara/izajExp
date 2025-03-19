@@ -7,9 +7,21 @@ import { obtenerDatosTablas } from '../data/tablasData';
 
 const Tablas = ({ route, navigation }) => {
   const [isSaved, setIsSaved] = useState(false);
-  const datosRecibidos = route.params || {};
-  console.log('Tablas: Datos recibidos desde SetupCarga:', datosRecibidos);
-  const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos } = obtenerDatosTablas(datosRecibidos);
+  
+  // Extraemos los datos recibidos de las pantallas anteriores
+  const { setupAparejosData, setupCargaData, setupGruaData, setupRadioData } = route.params || {};
+  
+  // Fusionamos todos los datos en un único objeto para que obtenerDatosTablas los lea correctamente
+  const combinedData = {
+    ...setupCargaData,
+    ...setupGruaData,
+    ...setupRadioData,
+    ...setupAparejosData,
+  };
+
+  console.log('Tablas: Datos recibidos desde SetupCarga:', combinedData);
+
+  const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos } = obtenerDatosTablas(combinedData);
 
   const handleGuardar = () => {
     Alert.alert(
@@ -17,27 +29,29 @@ const Tablas = ({ route, navigation }) => {
       '¿Estás seguro de guardar este plan de izaje?',
       [
         { text: 'Cancelar', onPress: () => console.log('Cancelado'), style: 'cancel' },
-        { text: 'Confirmar', onPress: handleConfirmar },
+        { text: 'Confirmar', onPress: () => console.log('Guardado') },
       ],
       { cancelable: false }
     );
   };
 
-  return (
-    <View style={{ backgroundColor: '#fff' ,flex: 1 }}>
-      <Components.Header />
+  const handlePDF = () => {
+    console.log('Generando PDF...');
+    // Llama a generarPDF con los parámetros necesarios si los tienes
+    // generarPDF(selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows);
+  };
 
+  return (
+    <View style={{ backgroundColor: '#fff', flex: 1 }}>
+      <Components.Header />
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Tablas</Text>
       </View>
-
       <ScrollView style={styles.tableContainer}>
-        {/* Usar el componente Tabla para cada tabla */}
         <Components.Tabla titulo="Aparejos" data={datosTablaPesoAparejos} />
         <Components.Tabla titulo="Datos de la maniobra" data={datosTablaManiobra} />
         <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
       </ScrollView>
-
       <View style={styles.buttonContainer}>
         <Components.Button
           label="Volver"
@@ -47,10 +61,7 @@ const Tablas = ({ route, navigation }) => {
         />
         <Components.Button
           label={isSaved ? 'PDF' : 'Guardar'}
-          onPress={isSaved ? () => {
-            console.log('Generando PDF...');
-            generarPDF(selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows);
-          } : handleGuardar}
+          onPress={isSaved ? handlePDF : handleGuardar}
           style={styles.button}
         />
       </View>

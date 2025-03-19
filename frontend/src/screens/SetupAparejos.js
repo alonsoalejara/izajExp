@@ -10,19 +10,24 @@ import GruaIllustration from '../components/cranes/UI/GruaIllustration';
 const SetupAparejos = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  
   const [setupGruaData, setSetupGruaData] = useState({});
   const [setupCargaData, setSetupCargaData] = useState({});
-  const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
-  const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
-  const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
+  const [setupRadioData, setSetupRadioData] = useState({});
+  
   const [cantidadManiobra, setCantidadManiobra] = useState('');
   const [eslingaOEstrobo, setEslingaOEstrobo] = useState('');
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState('');
+  
+  const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
+  const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
+  const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
 
   console.log("Datos recibidos en SetupAparejos:");
   console.log("SetupGruaData:", setupGruaData);
   console.log("SetupCargaData:", setupCargaData);
+  console.log("SetupRadioData:", setupRadioData);
 
   const openModal = (setModalVisible) => {
     setModalVisible(true);
@@ -44,17 +49,26 @@ const SetupAparejos = () => {
     if (route.params?.setupCargaData) {
       setSetupCargaData(route.params.setupCargaData);
     }
+    if (route.params?.setupGruaData) {
+      setSetupGruaData(route.params.setupGruaData);
+    }
+    if (route.params?.setupRadioData) {
+      setSetupRadioData(route.params.setupRadioData);
+    }
   }, [route.params]);
 
-  const handleNavigateToSetupCarga = () => {
+  const handleNavigateToTablas = () => {
     const setupAparejosData = {
       cantidadManiobra,
       eslingaOEstrobo,
       cantidadGrilletes,
       tipoGrillete
     };
+
     navigation.navigate('Tablas', {
       setupGruaData,
+      setupCargaData,
+      setupRadioData,
       setupAparejosData
     });
   };
@@ -126,7 +140,7 @@ const SetupAparejos = () => {
               />
               <Components.Button
                 label="Continuar"
-                onPress={handleNavigateToSetupCarga}
+                onPress={handleNavigateToTablas}
                 style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>
