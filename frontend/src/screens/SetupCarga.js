@@ -6,6 +6,7 @@ import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import RenderForma from '../utils/render/renderForma';
 import { validateCarga } from '../utils/validation/validateCarga';
+import { calculateCG } from '../utils/calculateCG';
 
 const SetupCarga = () => {
   const navigation = useNavigation();
@@ -40,15 +41,15 @@ const SetupCarga = () => {
   };
 
   const handleNavigateToSetupGrua = () => {
-    const pesoNum = parseFloat(peso.replace(/\s*kg$/, '').trim());
-    const alturaNum = parseFloat(altura.replace(/\s*m$/, '').trim());
+    const pesoNum = parseFloat(peso);
+    const alturaNum = parseFloat(altura);
     let largoNum, anchoNum;
     if (forma === 'Cuadrado' || forma === 'Círculo') {
       largoNum = alturaNum;
       anchoNum = alturaNum;
     } else {
-      largoNum = parseFloat(largo.replace(/\s*m$/, '').trim());
-      anchoNum = parseFloat(ancho.replace(/\s*m$/, '').trim());
+      largoNum = parseFloat(largo);
+      anchoNum = parseFloat(ancho);
     }
     const cargaData = { 
       ...carga, 
@@ -92,7 +93,9 @@ const SetupCarga = () => {
   };
 
   const altoLabel = forma === 'Círculo' ? 'diámetro' : forma === 'Cuadrado' ? 'lado' : 'alto';
-  const altoPlaceholder = forma === 'Círculo' ? 'Diámetro' : forma === 'Cuadrado' ? 'Lado' : 'Alto';
+
+  // Calcula el centro de gravedad usando la función importada.
+  const cg = calculateCG(forma, altura, largo, ancho);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -115,7 +118,9 @@ const SetupCarga = () => {
               onPress={() => setIsFormaVisible(true)}
               style={[{ width: 315 }, errors.forma && { borderColor: 'red', borderWidth: 3, borderRadius: 10 }]}
             />
-            <Text style={styles.labelText}>Ingrese el peso (kg) y el {altoLabel} (mm) de la carga:</Text>
+            <Text style={styles.labelText}>
+              Ingrese el peso y el {altoLabel} de la carga:
+            </Text>
             <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
               <View style={styles.inputField}>
                 {errors.peso && <Text style={styles.errorText}>{errors.peso}</Text>}
@@ -127,10 +132,7 @@ const SetupCarga = () => {
                   }}
                   placeholder="Peso de carga"
                   onEndEditing={() => {
-                    let cleanedValue = peso.replace(/\s*k$/, '').replace('k', '').trim();
-                    if (cleanedValue && !cleanedValue.includes('kg')) {
-                      cleanedValue = cleanedValue + ' kg';
-                    }
+                    const cleanedValue = peso.trim();
                     setPeso(cleanedValue);
                     handleInputChange('peso', cleanedValue);
                   }}
@@ -146,12 +148,9 @@ const SetupCarga = () => {
                     setAltura(value);
                     handleInputChange('alto', value);
                   }}
-                  placeholder={altoPlaceholder}
+                  placeholder={altoLabel.charAt(0).toUpperCase() + altoLabel.slice(1)}
                   onEndEditing={() => {
-                    let cleanedValue = altura.replace(/\s*m$/, '').trim();
-                    if (cleanedValue && !cleanedValue.includes('mm')) {
-                      cleanedValue = cleanedValue + ' mm';
-                    }
+                    const cleanedValue = altura.trim();
                     setAltura(cleanedValue);
                     handleInputChange('alto', cleanedValue);
                   }}
@@ -162,7 +161,7 @@ const SetupCarga = () => {
             </View>
             {forma !== 'Círculo' && forma !== 'Cuadrado' && (
               <>
-                <Text style={styles.labelText}>Ingrese el largo (mm) y ancho (mm):</Text>
+                <Text style={styles.labelText}>Ingrese el largo y ancho:</Text>
                 <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
                   <View style={styles.inputField}>
                     {errors.largo && <Text style={styles.errorText}>{errors.largo}</Text>}
@@ -174,10 +173,7 @@ const SetupCarga = () => {
                       }}
                       placeholder="Largo"
                       onEndEditing={() => {
-                        let cleanedValue = largo.replace(/\s*m$/, '').trim();
-                        if (cleanedValue && !cleanedValue.includes('mm')) {
-                          cleanedValue = cleanedValue + ' mm';
-                        }
+                        const cleanedValue = largo.trim();
                         setLargo(cleanedValue);
                         handleInputChange('largo', cleanedValue);
                       }}
@@ -195,10 +191,7 @@ const SetupCarga = () => {
                       }}
                       placeholder="Ancho"
                       onEndEditing={() => {
-                        let cleanedValue = ancho.replace(/\s*m$/, '').trim();
-                        if (cleanedValue && !cleanedValue.includes('mm')) {
-                          cleanedValue = cleanedValue + ' mm';
-                        }
+                        const cleanedValue = ancho.trim();
                         setAncho(cleanedValue);
                         handleInputChange('ancho', cleanedValue);
                       }}
@@ -214,7 +207,17 @@ const SetupCarga = () => {
               onPress={handleNavigateToSetupGrua}
               style={{ marginTop: 15, marginBottom: 0, width: 330, left: -60 }}
             />
-            <Text style={[styles.labelText, { marginTop: 15, marginBottom: 10 }]}>Visualización de forma:</Text>
+            <Text style={[styles.labelText, { marginTop: 15, marginBottom: 10 }]}>
+              Visualización de forma:
+            </Text>
+            {cg && (
+              <View style={{ marginTop: 5, marginBottom: 10, alignItems: 'center' }}>
+                <Text style={{ fontWeight: 'bold' }}>Centro de gravedad:</Text>
+                <Text>
+                  X: {cg.cgX.toFixed(2)} | Y: {cg.cgY.toFixed(2)} | Z: {cg.cgZ.toFixed(2)}
+                </Text>
+              </View>
+            )}
             <View style={styles.visualizationCargaContainer}>
               <RenderForma
                 forma={carga.forma}
