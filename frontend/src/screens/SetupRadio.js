@@ -40,7 +40,7 @@ const SetupRadio = () => {
     };
 
     await AsyncStorage.setItem('setupRadioData', JSON.stringify(setupRadioData));
-    navigation.navigate('SetupAparejos', { 
+    navigation.navigate('Tablas', { 
       setupGruaData, 
       setupCargaData, 
       setupRadioData 

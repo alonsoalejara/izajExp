@@ -57,7 +57,7 @@ const SetupAparejos = () => {
     }
   }, [route.params]);
 
-  const handleNavigateToTablas = () => {
+  const handleNavigateToSetupRadio = () => {
     const setupAparejosData = {
       cantidadManiobra,
       eslingaOEstrobo,
@@ -65,7 +65,7 @@ const SetupAparejos = () => {
       tipoGrillete
     };
 
-    navigation.navigate('Tablas', {
+    navigation.navigate('SetupRadio', {
       setupGruaData,
       setupCargaData,
       setupRadioData,
@@ -140,7 +140,7 @@ const SetupAparejos = () => {
               />
               <Components.Button
                 label="Continuar"
-                onPress={handleNavigateToTablas}
+                onPress={handleNavigateToSetupRadio}
                 style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>

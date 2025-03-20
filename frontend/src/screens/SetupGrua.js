@@ -45,8 +45,7 @@ const SetupGrua = () => {
     setModalVisible(true);
   };
 
-  // Función modificada para navegar hacia SetupRadio
-  const handleNavigateToSetupRadio = async () => {
+  const handleNavigateToSetupAparejos = async () => {
     const errors = validateSetupGrua(grua);
     if (Object.keys(errors).length > 0) {
       setErrorGrua(errors.grua || '');
@@ -60,8 +59,9 @@ const SetupGrua = () => {
       usuarioId,
     };
     await AsyncStorage.setItem('setupGruaData', JSON.stringify(setupGruaData));
-    navigation.navigate('SetupRadio', { setupGruaData, setupCargaData });
-  };
+    navigation.navigate('SetupAparejos', { setupGruaData, setupCargaData }); // Cambio aquí
+};
+
 
   const isInputsDisabled = !grua; 
 
@@ -152,7 +152,7 @@ const SetupGrua = () => {
               />
               <Components.Button
                 label="Continuar"
-                onPress={handleNavigateToSetupRadio}
+                onPress={handleNavigateToSetupAparejos}
                 style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>
