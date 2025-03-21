@@ -68,7 +68,6 @@ const BSCantidad = ({ isVisible, onClose, onSelect }) => {
         </View>
         <View style={styles.separatorLine}></View>
         <ScrollView style={styles.optionsContainer}>
-          {/* Opciones de cantidad: 1, 2, 4 */}
           {[1, 2, 4].map((cantidad) => (
             <TouchableOpacity
               key={cantidad}
@@ -80,7 +79,6 @@ const BSCantidad = ({ isVisible, onClose, onSelect }) => {
                   <IconMC name="transit-detour" size={30} color="#333" style={styles.icon} />
                   <Text style={styles.optionText}>{cantidad}</Text>
                 </View>
-                {/* Radio button alineado a la derecha */}
                 <View style={styles.radioContainer}>
                   <View
                     style={[

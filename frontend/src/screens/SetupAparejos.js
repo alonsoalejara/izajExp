@@ -16,6 +16,7 @@ const SetupAparejos = () => {
   const [setupRadioData, setSetupRadioData] = useState({});
   
   const [cantidadManiobra, setCantidadManiobra] = useState('');
+  // Eslinga o Estrobo ahora es un objeto con { type, cantidades }
   const [eslingaOEstrobo, setEslingaOEstrobo] = useState('');
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState('');
@@ -86,19 +87,31 @@ const SetupAparejos = () => {
               <Text style={styles.labelText}>Maniobra: (cantidad y tipo)</Text>
             </View>
             <View style={styles.inputContainer}>
-              <Components.ConfigButton
-                label="Cantidad"
-                value={cantidadManiobra ? `${cantidadManiobra}` : ""}
-                onPress={() => openModal(setCantidadModalVisible)}
-                width={150}
-              />
+            <Components.ConfigButton
+              label="Cantidad"
+              value={cantidadManiobra && cantidadManiobra !== '0' ? `${cantidadManiobra}` : ""}
+              onPress={() => openModal(setCantidadModalVisible)}
+              width={150}
+            />
               <Components.ConfigButton
                 label="Tipo"
-                value={eslingaOEstrobo ? `${eslingaOEstrobo}` : ""}
+                value={eslingaOEstrobo && eslingaOEstrobo.type ? `${eslingaOEstrobo.type}` : ""}
                 onPress={() => openModal(setManiobraModalVisible)}
                 width={150}
               />
             </View>
+
+            {/* Mostrar la selección de Eslinga/Estrobo y sus cantidades */}
+            {eslingaOEstrobo && eslingaOEstrobo.cantidades && Object.keys(eslingaOEstrobo.cantidades).length > 0 && (
+              <View style={styles.selectedManiobraContainer}>
+                {Object.entries(eslingaOEstrobo.cantidades).map(([diametro, cantidad]) => (
+                  <Text key={diametro} style={styles.selectedManiobraText}>
+                    {`${eslingaOEstrobo.type} de ${diametro} mm - Cantidad: ${cantidad}`}
+                  </Text>
+                ))}
+              </View>
+            )}
+
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>Grillete: (cantidad y tipo)</Text>
             </View>
@@ -126,10 +139,12 @@ const SetupAparejos = () => {
               onClose={() => setCantidadModalVisible(false)}
               onSelect={setCantidadManiobra}
             />
+            {/* Se pasa la cantidad de maniobra (convertida a número) a BSManiobra */}
             <BS.BSManiobra
               isVisible={isManiobraModalVisible}
               onClose={() => setManiobraModalVisible(false)}
               onSelect={setEslingaOEstrobo}
+              maxManiobra={parseInt(cantidadManiobra, 10)}
             />
             <View style={[styles.buttonContainer, { right: 40 }]}>
               <Components.Button
@@ -144,6 +159,7 @@ const SetupAparejos = () => {
                 style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>
+            
             {setupGruaData && setupGruaData.grua && setupGruaData.grua.nombre === "Terex RT555" ? (
               <View style={{ alignItems: 'center', marginTop: 460, marginBottom: -50 }}>
                 <GruaIllustration />

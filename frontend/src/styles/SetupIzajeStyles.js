@@ -112,6 +112,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 3, // Espacio entre el error y el input
   },
+  // Aparejos
+  selectedManiobraContainer: {
+    marginTop: 20,
+  },
+  selectedManiobraText: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: '#333',
+    marginVertical: 5,
+  },
+  
 });
 
 export default styles;

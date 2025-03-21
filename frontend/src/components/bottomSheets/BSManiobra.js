@@ -8,9 +8,9 @@ import Components from '../Components.index';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const BSManiobra = ({ isVisible, onClose, onSelect }) => {
+const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
   const [tipoManiobra, setTipoManiobra] = useState(null);
-  const [mostrarLista, setMostrarLista] = useState(null); // Cambié esto para gestionar listas individuales
+  const [mostrarLista, setMostrarLista] = useState(null); // Para gestionar listas individuales
   const [cantidades, setCantidades] = useState({});
 
   const bottomSheetHeight = SCREEN_HEIGHT * 0.8;
@@ -41,36 +41,38 @@ const BSManiobra = ({ isVisible, onClose, onSelect }) => {
   };
 
   const handleSelectManiobra = (tipo) => {
-    // Toggle the list visibility based on which option is selected
-    setMostrarLista(prev => prev === tipo ? null : tipo); // Cambié la lógica para manejar visibilidad de listas por tipo
+    setMostrarLista(prev => prev === tipo ? null : tipo);
+    setTipoManiobra(tipo);
   };
 
   const handleChangeCantidad = (diametro, incremento) => {
+    // Calcular el total actual
+    const totalActual = Object.values(cantidades).reduce((sum, value) => sum + value, 0);
+    const nuevoTotal = totalActual + incremento;
+    // Permitir decrementos siempre; para incrementos, validar que no se exceda el máximo
+    if (incremento > 0 && nuevoTotal > maxManiobra) {
+      return;
+    }
     setCantidades((prevCantidades) => {
       const nuevaCantidad = (prevCantidades[diametro] || 0) + incremento;
-      if (nuevaCantidad < 0) return prevCantidades; // Evita valores negativos
+      if (nuevaCantidad < 0) return prevCantidades;
       return { ...prevCantidades, [diametro]: nuevaCantidad };
     });
   };
 
   const handleConfirmar = () => {
-    // Acción cuando se presiona el botón "Confirmar"
-    onSelect(cantidades);  // Pasa las cantidades seleccionadas o cualquier dato que necesites
-    closeBottomSheet();    // Cierra el BottomSheet después de confirmar
+    // Envía un objeto con el tipo de maniobra y las cantidades seleccionadas
+    onSelect({ type: tipoManiobra, cantidades });
+    closeBottomSheet();
   };
 
   const renderLista = (tipo) => {
-    if (mostrarLista !== tipo) return null; // Muestra la lista solo si corresponde al tipo seleccionado
-
-    const datos = tipo === 'Eslinga'
-      ? Array.from(new Set([...eslingaData.grado8, ...eslingaData.grado10]))
-      : estroboData;
+    if (mostrarLista !== tipo) return null;
 
     return (
       <ScrollView style={styles.listaContainer} contentContainerStyle={{ flexGrow: 1 }}>
         {tipo === 'Eslinga' && (
           <>
-            {/* Mostrar "Grado 8" y "Grado 10" como texto en la lista */}
             <Text style={styles.textoGrado}>Grado 8 (80)</Text>
             {eslingaData.grado8.map((diametro) => (
               <View key={`grado8-${diametro}`} style={styles.listaItem}>
@@ -118,7 +120,8 @@ const BSManiobra = ({ isVisible, onClose, onSelect }) => {
                 </TouchableOpacity>
               </View>
             </View>
-          ))}
+          ))
+        }
       </ScrollView>
     );
   };
@@ -156,7 +159,6 @@ const BSManiobra = ({ isVisible, onClose, onSelect }) => {
           ))}
         </ScrollView>
 
-        {/* Botón "Confirmar" */}
         <View style={{ flexGrow: 1 }} />
         <Components.Button label="Confirmar" onPress={handleConfirmar} style={{ margin: 20, top: -10, left: 10 }} />
       </Animated.View>
