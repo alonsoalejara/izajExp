@@ -321,6 +321,67 @@ const BottomSheetStyles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'left',
   },
+  // Aparejos
+  listaContainer: {
+    backgroundColor: '#fff',
+    padding: 0,
+    borderRadius: 8,
+    marginHorizontal: 20,
+  },
+  listaItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  textoDiametro: {
+    fontSize: 16,
+    color: '#333',
+    flex: 1,
+  },
+  contadorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  botonContador: {
+    backgroundColor: '#ddd',
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  botonTexto: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  cantidadTexto: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  // Grados °
+  textoGrado: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+
+  grado8: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#00796B', // Color específico para el grado 8
+  },
+
+  grado10: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#D32F2F', // Color específico para el grado 10
+  },
 });
 
 export default BottomSheetStyles;
