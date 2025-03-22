@@ -114,7 +114,9 @@ const styles = StyleSheet.create({
   },
   // Aparejos
   selectedManiobraContainer: {
-    marginTop: 20,
+    minHeight: 50, // Asegura un tamaño mínimo
+    paddingVertical: 5, // Agrega espacio interno
+    justifyContent: 'center', // Centra el contenido si es más corto
   },
   selectedManiobraText: {
     fontSize: 16,

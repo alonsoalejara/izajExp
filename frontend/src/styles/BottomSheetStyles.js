@@ -374,14 +374,18 @@ const BottomSheetStyles = StyleSheet.create({
   grado8: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#00796B', // Color específico para el grado 8
+    color: '#00796B',
   },
 
   grado10: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#D32F2F', // Color específico para el grado 10
+    color: '#D32F2F',
   },
+  // Contenedor Grillete
+  optionsContainer: {
+    paddingHorizontal: 20,
+  },  
 });
 
 export default BottomSheetStyles;

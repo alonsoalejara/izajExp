@@ -5,7 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
-import GruaIllustration from '../components/cranes/UI/GruaIllustration';
 
 const SetupAparejos = () => {
   const navigation = useNavigation();
@@ -16,11 +15,11 @@ const SetupAparejos = () => {
   const [setupRadioData, setSetupRadioData] = useState({});
   
   const [cantidadManiobra, setCantidadManiobra] = useState('');
-  // Eslinga o Estrobo ahora es un objeto con { type, cantidades }
   const [eslingaOEstrobo, setEslingaOEstrobo] = useState('');
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
-  const [tipoGrillete, setTipoGrillete] = useState('');
-  
+  // Ahora "tipoGrillete" es un objeto que contendrá las cantidades por cada tamaño
+  const [tipoGrillete, setTipoGrillete] = useState({});
+
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
@@ -74,6 +73,14 @@ const SetupAparejos = () => {
     });
   };
 
+  // Se genera un resumen del objeto "tipoGrillete"
+  const grilleteSummary = tipoGrillete && typeof tipoGrillete === 'object'
+    ? Object.entries(tipoGrillete)
+        .filter(([pulgada, cantidad]) => cantidad > 0)
+        .map(([pulgada, cantidad]) => `${cantidad}x${pulgada}"`)
+        .join(', ')
+    : "";
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
@@ -87,21 +94,23 @@ const SetupAparejos = () => {
               <Text style={styles.labelText}>Maniobra: (cantidad y tipo)</Text>
             </View>
             <View style={styles.inputContainer}>
-            <Components.ConfigButton
-              label="Cantidad"
-              value={cantidadManiobra && cantidadManiobra !== '0' ? `${cantidadManiobra}` : ""}
-              onPress={() => openModal(setCantidadModalVisible)}
-              width={150}
-            />
+              <Components.ConfigButton
+                label="Cantidad"
+                value={cantidadManiobra && cantidadManiobra !== '0' ? `${cantidadManiobra}` : ""}
+                onPress={() => openModal(setCantidadModalVisible)}
+                placeholder="Maniobras"
+                width={150}
+              />
               <Components.ConfigButton
                 label="Tipo"
                 value={eslingaOEstrobo && eslingaOEstrobo.type ? `${eslingaOEstrobo.type}` : ""}
                 onPress={() => openModal(setManiobraModalVisible)}
+                placeholder="Esl./Estr."
                 width={150}
               />
             </View>
 
-            {/* Mostrar la selección de Eslinga/Estrobo y sus cantidades */}
+            {/* Visualización de eslinga/estrobo y sus cantidades */}
             {eslingaOEstrobo && eslingaOEstrobo.cantidades && Object.keys(eslingaOEstrobo.cantidades).length > 0 && (
               <View style={styles.selectedManiobraContainer}>
                 {Object.entries(eslingaOEstrobo.cantidades).map(([diametro, cantidad]) => (
@@ -124,22 +133,35 @@ const SetupAparejos = () => {
               />
               <Components.ConfigButton
                 label="Grillete"
-                value={tipoGrillete ? `Grill. de ${tipoGrillete}"` : ""}
+                value={grilleteSummary}
                 onPress={() => openModal(setGrilleteModalVisible)}
+                placeholder="Tipo Grillete"
                 width={150}
               />
             </View>
+
+            {/* Visualización detallada de la selección de grilletes */}
+            {tipoGrillete && typeof tipoGrillete === 'object' && Object.keys(tipoGrillete).length > 0 && (
+              <View style={styles.selectedManiobraContainer}>
+                {Object.entries(tipoGrillete).map(([pulgada, cantidad]) => (
+                  <Text key={pulgada} style={styles.selectedManiobraText}>
+                    {`${cantidad} grillete(s) de ${pulgada}"`}
+                  </Text>
+                ))}
+              </View>
+            )}
+
             <BS.BSGrillete
               isVisible={isGrilleteModalVisible}
               onClose={() => setGrilleteModalVisible(false)}
               onSelect={setTipoGrillete}
+              maxGrilletes={parseInt(cantidadGrilletes, 10)}
             />
             <BS.BSCantidad
               isVisible={isCantidadModalVisible}
               onClose={() => setCantidadModalVisible(false)}
               onSelect={setCantidadManiobra}
             />
-            {/* Se pasa la cantidad de maniobra (convertida a número) a BSManiobra */}
             <BS.BSManiobra
               isVisible={isManiobraModalVisible}
               onClose={() => setManiobraModalVisible(false)}
@@ -159,12 +181,6 @@ const SetupAparejos = () => {
                 style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>
-            
-            {setupGruaData && setupGruaData.grua && setupGruaData.grua.nombre === "Terex RT555" ? (
-              <View style={{ alignItems: 'center', marginTop: 460, marginBottom: -50 }}>
-                <GruaIllustration />
-              </View>
-            ) : null}
           </View>
         </ScrollView>
       </View>

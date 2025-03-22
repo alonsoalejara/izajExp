@@ -71,7 +71,7 @@ const BSForma = ({ isVisible, onClose, onSelect }) => {
           <Text style={styles.modalTitle}>Seleccionar forma</Text>
         </View>
         <View style={styles.separatorLine}></View>
-        <ScrollView style={styles.optionsContainer}>
+        <ScrollView style={[styles.optionsContainer, { paddingHorizontal: 0 }]}>
           {formas.length === 0 ? (
             <Text>No se encontraron formas disponibles.</Text>
           ) : (

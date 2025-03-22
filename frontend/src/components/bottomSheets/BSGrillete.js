@@ -1,25 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, View, Text, TouchableOpacity, Animated, TouchableWithoutFeedback, Dimensions, ScrollView } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, Animated, ScrollView, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import styles from '../../styles/BottomSheetStyles';
 import IconFA from 'react-native-vector-icons/FontAwesome';
-import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 import { grilleteOptions } from '../../data/grilleteData';
+import Components from '../Components.index';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const BSGrillete = ({ isVisible, onClose, onSelect }) => {
-  const [grilletes, setGrilletes] = useState([]);
-  const [selectedGrillete, setSelectedGrillete] = useState(null);
+const BSGrillete = ({ isVisible, onClose, onSelect, maxGrilletes }) => {
+  // "cantidades" almacenará la cantidad seleccionada por cada tamaño
+  const [cantidades, setCantidades] = useState({});
   const bottomSheetHeight = SCREEN_HEIGHT * 0.7;
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
-
-  const handleSelectGrillete = (grillete) => {
-    setSelectedGrillete(grillete);
-    setTimeout(() => {
-      onSelect(grillete.pulgada);
-      onClose();
-    }, 150);
-  };
 
   useEffect(() => {
     if (isVisible) {
@@ -28,10 +20,6 @@ const BSGrillete = ({ isVisible, onClose, onSelect }) => {
       closeBottomSheet();
     }
   }, [isVisible]);
-
-  useEffect(() => {
-    setGrilletes(grilleteOptions);
-  }, []);
 
   const openBottomSheet = () => {
     Animated.timing(positionY, {
@@ -47,6 +35,24 @@ const BSGrillete = ({ isVisible, onClose, onSelect }) => {
       duration: 150,
       useNativeDriver: false,
     }).start(() => onClose());
+  };
+
+  const handleChangeCantidad = (pulgada, incremento) => {
+    const totalActual = Object.values(cantidades).reduce((sum, value) => sum + value, 0);
+    const nuevoTotal = totalActual + incremento;
+    if (incremento > 0 && maxGrilletes && nuevoTotal > maxGrilletes) {
+      return;
+    }
+    setCantidades((prevCantidades) => {
+      const nuevaCantidad = (prevCantidades[pulgada] || 0) + incremento;
+      if (nuevaCantidad < 0) return prevCantidades;
+      return { ...prevCantidades, [pulgada]: nuevaCantidad };
+    });
+  };
+
+  const handleConfirmar = () => {
+    onSelect(cantidades);
+    closeBottomSheet();
   };
 
   return (
@@ -66,42 +72,26 @@ const BSGrillete = ({ isVisible, onClose, onSelect }) => {
             style={styles.backIcon}
             onPress={closeBottomSheet}
           />
-          <Text style={styles.modalTitle}>Seleccionar grillete</Text>
+          <Text style={[styles.modalTitle, { marginLeft: 40 }]}>Seleccionar Grilletes</Text>
         </View>
         <View style={styles.separatorLine}></View>
         <ScrollView style={styles.optionsContainer}>
-          {grilletes.length === 0 ? (
-            <Text>No se encontraron grilletes disponibles.</Text>
-          ) : (
-            grilletes.map((grillete, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.optionButton}
-                onPress={() => handleSelectGrillete(grillete)}
-              >
-                <View style={styles.optionContent}>
-                  <View style={styles.optionTextContainer}>
-                    <IconMC name="hook" size={30} color="#333" style={styles.icon} />
-                    <Text style={styles.optionText}>Grillete de {grillete.pulgada}"</Text>
-                  </View>
-                  {/* Radio button alineado a la derecha */}
-                  <View style={styles.radioContainer}>
-                    <View
-                      style={[
-                        styles.radioButton,
-                        selectedGrillete && selectedGrillete.pulgada === grillete.pulgada && styles.selectedRadioButton,
-                      ]}
-                    >
-                      {selectedGrillete && selectedGrillete.pulgada === grillete.pulgada && (
-                        <View style={styles.selectedCircle} />
-                      )}
-                    </View>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))
-          )}
+          {grilleteOptions.map((grillete, index) => (
+            <View key={index} style={styles.listaItem}>
+              <Text style={styles.textoDiametro}>Grillete de {grillete.pulgada}"</Text>
+              <View style={styles.contadorContainer}>
+                <TouchableOpacity style={styles.botonContador} onPress={() => handleChangeCantidad(grillete.pulgada, -1)}>
+                  <Text style={styles.botonTexto}>-</Text>
+                </TouchableOpacity>
+                <Text style={styles.cantidadTexto}>{cantidades[grillete.pulgada] || 0}</Text>
+                <TouchableOpacity style={styles.botonContador} onPress={() => handleChangeCantidad(grillete.pulgada, 1)}>
+                  <Text style={styles.botonTexto}>+</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
         </ScrollView>
+        <Components.Button label="Confirmar" onPress={handleConfirmar} style={{ margin: 20, top: -10, left: 10 }} />
       </Animated.View>
     </Modal>
   );
