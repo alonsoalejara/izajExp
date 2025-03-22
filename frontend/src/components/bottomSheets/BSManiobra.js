@@ -10,7 +10,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
   const [tipoManiobra, setTipoManiobra] = useState(null);
-  const [mostrarLista, setMostrarLista] = useState(null); // Para gestionar listas individuales
+  const [mostrarLista, setMostrarLista] = useState(null);
   const [cantidades, setCantidades] = useState({});
 
   const bottomSheetHeight = SCREEN_HEIGHT * 0.8;
@@ -41,7 +41,7 @@ const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
   };
 
   const handleSelectManiobra = (tipo) => {
-    setMostrarLista(prev => prev === tipo ? null : tipo);
+    setMostrarLista((prev) => (prev === tipo ? null : tipo));
     setTipoManiobra(tipo);
   };
 
@@ -74,7 +74,7 @@ const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
         {tipo === 'Eslinga' && (
           <>
             <Text style={styles.textoGrado}>Grado 8 (80)</Text>
-            {eslingaData.grado8.map((diametro) => (
+            {eslingaData.grado8.diametros.map((diametro) => (
               <View key={`grado8-${diametro}`} style={styles.listaItem}>
                 <Text style={styles.textoDiametro}>{diametro} mm</Text>
                 <View style={styles.contadorContainer}>
@@ -89,7 +89,7 @@ const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
               </View>
             ))}
             <Text style={styles.textoGrado}>Grado 10 (100)</Text>
-            {eslingaData.grado10.map((diametro) => (
+            {eslingaData.grado10.diametros.map((diametro) => (
               <View key={`grado10-${diametro}`} style={styles.listaItem}>
                 <Text style={styles.textoDiametro}>{diametro} mm</Text>
                 <View style={styles.contadorContainer}>
@@ -107,7 +107,7 @@ const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
         )}
 
         {tipo === 'Estrobo' &&
-          estroboData.map((diametro) => (
+          estroboData.diametros.map((diametro) => (
             <View key={`estrobo-${diametro}`} style={styles.listaItem}>
               <Text style={styles.textoDiametro}>{diametro} mm</Text>
               <View style={styles.contadorContainer}>
@@ -120,8 +120,7 @@ const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
                 </TouchableOpacity>
               </View>
             </View>
-          ))
-        }
+          ))}
       </ScrollView>
     );
   };

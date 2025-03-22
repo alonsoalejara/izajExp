@@ -81,7 +81,7 @@ const Tablas = ({ route, navigation }) => {
           onPress: async () => {
             try {
               console.log('Guardando plan de izaje...');
-  
+
               // Transformamos la tabla de aparejos para que cada valor numérico sea del tipo adecuado
               const aparejos = datosTablaPesoAparejos.map(item => ({
                 descripcion: item.descripcion,
@@ -89,7 +89,7 @@ const Tablas = ({ route, navigation }) => {
                 pesoUnitario: parseFloat(item.pesoUnitario),
                 pesoTotal: item.pesoTotal,
               }));
-  
+
               // Extraer datos para el objeto "datos" con conversión a número
               const datos = {
                 largoPluma:
@@ -98,7 +98,7 @@ const Tablas = ({ route, navigation }) => {
                   0,
                 contrapeso: parseFloat(combinedData.grua?.contrapeso) || 0,
               };
-  
+
               // Extraer datos para el objeto "cargas" desde la tabla de maniobra
               const cargas = {
                 pesoEquipo: datosTablaManiobra.find(item => item.descripcion === 'Peso del equipo')?.cantidad.valor || 0,
@@ -109,12 +109,12 @@ const Tablas = ({ route, navigation }) => {
                 capacidadLevante: datosTablaManiobra.find(item => item.descripcion === 'Capacidad de levante')?.cantidad.valor || 0,
                 porcentajeUtilizacion: 0,
               };
-  
+
               // Aseguramos que 'usuario' sea un string usando la clave correcta de AsyncStorage
               const usuario =
                 (combinedData.usuario && combinedData.usuario.toString()) ||
                 (await AsyncStorage.getItem('usuarioId'));
-  
+
               // Construir el cuerpo de la petición
               const finalData = {
                 usuario,
@@ -122,14 +122,14 @@ const Tablas = ({ route, navigation }) => {
                 datos,
                 cargas,
               };
-  
+
               // Obtener token de acceso para autorización
               const accessToken = await AsyncStorage.getItem('accessToken');
               if (!accessToken) {
                 alert('No autorizado. Por favor, inicie sesión nuevamente.');
                 return;
               }
-  
+
               const response = await fetch(getApiUrl('setupIzaje/'), {
                 method: 'POST',
                 headers: {
@@ -138,9 +138,9 @@ const Tablas = ({ route, navigation }) => {
                 },
                 body: JSON.stringify(finalData),
               });
-  
+
               const data = await response.json();
-  
+
               if (response.ok) {
                 alert('Plan de izaje guardado exitosamente.');
                 setIsSaved(true);
@@ -156,7 +156,7 @@ const Tablas = ({ route, navigation }) => {
       ],
       { cancelable: false }
     );
-  };  
+  };
 
   return (
     <View style={{ backgroundColor: '#fff', flex: 1 }}>

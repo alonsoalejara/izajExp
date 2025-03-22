@@ -17,7 +17,6 @@ const SetupAparejos = () => {
   const [cantidadManiobra, setCantidadManiobra] = useState('');
   const [eslingaOEstrobo, setEslingaOEstrobo] = useState('');
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
-  // Ahora "tipoGrillete" es un objeto que contendrá las cantidades por cada tamaño
   const [tipoGrillete, setTipoGrillete] = useState({});
 
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
@@ -76,8 +75,8 @@ const SetupAparejos = () => {
   // Se genera un resumen del objeto "tipoGrillete"
   const grilleteSummary = tipoGrillete && typeof tipoGrillete === 'object'
     ? Object.entries(tipoGrillete)
-        .filter(([pulgada, cantidad]) => cantidad > 0)
-        .map(([pulgada, cantidad]) => `${cantidad}x${pulgada}"`)
+        .filter(([diametro, cantidad]) => cantidad > 0)
+        .map(([diametro, cantidad]) => `${cantidad}x${diametro}"`)
         .join(', ')
     : "";
 
@@ -143,9 +142,9 @@ const SetupAparejos = () => {
             {/* Visualización detallada de la selección de grilletes */}
             {tipoGrillete && typeof tipoGrillete === 'object' && Object.keys(tipoGrillete).length > 0 && (
               <View style={styles.selectedManiobraContainer}>
-                {Object.entries(tipoGrillete).map(([pulgada, cantidad]) => (
-                  <Text key={pulgada} style={styles.selectedManiobraText}>
-                    {`${cantidad} grillete(s) de ${pulgada}"`}
+                {Object.entries(tipoGrillete).map(([diametro, cantidad]) => (
+                  <Text key={diametro} style={styles.selectedManiobraText}>
+                    {`${cantidad} grillete(s) de ${diametro}"`}
                   </Text>
                 ))}
               </View>
