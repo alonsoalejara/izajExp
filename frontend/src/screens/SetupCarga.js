@@ -119,7 +119,7 @@ const SetupCarga = () => {
               style={[{ width: 315 }, errors.forma && { borderColor: 'red', borderWidth: 3, borderRadius: 10 }]}
             />
             <Text style={styles.labelText}>
-              Ingrese el peso y el {altoLabel} de la carga:
+              Ingrese el peso (kg) y el {altoLabel} (m) de la carga:
             </Text>
             <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
               <View style={styles.inputField}>

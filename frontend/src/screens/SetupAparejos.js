@@ -167,7 +167,7 @@ const SetupAparejos = () => {
               onSelect={setEslingaOEstrobo}
               maxManiobra={parseInt(cantidadManiobra, 10)}
             />
-            <View style={[styles.buttonContainer, { right: 40 }]}>
+            <View style={[styles.buttonContainer, { top: 10, right: 40 }]}>
               <Components.Button
                 label="Volver"
                 onPress={() => navigation.goBack()}
