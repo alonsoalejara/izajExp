@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, TextInput, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
@@ -87,12 +87,32 @@ const SetupAparejos = () => {
   const tableData = useMemo(() => {
     let arr = [];
     if (eslingaOEstrobo && eslingaOEstrobo.cantidades) {
+      // Sumar todas las cantidades para saber el total de aparejos
+      const totalAparejos = Object.values(eslingaOEstrobo.cantidades).reduce(
+        (sum, qty) => sum + qty,
+        0
+      );
+      // Si hay más de un aparejo, se espera que sea un número par.
+      // Se determina la mitad.
+      const mitad = totalAparejos > 1 ? totalAparejos / 2 : 0;
+      
       Object.entries(eslingaOEstrobo.cantidades).forEach(([diametro, cantidad]) => {
         for (let i = 0; i < cantidad; i++) {
           const key = `${eslingaOEstrobo.type}-${diametro}-${i}`;
+          let etiqueta = "";
+          if (totalAparejos === 1) {
+            etiqueta = "S1";
+          } else {
+            // Si ya se han agregado menos de 'mitad' filas, se asigna S1; de lo contrario, S2.
+            if (arr.length < mitad) {
+              etiqueta = "S1";
+            } else {
+              etiqueta = "S2";
+            }
+          }
           arr.push({
             key,
-            item: `${eslingaOEstrobo.type} de ${diametro} mm`,
+            item: `${etiqueta}: ${eslingaOEstrobo.type} de ${diametro} mm`,
             medida: medidasAparejos[key] || ''
           });
         }
@@ -138,13 +158,19 @@ const SetupAparejos = () => {
 
             {/* Tabla para eslinga/estrobo con campos editables */}
             {eslingaOEstrobo && eslingaOEstrobo.cantidades && Object.keys(eslingaOEstrobo.cantidades).length > 0 && (
-              <Components.Tabla
-                titulo="Medidas"
-                data={tableData}
-                editable={true}
-                onChangeMedida={handleChangeMedida}
-                style={{ marginTop: 0 }}
-              />
+              <>
+                <Image
+                  source={require('../../assets/variables-izaje-carga.png')}
+                  style={{ width: '100%', height: 100, resizeMode: 'contain', marginBottom: 10 }}
+                />
+                <Components.Tabla
+                  titulo="Medidas"
+                  data={tableData}
+                  editable={true}
+                  onChangeMedida={handleChangeMedida}
+                  style={{ marginTop: 0 }}
+                />
+              </>
             )}
 
             <View style={styles.inputWrapper}>

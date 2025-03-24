@@ -61,11 +61,16 @@ const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
   };
 
   const handleConfirmar = () => {
+    const totalAparejos = Object.values(cantidades).reduce((sum, value) => sum + value, 0);
+    if (totalAparejos % 2 !== 0) {
+      Alert.alert("Error", "El número total de eslingas/estrobos debe ser par.");
+      return;
+    }
     // Envía un objeto con el tipo de maniobra y las cantidades seleccionadas
     onSelect({ type: tipoManiobra, cantidades });
     closeBottomSheet();
   };
-
+  
   const renderLista = (tipo) => {
     if (mostrarLista !== tipo) return null;
 
