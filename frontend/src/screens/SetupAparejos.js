@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, TextInput } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
@@ -19,6 +19,9 @@ const SetupAparejos = () => {
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState({});
 
+  // Estado para guardar las medidas manuales para cada aparejo
+  const [medidasAparejos, setMedidasAparejos] = useState({});
+
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
@@ -26,7 +29,6 @@ const SetupAparejos = () => {
   console.log("Datos recibidos en SetupAparejos:");
   console.log("SetupGruaData:", setupGruaData);
   console.log("SetupCargaData:", setupCargaData);
-  console.log("SetupRadioData:", setupRadioData);
 
   const openModal = (setModalVisible) => {
     setModalVisible(true);
@@ -61,7 +63,8 @@ const SetupAparejos = () => {
       cantidadManiobra,
       eslingaOEstrobo,
       cantidadGrilletes,
-      tipoGrillete
+      tipoGrillete,
+      medidasAparejos // Se envían también las medidas ingresadas manualmente
     };
 
     navigation.navigate('SetupRadio', {
@@ -80,11 +83,35 @@ const SetupAparejos = () => {
         .join(', ')
     : "";
 
+  // Construir la data para la tabla de eslinga/estrobo
+  const tableData = useMemo(() => {
+    let arr = [];
+    if (eslingaOEstrobo && eslingaOEstrobo.cantidades) {
+      Object.entries(eslingaOEstrobo.cantidades).forEach(([diametro, cantidad]) => {
+        for (let i = 0; i < cantidad; i++) {
+          const key = `${eslingaOEstrobo.type}-${diametro}-${i}`;
+          arr.push({
+            key,
+            item: `${eslingaOEstrobo.type} de ${diametro} mm`,
+            medida: medidasAparejos[key] || ''
+          });
+        }
+      });
+    }
+    return arr;
+  }, [eslingaOEstrobo, medidasAparejos]);
+
+  // Función para actualizar la medida manual en el estado
+  const handleChangeMedida = (index, value) => {
+    const key = tableData[index].key;
+    setMedidasAparejos(prev => ({ ...prev, [key]: value }));
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
         <Components.Header />
-        <ScrollView contentContainerStyle={{ flexGrow: 2, height: 1000 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 2, paddingBottom: 50 }}>
           <View style={styles.titleContainer}>
             <Text style={styles.sectionTitle}>Configuración de aparejos</Text>
           </View>
@@ -109,15 +136,15 @@ const SetupAparejos = () => {
               />
             </View>
 
-            {/* Visualización de eslinga/estrobo y sus cantidades */}
+            {/* Tabla para eslinga/estrobo con campos editables */}
             {eslingaOEstrobo && eslingaOEstrobo.cantidades && Object.keys(eslingaOEstrobo.cantidades).length > 0 && (
-              <View style={styles.selectedManiobraContainer}>
-                {Object.entries(eslingaOEstrobo.cantidades).map(([diametro, cantidad]) => (
-                  <Text key={diametro} style={styles.selectedManiobraText}>
-                    {`${eslingaOEstrobo.type} de ${diametro} mm - Cantidad: ${cantidad}`}
-                  </Text>
-                ))}
-              </View>
+              <Components.Tabla
+                titulo="Medidas"
+                data={tableData}
+                editable={true}
+                onChangeMedida={handleChangeMedida}
+                style={{ marginTop: 0 }}
+              />
             )}
 
             <View style={styles.inputWrapper}>
@@ -139,7 +166,6 @@ const SetupAparejos = () => {
               />
             </View>
 
-            {/* Visualización detallada de la selección de grilletes */}
             {tipoGrillete && typeof tipoGrillete === 'object' && Object.keys(tipoGrillete).length > 0 && (
               <View style={styles.selectedManiobraContainer}>
                 {Object.entries(tipoGrillete).map(([diametro, cantidad]) => (
