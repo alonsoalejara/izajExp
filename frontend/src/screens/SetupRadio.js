@@ -9,19 +9,15 @@ import { evaluateMovement } from '../data/loadCapacity';
 const SetupRadio = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { setupGruaData, setupCargaData } = route.params || {};
+  const { setupGruaData, setupCargaData, setupAparejosData } = route.params || {};
 
   const [radioIzaje, setRadioIzaje] = useState('');
   const [radioMontaje, setRadioMontaje] = useState('');
 
-  // Se asume que el peso de la carga viene en toneladas, ej. 5 t.
+  // Se asume que el peso de la carga viene en toneladas
   const pesoCarga = setupCargaData?.peso || 'No disponible';
-
-  // Se asume que el largo de pluma viene en metros y es un valor exacto definido en las tablas.
-  // Ejemplo: 10.6, 15.2, 19.8, 24.3, 28.9 o 33.5.
   const boomLength = setupGruaData?.largoPluma ? parseFloat(setupGruaData.largoPluma) : null;
 
-  // Se evalúa el movimiento basado en el radio de montaje, el peso y el largo de pluma.
   let movementEvaluation = null;
   const parsedRadioMontaje = parseFloat(radioMontaje);
   const parsedPesoCarga = parseFloat(pesoCarga);
@@ -43,11 +39,15 @@ const SetupRadio = () => {
     navigation.navigate('Tablas', { 
       setupGruaData, 
       setupCargaData, 
-      setupRadioData 
+      setupRadioData,
+      setupAparejosData 
     });
   };
 
-  console.log('Datos recibidos en SetupRadio:', route.params);
+  console.log("Datos recibidos en SetupRadio:");
+  console.log("SetupGruaData:", setupGruaData);
+  console.log("SetupCargaData:", setupCargaData);
+  console.log("SetupAparejosData:", setupAparejosData);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -98,7 +98,7 @@ const SetupRadio = () => {
             </View>
             <View style={{ top: -700 }}>
               <Text style={styles.labelText}>
-                Peso de la carga: {pesoCarga} t
+                Peso de la carga: {pesoCarga} kg ({(pesoCarga / 1000).toFixed(1)} t)
               </Text>
               <Text style={styles.labelText}>
                 Radio de izaje: {radioIzaje ? `${radioIzaje} m` : ''}
