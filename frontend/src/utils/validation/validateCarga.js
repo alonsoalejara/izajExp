@@ -52,8 +52,8 @@ export const validateCarga = (peso, largo, ancho, alto, forma) => {
     }
   }
 
-  // Validar largo y ancho solo si la forma NO es Círculo ni Cuadrado
-  if (forma !== 'Círculo' && forma !== 'Cuadrado') {
+  // Validar largo y ancho solo si la forma NO es Cilindro ni Cuadrado
+  if (forma !== 'Cilindro' && forma !== 'Cuadrado') {
     if (!largo) {
       newErrors.largo = 'Campo obligatorio';
     } else {

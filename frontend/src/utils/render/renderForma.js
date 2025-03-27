@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import Svg, { Polygon, Defs, RadialGradient, Stop, Circle, Line } from 'react-native-svg';
+import Svg, { Polygon, Defs, RadialGradient, Stop, Rect, Ellipse, Line } from 'react-native-svg';
 
 const RenderForma = ({ forma, dimensiones }) => {
   // Función para renderizar las dimensiones solo con nombre, sin el valor numérico
@@ -46,23 +46,37 @@ const RenderForma = ({ forma, dimensiones }) => {
         </Svg>
       );
 
-    case 'Círculo':
-      return (
-        <Svg height="100" width="100">
-          <Defs>
-            <RadialGradient id="grad" cx="50%" cy="50%" r="50%" fx="35%" fy="35%">
-              <Stop offset="0%" stopColor="white" stopOpacity="0.8" />
-              <Stop offset="50%" stopColor="gray" stopOpacity="0.8" />
-              <Stop offset="100%" stopColor="black" stopOpacity="1" />
-            </RadialGradient>
-          </Defs>
-          <Circle cx="50" cy="50" r="40" fill="url(#grad)" stroke="black" />
+      case 'Cilindro':
+        return (
+          <Svg height="120" width="100" viewBox="0 0 100 120">
+            {/* Definición del gradiente (ya no se usa) */}
+            <Defs>
+              <RadialGradient id="grad" cx="50%" cy="30%" r="50%" fx="50%" fy="30%">
+                <Stop offset="0%" stopColor="white" stopOpacity="0.8" />
+                <Stop offset="50%" stopColor="gray" stopOpacity="0.8" />
+                <Stop offset="100%" stopColor="black" stopOpacity="1" />
+              </RadialGradient>
+            </Defs>
+      
+            {/* Cuerpo del cilindro (gris claro) */}
+            <Rect x="10" y="30" width="80" height="60" fill="lightgray" stroke="black" />
 
-          {/* Líneas representando el diámetro sin valores numéricos */}
-          {renderDimension('Diámetro', { x1: 10, y1: 50, x2: 90, y2: 50, textX: 50, textY: 45, textStyle: { top: 41, right: 55 } })}
-        </Svg>
-      );
-
+            {/* Elipse superior (tapa superior, gris) */}
+            <Ellipse cx="50" cy="30" rx="40" ry="15" fill="gray" stroke="black" />
+      
+            {/* Líneas laterales */}
+            <Line x1="10" y1="30" x2="10" y2="90" stroke="black" strokeWidth="1" />
+            <Line x1="90" y1="30" x2="90" y2="90" stroke="black" strokeWidth="1" />
+      
+            {/* Elipse inferior (tapa inferior, gris) */}
+            <Ellipse cx="50" cy="90" rx="40" ry="15" fill="gray" stroke="black" />
+      
+            {/* Líneas de dimensiones */}
+            {renderDimension('X&Z: Diametro', { x1: 10, y1: 30, x2: 90, y2: 30, textX: 50, textY: 25, textStyle: { top: -40, left: -85 } })}
+            {renderDimension('Y: largo', { x1: 95, y1: 30, x2: 95, y2: 90, textX: 105, textY: 60, textStyle: { top: -20, left: 100 } })}
+          </Svg>
+        );
+      
     default:
       return <View style={{ width: 315, height: 150, backgroundColor: 'transparent', borderRadius: 10 , borderWidth: 1, borderColor: '#ddd' }} />;
   }

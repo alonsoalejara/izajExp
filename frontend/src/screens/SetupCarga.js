@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Alert, Image } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Components from '../components/Components.index';
 import styles from '../styles/SetupIzajeStyles';
@@ -92,9 +92,9 @@ const SetupCarga = () => {
     }
   };
 
-  const altoLabel = forma === 'Círculo' ? 'diámetro' : forma === 'Cuadrado' ? 'lado' : 'alto';
-  const effectiveAncho = (forma === 'Cuadrado' || forma === 'Círculo') ? altura : ancho;
-  const effectiveLargo = (forma === 'Cuadrado' || forma === 'Círculo') ? altura : largo;
+  const altoLabel = forma === 'Cilindro' ? 'altura' : forma === 'Cuadrado' ? 'lado' : 'alto';
+  const effectiveAncho = (forma === 'Cuadrado' || forma === 'Cilindro') ? altura : ancho;
+  const effectiveLargo = (forma === 'Cuadrado' || forma === 'Cilindro') ? altura : largo;
   
   // Calcula el centro de gravedad usando la función importada.
   const cg = calculateCG(forma, altura, largo, ancho);
@@ -161,7 +161,7 @@ const SetupCarga = () => {
                 />
               </View>
             </View>
-            {forma !== 'Círculo' && forma !== 'Cuadrado' && (
+            {forma !== 'Cilindro' && forma !== 'Cuadrado' && (
               <>
                 <Text style={styles.labelText}>Ingrese el largo y ancho:</Text>
                 <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
@@ -204,76 +204,64 @@ const SetupCarga = () => {
                 </View>
               </>
             )}
+            {/* Nuevo campo para Cilindro */}
+            {forma === 'Cilindro' && (
+              <View style={styles.inputWrapper}>
+                <Text style={styles.labelText}>Ingrese el diámetro (m):</Text>
+                {errors.diametro && <Text style={styles.errorText}>{errors.diametro}</Text>}
+                <Components.NumericInput
+                  value={diametro}
+                  onChangeText={(value) => {
+                    setDiametro(value);
+                    handleInputChange('diametro', value);
+                  }}
+                  placeholder="Diámetro del cilindro"
+                  onEndEditing={() => {
+                    const cleanedValue = diametro.trim();
+                    setDiametro(cleanedValue);
+                    handleInputChange('diametro', cleanedValue);
+                  }}
+                  editable={!!forma}
+                  style={[{ width: 150 }, errors.diametro && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 }]}
+                />
+              </View>
+            )}
             <Components.Button
               label="Continuar"
               onPress={handleNavigateToSetupGrua}
               style={{ marginTop: 15, marginBottom: 0, width: 330, left: -60 }}
             />
-          {/* Visualización de forma: */}
-          <Text style={[styles.labelText, { marginTop: 15, marginBottom: 10 }]}>
-            Visualización de forma:
-          </Text>
-          {cg && (
-            <View style={{ marginTop: 5, marginBottom: 10, alignItems: 'center' }}>
-              <Text style={{ fontWeight: 'bold' }}>Centro de gravedad:</Text>
-              <Text>
-                X: {cg.cgX.toFixed(1)} | Y: {cg.cgY.toFixed(1)} | Z: {cg.cgZ.toFixed(1)}
-              </Text>
-            </View>
-          )}
-          <View style={[styles.visualizationCargaContainer, { marginBottom: 40 }]}>
-            <RenderForma
-              forma={carga.forma}
-              dimensiones={{
-                largo: carga.largo,
-                ancho: carga.ancho,
-                profundidad: carga.alto,
-              }}
-            />
-          </View>
-          {/* Bloque para D1 y D2 */}
-          {cg && (
-            <View style={{ alignItems: 'center', marginTop: -30, left: -114 }}>
-              <View style={{ flexDirection: 'row', gap: 10 }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>D1:</Text>
-                <Text style={{ fontWeight: '500', fontSize: 18, width: 50, textAlign: 'center' }}>
-                  {cg.cgX.toFixed(1)}
+            {/* Visualización de forma: */}
+            <Text style={[styles.labelText, { marginTop: 15, marginBottom: 10 }]}>
+              Visualización de forma:
+            </Text>
+            {cg && (
+              <View style={{ marginTop: 5, marginBottom: 10, alignItems: 'center' }}>
+                <Text style={{ fontWeight: 'bold' }}>Centro de gravedad:</Text>
+                <Text>
+                  X: {cg.cgX.toFixed(1)} | Y: {cg.cgY.toFixed(1)} | Z: {cg.cgZ.toFixed(1)}
                 </Text>
               </View>
-              <View style={{ flexDirection: 'row', gap: 10 }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>D2:</Text>
-                <Text style={{ fontWeight: '500', fontSize: 18, width: 50, textAlign: 'center' }}>
-                  {((parseFloat(effectiveAncho) || 0) - cg.cgX).toFixed(1)}
-                </Text>
-              </View>
-            </View>
-          )}
-            <View>
-              <Text style={{ fontWeight: 'bold', fontSize: 18, marginTop: 0 }}>Dimensiones:</Text>
-              <Image
-                source={require('../../assets/variables-izaje-carga.png')}
-                style={{
-                  borderRadius: 20,
-                  borderWidth: 5,
-                  borderColor: '#000',
-                  top: -380,
-                  marginBottom: -750,
-                  width: 1200,
-                  height: 890,
-                  left: -525,
-                  transform: [{ scale: 0.12 }],
+            )}
+            <View style={[styles.visualizationCargaContainer, { marginBottom: 40 }]}>
+              <RenderForma
+                forma={carga.forma}
+                dimensiones={{
+                  largo: carga.largo,
+                  ancho: carga.ancho,
+                  profundidad: carga.alto,
                 }}
               />
             </View>
+            <BS.BSForma
+              isVisible={isFormaVisible}
+              onClose={() => setIsFormaVisible(false)}
+              onSelect={(selectedForma) => {
+                setForma(selectedForma);
+                handleInputChange('forma', selectedForma);
+              }}
+            />
           </View>
-          <BS.BSForma
-            isVisible={isFormaVisible}
-            onClose={() => setIsFormaVisible(false)}
-            onSelect={(selectedForma) => {
-              setForma(selectedForma);
-              handleInputChange('forma', selectedForma);
-            }}
-          />
         </ScrollView>
       </View>
     </TouchableWithoutFeedback>

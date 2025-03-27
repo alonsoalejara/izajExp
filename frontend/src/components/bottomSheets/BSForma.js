@@ -29,7 +29,7 @@ const BSForma = ({ isVisible, onClose, onSelect }) => {
   }, [isVisible]);
 
   useEffect(() => {
-    setFormas(['Cuadrado', 'Rectángulo', 'Círculo']);
+    setFormas(['Cuadrado', 'Rectángulo', 'Cilindro']);
   }, []);
 
   const openBottomSheet = () => {
