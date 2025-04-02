@@ -14,6 +14,7 @@ const SetupCarga = () => {
   const [ancho, setAncho] = useState('');
   const [largo, setLargo] = useState('');
   const [altura, setAltura] = useState('');
+  const [diametro, setDiametro] = useState('');
   const [forma, setForma] = useState('');
   const [isFormaVisible, setIsFormaVisible] = useState(false);
   const [carga, setCarga] = useState({
@@ -43,22 +44,44 @@ const SetupCarga = () => {
   const handleNavigateToSetupGrua = () => {
     const pesoNum = parseFloat(peso);
     const alturaNum = parseFloat(altura);
-    let largoNum, anchoNum;
-    if (forma === 'Cuadrado' || forma === 'Círculo') {
-      largoNum = alturaNum;
-      anchoNum = alturaNum;
-    } else {
-      largoNum = parseFloat(largo);
-      anchoNum = parseFloat(ancho);
-    }
-    const cargaData = { 
-      ...carga, 
-      peso: pesoNum, 
-      largo: largoNum, 
-      ancho: anchoNum, 
-      alto: alturaNum 
+
+    let cargaData = {
+      ...carga,
+      peso: pesoNum,
+      alto: alturaNum,
     };
+
+    if (forma === 'Cilindro') {
+      // Para un cilindro, se pasan solo altura y diametro (convertido a número)
+      // y se asigna 0 a largo y ancho.
+      cargaData = { 
+        ...cargaData, 
+        diametro: parseFloat(diametro),
+        largo: 0,
+        ancho: 0,
+      };
+    } else if (forma === 'Cuadrado') {
+      // Para un cuadrado, se utiliza la altura como valor para largo y ancho, y el diametro se asigna a 0.
+      cargaData = { 
+        ...cargaData, 
+        largo: alturaNum, 
+        ancho: alturaNum, 
+        diametro: 0 
+      };
+    } else {
+      // Para un rectángulo u otra forma, se utilizan los valores ingresados para largo y ancho y se asigna 0 al diametro.
+      const largoNum = parseFloat(largo);
+      const anchoNum = parseFloat(ancho);
+      cargaData = { 
+        ...cargaData, 
+        largo: largoNum, 
+        ancho: anchoNum, 
+        diametro: 0 
+      };
+    }
+
     console.log("Datos que se están pasando a SetupGrua:", cargaData);
+
     if (largo === ancho && ancho === altura && largo !== '') {
       Alert.alert(
         "Dimensiones de un cubo detectadas",
@@ -93,11 +116,14 @@ const SetupCarga = () => {
   };
 
   const altoLabel = forma === 'Cilindro' ? 'altura' : forma === 'Cuadrado' ? 'lado' : 'alto';
-  const effectiveAncho = (forma === 'Cuadrado' || forma === 'Cilindro') ? altura : ancho;
-  const effectiveLargo = (forma === 'Cuadrado' || forma === 'Cilindro') ? altura : largo;
-  
+
   // Calcula el centro de gravedad usando la función importada.
-  const cg = calculateCG(forma, altura, largo, ancho);
+  const cg = calculateCG(
+    forma,
+    altura,
+    forma === 'Cilindro' ? diametro : largo,
+    ancho
+  );
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -121,7 +147,7 @@ const SetupCarga = () => {
               style={[{ width: 315 }, errors.forma && { borderColor: 'red', borderWidth: 3, borderRadius: 10 }]}
             />
             <Text style={styles.labelText}>
-              Ingrese el peso (kg) y el {altoLabel} (m) de la carga:
+              Ingrese el peso (ton) y el {altoLabel} (m) de la carga:
             </Text>
             <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
               <View style={styles.inputField}>
@@ -204,10 +230,10 @@ const SetupCarga = () => {
                 </View>
               </>
             )}
-            {/* Nuevo campo para Cilindro */}
+            {/* Campo para Cilindro */}
             {forma === 'Cilindro' && (
               <View style={styles.inputWrapper}>
-                <Text style={styles.labelText}>Ingrese el diámetro (m):</Text>
+                <Text style={[styles.labelText, { top: -8 }]}>Ingrese el diámetro (m):</Text>
                 {errors.diametro && <Text style={styles.errorText}>{errors.diametro}</Text>}
                 <Components.NumericInput
                   value={diametro}
@@ -222,7 +248,7 @@ const SetupCarga = () => {
                     handleInputChange('diametro', cleanedValue);
                   }}
                   editable={!!forma}
-                  style={[{ width: 150 }, errors.diametro && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 }]}
+                  style={[{ width: 320 }, errors.diametro && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 }]}
                 />
               </View>
             )}
@@ -231,7 +257,7 @@ const SetupCarga = () => {
               onPress={handleNavigateToSetupGrua}
               style={{ marginTop: 15, marginBottom: 0, width: 330, left: -60 }}
             />
-            {/* Visualización de forma: */}
+            {/* Visualización de forma */}
             <Text style={[styles.labelText, { marginTop: 15, marginBottom: 10 }]}>
               Visualización de forma:
             </Text>

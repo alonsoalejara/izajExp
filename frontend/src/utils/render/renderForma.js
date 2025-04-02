@@ -72,8 +72,8 @@ const RenderForma = ({ forma, dimensiones }) => {
             <Ellipse cx="50" cy="90" rx="40" ry="15" fill="gray" stroke="black" />
       
             {/* Líneas de dimensiones */}
-            {renderDimension('X&Z: Diametro', { x1: 10, y1: 30, x2: 90, y2: 30, textX: 50, textY: 25, textStyle: { top: -40, left: -85 } })}
-            {renderDimension('Y: largo', { x1: 95, y1: 30, x2: 95, y2: 90, textX: 105, textY: 60, textStyle: { top: -20, left: 100 } })}
+            {renderDimension('X&Y: Diametro', { x1: 10, y1: 30, x2: 90, y2: 30, textX: 50, textY: 25, textStyle: { top: -40, left: -85 } })}
+            {renderDimension('Z: Altura', { x1: 95, y1: 30, x2: 95, y2: 90, textX: 105, textY: 60, textStyle: { top: -20, left: 100 } })}
           </Svg>
         );
       
