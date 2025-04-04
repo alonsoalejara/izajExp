@@ -5,8 +5,10 @@ import Components from '../components/Components.index';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import RenderForma from '../utils/render/renderForma';
+import RenderCG from '../utils/render/renderCG';
 import { validateCarga } from '../utils/validation/validateCarga';
-import { calculateCG } from '../utils/calculateCG';
+// Se importa el nuevo módulo que calcula CG y las dimensiones D1/D2.
+import { calculateGeometry } from '../utils/calculateGeometry';
 
 const SetupCarga = () => {
   const navigation = useNavigation();
@@ -17,13 +19,7 @@ const SetupCarga = () => {
   const [diametro, setDiametro] = useState('');
   const [forma, setForma] = useState('');
   const [isFormaVisible, setIsFormaVisible] = useState(false);
-  const [carga, setCarga] = useState({
-    peso: '',
-    largo: '',
-    ancho: '',
-    alto: '',
-    forma: '',
-  });
+  const [carga, setCarga] = useState({ peso: '', largo: '', ancho: '', alto: '', forma: '' });
   const [errors, setErrors] = useState({});
 
   const handleInputChange = (field, value) => {
@@ -52,8 +48,6 @@ const SetupCarga = () => {
     };
 
     if (forma === 'Cilindro') {
-      // Para un cilindro, se pasan solo altura y diametro (convertido a número)
-      // y se asigna 0 a largo y ancho.
       cargaData = { 
         ...cargaData, 
         diametro: parseFloat(diametro),
@@ -61,7 +55,6 @@ const SetupCarga = () => {
         ancho: 0,
       };
     } else if (forma === 'Cuadrado') {
-      // Para un cuadrado, se utiliza la altura como valor para largo y ancho, y el diametro se asigna a 0.
       cargaData = { 
         ...cargaData, 
         largo: alturaNum, 
@@ -69,13 +62,12 @@ const SetupCarga = () => {
         diametro: 0 
       };
     } else {
-      // Para un rectángulo u otra forma, se utilizan los valores ingresados para largo y ancho y se asigna 0 al diametro.
       const largoNum = parseFloat(largo);
       const anchoNum = parseFloat(ancho);
       cargaData = { 
         ...cargaData, 
         largo: largoNum, 
-        ancho: anchoNum, 
+        ancho: anchoNum,
         diametro: 0 
       };
     }
@@ -117,19 +109,22 @@ const SetupCarga = () => {
 
   const altoLabel = forma === 'Cilindro' ? 'altura' : forma === 'Cuadrado' ? 'lado' : 'alto';
 
-  // Calcula el centro de gravedad usando la función importada.
-  const cg = calculateCG(
+  // Se calcula la geometría (CG y dimensiones D1/D2) usando el nuevo módulo.
+  // Para el caso de 'Cilindro', se pasa el diámetro en lugar del largo.
+  const geometry = calculateGeometry(
     forma,
     altura,
     forma === 'Cilindro' ? diametro : largo,
     ancho
   );
+  const cg = geometry?.cg;
+  const { d1x, d2x, d1y, d2y } = geometry?.dimensions || { d1x: 0, d2x: 0, d1y: 0, d2y: 0 };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
         <Components.Header />
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}>
           <View style={styles.titleContainer}>
             <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
           </View>
@@ -230,7 +225,6 @@ const SetupCarga = () => {
                 </View>
               </>
             )}
-            {/* Campo para Cilindro */}
             {forma === 'Cilindro' && (
               <View style={styles.inputWrapper}>
                 <Text style={[styles.labelText, { top: -8 }]}>Ingrese el diámetro (m):</Text>
@@ -252,21 +246,24 @@ const SetupCarga = () => {
                 />
               </View>
             )}
-            <Components.Button
-              label="Continuar"
-              onPress={handleNavigateToSetupGrua}
-              style={{ marginTop: 15, marginBottom: 0, width: 330, left: -60 }}
-            />
-            {/* Visualización de forma */}
-            <Text style={[styles.labelText, { marginTop: 15, marginBottom: 10 }]}>
-              Visualización de forma:
-            </Text>
-            {cg && (
-              <View style={{ marginTop: 5, marginBottom: 10, alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold' }}>Centro de gravedad:</Text>
-                <Text>
-                  X: {cg.cgX.toFixed(1)} | Y: {cg.cgY.toFixed(1)} | Z: {cg.cgZ.toFixed(1)}
-                </Text>
+            {/* Se muestra la sección de CG y dimensiones solo si se han ingresado los valores necesarios */}
+            {geometry && (
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5, marginBottom: 10 }}>
+                {/* Columna izquierda: Centro de gravedad */}
+                <View style={{ flex: 1 }}>
+                  <View style={{ alignItems: 'flex-start' }}>
+                    <Text style={{ fontWeight: 'bold' }}>Centro de gravedad:</Text>
+                    <Text>
+                      X: {cg.cgX.toFixed(1)} | Y: {cg.cgY.toFixed(1)} | Z: {cg.cgZ.toFixed(1)}
+                    </Text>
+                  </View>
+                </View>
+                {/* Columna derecha: Dimensiones D1 y D2 */}
+                <View style={{ flex: 1, alignItems: 'flex-end', paddingRight: 20 }}>
+                  <Text style={{ fontWeight: 'bold' }}>Dimensiones:</Text>
+                  <Text>Eje X: D1: {d1x.toFixed(1)} | D2: {d2x.toFixed(1)}</Text>
+                  <Text>Eje Y: D1: {d1y.toFixed(1)} | D2: {d2y.toFixed(1)}</Text>
+                </View>
               </View>
             )}
             <View style={[styles.visualizationCargaContainer, { marginBottom: 40 }]}>
@@ -279,6 +276,14 @@ const SetupCarga = () => {
                 }}
               />
             </View>
+            {/* Renderizamos el componente para las imágenes */}
+            <RenderCG forma={forma} />
+            {/* Botón "Continuar" */}
+            <Components.Button
+              label="Continuar"
+              onPress={handleNavigateToSetupGrua}
+              style={{ marginTop: -15, marginBottom: 30, left: -25, width: 330, alignSelf: 'center' }}
+            />
             <BS.BSForma
               isVisible={isFormaVisible}
               onClose={() => setIsFormaVisible(false)}
