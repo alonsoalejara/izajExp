@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';  
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -22,7 +22,8 @@ const SetupGrua = () => {
   const [grua, setGrua] = useState('');
   const [errorGrua, setErrorGrua] = useState('');
   const [largoPluma, setLargoPluma] = useState('');
-  const [anguloInclinacion, setAnguloInclinacion] = useState('');
+  const [radioIzaje, setRadioIzaje] = useState('');
+  const [radioMontaje, setRadioMontaje] = useState('');
   const [usuarioId, setUsuarioId] = useState(null);
 
   useEffect(() => {
@@ -55,21 +56,23 @@ const SetupGrua = () => {
     const setupGruaData = {
       grua,
       largoPluma,
-      anguloInclinacion,
+      anguloInclinacion: "75°", // Fijamos el valor del ángulo
+      radioIzaje,
+      radioMontaje,
       usuarioId,
     };
     await AsyncStorage.setItem('setupGruaData', JSON.stringify(setupGruaData));
-    navigation.navigate('SetupAparejos', { setupGruaData, setupCargaData }); // Cambio aquí
-};
+    navigation.navigate('SetupAparejos', { setupGruaData, setupCargaData });
+  };
 
 
-  const isInputsDisabled = !grua; 
+  const isInputsDisabled = !grua;
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
         <Components.Header />
-        <ScrollView contentContainerStyle={{ flexGrow: 2, height: 1000 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 2, height: 1200 }}>
           <View style={styles.titleContainer}>
             <Text style={styles.sectionTitle}>Configurar grúa</Text>
           </View>
@@ -93,10 +96,8 @@ const SetupGrua = () => {
                 setErrorGrua('');
                 if (selectedGrua.nombre === "Terex RT555") {
                   setLargoPluma("10.5 m");
-                  setAnguloInclinacion("75°");
                 } else {
                   setLargoPluma("");
-                  setAnguloInclinacion("");
                 }
               }}
             />
@@ -109,7 +110,7 @@ const SetupGrua = () => {
                 value={largoPluma || ''}
                 placeholder="Largo pluma"
                 onPress={() => openModal(setLargoPlumaModalVisible)}
-                style={{ height: 60, width: 150, top: 7 }}
+                style={{ height: 60, width: 320, top: 7 }}
                 disabled={isInputsDisabled}
               />
               <BS.BSLargoPluma
@@ -117,32 +118,34 @@ const SetupGrua = () => {
                 onClose={() => setLargoPlumaModalVisible(false)}
                 onSelect={(selectedLargoPluma) => setLargoPluma(selectedLargoPluma)}
               />
-              <Components.NumericInput
-                label="Ángulo de inclinación"
-                value={anguloInclinacion}
-                onChangeText={(text) => {
-                  let cleanedValue = text.replace('°', '').trim();
-                  if (cleanedValue) {
-                    let numValue = parseInt(cleanedValue, 10);
-                    if (numValue < 10) numValue = 10;
-                    if (numValue > 75) numValue = 75;
-                    setAnguloInclinacion(`${numValue}°`);
-                  } else {
-                    setAnguloInclinacion('');
-                  }
-                }}
-                placeholder="Ángulo (°)"
-                onEndEditing={() => {
-                  if (anguloInclinacion && !anguloInclinacion.includes('°')) {
-                    setAnguloInclinacion(anguloInclinacion + '°');
-                  }
-                }}
-                editable={!isInputsDisabled}
-                style={{ width: 150, height: 59, top: 10 }}
-                showControls={true}
-                showClearButton={false}
-              />
             </View>
+
+            {/* Container para Radio de Izaje y Radio de Montaje */}
+            <View style={[styles.inputContainer, { marginTop: 15, marginBottom: 15 }]}>
+              <View style={{ flex: 1, marginRight: 10 }}>
+                <Text style={styles.labelText}>Radio de izaje (m):</Text>
+                <Components.NumericInput
+                  value={radioIzaje}
+                  onChangeText={setRadioIzaje}
+                  placeholder="Radio de izaje"
+                  editable={!isInputsDisabled}
+                  style={{ height: 60, marginTop: 10 }}
+                  showControls={false}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.labelText}>Radio de montaje (m):</Text>
+                <Components.NumericInput
+                  value={radioMontaje}
+                  onChangeText={setRadioMontaje}
+                  placeholder="Radio de montaje"
+                  editable={!isInputsDisabled}
+                  style={{ height: 60, marginTop: 10 }}
+                  showControls={false}
+                />
+              </View>
+            </View>
+
             <View style={[styles.buttonContainer, { right: 40, marginTop: 15, marginBottom: -20 }]}>
               <Components.Button
                 label="Volver"
@@ -157,8 +160,18 @@ const SetupGrua = () => {
               />
             </View>
             <View style={styles.inputWrapper}>
-              <Text style={styles.labelText}>Visualización de la grúa:</Text>
+              <Text style={[styles.labelText, { left: 8 }]}>Visualización de la grúa:</Text>
             </View>
+            {grua ? (
+              <View style={{ width: 150, height: 39, top: 0, justifyContent: 'center' }}>
+                <Text style={[styles.labelText, { textAlign: 'center' }]}>Ángulo de inclinación</Text>
+                <View style={{ alignItems: 'center' }}>
+                  <Text style={{ fontSize: 18, color: '#333' }}>75°</Text>
+                </View>
+              </View>
+            ) : (
+              <View style={{ width: 150 }} />
+            )}
             <View style={styles.visualizationGruaContainer}>
               {!grua ? (
                 <Text style={[styles.labelText, { color: '#ccc'}]}>
@@ -169,9 +182,9 @@ const SetupGrua = () => {
                   <View style={getGridContainerStyle(largoPluma)}>
                     <RenderGrid />
                   </View>
-                  <GruaIllustration 
+                  <GruaIllustration
                     alturaType={getAlturaType(largoPluma)}
-                    inclinacion={parseInt(anguloInclinacion, 10)}
+                    inclinacion={75}
                     style={getGruaIllustrationStyle(largoPluma)}
                   />
                 </View>
