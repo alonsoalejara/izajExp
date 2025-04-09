@@ -11,6 +11,7 @@ import { getGridContainerStyle } from '../utils/gridStyles';
 import { getGruaIllustrationStyle } from '../utils/gruaStyles';
 import { getAlturaType } from '../logic/alturaLogic';
 import { validateSetupGrua } from '../utils/validation/validationCrane';
+import { inclinacionMapAltura33 } from '../utils/inclinacionMapAltura33'; // Importa el mapa de inclinaciones
 
 const SetupGrua = () => {
   const navigation = useNavigation();
@@ -27,6 +28,7 @@ const SetupGrua = () => {
   const [radioMontaje, setRadioMontaje] = useState('');
   const [errorRadioMontaje, setErrorRadioMontaje] = useState('');
   const [radioTrabajoMaximo, setRadioTrabajoMaximo] = useState('');
+  const [anguloInclinacionVisual, setAnguloInclinacionVisual] = useState(75);
   const [usuarioId, setUsuarioId] = useState(null);
 
   useEffect(() => {
@@ -48,8 +50,24 @@ const SetupGrua = () => {
   useEffect(() => {
     const izaje = parseFloat(radioIzaje) || 0;
     const montaje = parseFloat(radioMontaje) || 0;
-    setRadioTrabajoMaximo(Math.max(izaje, montaje).toString());
-  }, [radioIzaje, radioMontaje]);
+    const maxRadio = Math.max(izaje, montaje);
+    setRadioTrabajoMaximo(maxRadio.toString());
+
+    // Determinar el ángulo de inclinación basado en el radio de trabajo máximo para altura33
+    if (grua?.nombre === "Terex RT555" && getAlturaType(largoPluma) === 'altura33') {
+      const radioEntero = String(Math.floor(maxRadio));
+      const inclinacion = inclinacionMapAltura33[radioEntero];
+      if (inclinacion !== undefined) {
+        setAnguloInclinacionVisual(inclinacion);
+      } else {
+        // Puedes definir un valor por defecto si el radio no se encuentra en el mapa
+        setAnguloInclinacionVisual(75);
+      }
+    } else {
+      // Para otras grúas o alturas, podrías tener lógica diferente o un valor por defecto
+      setAnguloInclinacionVisual(75);
+    }
+  }, [radioIzaje, radioMontaje, grua, largoPluma]);
 
   const openModal = (setModalVisible) => {
     setModalVisible(true);
@@ -73,7 +91,7 @@ const SetupGrua = () => {
     const setupGruaData = {
       grua,
       largoPluma,
-      anguloInclinacion: "75°",
+      anguloInclinacion: anguloInclinacionVisual.toString() + "°",
       radioIzaje,
       radioMontaje,
       radioTrabajoMaximo,
@@ -91,7 +109,7 @@ const SetupGrua = () => {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
         <Components.Header />
-        <View style={{ flex: 1 }}> 
+        <View style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View style={styles.titleContainer}>
               <Text style={styles.sectionTitle}>Configurar grúa</Text>
@@ -175,7 +193,7 @@ const SetupGrua = () => {
                 <View style={{ width: 150, height: 39, top: 0, justifyContent: 'center' }}>
                   <Text style={[styles.labelText, { textAlign: 'center' }]}>Ángulo de inclinación</Text>
                   <View style={{ alignItems: 'center' }}>
-                    <Text style={{ fontSize: 18, color: '#333' }}>75°</Text>
+                    <Text style={{ fontSize: 18, color: '#333' }}>{anguloInclinacionVisual}°</Text>
                   </View>
                 </View>
               ) : (
@@ -193,7 +211,7 @@ const SetupGrua = () => {
                     </View>
                     <GruaIllustration
                       alturaType={getAlturaType(largoPluma)}
-                      inclinacion={75}
+                      inclinacion={anguloInclinacionVisual}
                       radioTrabajoMaximo={radioTrabajoMaximo}
                       style={getGruaIllustrationStyle(largoPluma)}
                     />
@@ -202,27 +220,26 @@ const SetupGrua = () => {
                   <Text style={styles.labelText}>No disponible</Text>
                 )}
               </View>
-              <View style={[styles.buttonContainer, { right: 40 }]}>
-                <Components.Button
-                  label="Volver"
-                  onPress={() => navigation.goBack()}
-                  isCancel={true}
-                  style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
-                />
-                <Components.Button
-                  label="Continuar"
-                  onPress={handleNavigateToSetupAparejos}
-                  disabled={isContinuarDisabled}
-                  style={[
-                    styles.button,
-                    { width: '50%', right: 45 },
-                    isContinuarDisabled && { backgroundColor: '#cccccc' },
-                  ]}
-                />
-              </View>
             </View>
           </ScrollView>
-
+          <View style={[styles.buttonContainer, { right: 40, marginTop: 15 }]}>
+            <Components.Button
+              label="Volver"
+              onPress={() => navigation.goBack()}
+              isCancel={true}
+              style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
+            />
+            <Components.Button
+              label="Continuar"
+              onPress={handleNavigateToSetupAparejos}
+              disabled={isContinuarDisabled}
+              style={[
+                styles.button,
+                { width: '50%', right: 45 },
+                isContinuarDisabled && { backgroundColor: '#cccccc' },
+              ]}
+            />
+          </View>
         </View>
       </View>
     </TouchableWithoutFeedback>

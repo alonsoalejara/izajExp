@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import StyledView from '../../UI/StyledView';
+import { inclinacionMapAltura33 } from '../../../../utils/inclinacionMapAltura33';
 
-// Mapeo de estilos del contenedor según altura y ángulo
 const containerDimensionsMap = {
   altura33: {
     "75": { bottom: 915, right: 10 },
@@ -134,14 +134,13 @@ const armDimensionsMap = {
   altura10: { width: 520, height: 25 },
 };
 
-const PlumaGrua = ({ alturaType = 'altura10', inclinacion = 75, radioTrabajoMaximo }) => {
-  let currentInclinacion = inclinacion;
+const PlumaGrua = ({ alturaType = 'altura10', inclinacion: propInclinacion = 75, radioTrabajoMaximo }) => {
+  let currentInclinacion = propInclinacion;
 
-  // Determinar la inclinación basada en el radio de trabajo máximo
-  if (parseFloat(radioTrabajoMaximo) === 7) {
-    currentInclinacion = 75;
-  } else if (parseFloat(radioTrabajoMaximo) === 32) {
-    currentInclinacion = 10;
+  // Determinar la inclinación basada en el radio de trabajo máximo SÓLO para altura33
+  if (alturaType === 'altura33' && radioTrabajoMaximo) {
+    const radio = String(Math.floor(parseFloat(radioTrabajoMaximo))); // Redondeamos hacia abajo para la búsqueda
+    currentInclinacion = inclinacionMapAltura33[radio] || currentInclinacion; // Usamos el valor del mapa o el valor por defecto
   }
 
   const angleKey = String(currentInclinacion);
