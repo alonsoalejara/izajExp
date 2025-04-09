@@ -134,16 +134,24 @@ const armDimensionsMap = {
   altura10: { width: 520, height: 25 },
 };
 
-const PlumaGrua = ({ alturaType = 'altura10', inclinacion = 75 }) => {
-  // Convertir el ángulo a string para buscar en el mapa
-  const angleKey = String(inclinacion);
+const PlumaGrua = ({ alturaType = 'altura10', inclinacion = 75, radioTrabajoMaximo }) => {
+  let currentInclinacion = inclinacion;
+
+  // Determinar la inclinación basada en el radio de trabajo máximo
+  if (parseFloat(radioTrabajoMaximo) === 7) {
+    currentInclinacion = 75;
+  } else if (parseFloat(radioTrabajoMaximo) === 32) {
+    currentInclinacion = 10;
+  }
+
+  const angleKey = String(currentInclinacion);
   const containerStyle =
     (containerDimensionsMap[alturaType] && containerDimensionsMap[alturaType][angleKey]) ||
     {};
   const armDimensions = armDimensionsMap[alturaType] || { width: 0, height: 0 };
 
   return (
-    <View style={[styles.container, containerStyle, { transform: [{ rotate: `${inclinacion}deg` }] }]}>
+    <View style={[styles.container, containerStyle, { transform: [{ rotate: `${currentInclinacion}deg` }] }]}>
       {armDimensions.width ? (
         <StyledView
           width={armDimensions.width}

@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import RT555 from '../../cranes/RT555/RT555.index';
 
-export default function GruaIllustration({ style, alturaType, inclinacion = 75 }) {
+export default function GruaIllustration({ style, alturaType, inclinacion = 75, radioTrabajoMaximo }) {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -11,7 +11,7 @@ export default function GruaIllustration({ style, alturaType, inclinacion = 75 }
           <View style={styles.gruaContainer}>
             <RT555.BaseGrua />
             <RT555.RuedasGrua />
-            <RT555.Boom alturaType={alturaType} inclinacion={inclinacion} />
+            <RT555.Boom alturaType={alturaType} inclinacion={inclinacion} radioTrabajoMaximo={radioTrabajoMaximo} />
             <RT555.CabinaGrua />
             <RT555.GanchoGrua />
           </View>
