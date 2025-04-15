@@ -6,7 +6,7 @@ import CableStorage from './cableStorage/cableStorage.index';
 const Boom = ({ alturaType = 'altura10', inclinacion = 75, radioTrabajoMaximo }) => (
   <View>
     <PlumaGrua alturaType={alturaType} inclinacion={inclinacion} radioTrabajoMaximo={radioTrabajoMaximo} />
-    <CableStorage alturaType={alturaType} />
+    <CableStorage alturaType={alturaType} inclinacion={inclinacion} />
   </View>
 );
 
