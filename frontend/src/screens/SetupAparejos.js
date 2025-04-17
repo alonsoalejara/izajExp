@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, TextInput, Image } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
@@ -9,11 +9,11 @@ import Components from '../components/Components.index';
 const SetupAparejos = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  
+
   const [setupGruaData, setSetupGruaData] = useState({});
   const [setupCargaData, setSetupCargaData] = useState({});
   const [setupRadioData, setSetupRadioData] = useState({});
-  
+
   const [cantidadManiobra, setCantidadManiobra] = useState('');
   const [eslingaOEstrobo, setEslingaOEstrobo] = useState('');
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
@@ -25,6 +25,9 @@ const SetupAparejos = () => {
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
+
+  // Nuevo estado para el ángulo seleccionado
+  const [anguloSeleccionado, setAnguloSeleccionado] = useState(null);
 
   console.log("Datos recibidos en SetupAparejos:");
   console.log("SetupGruaData:", setupGruaData);
@@ -58,13 +61,24 @@ const SetupAparejos = () => {
     }
   }, [route.params]);
 
+  useEffect(() => {
+    // Actualizar la cantidad de grilletes automáticamente
+    if (cantidadManiobra && eslingaOEstrobo?.cantidades) {
+      const totalAparejos = Object.values(eslingaOEstrobo.cantidades).reduce((sum, qty) => sum + qty, 0);
+      setCantidadGrilletes(totalAparejos.toString());
+    } else {
+      setCantidadGrilletes('');
+    }
+  }, [cantidadManiobra, eslingaOEstrobo]);
+
   const handleNavigateToSetupRadio = () => {
     const setupAparejosData = {
       cantidadManiobra,
       eslingaOEstrobo,
       cantidadGrilletes,
       tipoGrillete,
-      medidasAparejos // Se envían también las medidas ingresadas manualmente
+      medidasAparejos, // Se envían también las medidas ingresadas manualmente
+      anguloEslinga: anguloSeleccionado, // Enviar el ángulo seleccionado
     };
 
     navigation.navigate('SetupRadio', {
@@ -95,7 +109,7 @@ const SetupAparejos = () => {
       // Si hay más de un aparejo, se espera que sea un número par.
       // Se determina la mitad.
       const mitad = totalAparejos > 1 ? totalAparejos / 2 : 0;
-      
+
       Object.entries(eslingaOEstrobo.cantidades).forEach(([diametro, cantidad]) => {
         for (let i = 0; i < cantidad; i++) {
           const key = `${eslingaOEstrobo.type}-${diametro}-${i}`;
@@ -127,6 +141,100 @@ const SetupAparejos = () => {
     setMedidasAparejos(prev => ({ ...prev, [key]: value }));
   };
 
+  const renderAnguloButtons = () => (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10, marginTop: 10 }}>
+      <TouchableOpacity
+        style={{ flexDirection: 'row', alignItems: 'center', marginRight: 15 }}
+        onPress={() => setAnguloSeleccionado('60')}
+      >
+        <View
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: 10,
+            borderWidth: 2,
+            borderColor: '#ee0000',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 5,
+          }}
+        >
+          {anguloSeleccionado === '60' && (
+            <View
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: 6,
+                backgroundColor: '#ee0000',
+              }}
+            />
+          )}
+        </View>
+        <Text>60°</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={{ flexDirection: 'row', alignItems: 'center', marginRight: 15 }}
+        onPress={() => setAnguloSeleccionado('45')}
+      >
+        <View
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: 10,
+            borderWidth: 2,
+            borderColor: '#ee0000',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 5,
+          }}
+        >
+          {anguloSeleccionado === '45' && (
+            <View
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: 6,
+                backgroundColor: '#ee0000',
+              }}
+            />
+          )}
+        </View>
+        <Text>45°</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={{ flexDirection: 'row', alignItems: 'center' }}
+        onPress={() => setAnguloSeleccionado('30')}
+      >
+        <View
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: 10,
+            borderWidth: 2,
+            borderColor: '#ee0000',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 5,
+          }}
+        >
+          {anguloSeleccionado === '30' && (
+            <View
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: 6,
+                backgroundColor: '#ee0000',
+              }}
+            />
+          )}
+        </View>
+        <Text>30°</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
@@ -156,13 +264,22 @@ const SetupAparejos = () => {
               />
             </View>
 
+            {/* Renderizar los botones de ángulo y la imagen condicionalmente */}
+            {eslingaOEstrobo && eslingaOEstrobo.cantidades && Object.keys(eslingaOEstrobo.cantidades).length > 0 && (
+              parseInt(cantidadManiobra, 10) === 2 || parseInt(cantidadManiobra, 10) === 4 ? (
+                <>
+                  {renderAnguloButtons()}
+                  <Image
+                    source={require('../../assets/esl-est-grade.png')}
+                    style={{ width: '100%', height: 100, resizeMode: 'contain', marginBottom: 10 }}
+                  />
+                </>
+              ) : null
+            )}
+
             {/* Tabla para eslinga/estrobo con campos editables */}
             {eslingaOEstrobo && eslingaOEstrobo.cantidades && Object.keys(eslingaOEstrobo.cantidades).length > 0 && (
               <>
-                <Image
-                  source={require('../../assets/variables-izaje-carga.png')}
-                  style={{ width: '100%', height: 100, resizeMode: 'contain', marginBottom: 10 }}
-                />
                 <Components.Tabla
                   titulo="Medidas"
                   data={tableData}
@@ -174,14 +291,16 @@ const SetupAparejos = () => {
             )}
 
             <View style={styles.inputWrapper}>
-              <Text style={styles.labelText}>Grillete: (cantidad y tipo)</Text>
+              <Text style={styles.labelText}>Grillete: (cantidad)</Text>
             </View>
             <View style={styles.inputContainer}>
               <Components.NumericInput
                 label="Cantidad"
                 value={cantidadGrilletes}
-                onChangeText={setCantidadGrilletes}
                 placeholder="Cantidad"
+                editable={false} // Deshabilitar la edición manual
+                showControls={false} // Ocultar los controles de incremento/decremento
+                showClearButton={false} // Ocultar el botón de limpiar
               />
               <Components.ConfigButton
                 label="Grillete"
@@ -189,6 +308,7 @@ const SetupAparejos = () => {
                 onPress={() => openModal(setGrilleteModalVisible)}
                 placeholder="Tipo Grillete"
                 width={150}
+                disabled={!cantidadGrilletes} // Deshabilitar si no hay cantidad de grilletes
               />
             </View>
 
@@ -230,6 +350,7 @@ const SetupAparejos = () => {
                 label="Continuar"
                 onPress={handleNavigateToSetupRadio}
                 style={[styles.button, { width: '50%', right: 45 }]}
+                disabled={!cantidadGrilletes || Object.keys(tipoGrillete).length === 0} // Deshabilitar si no hay grilletes o tipo
               />
             </View>
           </View>

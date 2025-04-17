@@ -19,7 +19,12 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
                 style={{ borderWidth: 1, borderRadius: 5, borderColor: '#ccc', padding: 15 }}
                 placeholder="Medida (metros)"
                 value={item.medida}
-                onChangeText={(value) => onChangeMedida(index, value)}
+                onChangeText={(value) => {
+                  // Use a regular expression to allow only numbers
+                  const numericValue = value.replace(/[^0-9.]/g, '');
+                  onChangeMedida(index, numericValue);
+                }}
+                keyboardType="numeric" // Suggest the numeric keyboard
               />
             </View>
           </View>
