@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import StyledView from '../../UI/StyledView';
-import { inclinacionMapAltura33 } from '../../../../utils/inclinacionMapAltura33';
+import { inclinacionMapAlturas } from '../../../../utils/inclinacionMapAlturas';
 
 const containerDimensionsMap = {
   altura33: {
@@ -140,7 +140,7 @@ const PlumaGrua = ({ alturaType = 'altura10', inclinacion: propInclinacion = 75,
   // Determinar la inclinación basada en el radio de trabajo máximo SÓLO para altura33
   if (alturaType === 'altura33' && radioTrabajoMaximo) {
     const radio = String(Math.floor(parseFloat(radioTrabajoMaximo))); // Redondeamos hacia abajo para la búsqueda
-    currentInclinacion = inclinacionMapAltura33[radio] || currentInclinacion; // Usamos el valor del mapa o el valor por defecto
+    currentInclinacion = inclinacionMapAlturas[radio] || currentInclinacion; // Usamos el valor del mapa o el valor por defecto
   }
 
   const angleKey = String(currentInclinacion);

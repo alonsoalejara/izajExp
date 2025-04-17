@@ -11,7 +11,7 @@ import { getGridContainerStyle } from '../utils/gridStyles';
 import { getGruaIllustrationStyle } from '../utils/gruaStyles';
 import { getAlturaType } from '../logic/alturaLogic';
 import { validateSetupGrua } from '../utils/validation/validationCrane';
-import { inclinacionMapAltura33 } from '../utils/inclinacionMapAltura33'; // Importa el mapa de inclinaciones
+import { inclinacionMapAlturas } from '../utils/inclinacionMapAlturas';
 
 const SetupGrua = () => {
   const navigation = useNavigation();
@@ -52,19 +52,18 @@ const SetupGrua = () => {
     const montaje = parseFloat(radioMontaje) || 0;
     const maxRadio = Math.max(izaje, montaje);
     setRadioTrabajoMaximo(maxRadio.toString());
-
-    // Determinar el ángulo de inclinación basado en el radio de trabajo máximo para altura33
-    if (grua?.nombre === "Terex RT555" && getAlturaType(largoPluma) === 'altura33') {
+  
+    if (grua?.nombre === "Terex RT555") {
+      const alturaType = getAlturaType(largoPluma);
       const radioEntero = String(Math.floor(maxRadio));
-      const inclinacion = inclinacionMapAltura33[radioEntero];
-      if (inclinacion !== undefined) {
-        setAnguloInclinacionVisual(inclinacion);
+      const inclinacionMapForAltura = inclinacionMapAlturas[alturaType];
+  
+      if (inclinacionMapForAltura && inclinacionMapForAltura[radioEntero] !== undefined) {
+        setAnguloInclinacionVisual(inclinacionMapForAltura[radioEntero]);
       } else {
-        // Puedes definir un valor por defecto si el radio no se encuentra en el mapa
         setAnguloInclinacionVisual(75);
       }
     } else {
-      // Para otras grúas o alturas, podrías tener lógica diferente o un valor por defecto
       setAnguloInclinacionVisual(75);
     }
   }, [radioIzaje, radioMontaje, grua, largoPluma]);
