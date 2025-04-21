@@ -18,20 +18,25 @@ export const obtenerDatosTablas = (datosRecibidos) => {
   const pesoTotalGrillete = pesoGrillete * cantidadGrilletes;
 
   // 📌 Tabla Peso Aparejos
-  const datosTablaPesoAparejos = [
-    {
-      descripcion: datosRecibidos.eslingaOEstrobo,
+  const datosTablaPesoAparejos = [];
+
+  if (datosRecibidos.eslingaOEstrobo) {
+    datosTablaPesoAparejos.push({
+      descripcion: datosRecibidos.eslingaOEstrobo.type || datosRecibidos.eslingaOEstrobo, // Usar .type si existe, sino el valor completo (si es string)
       cantidad: cantidadManiobra,
       pesoUnitario: `${pesoManiobra} kg`,
       pesoTotal: pesoTotalManiobra,
-    },
-    {
+    });
+  }
+  
+  if (datosRecibidos.tipoGrillete) {
+    datosTablaPesoAparejos.push({
       descripcion: `Grillete de ${datosRecibidos.tipoGrillete}"`,
       cantidad: cantidadGrilletes,
       pesoUnitario: `${pesoGrillete} kg`,
       pesoTotal: pesoTotalGrillete,
-    },
-  ];
+    });
+  }
 
   const pesoAparejos = datosTablaPesoAparejos.reduce((total, item) => total + item.pesoTotal, 0);
   const pesoEquipo = datosRecibidos.grua?.pesoEquipo || 0;

@@ -19,14 +19,12 @@ const SetupAparejos = () => {
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState({});
 
-  // Estado para guardar las medidas manuales para cada aparejo
   const [medidasAparejos, setMedidasAparejos] = useState({});
 
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
 
-  // Nuevo estado para el ángulo seleccionado
   const [anguloSeleccionado, setAnguloSeleccionado] = useState(null);
 
   const openModal = (setModalVisible) => {
@@ -58,7 +56,6 @@ const SetupAparejos = () => {
   }, [route.params]);
 
   useEffect(() => {
-    // Actualizar la cantidad de grilletes automáticamente
     if (cantidadManiobra && eslingaOEstrobo?.cantidades) {
       const totalAparejos = Object.values(eslingaOEstrobo.cantidades).reduce((sum, qty) => sum + qty, 0);
       setCantidadGrilletes(totalAparejos.toString());
@@ -67,24 +64,24 @@ const SetupAparejos = () => {
     }
   }, [cantidadManiobra, eslingaOEstrobo]);
 
-  const handleNavigateToSetupRadio = () => {
+  const handleNavigateToTablas = () => {
     const setupAparejosData = {
       cantidadManiobra,
       eslingaOEstrobo,
       cantidadGrilletes,
       tipoGrillete,
-      medidasAparejos, // Se envían también las medidas ingresadas manualmente
-      anguloEslinga: anguloSeleccionado, // Enviar el ángulo seleccionado
+      medidasAparejos,
+      anguloEslinga: anguloSeleccionado,
     };
 
-    console.log("3. Datos que se están pasando a SetupRadio:");
+    console.log("3. Datos que se están pasando a Tablas:");
     for (const key in setupAparejosData) {
       if (Object.prototype.hasOwnProperty.call(setupAparejosData, key)) {
         console.log(`  ${key}: ${setupAparejosData[key]}`);
       }
     }
 
-    navigation.navigate('SetupRadio', {
+    navigation.navigate('Tablas', {
       setupGruaData,
       setupCargaData,
       setupRadioData,
@@ -92,7 +89,6 @@ const SetupAparejos = () => {
     });
   };
 
-  // Se genera un resumen del objeto "tipoGrillete"
   const grilleteSummary = tipoGrillete && typeof tipoGrillete === 'object'
     ? Object.entries(tipoGrillete)
         .filter(([diametro, cantidad]) => cantidad > 0)
@@ -100,7 +96,6 @@ const SetupAparejos = () => {
         .join(', ')
     : "";
 
-  // Construir la data para la tabla de eslinga/estrobo
   const tableData = useMemo(() => {
     let arr = [];
     if (eslingaOEstrobo && eslingaOEstrobo.cantidades) {
@@ -109,11 +104,12 @@ const SetupAparejos = () => {
         0
       );
       const mitad = totalAparejos > 1 ? totalAparejos / 2 : 0;
-
+  
       Object.entries(eslingaOEstrobo.cantidades).forEach(([diametro, cantidad]) => {
         for (let i = 0; i < cantidad; i++) {
           const key = `${eslingaOEstrobo.type}-${diametro}-${i}`;
           let etiqueta = totalAparejos === 1 ? 'S1' : arr.length < mitad ? 'S1' : 'S2';
+          // Aquí estás creando el objeto que se añade al array
           arr.push({ key, item: `${etiqueta}: ${eslingaOEstrobo.type} de ${diametro} mm`, medida: medidasAparejos[key] || '' });
         }
       });
@@ -244,7 +240,7 @@ const SetupAparejos = () => {
                 style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
               />
               <Components.Button
-                label="Continuar" onPress={handleNavigateToSetupRadio}
+                label="Continuar" onPress={handleNavigateToTablas}
                 disabled={!cantidadGrilletes || Object.keys(tipoGrillete).length === 0}
                 style={[styles.button, { width: '50%', right: 45 }]}
               />
