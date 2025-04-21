@@ -21,7 +21,12 @@ const Tablas = ({ route, navigation }) => {
     ...setupAparejosData,
   };
 
-  console.log('Tablas: Datos recibidos desde SetupCarga:', combinedData);
+  console.log('4. Tablas: Datos recibidos desde SetupCarga:');
+  for (const key in combinedData) {
+    if (Object.prototype.hasOwnProperty.call(combinedData, key)) {
+      console.log(`  ${key}: ${typeof combinedData[key] === 'object' ? '[object Object]' : combinedData[key]}`);
+    }
+  }
 
   const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos } = obtenerDatosTablas(combinedData);
 
