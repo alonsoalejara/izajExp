@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
@@ -28,10 +28,6 @@ const SetupAparejos = () => {
 
   // Nuevo estado para el ángulo seleccionado
   const [anguloSeleccionado, setAnguloSeleccionado] = useState(null);
-
-  console.log("Datos recibidos en SetupAparejos:");
-  console.log("SetupGruaData:", setupGruaData);
-  console.log("SetupCargaData:", setupCargaData);
 
   const openModal = (setModalVisible) => {
     setModalVisible(true);
@@ -81,6 +77,13 @@ const SetupAparejos = () => {
       anguloEslinga: anguloSeleccionado, // Enviar el ángulo seleccionado
     };
 
+    console.log("3. Datos que se están pasando a SetupRadio:");
+    for (const key in setupAparejosData) {
+      if (Object.prototype.hasOwnProperty.call(setupAparejosData, key)) {
+        console.log(`  ${key}: ${setupAparejosData[key]}`);
+      }
+    }
+
     navigation.navigate('SetupRadio', {
       setupGruaData,
       setupCargaData,
@@ -101,41 +104,23 @@ const SetupAparejos = () => {
   const tableData = useMemo(() => {
     let arr = [];
     if (eslingaOEstrobo && eslingaOEstrobo.cantidades) {
-      // Sumar todas las cantidades para saber el total de aparejos
       const totalAparejos = Object.values(eslingaOEstrobo.cantidades).reduce(
         (sum, qty) => sum + qty,
         0
       );
-      // Si hay más de un aparejo, se espera que sea un número par.
-      // Se determina la mitad.
       const mitad = totalAparejos > 1 ? totalAparejos / 2 : 0;
 
       Object.entries(eslingaOEstrobo.cantidades).forEach(([diametro, cantidad]) => {
         for (let i = 0; i < cantidad; i++) {
           const key = `${eslingaOEstrobo.type}-${diametro}-${i}`;
-          let etiqueta = "";
-          if (totalAparejos === 1) {
-            etiqueta = "S1";
-          } else {
-            // Si ya se han agregado menos de 'mitad' filas, se asigna S1; de lo contrario, S2.
-            if (arr.length < mitad) {
-              etiqueta = "S1";
-            } else {
-              etiqueta = "S2";
-            }
-          }
-          arr.push({
-            key,
-            item: `${etiqueta}: ${eslingaOEstrobo.type} de ${diametro} mm`,
-            medida: medidasAparejos[key] || ''
-          });
+          let etiqueta = totalAparejos === 1 ? 'S1' : arr.length < mitad ? 'S1' : 'S2';
+          arr.push({ key, item: `${etiqueta}: ${eslingaOEstrobo.type} de ${diametro} mm`, medida: medidasAparejos[key] || '' });
         }
       });
     }
     return arr;
   }, [eslingaOEstrobo, medidasAparejos]);
 
-  // Función para actualizar la medida manual en el estado
   const handleChangeMedida = (index, value) => {
     const key = tableData[index].key;
     setMedidasAparejos(prev => ({ ...prev, [key]: value }));
@@ -143,95 +128,18 @@ const SetupAparejos = () => {
 
   const renderAnguloButtons = () => (
     <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10, marginTop: 10 }}>
-      <TouchableOpacity
-        style={{ flexDirection: 'row', alignItems: 'center', marginRight: 15 }}
-        onPress={() => setAnguloSeleccionado('60')}
-      >
-        <View
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: 10,
-            borderWidth: 2,
-            borderColor: '#ee0000',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 5,
-          }}
+      {['60', '45', '30'].map(angulo => (
+        <TouchableOpacity
+          key={angulo}
+          style={{ flexDirection: 'row', alignItems: 'center', marginRight: 15 }}
+          onPress={() => setAnguloSeleccionado(angulo)}
         >
-          {anguloSeleccionado === '60' && (
-            <View
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 6,
-                backgroundColor: '#ee0000',
-              }}
-            />
-          )}
-        </View>
-        <Text>60°</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={{ flexDirection: 'row', alignItems: 'center', marginRight: 15 }}
-        onPress={() => setAnguloSeleccionado('45')}
-      >
-        <View
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: 10,
-            borderWidth: 2,
-            borderColor: '#ee0000',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 5,
-          }}
-        >
-          {anguloSeleccionado === '45' && (
-            <View
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 6,
-                backgroundColor: '#ee0000',
-              }}
-            />
-          )}
-        </View>
-        <Text>45°</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={{ flexDirection: 'row', alignItems: 'center' }}
-        onPress={() => setAnguloSeleccionado('30')}
-      >
-        <View
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: 10,
-            borderWidth: 2,
-            borderColor: '#ee0000',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 5,
-          }}
-        >
-          {anguloSeleccionado === '30' && (
-            <View
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 6,
-                backgroundColor: '#ee0000',
-              }}
-            />
-          )}
-        </View>
-        <Text>30°</Text>
-      </TouchableOpacity>
+          <View style={{ width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: '#ee0000', alignItems: 'center', justifyContent: 'center', marginRight: 5 }}>
+            {anguloSeleccionado === angulo && <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: '#ee0000' }} />}
+          </View>
+          <Text>{angulo}°</Text>
+        </TouchableOpacity>
+      ))}
     </View>
   );
 
@@ -264,30 +172,25 @@ const SetupAparejos = () => {
               />
             </View>
 
-            {/* Renderizar los botones de ángulo y la imagen condicionalmente */}
-            {eslingaOEstrobo && eslingaOEstrobo.cantidades && Object.keys(eslingaOEstrobo.cantidades).length > 0 && (
-              parseInt(cantidadManiobra, 10) === 2 || parseInt(cantidadManiobra, 10) === 4 ? (
-                <>
-                  {renderAnguloButtons()}
-                  <Image
-                    source={require('../../assets/esl-est-grade.png')}
-                    style={{ width: '100%', height: 100, resizeMode: 'contain', marginBottom: 10 }}
-                  />
-                </>
-              ) : null
-            )}
-
-            {/* Tabla para eslinga/estrobo con campos editables */}
-            {eslingaOEstrobo && eslingaOEstrobo.cantidades && Object.keys(eslingaOEstrobo.cantidades).length > 0 && (
+            {(eslingaOEstrobo && eslingaOEstrobo.cantidades && Object.keys(eslingaOEstrobo.cantidades).length > 0 &&
+              (parseInt(cantidadManiobra, 10) === 2 || parseInt(cantidadManiobra, 10) === 4)) && (
               <>
-                <Components.Tabla
-                  titulo="Medidas"
-                  data={tableData}
-                  editable={true}
-                  onChangeMedida={handleChangeMedida}
-                  style={{ marginTop: 0 }}
+                {renderAnguloButtons()}
+                <Image
+                  source={require('../../assets/esl-est-grade.png')}
+                  style={{ width: '100%', height: 100, resizeMode: 'contain', marginBottom: 10 }}
                 />
               </>
+            )}
+
+            {eslingaOEstrobo && eslingaOEstrobo.cantidades && Object.keys(eslingaOEstrobo.cantidades).length > 0 && (
+              <Components.Tabla
+                titulo="Medidas"
+                data={tableData}
+                editable
+                onChangeMedida={handleChangeMedida}
+                style={{ marginTop: 0 }}
+              />
             )}
 
             <View style={styles.inputWrapper}>
@@ -298,9 +201,9 @@ const SetupAparejos = () => {
                 label="Cantidad"
                 value={cantidadGrilletes}
                 placeholder="Cantidad"
-                editable={false} // Deshabilitar la edición manual
-                showControls={false} // Ocultar los controles de incremento/decremento
-                showClearButton={false} // Ocultar el botón de limpiar
+                editable={false}
+                showControls={false}
+                showClearButton={false}
               />
               <Components.ConfigButton
                 label="Grillete"
@@ -308,7 +211,7 @@ const SetupAparejos = () => {
                 onPress={() => openModal(setGrilleteModalVisible)}
                 placeholder="Tipo Grillete"
                 width={150}
-                disabled={!cantidadGrilletes} // Deshabilitar si no hay cantidad de grilletes
+                disabled={!cantidadGrilletes}
               />
             </View>
 
@@ -323,34 +226,27 @@ const SetupAparejos = () => {
             )}
 
             <BS.BSGrillete
-              isVisible={isGrilleteModalVisible}
-              onClose={() => setGrilleteModalVisible(false)}
-              onSelect={setTipoGrillete}
+              isVisible={isGrilleteModalVisible} onClose={() => setGrilleteModalVisible(false)} onSelect={setTipoGrillete}
               maxGrilletes={parseInt(cantidadGrilletes, 10)}
             />
             <BS.BSCantidad
-              isVisible={isCantidadModalVisible}
-              onClose={() => setCantidadModalVisible(false)}
-              onSelect={setCantidadManiobra}
+              isVisible={isCantidadModalVisible} onClose={() => setCantidadModalVisible(false)} onSelect={setCantidadManiobra}
             />
             <BS.BSManiobra
-              isVisible={isManiobraModalVisible}
-              onClose={() => setManiobraModalVisible(false)}
-              onSelect={setEslingaOEstrobo}
+              isVisible={isManiobraModalVisible} onClose={() => setManiobraModalVisible(false)} onSelect={setEslingaOEstrobo}
               maxManiobra={parseInt(cantidadManiobra, 10)}
             />
-            <View style={[styles.buttonContainer, { top: 10, right: 40 }]}>
+
+            <View style={[styles.buttonContainer, { top: 10, right: 40 }]}
+            >
               <Components.Button
-                label="Volver"
-                onPress={() => navigation.goBack()}
-                isCancel={true}
+                label="Volver" onPress={() => navigation.goBack()} isCancel
                 style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
               />
               <Components.Button
-                label="Continuar"
-                onPress={handleNavigateToSetupRadio}
+                label="Continuar" onPress={handleNavigateToSetupRadio}
+                disabled={!cantidadGrilletes || Object.keys(tipoGrillete).length === 0}
                 style={[styles.button, { width: '50%', right: 45 }]}
-                disabled={!cantidadGrilletes || Object.keys(tipoGrillete).length === 0} // Deshabilitar si no hay grilletes o tipo
               />
             </View>
           </View>

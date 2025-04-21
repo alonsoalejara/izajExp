@@ -7,7 +7,6 @@ import BS from '../components/bottomSheets/BS.index';
 import RenderForma from '../utils/render/renderForma';
 import RenderCG from '../utils/render/renderCG';
 import { validateCarga } from '../utils/validation/validateCarga';
-// Se importa el nuevo módulo que calcula CG y las dimensiones D1/D2.
 import { calculateGeometry } from '../utils/calculateGeometry';
 
 const SetupCarga = () => {
@@ -40,40 +39,45 @@ const SetupCarga = () => {
   const handleNavigateToSetupGrua = () => {
     const pesoNum = parseFloat(peso);
     const alturaNum = parseFloat(altura);
-
+    
     let cargaData = {
       ...carga,
       peso: pesoNum,
       alto: alturaNum,
     };
-
+    
     if (forma === 'Cilindro') {
-      cargaData = { 
-        ...cargaData, 
-        diametro: parseFloat(diametro),
-        largo: 0,
-        ancho: 0,
+      cargaData = {
+      ...cargaData,
+      diametro: parseFloat(diametro),
+      largo: 0,
+      ancho: 0,
       };
     } else if (forma === 'Cuadrado') {
-      cargaData = { 
-        ...cargaData, 
-        largo: alturaNum, 
-        ancho: alturaNum, 
-        diametro: 0 
+      cargaData = {
+      ...cargaData,
+      largo: alturaNum,
+      ancho: alturaNum,
+      diametro: 0
       };
     } else {
       const largoNum = parseFloat(largo);
       const anchoNum = parseFloat(ancho);
-      cargaData = { 
-        ...cargaData, 
-        largo: largoNum, 
-        ancho: anchoNum,
-        diametro: 0 
+      cargaData = {
+      ...cargaData,
+      largo: largoNum,
+      ancho: anchoNum,
+      diametro: 0
       };
     }
-
-    console.log("Datos que se están pasando a SetupGrua:", cargaData);
-
+    
+    console.log("1. Datos que se están pasando a SetupGrua:");
+    for (const key in cargaData) {
+      if (cargaData.hasOwnProperty(key)) {
+        console.log(`  ${key}: ${cargaData[key]}`);
+      }
+    }
+    
     if (largo === ancho && ancho === altura && largo !== '') {
       Alert.alert(
         "Dimensiones de un cubo detectadas",
@@ -101,11 +105,11 @@ const SetupCarga = () => {
         ]
       );
     } else {
-      if (validateInputs()) {
-        navigation.navigate('SetupGrua', { setupCargaData: cargaData });
+        if (validateInputs()) {
+          navigation.navigate('SetupGrua', { setupCargaData: cargaData });
+        }
       }
-    }
-  };
+    };
 
   const altoLabel = forma === 'Cilindro' ? 'altura' : forma === 'Cuadrado' ? 'lado' : 'alto';
 

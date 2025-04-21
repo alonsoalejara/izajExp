@@ -76,17 +76,13 @@ const SetupGrua = () => {
     const errorsGrua = validateSetupGrua(grua);
     const errorsRadioIzaje = !radioIzaje && isInputsEnabled;
     const errorsRadioMontaje = !radioMontaje && isInputsEnabled;
-
+    
     setErrorGrua(errorsGrua.grua || '');
     setErrorRadioIzaje(errorsRadioIzaje ? 'Este campo es requerido' : '');
     setErrorRadioMontaje(errorsRadioMontaje ? 'Este campo es requerido' : '');
-
-    if (Object.keys(errorsGrua).length > 0 || errorsRadioIzaje || errorsRadioMontaje) {
-      return;
-    }
-
-    console.log("Radio de trabajo maximo:", radioTrabajoMaximo);
-
+    
+    console.log("2. Datos que se están pasando a SetupAparejos:");
+    
     const setupGruaData = {
       grua,
       largoPluma,
@@ -96,6 +92,13 @@ const SetupGrua = () => {
       radioTrabajoMaximo,
       usuarioId,
     };
+    
+    for (const key in setupGruaData) {
+      if (setupGruaData.hasOwnProperty(key)) {
+        console.log(`  ${key}: ${setupGruaData[key]}`);
+      }
+    }
+    
     await AsyncStorage.setItem('setupGruaData', JSON.stringify(setupGruaData));
     navigation.navigate('SetupAparejos', { setupGruaData, setupCargaData });
   };
