@@ -85,7 +85,7 @@ const SetupGrua = () => {
 
     console.log("2. Datos que se están pasando a SetupAparejos:");
     const setupGruaData = {
-      grua,
+      nombreGrua: grua?.nombre || '',
       largoPluma,
       anguloInclinacion: `${anguloInclinacionVisual}°`,
       radioIzaje,

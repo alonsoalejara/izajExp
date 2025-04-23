@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
@@ -18,14 +18,15 @@ const SetupAparejos = () => {
   const [eslingaOEstrobo, setEslingaOEstrobo] = useState('');
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState({});
-
-  const [medidasAparejos, setMedidasAparejos] = useState({});
+  const [medidaS1, setMedidaS1] = useState('');
+  const [medidaS2, setMedidaS2] = useState('');
 
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
 
   const [anguloSeleccionado, setAnguloSeleccionado] = useState(null);
+  const [tableData, setTableData] = useState([]);
 
   const openModal = (setModalVisible) => {
     setModalVisible(true);
@@ -59,19 +60,44 @@ const SetupAparejos = () => {
     if (cantidadManiobra && eslingaOEstrobo?.cantidades) {
       const totalAparejos = Object.values(eslingaOEstrobo.cantidades).reduce((sum, qty) => sum + qty, 0);
       setCantidadGrilletes(totalAparejos.toString());
+
+      let nuevaTablaData = [];
+      let contador = 0;
+      const mitad = totalAparejos > 1 ? totalAparejos / 2 : 0;
+
+      Object.entries(eslingaOEstrobo.cantidades).forEach(([diametro, cantidad]) => {
+        for (let i = 0; i < cantidad; i++) {
+          const key = `${eslingaOEstrobo.type}-${diametro}-${i}`;
+          const etiqueta = totalAparejos === 1 ? 'S1' : contador < mitad ? 'S1' : 'S2';
+          nuevaTablaData.push({ key, item: `${etiqueta}: ${eslingaOEstrobo.type} de ${diametro} mm`, etiqueta });
+          contador++;
+        }
+      });
+      setTableData(nuevaTablaData);
+      setMedidaS1('');
+      setMedidaS2('');
     } else {
       setCantidadGrilletes('');
+      setTableData([]);
+      setMedidaS1('');
+      setMedidaS2('');
     }
   }, [cantidadManiobra, eslingaOEstrobo]);
 
   const handleNavigateToTablas = () => {
+    const grilletePulgadas = Object.entries(tipoGrillete)
+      .filter(([diametro, cantidad]) => cantidad > 0)
+      .map(([diametro]) => `${diametro}"`)
+      .join(', ');
+
     const setupAparejosData = {
       cantidadManiobra,
-      eslingaOEstrobo,
+      eslingaOEstrobo: eslingaOEstrobo?.type || '',
       cantidadGrilletes,
-      tipoGrillete,
-      medidasAparejos,
-      anguloEslinga: anguloSeleccionado,
+      tipoGrillete: grilletePulgadas,
+      medidaS1: tableData.find(item => item.etiqueta === 'S1')?.medida || '',
+      medidaS2: tableData.find(item => item.etiqueta === 'S2')?.medida || '',
+      anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
     };
 
     console.log("3. Datos que se están pasando a Tablas:");
@@ -96,30 +122,10 @@ const SetupAparejos = () => {
         .join(', ')
     : "";
 
-  const tableData = useMemo(() => {
-    let arr = [];
-    if (eslingaOEstrobo && eslingaOEstrobo.cantidades) {
-      const totalAparejos = Object.values(eslingaOEstrobo.cantidades).reduce(
-        (sum, qty) => sum + qty,
-        0
-      );
-      const mitad = totalAparejos > 1 ? totalAparejos / 2 : 0;
-  
-      Object.entries(eslingaOEstrobo.cantidades).forEach(([diametro, cantidad]) => {
-        for (let i = 0; i < cantidad; i++) {
-          const key = `${eslingaOEstrobo.type}-${diametro}-${i}`;
-          let etiqueta = totalAparejos === 1 ? 'S1' : arr.length < mitad ? 'S1' : 'S2';
-          // Aquí estás creando el objeto que se añade al array
-          arr.push({ key, item: `${etiqueta}: ${eslingaOEstrobo.type} de ${diametro} mm`, medida: medidasAparejos[key] || '' });
-        }
-      });
-    }
-    return arr;
-  }, [eslingaOEstrobo, medidasAparejos]);
-
   const handleChangeMedida = (index, value) => {
-    const key = tableData[index].key;
-    setMedidasAparejos(prev => ({ ...prev, [key]: value }));
+    const newData = [...tableData];
+    newData[index].medida = value;
+    setTableData(newData);
   };
 
   const renderAnguloButtons = () => (
@@ -180,13 +186,42 @@ const SetupAparejos = () => {
             )}
 
             {eslingaOEstrobo && eslingaOEstrobo.cantidades && Object.keys(eslingaOEstrobo.cantidades).length > 0 && (
-              <Components.Tabla
-                titulo="Medidas"
-                data={tableData}
-                editable
-                onChangeMedida={handleChangeMedida}
-                style={{ marginTop: 0 }}
-              />
+              <View>
+                <Text style={styles.labelText}>Medida S1 (m):</Text>
+                {tableData.filter(item => item.etiqueta === 'S1').map((item, index) => (
+                  <Components.NumericInput
+                    key={item.key}
+                    value={item.medida}
+                    onChangeText={(value) => {
+                      const s1Index = tableData.findIndex(dataItem => dataItem.key === item.key);
+                      if (s1Index !== -1) {
+                        handleChangeMedida(s1Index, value);
+                      }
+                    }}
+                    placeholder={`Medida ${index + 1}`}
+                    showControls={false}
+                    style={styles.inputField}
+                  />
+                ))}
+                {tableData.filter(item => item.etiqueta === 'S2').length > 0 && (
+                  <Text style={[styles.labelText, { marginTop: 15 }]}>Medida S2 (m):</Text>
+                )}
+                {tableData.filter(item => item.etiqueta === 'S2').map((item, index) => (
+                  <Components.NumericInput
+                    key={item.key}
+                    value={item.medida}
+                    onChangeText={(value) => {
+                      const s2Index = tableData.findIndex(dataItem => dataItem.key === item.key);
+                      if (s2Index !== -1) {
+                        handleChangeMedida(s2Index, value);
+                      }
+                    }}
+                    placeholder={`Medida ${index + 1}`}
+                    showControls={false}
+                    style={styles.inputField}
+                  />
+                ))}
+              </View>
             )}
 
             <View style={styles.inputWrapper}>
@@ -241,7 +276,7 @@ const SetupAparejos = () => {
               />
               <Components.Button
                 label="Continuar" onPress={handleNavigateToTablas}
-                disabled={!cantidadGrilletes || Object.keys(tipoGrillete).length === 0}
+                disabled={!cantidadGrilletes || Object.keys(tipoGrillete).length === 0 || tableData.some(item => !item.medida && cantidadManiobra > 0)}
                 style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>
