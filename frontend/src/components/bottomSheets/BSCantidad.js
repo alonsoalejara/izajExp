@@ -13,10 +13,8 @@ const BSCantidad = ({ isVisible, onClose, onSelect }) => {
 
   const handleSelectCantidad = (cantidad) => {
     setCantidadSeleccionada(cantidad);
-    setTimeout(() => {
-      onSelect(cantidad);
-      onClose();
-    }, 150);
+    onSelect(cantidad);
+    onClose();
   };
 
   const openBottomSheet = () => {
