@@ -18,6 +18,8 @@ const SetupAparejos = () => {
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState({});
   const [medidaManiobraUnica, setMedidaManiobraUnica] = useState('');
+  const [medidaS1, setMedidaS1] = useState('');
+  const [medidaS2, setMedidaS2] = useState('');
 
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
@@ -25,6 +27,9 @@ const SetupAparejos = () => {
 
   const [anguloSeleccionado, setAnguloSeleccionado] = useState(null);
   const [tableData, setTableData] = useState([]);
+
+  // Convertimos cantidad a número para comparaciones
+  const cantidadNumero = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
 
   const openModal = setter => setter(true);
 
@@ -48,16 +53,18 @@ const SetupAparejos = () => {
     if (maniobraSeleccionada.cantidad && maniobraSeleccionada.tipo?.cantidades) {
       const total = Object.values(maniobraSeleccionada.tipo.cantidades).reduce((sum, qty) => sum + qty, 0);
       setCantidadGrilletes(total.toString());
+
       const rows = [];
       let count = 0;
       const half = total > 1 ? total / 2 : 0;
+
       Object.entries(maniobraSeleccionada.tipo.cantidades).forEach(([dia, qty]) => {
         for (let i = 0; i < qty; i++) {
           const label = total === 1 ? 'S1' : count < half ? 'S1' : 'S2';
           rows.push({
             key: `${maniobraSeleccionada.tipo.type}-${dia}-${i}`,
             item: `${label}: ${maniobraSeleccionada.tipo.type} de ${dia} mm`,
-            etiqueta: label
+            etiqueta: label,
           });
           count++;
         }
@@ -67,7 +74,9 @@ const SetupAparejos = () => {
       setCantidadGrilletes('');
       setTableData([]);
     }
+    // Reset measures on maniobra change
     setMedidaManiobraUnica('');
+    setMedidaS2('');
   }, [maniobraSeleccionada]);
 
   const handleNavigate = () => {
@@ -83,6 +92,8 @@ const SetupAparejos = () => {
       tipoGrillete: grilleteDesc,
       medidaManiobra: medidaManiobraUnica,
       anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
+      medidaS1Maniobra: medidaS1,
+      medidaS2Maniobra: medidaS2,
     };
 
     navigation.navigate('Tablas', {
@@ -99,7 +110,7 @@ const SetupAparejos = () => {
     .join(', ');
 
   const renderAngulos = () => (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10 }}>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10, marginTop: 30, left: -25 }}>
       {['60', '45', '30'].map(angle => (
         <TouchableOpacity
           key={angle}
@@ -136,6 +147,7 @@ const SetupAparejos = () => {
           <View style={styles.titleContainer}>
             <Text style={styles.sectionTitle}>Configuración de aparejos</Text>
           </View>
+
           <View style={styles.container}>
             {/* Selección de maniobra */}
             <View style={styles.inputWrapper}>
@@ -158,6 +170,42 @@ const SetupAparejos = () => {
               />
             </View>
 
+            {/* Medidas S1 y S2 */}
+            {maniobraSeleccionada.cantidad !== '' && (
+              <>              
+                <View style={styles.inputWrapper}>
+                  <Text style={styles.labelText}>Medidas de maniobra y ángulo de trabajo:</Text>
+                </View>
+                <View style={styles.inputContainer}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.labelText}>Medida S1 (metros):</Text>
+                    <Components.NumericInput
+                      value={medidaS1}
+                      onChangeText={setMedidaS1}
+                      placeholder="Medida S1"
+                      keyboardType="numeric"
+                      style={{ width: '100%' }}
+                      showControls={false}
+                      showClearButton={true}
+                    />
+                  </View>
+                  <View style={{ flex: 1, marginLeft: 10 }}>
+                    <Text style={styles.labelText}>Medida S2 (metros):</Text>
+                    <Components.NumericInput
+                      value={medidaS2}
+                      onChangeText={setMedidaS2}
+                      placeholder="Medida S2"
+                      keyboardType="numeric"
+                      style={{ width: '100%', backgroundColor: cantidadNumero === 1 ? '#eee' : '#fff' }}
+                      editable={cantidadNumero !== 1}
+                      showControls={false}
+                      showClearButton={cantidadNumero !== 1}
+                    />
+                  </View>
+                </View>
+              </>
+            )}
+
             {/* Ángulos e imagen para 2 o 4 maniobras */}
             {maniobraSeleccionada.tipo?.cantidades && ['2', '4'].includes(maniobraSeleccionada.cantidad) && (
               <>
@@ -169,8 +217,8 @@ const SetupAparejos = () => {
               </>
             )}
 
-            {/* Medida maniobra única */}
-            {maniobraSeleccionada.cantidad === '1' && (
+            {/* Medida unica para 1 maniobra */}
+            {cantidadNumero === 1 && (
               <>
                 <Text style={styles.labelText}>Medida maniobra (m):</Text>
                 <TextInput
@@ -183,7 +231,7 @@ const SetupAparejos = () => {
               </>
             )}
 
-            {/* Grillete: cantidad */}
+            {/* Sección Grillete */}
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>Grillete: (cantidad)</Text>
             </View>
@@ -206,7 +254,7 @@ const SetupAparejos = () => {
               />
             </View>
 
-            {/* Lista de grilletes seleccionados */}
+            {/* Lista de grilletes */}
             {Object.keys(tipoGrillete).length > 0 && (
               <View style={styles.selectedManiobraContainer}>
                 {Object.entries(tipoGrillete).map(([dia, qty]) => (
@@ -217,7 +265,7 @@ const SetupAparejos = () => {
               </View>
             )}
 
-            {/* Modals para selección */}
+            {/* Modals */}
             <BS.BSGrillete
               isVisible={isGrilleteModalVisible}
               onClose={() => setGrilleteModalVisible(false)}
@@ -227,7 +275,7 @@ const SetupAparejos = () => {
             <BS.BSCantidad
               isVisible={isCantidadModalVisible}
               onClose={() => setCantidadModalVisible(false)}
-              onSelect={cantidad => setManiobraSeleccionada(prev => ({ ...prev, cantidad }))}
+              onSelect={cantidad => setManiobraSeleccionada(prev => ({ ...prev, cantidad: cantidad.toString() }))}
             />
             <BS.BSManiobra
               isVisible={isManiobraModalVisible}
@@ -236,10 +284,10 @@ const SetupAparejos = () => {
               maxManiobra={parseInt(maniobraSeleccionada.cantidad, 10)}
             />
 
-            {/* Botones de navegación */}
+            {/* Botones */}
             <View style={[styles.buttonContainer, { top: 10, right: 40 }]}>
               <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]} />
-              <Components.Button label="Continuar" onPress={handleNavigate} disabled={!cantidadGrilletes || (maniobraSeleccionada.cantidad === '1' && !medidaManiobraUnica)} style={[styles.button, { width: '50%', right: 45 }]} />
+              <Components.Button label="Continuar" onPress={handleNavigate} disabled={!cantidadGrilletes || (cantidadNumero === 1 && !medidaManiobraUnica)} style={[styles.button, { width: '50%', right: 45 }]} />
             </View>
           </View>
         </ScrollView>
