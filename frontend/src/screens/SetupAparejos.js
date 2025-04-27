@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
@@ -17,7 +17,6 @@ const SetupAparejos = () => {
   const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null, cantidades: {} });
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState({});
-  const [medidaManiobraUnica, setMedidaManiobraUnica] = useState('');
   const [medidaS1, setMedidaS1] = useState('');
   const [medidaS2, setMedidaS2] = useState('');
 
@@ -75,9 +74,15 @@ const SetupAparejos = () => {
       setTableData([]);
     }
     // Reset measures on maniobra change
-    setMedidaManiobraUnica('');
+    setMedidaS1('');
     setMedidaS2('');
   }, [maniobraSeleccionada]);
+
+  useEffect(() => {
+    if (cantidadNumero === 1) {
+      setMedidaS2('0');
+    }
+  }, [cantidadNumero]);
 
   const handleNavigate = () => {
     const grilleteDesc = Object.entries(tipoGrillete)
@@ -90,7 +95,6 @@ const SetupAparejos = () => {
       eslingaOEstrobo: maniobraSeleccionada.tipo?.type || '',
       cantidadGrilletes,
       tipoGrillete: grilleteDesc,
-      medidaManiobra: medidaManiobraUnica,
       anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
       medidaS1Maniobra: medidaS1,
       medidaS2Maniobra: medidaS2,
@@ -170,11 +174,11 @@ const SetupAparejos = () => {
               />
             </View>
 
-            {/* Medidas S1 y S2 */}
-            {maniobraSeleccionada.cantidad !== '' && (
-              <>              
+           {/* Medidas S1 y S2 */}
+           {maniobraSeleccionada.cantidad !== '' && (
+              <>
                 <View style={styles.inputWrapper}>
-                  <Text style={styles.labelText}>Medidas de maniobra y ángulo de trabajo:</Text>
+                  <Text style={styles.labelText}>Medidas de maniobra (m):</Text>
                 </View>
                 <View style={styles.inputContainer}>
                   <View style={{ flex: 1 }}>
@@ -213,20 +217,6 @@ const SetupAparejos = () => {
                 <Image
                   source={require('../../assets/esl-est-grade.png')}
                   style={{ width: '100%', height: 100, resizeMode: 'contain', marginVertical: 10 }}
-                />
-              </>
-            )}
-
-            {/* Medida unica para 1 maniobra */}
-            {cantidadNumero === 1 && (
-              <>
-                <Text style={styles.labelText}>Medida maniobra (m):</Text>
-                <TextInput
-                  value={medidaManiobraUnica}
-                  onChangeText={setMedidaManiobraUnica}
-                  placeholder="Medida"
-                  keyboardType="numeric"
-                  style={styles.inputField}
                 />
               </>
             )}
@@ -287,7 +277,7 @@ const SetupAparejos = () => {
             {/* Botones */}
             <View style={[styles.buttonContainer, { top: 10, right: 40 }]}>
               <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]} />
-              <Components.Button label="Continuar" onPress={handleNavigate} disabled={!cantidadGrilletes || (cantidadNumero === 1 && !medidaManiobraUnica)} style={[styles.button, { width: '50%', right: 45 }]} />
+              <Components.Button label="Continuar" onPress={handleNavigate} disabled={!cantidadGrilletes || (cantidadNumero === 1 && (!medidaS1 || medidaS1 === '')) || (cantidadNumero > 1 && (!medidaS1 || medidaS1 === '' || !medidaS2 || medidaS2 === ''))} style={[styles.button, { width: '50%', right: 45 }]} />
             </View>
           </View>
         </ScrollView>
