@@ -9,6 +9,7 @@ import getApiUrl from '../utils/apiUrl';
 
 const Tablas = ({ route, navigation }) => {
   const [isSaved, setIsSaved] = useState(false);
+  const [nombreProyecto, setNombreProyecto] = useState('');
 
   // Extraemos los datos recibidos de las pantallas anteriores
   const { setupAparejosData, setupCargaData, setupGruaData, setupRadioData } = route.params || {};
@@ -70,8 +71,8 @@ const Tablas = ({ route, navigation }) => {
     // Usamos el objeto grúa recibido en combinedData como selectedGrua
     const selectedGrua = combinedData.grua;
 
-    // Llamamos a la función que genera el PDF
-    await generarPDF(selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows);
+    // Llamamos a la función que genera el PDF, pasando el nombre del proyecto
+    await generarPDF(selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows, nombreProyecto);
   };
 
   // Función para enviar el plan de izaje mediante POST y luego cambiar el estado
@@ -122,6 +123,7 @@ const Tablas = ({ route, navigation }) => {
 
               // Construir el cuerpo de la petición
               const finalData = {
+                nombreProyecto, // Incluimos el nombre del proyecto
                 usuario,
                 aparejos,
                 datos,
@@ -168,6 +170,17 @@ const Tablas = ({ route, navigation }) => {
       <Components.Header />
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Tablas</Text>
+      </View>
+      <View style={{ paddingHorizontal: 20, marginBottom: 10, top: 150 }}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 5 }}>Ingrese nombre del proyecto:</Text>
+        <Components.NumericInput
+          value={nombreProyecto}
+          onChangeText={setNombreProyecto}
+          placeholder="Nombre del proyecto"
+          style={{ width: '100%' }}
+          showControls={false}
+          showClearButton={true}
+        />
       </View>
       <ScrollView style={styles.tableContainer}>
         <Components.Tabla titulo="Aparejos" data={datosTablaPesoAparejos} />
