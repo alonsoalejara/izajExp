@@ -20,6 +20,8 @@ const Tablas = ({ route, navigation }) => {
     ...setupGruaData,
     ...setupRadioData,
     ...setupAparejosData,
+    pesoEquipo: setupGruaData?.pesoEquipo, // Asegúrate de que setupGruaData tenga esta propiedad
+    pesoGancho: setupGruaData?.pesoGancho,   // Asegúrate de que setupGruaData tenga esta propiedad
   };
 
   console.log('4. Tablas: Datos recibidos desde SetupCarga:');
@@ -28,7 +30,7 @@ const Tablas = ({ route, navigation }) => {
       console.log(`  ${key}: ${typeof combinedData[key] === 'object' ? '[object Object]' : combinedData[key]}`);
     }
   }
-
+ 
   const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos } = obtenerDatosTablas(combinedData);
 
   // Función que transforma los datos y llama a generarPDF
@@ -182,10 +184,13 @@ const Tablas = ({ route, navigation }) => {
           showClearButton={true}
         />
       </View>
+      <View style={styles.labelContainer}>
+        <Text style={styles.labelText}>Datos:</Text>
+      </View>
       <ScrollView style={styles.tableContainer}>
+        <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
         <Components.Tabla titulo="Aparejos" data={datosTablaPesoAparejos} />
         <Components.Tabla titulo="Datos de la maniobra" data={datosTablaManiobra} />
-        <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
       </ScrollView>
       <View style={styles.buttonContainer}>
         <Components.Button

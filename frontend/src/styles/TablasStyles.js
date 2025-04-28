@@ -17,6 +17,18 @@ const styles = StyleSheet.create({
     color: '#333',
     marginVertical: 10,
   },
+  labelContainer: {
+    paddingHorizontal: 20,
+    marginTop: 10,
+  },
+  labelText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+    marginTop: 10,
+    textAlign: 'left',
+    top: 130,
+  },
   // Contenedor de todas las tablas
   tableContainer: {
     backgroundColor: '#fff',

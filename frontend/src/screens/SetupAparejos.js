@@ -85,16 +85,15 @@ const SetupAparejos = () => {
   }, [cantidadNumero]);
 
   const handleNavigate = () => {
-    const grilleteDesc = Object.entries(tipoGrillete)
-      .filter(([, qty]) => qty > 0)
-      .map(([dia, qty]) => `${qty}x${dia}\"`)
+    const grilletePulgada = Object.keys(tipoGrillete)
+      .filter(dia => tipoGrillete[dia] > 0)
       .join(', ');
 
     const payload = {
       cantidadManiobra: maniobraSeleccionada.cantidad,
       eslingaOEstrobo: maniobraSeleccionada.tipo?.type || '',
       cantidadGrilletes,
-      tipoGrillete: grilleteDesc,
+      tipoGrillete: grilletePulgada,
       anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
       medidaS1Maniobra: medidaS1,
       medidaS2Maniobra: medidaS2,
@@ -107,6 +106,7 @@ const SetupAparejos = () => {
       setupAparejosData: payload,
     });
   };
+
 
   const grilleteSummary = Object.entries(tipoGrillete)
     .filter(([, qty]) => qty > 0)

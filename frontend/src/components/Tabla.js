@@ -63,7 +63,7 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
                 {item.pesoUnitario || 'N/A'}
               </Text>
               <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 10 }]}>
-                {`${item.pesoTotal} kg`}
+                {`${item.pesoTotal}`}
               </Text>
             </>
           )}

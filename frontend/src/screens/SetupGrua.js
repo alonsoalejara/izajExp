@@ -92,16 +92,20 @@ const SetupGrua = () => {
       radioMontaje,
       radioTrabajoMaximo,
       usuarioId,
+      contrapeso: grua?.contrapeso || '',
+      pesoEquipo: grua?.pesoEquipo || '',
+      pesoGancho: grua?.pesoGancho || '',
     };
     for (const key in setupGruaData) {
       if (Object.prototype.hasOwnProperty.call(setupGruaData, key)) {
         console.log(`  ${key}: ${setupGruaData[key]}`);
       }
     }
-
+    console.log("Datos de setupGruaData antes de guardar:", setupGruaData);
     await AsyncStorage.setItem('setupGruaData', JSON.stringify(setupGruaData));
     navigation.navigate('SetupAparejos', { setupGruaData, setupCargaData });
   };
+  
 
   const isInputsDisabled = !grua;
   const isContinuarDisabled = !grua || !radioIzaje || !radioMontaje;
