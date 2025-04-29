@@ -20,8 +20,8 @@ const Tablas = ({ route, navigation }) => {
     ...setupGruaData,
     ...setupRadioData,
     ...setupAparejosData,
-    pesoEquipo: setupGruaData?.pesoEquipo, // Asegúrate de que setupGruaData tenga esta propiedad
-    pesoGancho: setupGruaData?.pesoGancho,   // Asegúrate de que setupGruaData tenga esta propiedad
+    pesoEquipo: setupGruaData?.pesoEquipo,
+    pesoGancho: setupGruaData?.pesoGancho,
   };
 
   console.log('4. Tablas: Datos recibidos desde SetupCarga:');
@@ -30,8 +30,14 @@ const Tablas = ({ route, navigation }) => {
       console.log(`  ${key}: ${typeof combinedData[key] === 'object' ? '[object Object]' : combinedData[key]}`);
     }
   }
- 
+
   const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos } = obtenerDatosTablas(combinedData);
+
+  // Datos para la nueva tabla XYZ
+  const datosTablaXYZ = [
+    { X: 'N/A', Y: 'N/A', Z: 'N/A' },
+    { X: 'N/A', Y: 'N/A', Z: 'N/A' },
+  ];
 
   // Función que transforma los datos y llama a generarPDF
   const handlePDF = async () => {
@@ -66,7 +72,7 @@ const Tablas = ({ route, navigation }) => {
 
     // Calculamos el total de peso de aparejos
     const totalPesoAparejos = datosTablaPesoAparejos.reduce(
-      (total, row) => total + row.pesoTotal,
+      (total, row) => total + parseFloat(row.pesoTotal.replace(' ton', '') || 0),
       0
     );
 
@@ -95,7 +101,7 @@ const Tablas = ({ route, navigation }) => {
                 descripcion: item.descripcion,
                 cantidad: item.cantidad,
                 pesoUnitario: parseFloat(item.pesoUnitario),
-                pesoTotal: item.pesoTotal,
+                pesoTotal: parseFloat(item.pesoTotal.replace(' ton', '') || 0),
               }));
 
               // Extraer datos para el objeto "datos" con conversión a número
@@ -109,11 +115,13 @@ const Tablas = ({ route, navigation }) => {
 
               // Extraer datos para el objeto "cargas" desde la tabla de maniobra
               const cargas = {
-                pesoEquipo: datosTablaManiobra.find(item => item.descripcion === 'Peso del equipo')?.cantidad.valor || 0,
+                pesoEquipo: datosTablaManiobra.find(item => item.descripcion === 'Peso elemento')?.cantidad.valor || 0,
                 pesoAparejos: datosTablaManiobra.find(item => item.descripcion === 'Peso aparejos')?.cantidad.valor || 0,
-                pesoGancho: datosTablaManiobra.find(item => item.descripcion === 'Peso del gancho')?.cantidad.valor || 0,
+                pesoGancho: datosTablaManiobra.find(item => item.descripcion === 'Peso gancho')?.cantidad.valor || 0,
+                pesoCable: datosTablaManiobra.find(item => item.descripcion === 'Peso cable')?.cantidad?.valor || 'N/A',
                 pesoTotal: datosTablaManiobra.find(item => item.descripcion === 'Peso total')?.cantidad.valor || 0,
                 radioTrabajoMax: datosTablaManiobra.find(item => item.descripcion === 'Radio de trabajo máximo')?.cantidad.valor || 0,
+                anguloTrabajo: datosTablaManiobra.find(item => item.descripcion === 'Ángulo de trabajo')?.cantidad || 'N/A',
                 capacidadLevante: datosTablaManiobra.find(item => item.descripcion === 'Capacidad de levante')?.cantidad.valor || 0,
                 porcentajeUtilizacion: 0,
               };
@@ -125,7 +133,7 @@ const Tablas = ({ route, navigation }) => {
 
               // Construir el cuerpo de la petición
               const finalData = {
-                nombreProyecto, // Incluimos el nombre del proyecto
+                nombreProyecto,
                 usuario,
                 aparejos,
                 datos,
@@ -191,6 +199,7 @@ const Tablas = ({ route, navigation }) => {
         <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
         <Components.Tabla titulo="Aparejos" data={datosTablaPesoAparejos} />
         <Components.Tabla titulo="Datos de la maniobra" data={datosTablaManiobra} />
+        <Components.Tabla titulo="Cálculo de centro de gravedad:" data={datosTablaXYZ} />
       </ScrollView>
       <View style={styles.buttonContainer}>
         <Components.Button

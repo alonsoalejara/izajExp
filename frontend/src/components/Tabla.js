@@ -3,54 +3,67 @@ import { View, Text, TextInput } from 'react-native';
 import styles from '../styles/TablasStyles';
 
 const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
-  if (editable) {
-    return (
-      <View style={[styles.tableSection, { width: '100%', left: -20 }]}>
-        <Text style={styles.sectionTitle}>{titulo}</Text>
+  const renderTableHeader = () => {
+    if (titulo === "Cálculo de centro de gravedad:") {
+      return (
         <View style={styles.tableHeader}>
-          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Item</Text>
-          <Text style={[styles.headerText, { flex: 1, textAlign: 'left' }]}>Largo maniobra (m)</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>X</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'left' }]}>Y</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', right: 10 }]}>Z</Text>
         </View>
-        {data.map((item, index) => (
-          <View key={item.key} style={styles.row}>
-            <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 10, top: 15, fontSize: '16', fontWeight: '500' }]}>{item.item}</Text>
-            <View style={[styles.cell, { flex: 1 }]}>
-              <TextInput
-                style={{ borderWidth: 1, borderRadius: 5, borderColor: '#ccc', padding: 15 }}
-                placeholder="Medida (metros)"
-                value={item.medida}
-                onChangeText={(value) => {
-                  // Use a regular expression to allow only numbers
-                  const numericValue = value.replace(/[^0-9.]/g, '');
-                  onChangeMedida(index, numericValue);
-                }}
-                keyboardType="numeric" // Suggest the numeric keyboard
-              />
-            </View>
-          </View>
-        ))}
-      </View>
-    );
-  }
+      );
+    } else if (titulo === "Aparejos") {
+      return (
+        <View style={styles.tableHeader}>
+          <Text style={[styles.headerText, { flex: 0.5, textAlign: 'left', left: 10 }]}>Ítem</Text>
+          <Text style={[styles.headerText, { flex: 1.5, textAlign: 'left', left: 18 }]}>Descripción</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 4 }]}>Largo</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 15 }]}>Peso Unit.</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 10 }]}>Grillete</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 20 }]}>Peso Unit.</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.tableHeader}>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Ítem</Text>
+          <Text style={[styles.headerText, { flex: 2, textAlign: 'left' }]}>Descripción</Text>
+          <Text style={[styles.headerText, { flex: 1, right: 10, textAlign: titulo === "Aparejos" ? "center" : "right" }]}>
+            Cantidad
+          </Text>
+          {titulo === "Aparejos" && (
+            <>
+              <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 10 }]}>Peso unit.</Text>
+              <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 10 }]}>Peso total</Text>
+            </>
+          )}
+        </View>
+      );
+    }
+  };
 
-  // Diseño por defecto (sin edición)
-  return (
-    <View style={styles.tableSection}>
-      <Text style={styles.sectionTitle}>{titulo}</Text>
-      <View style={styles.tableHeader}>
-        <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Ítem</Text>
-        <Text style={[styles.headerText, { flex: 2, textAlign: 'left' }]}>Descripción</Text>
-        <Text style={[styles.headerText, { flex: 1, right: 10, textAlign: titulo === "Aparejos" ? "center" : "right" }]}>
-          Cantidad
-        </Text>
-        {titulo === "Aparejos" && (
-          <>
-            <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 10 }]}>Peso unit.</Text>
-            <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 10 }]}>Peso total</Text>
-          </>
-        )}
-      </View>
-      {data.map((item, index) => (
+  const renderTableRow = (item, index) => {
+    if (titulo === "Cálculo de centro de gravedad:") {
+      return (
+        <View key={index} style={styles.row}>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 10 }]}>{item.X}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'left' }]}>{item.Y}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'left', right: 10 }]}>{item.Z}</Text>
+        </View>
+      );
+    } else if (titulo === "Aparejos") {
+      return (
+        <View key={index} style={styles.row}>
+          <Text style={[styles.cell, { flex: 0.5, textAlign: 'left', left: 20 }]}>{index + 1}</Text>
+          <Text style={[styles.cell, { flex: 1.5, textAlign: 'left', left: 20 }]}>{item.descripcion}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 10 }]}>{item.largo || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 3 }]}>{item.pesoUnitarioManiobra || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 18 }]}>{item.grillete || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 10 }]}>{item.pesoUnitarioGrillete || 'N/A'}</Text>
+        </View>
+      );
+    } else {
+      return (
         <View key={index} style={styles.row}>
           <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 10 }]}>{index + 1}</Text>
           <Text style={[styles.cell, { flex: 2, textAlign: 'left' }]}>{item.descripcion}</Text>
@@ -68,7 +81,44 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
             </>
           )}
         </View>
-      ))}
+      );
+    }
+  };
+
+  if (editable) {
+    return (
+      <View style={[styles.tableSection, { width: '100%', left: -20 }]}>
+        <Text style={styles.sectionTitle}>{titulo}</Text>
+        <View style={styles.tableHeader}>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Item</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'left' }]}>Largo maniobra (m)</Text>
+        </View>
+        {data.map((item, index) => (
+          <View key={item.key} style={styles.row}>
+            <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 10, top: 15, fontSize: '16', fontWeight: '500' }]}>{item.item}</Text>
+            <View style={[styles.cell, { flex: 1 }]}>
+              <TextInput
+                style={{ borderWidth: 1, borderRadius: 5, borderColor: '#ccc', padding: 15 }}
+                placeholder="Medida (metros)"
+                value={item.medida}
+                onChangeText={(value) => {
+                  const numericValue = value.replace(/[^0-9.]/g, '');
+                  onChangeMedida(index, numericValue);
+                }}
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+        ))}
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.tableSection}>
+      <Text style={styles.sectionTitle}>{titulo}</Text>
+      {renderTableHeader()}
+      {data.map((item, index) => renderTableRow(item, index))}
     </View>
   );
 };
