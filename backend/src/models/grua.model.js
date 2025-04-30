@@ -18,6 +18,11 @@ const gruaSchema = new Schema(
       required: [true, 'El peso del gancho es obligatorio'],
       min: [0, 'El peso no puede ser negativo'],
     },
+    pesoCable: {
+      type: Number,
+      required: [true, 'El peso del gancho es obligatorio'],
+      min: [0, 'El peso no puede ser negativo'],
+    },
     capacidadLevante: {
       type: Number,
       required: [true, 'La capacidad de levante es obligatoria'],

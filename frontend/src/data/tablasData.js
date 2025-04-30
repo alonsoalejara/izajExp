@@ -7,18 +7,19 @@ export const obtenerDatosTablas = (datosRecibidos) => {
   console.log("Cantidad de grilletes en datosRecibidos:", datosRecibidos.cantidadGrilletes);
   console.log("Largo S1 en datosRecibidos:", datosRecibidos.medidaS1Maniobra);
   console.log("Largo S2 en datosRecibidos:", datosRecibidos.medidaS2Maniobra);
+  console.log("Ángulo de trabajo en datosRecibidos:", datosRecibidos.anguloEslinga);
+  console.log("Capacidad de levante en datosRecibidos:", datosRecibidos.capacidadLevante);
 
   // Convertir a número si las propiedades vienen como cadenas
   const radioIzaje = parseFloat(datosRecibidos.radioIzaje) || 0;
   const radioMontaje = parseFloat(datosRecibidos.radioMontaje) || 0;
   const radioMaximo = Math.max(radioIzaje, radioMontaje);
-  const anguloTrabajo = datosRecibidos.anguloTrabajo || 'N/A';
   const medidaS1Maniobra = datosRecibidos.medidaS1Maniobra || 'N/A';
   const medidaS2Maniobra = datosRecibidos.medidaS2Maniobra || 'N/A';
+  const cantidadManiobra = parseInt(datosRecibidos.cantidadManiobra, 10) || 0;
 
   // Buscar el peso unitario según la eslinga o estrobo seleccionado
   const pesoManiobraUnitario = maniobraOptions.find(m => m.label === datosRecibidos.eslingaOEstrobo)?.peso || 0;
-  const cantidadManiobra = parseFloat(datosRecibidos.cantidadManiobra) || 0;
 
   // Obtener información del grillete
   const tipoGrillete = datosRecibidos.tipoGrillete || 'N/A';
@@ -44,7 +45,7 @@ export const obtenerDatosTablas = (datosRecibidos) => {
         pesoUnitarioManiobra: `${pesoManiobraUnitario} ton`,
         grillete: tipoGrillete !== 'N/A' ? tipoGrillete + '"' : 'N/A',
         pesoUnitarioGrillete: tipoGrillete !== 'N/A' ? `${pesoGrilleteUnitario} ton` : 'N/A',
-        pesoTotalFila: `${pesoTotalFila} ton`, 
+        pesoTotalFila: `${pesoTotalFila.toFixed(2)} ton`,
       });
     }
   }
@@ -59,26 +60,29 @@ export const obtenerDatosTablas = (datosRecibidos) => {
       pesoUnitarioManiobra: 'N/A',
       grillete: tipoGrillete + '"',
       pesoUnitarioGrillete: `${pesoGrilleteUnitario} ton`,
-      pesoTotalFila: `${pesoGrilleteUnitario * cantidadGrilletes} ton`,
+      pesoTotalFila: `${(pesoGrilleteUnitario * cantidadGrilletes).toFixed(2)} ton`,
     });
   }
 
-  const pesoEquipo = parseFloat(datosRecibidos.pesoEquipo) || 0;
+  const pesoEquipo = parseFloat(datosRecibidos.peso) || 0;
   const pesoGancho = parseFloat(datosRecibidos.pesoGancho) || 0;
   const pesoCable = parseFloat(datosRecibidos.pesoCable) || 'N/A';
   const pesoTotal = totalPesoAparejos + pesoEquipo + pesoGancho + (typeof pesoCable === 'number' ? pesoCable : 0);
 
+  // Determinar el ángulo de trabajo a mostrar
+  const anguloTrabajo = cantidadManiobra > 1 && datosRecibidos.anguloEslinga ? datosRecibidos.anguloEslinga : 'N/A';
+
   // 📌 Tabla Maniobra
   const datosTablaManiobra = [
     { descripcion: 'Peso elemento', cantidad: { valor: pesoEquipo, unidad: 'ton' } },
-    { descripcion: 'Peso aparejos', cantidad: { valor: totalPesoAparejos, unidad: 'ton' } },
+    { descripcion: 'Peso aparejos', cantidad: { valor: totalPesoAparejos.toFixed(2), unidad: 'ton' } },
     { descripcion: 'Peso gancho', cantidad: { valor: pesoGancho, unidad: 'ton' } },
-    { descripcion: 'Peso cable', cantidad: typeof pesoCable === 'number' ? { valor: pesoCable, unidad: 'ton' } : 'N/A' },
-    { descripcion: 'Peso total', cantidad: { valor: pesoTotal, unidad: 'ton' } },
+    { descripcion: 'Peso cable', cantidad: { valor: pesoCable, unidad: 'ton' } },
+    { descripcion: 'Peso total', cantidad: { valor: pesoTotal.toFixed(2), unidad: 'ton' } },
     { descripcion: 'Radio de trabajo máximo', cantidad: { valor: radioMaximo, unidad: 'm' } },
     { descripcion: 'Ángulo de trabajo', cantidad: anguloTrabajo },
-    { descripcion: 'Capacidad de levante', cantidad: { valor: datosRecibidos.grua?.capacidadLevante || 0, unidad: 'ton' } },
-    { descripcion: '% Utilización', cantidad: 'N/A' },
+    { descripcion: 'Capacidad de levante', cantidad: { valor: datosRecibidos.capacidadLevante || 0, unidad: 'ton' } },
+    { descripcion: '% Utilización', cantidad: { valor: 0, unidad: '%' } },
   ];
 
   // 📌 Tabla Datos de la Grúa

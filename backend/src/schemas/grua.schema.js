@@ -18,6 +18,11 @@ const gruaBodySchema = Joi.object({
     "number.min": "El peso del gancho no puede ser negativo.",
     "any.required": "El peso del gancho es obligatorio.",
   }),
+  pesoCable: Joi.number().min(0).required().messages({
+    "number.base": "El peso del cable debe ser un número.",
+    "number.min": "El peso del cable no puede ser negativo.",
+    "any.required": "El peso del cable es obligatorio.",
+  }),
   capacidadLevante: Joi.number().min(0).required().messages({
     "number.base": "La capacidad de levante debe ser un número.",
     "number.min": "La capacidad de levante no puede ser negativa.",

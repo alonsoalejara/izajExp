@@ -15,7 +15,7 @@ async function getGruas() {
 
 async function createGrua(grua) {
   try {
-    const { nombre, pesoEquipo, pesoGancho, capacidadLevante, largoPluma, contrapeso } = grua;
+    const { nombre, pesoEquipo, pesoGancho, pesoCable, capacidadLevante, largoPluma, contrapeso } = grua;
 
     const gruaFound = await Grua.findOne({ nombre });
     if (gruaFound) return [null, "La grúa ya existe"];
@@ -23,7 +23,8 @@ async function createGrua(grua) {
     const newGrua = new Grua({ 
       nombre, 
       pesoEquipo, 
-      pesoGancho, 
+      pesoGancho,
+      pesoCable,
       capacidadLevante, 
       largoPluma, 
       contrapeso 
@@ -49,11 +50,11 @@ async function getGruaById(id) {
 
 async function updateGrua(id, grua) {
   try {
-    const { nombre, pesoEquipo, pesoGancho, capacidadLevante, largoPluma, contrapeso } = grua;
+    const { nombre, pesoEquipo, pesoGancho, pesoCable, capacidadLevante, largoPluma, contrapeso } = grua;
 
     const gruaUpdated = await Grua.findByIdAndUpdate(
       id,
-      { nombre, pesoEquipo, pesoGancho, capacidadLevante, largoPluma, contrapeso },
+      { nombre, pesoEquipo, pesoGancho, pesoCable, capacidadLevante, largoPluma, contrapeso },
       { new: true, runValidators: true }
     );
 

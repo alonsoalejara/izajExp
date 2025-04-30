@@ -95,6 +95,8 @@ const SetupGrua = () => {
       contrapeso: grua?.contrapeso || '',
       pesoEquipo: grua?.pesoEquipo || '',
       pesoGancho: grua?.pesoGancho || '',
+      pesoCable: grua?.pesoCable || '',
+      capacidadLevante: grua?.capacidadLevante || '',
     };
     for (const key in setupGruaData) {
       if (Object.prototype.hasOwnProperty.call(setupGruaData, key)) {
