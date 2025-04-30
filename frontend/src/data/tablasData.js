@@ -14,8 +14,8 @@ export const obtenerDatosTablas = (datosRecibidos) => {
   const radioIzaje = parseFloat(datosRecibidos.radioIzaje) || 0;
   const radioMontaje = parseFloat(datosRecibidos.radioMontaje) || 0;
   const radioMaximo = Math.max(radioIzaje, radioMontaje);
-  const medidaS1Maniobra = datosRecibidos.medidaS1Maniobra || 'N/A';
-  const medidaS2Maniobra = datosRecibidos.medidaS2Maniobra || 'N/A';
+  const medidaS1Maniobra = parseFloat(datosRecibidos.medidaS1Maniobra) || 0;
+  const medidaS2Maniobra = parseFloat(datosRecibidos.medidaS2Maniobra) || 0;  
   const cantidadManiobra = parseInt(datosRecibidos.cantidadManiobra, 10) || 0;
 
   // Buscar el peso unitario según la eslinga o estrobo seleccionado
