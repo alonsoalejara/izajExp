@@ -7,6 +7,11 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
     if (titulo === "Cálculo de centro de gravedad:") {
       return (
         <View style={styles.tableHeader}>
+          {/* Nueva columna Ítem */}
+          <Text style={[styles.headerText, { flex: 0.5, textAlign: 'left', left: 10 }]}>Ítem</Text>
+          {/* Nueva columna Descripción */}
+          <Text style={[styles.headerText, { flex: 1.5, textAlign: 'left', left: 10 }]}>Descripción</Text>
+          {/* Columnas existentes */}
           <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>X: Ancho</Text>
           <Text style={[styles.headerText, { flex: 1, textAlign: 'left' }]}>Y: Largo</Text>
           <Text style={[styles.headerText, { flex: 1, textAlign: 'left', right: 10 }]}>Z: Alto</Text>
@@ -46,6 +51,11 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
     if (titulo === "Cálculo de centro de gravedad:") {
       return (
         <View key={index} style={styles.row}>
+          {/* Valor de Ítem */}
+          <Text style={[styles.cell, { flex: 0.5, textAlign: 'left', left: 20 }]}>{item.item}</Text>
+          {/* Valor de Descripción */}
+          <Text style={[styles.cell, { flex: 1.5, textAlign: 'left', left: 20 }]}>{item.descripcion}</Text>
+          {/* Columnas existentes */}
           <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 35 }]}>{item.X === 'N/A' ? '0' : item.X}</Text>
           <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 25 }]}>{item.Y === 'N/A' ? '0' : item.Y}</Text>
           <Text style={[styles.cell, { flex: 1, textAlign: 'left', right: -10 }]}>{item.Z === 'N/A' ? '0' : item.Z}</Text>

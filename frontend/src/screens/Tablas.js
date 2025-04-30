@@ -35,8 +35,9 @@ const Tablas = ({ route, navigation }) => {
 
   // Datos para la nueva tabla XYZ
   const datosTablaXYZ = [
-    { X: 'N/A', Y: 'N/A', Z: 'N/A' },
-    { X: 'N/A', Y: 'N/A', Z: 'N/A' },
+    { item: 1, descripcion: 'Medidas', X: 'N/A', Y: 'N/A', Z: 'N/A' },
+    { item: 2, descripcion: 'CG',  X: 'N/A', Y: 'N/A', Z: 'N/A' },
+    { item: 3, descripcion: '% Utilización', X: 'N/A', Y: 'N/A', Z: 'N/A' },
   ];
 
   // Función que transforma los datos y llama a generarPDF
