@@ -145,7 +145,7 @@ const SetupGrua = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Components.Header />
         <View style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -186,7 +186,7 @@ const SetupGrua = () => {
                   placeholder="Largo pluma"
                   onPress={() => openModal(setLargoPlumaModalVisible)}
                   disabled={isInputsDisabled}
-                  style={{ height: 60, width: 320, top: 7 }}
+                  style={{ height: 60, width: 330, top: 7 }}
                 />
                 <BS.BSLargoPluma
                   isVisible={isLargoPlumaModalVisible}
@@ -205,7 +205,7 @@ const SetupGrua = () => {
                     placeholder="Radio de izaje"
                     editable={!isInputsDisabled}
                     showControls={false}
-                    style={[styles.inputField, errorRadioIzaje && { borderColor: 'red', borderWidth: 3 }]}
+                    style={[styles.inputField, { width: 160, marginTop: 10 } , errorRadioIzaje && { borderColor: 'red', borderWidth: 3 }]}
                   />
                   {errorRadioIzaje && <Text style={styles.errorText}>{errorRadioIzaje}</Text>}
                 </View>
@@ -217,7 +217,7 @@ const SetupGrua = () => {
                     placeholder="Radio de montaje"
                     editable={!isInputsDisabled}
                     showControls={false}
-                    style={[styles.inputField, errorRadioMontaje && { borderColor: 'red', borderWidth: 3 }]}
+                    style={[styles.inputField, { width: 160, marginTop: 10 }, errorRadioMontaje && { borderColor: 'red', borderWidth: 3 }]}
                   />
                   {errorRadioMontaje && <Text style={styles.errorText}>{errorRadioMontaje}</Text>}
                 </View>
