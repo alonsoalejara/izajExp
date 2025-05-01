@@ -6,6 +6,7 @@ import Components from '../components/Components.index.js';
 import { obtenerDatosTablas } from '../data/tablasData';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getApiUrl from '../utils/apiUrl';
+import { calculateGeometry } from '../utils/calculateGeometry';
 
 const Tablas = ({ route, navigation }) => {
   const [isSaved, setIsSaved] = useState(false);
@@ -24,20 +25,53 @@ const Tablas = ({ route, navigation }) => {
     pesoGancho: setupGruaData?.pesoGancho,
   };
 
-  console.log('4. Tablas: Datos recibidos desde SetupCarga:');
-  for (const key in combinedData) {
-    if (Object.prototype.hasOwnProperty.call(combinedData, key)) {
-      console.log(`  ${key}: ${typeof combinedData[key] === 'object' ? '[object Object]' : combinedData[key]}`);
-    }
-  }
+  // Recalcular CG con los mismos parámetros que en SetupCarga
+  const geometry = calculateGeometry(
+    combinedData.forma,
+    combinedData.alto,
+    combinedData.forma === 'Cilindro'
+      ? combinedData.diametro
+      : combinedData.largo,
+    combinedData.ancho
+  );
 
+  // 📌 Cálculo de Posición Relativa (%) para el item 3
+  const relX = geometry && combinedData.ancho
+    ? ((geometry.cg.cgX / combinedData.ancho) * 100).toFixed(0)
+    : null;
+  const relY = geometry && combinedData.largo
+    ? ((geometry.cg.cgY / combinedData.largo) * 100).toFixed(0)
+    : null;
+  const relZ = geometry && combinedData.alto
+    ? ((geometry.cg.cgZ / combinedData.alto) * 100).toFixed(0)
+    : null;
+
+  // Ahora obtenemos las demás tablas…
   const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos } = obtenerDatosTablas(combinedData);
 
   // Datos para la nueva tabla XYZ
   const datosTablaXYZ = [
-    { item: 1, descripcion: 'Medidas', X: 'N/A', Y: 'N/A', Z: 'N/A' },
-    { item: 2, descripcion: 'CG',  X: 'N/A', Y: 'N/A', Z: 'N/A' },
-    { item: 3, descripcion: '% Utilización', X: 'N/A', Y: 'N/A', Z: 'N/A' },
+    {
+      item: 1,
+      descripcion: 'Medidas',
+      X: `${combinedData.ancho} m`,
+      Y: `${combinedData.largo} m`,
+      Z: `${combinedData.alto} m`,
+    },
+    {
+      item: 2,
+      descripcion: 'CG',
+      X: geometry ? `${geometry.cg.cgX.toFixed(1)} m` : 'N/A',
+      Y: geometry ? `${geometry.cg.cgY.toFixed(1)} m` : 'N/A',
+      Z: geometry ? `${geometry.cg.cgZ.toFixed(1)} m` : 'N/A',
+    },
+    {
+      item: 3,
+      descripcion: 'Posic. Relativa',
+      X: relX !== null ? `${relX} %` : 'N/A',
+      Y: relY !== null ? `${relY} %` : 'N/A',
+      Z: relZ !== null ? `${relZ} %` : 'N/A',
+    },
   ];
 
   // Función que transforma los datos y llama a generarPDF
