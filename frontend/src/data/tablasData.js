@@ -10,7 +10,6 @@ export const obtenerDatosTablas = (datosRecibidos) => {
   console.log("Ángulo de trabajo en datosRecibidos:", datosRecibidos.anguloEslinga);
   console.log("Capacidad de levante en datosRecibidos:", datosRecibidos.capacidadLevante);
 
-  // Convertir a número si las propiedades vienen como cadenas
   const radioIzaje = parseFloat(datosRecibidos.radioIzaje) || 0;
   const radioMontaje = parseFloat(datosRecibidos.radioMontaje) || 0;
   const radioMaximo = Math.max(radioIzaje, radioMontaje);
@@ -18,15 +17,12 @@ export const obtenerDatosTablas = (datosRecibidos) => {
   const medidaS2Maniobra = parseFloat(datosRecibidos.medidaS2Maniobra) || 0;  
   const cantidadManiobra = parseInt(datosRecibidos.cantidadManiobra, 10) || 0;
 
-  // Buscar el peso unitario según la eslinga o estrobo seleccionado
   const pesoManiobraUnitario = maniobraOptions.find(m => m.label === datosRecibidos.eslingaOEstrobo)?.peso || 0;
 
-  // Obtener información del grillete
   const tipoGrillete = datosRecibidos.tipoGrillete || 'N/A';
   const pesoGrilleteUnitario = grilleteOptions.find(g => g.pulgada === tipoGrillete)?.peso || 0;
   const cantidadGrilletes = parseFloat(datosRecibidos.cantidadGrilletes) || 0;
 
-  // 📌 Tabla Peso Aparejos
   const datosTablaPesoAparejos = [];
   let totalPesoAparejos = 0;
 
@@ -50,7 +46,6 @@ export const obtenerDatosTablas = (datosRecibidos) => {
     }
   }
 
-  // Si no hay eslinga/estrobo pero sí grillete (raro, pero posible)
   if (cantidadManiobra === 0 && datosRecibidos.tipoGrillete) {
     totalPesoAparejos += (pesoGrilleteUnitario * cantidadGrilletes);
     datosTablaPesoAparejos.push({
@@ -66,32 +61,35 @@ export const obtenerDatosTablas = (datosRecibidos) => {
 
   const pesoEquipo = parseFloat(datosRecibidos.peso) || 0;
   const pesoGancho = parseFloat(datosRecibidos.pesoGancho) || 0;
-  const pesoCable = parseFloat(datosRecibidos.pesoCable) || 'N/A';
-  const pesoTotal = totalPesoAparejos + pesoEquipo + pesoGancho + (typeof pesoCable === 'number' ? pesoCable : 0);
+  const pesoCable = parseFloat(datosRecibidos.pesoCable) || 0;
+  const pesoTotal = totalPesoAparejos + pesoEquipo + pesoGancho + pesoCable;
 
-  // Determinar el ángulo de trabajo a mostrar
+  const capacidadLevante = parseFloat(datosRecibidos.capacidadLevante) || 0;
+  const porcentajeUtilizacion = capacidadLevante > 0
+    ? Number(((pesoTotal / capacidadLevante) * 100).toFixed(1))
+    : 0;
+
   const anguloTrabajo = cantidadManiobra > 1 && datosRecibidos.anguloEslinga ? datosRecibidos.anguloEslinga : 'N/A';
 
-  // 📌 Tabla Maniobra
   const datosTablaManiobra = [
-    { descripcion: 'Peso elemento', cantidad: { valor: pesoEquipo, unidad: 'ton' } },
-    { descripcion: 'Peso aparejos', cantidad: { valor: totalPesoAparejos.toFixed(2), unidad: 'ton' } },
-    { descripcion: 'Peso gancho', cantidad: { valor: pesoGancho, unidad: 'ton' } },
-    { descripcion: 'Peso cable', cantidad: { valor: pesoCable, unidad: 'ton' } },
-    { descripcion: 'Peso total', cantidad: { valor: pesoTotal.toFixed(2), unidad: 'ton' } },
-    { descripcion: 'Radio de trabajo máximo', cantidad: { valor: radioMaximo, unidad: 'm' } },
-    { descripcion: 'Ángulo de trabajo', cantidad: anguloTrabajo },
-    { descripcion: 'Capacidad de levante', cantidad: { valor: datosRecibidos.capacidadLevante || 0, unidad: 'ton' } },
-    { descripcion: '% Utilización', cantidad: { valor: 0, unidad: '%' } },
+    { descripcion: 'Peso elemento',       cantidad: { valor: pesoEquipo,        unidad: 'ton' } },
+    { descripcion: 'Peso aparejos',       cantidad: { valor: totalPesoAparejos.toFixed(2), unidad: 'ton' } },
+    { descripcion: 'Peso gancho',         cantidad: { valor: pesoGancho,       unidad: 'ton' } },
+    { descripcion: 'Peso cable',          cantidad: { valor: pesoCable,        unidad: 'ton' } },
+    { descripcion: 'Peso total',          cantidad: { valor: pesoTotal.toFixed(2),     unidad: 'ton' } },
+    { descripcion: 'Radio de trabajo máximo', cantidad: { valor: radioMaximo,     unidad: 'm'   } },
+    { descripcion: 'Ángulo de trabajo',   cantidad: anguloTrabajo },
+    { descripcion: 'Capacidad de levante',cantidad: { valor: capacidadLevante,   unidad: 'ton' } },
+    { descripcion: '% Utilización',       cantidad: { valor: porcentajeUtilizacion, unidad: '%' } },
   ];
 
-  // 📌 Tabla Datos de la Grúa
   const datosTablaGrua = [
     { descripcion: 'Grúa', cantidad: datosRecibidos.nombreGrua || 'N/A' },
     { descripcion: 'Largo de pluma', cantidad: datosRecibidos.largoPluma || 'N/A' },
     { descripcion: 'Grado de inclinación', cantidad: datosRecibidos.anguloInclinacion || 'N/A' },
     { descripcion: 'Contrapeso', cantidad: `${datosRecibidos.contrapeso || 0} ton` },
   ];
+  
   console.log("datosTablaPesoAparejos antes de retornar:", datosTablaPesoAparejos);
 
   return {

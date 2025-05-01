@@ -33,6 +33,7 @@ const SetupGrua = () => {
   const [anguloInclinacionVisual, setAnguloInclinacionVisual] = useState(75);
   const [usuarioId, setUsuarioId] = useState(null);
   const [movementEval, setMovementEval] = useState(null);
+  const [capacidadLevanteCalc, setCapacidadLevanteCalc] = useState(null);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -48,19 +49,47 @@ const SetupGrua = () => {
   }, []);
 
   useEffect(() => {
-    const izajeVal = parseFloat(radioIzaje) || 0;
+    const izajeVal   = parseFloat(radioIzaje)   || 0;
     const montajeVal = parseFloat(radioMontaje) || 0;
+    const boomLength = parseFloat(largoPluma)   || 0;
+    const pesoCargaVal = parseFloat(setupCargaData.peso) || 0;
+
+    // Cálculo de capacidad de levante inicial y final
+    const initialEval = evaluateMovement(izajeVal, pesoCargaVal, boomLength);
+    const finalEval   = evaluateMovement(montajeVal, pesoCargaVal, boomLength);
+
+    const capInicial = initialEval.details?.capacityAvailable;
+    const capFinal   = finalEval.details?.capacityAvailable;
+    const menorCapacidad = (capInicial != null && capFinal != null)
+      ? Math.min(capInicial, capFinal)
+      : capInicial ?? capFinal;
+
+    setCapacidadLevanteCalc(menorCapacidad);
+
+    console.log(
+      `Capacidad inicial (radio izaje ${izajeVal} m): ` +
+      `${capInicial?.toFixed(1) ?? 'N/A'} t`
+    );
+    console.log(
+      `Capacidad final  (radio montaje ${montajeVal} m): ` +
+      `${capFinal?.toFixed(1) ?? 'N/A'} t`
+    );
+    console.log(
+      `Capacidad de levante asignada: ${menorCapacidad?.toFixed(1) ?? 'N/A'} t`
+    );
+
+    // Calcular y guardar el radio de trabajo máximo
     const maxRadio = Math.max(izajeVal, montajeVal);
     setRadioTrabajoMaximo(maxRadio.toString());
 
-    const pesoCargaVal = parseFloat(setupCargaData.peso) || 0;
-    if (!isNaN(maxRadio) && !isNaN(pesoCargaVal) && largoPluma) {
-      const boomLength = parseFloat(largoPluma) || 0;
+    // Evaluar movementEval con el radio máximo
+    if (!isNaN(maxRadio) && !isNaN(pesoCargaVal) && boomLength) {
       setMovementEval(evaluateMovement(maxRadio, pesoCargaVal, boomLength));
     } else {
       setMovementEval(null);
     }
 
+    // Ajustar ángulo de inclinación visual si es Terex RT555
     if (grua?.nombre === "Terex RT555") {
       const alturaType = getAlturaType(largoPluma);
       const radioEntero = String(Math.floor(maxRadio));
@@ -96,8 +125,11 @@ const SetupGrua = () => {
       pesoEquipo: grua?.pesoEquipo || '',
       pesoGancho: grua?.pesoGancho || '',
       pesoCable: grua?.pesoCable || '',
-      capacidadLevante: grua?.capacidadLevante || '',
+      capacidadLevante: capacidadLevanteCalc != null
+        ? capacidadLevanteCalc.toFixed(1)
+        : grua?.capacidadLevante || '',
     };
+
     for (const key in setupGruaData) {
       if (Object.prototype.hasOwnProperty.call(setupGruaData, key)) {
         console.log(`  ${key}: ${setupGruaData[key]}`);
@@ -107,7 +139,6 @@ const SetupGrua = () => {
     await AsyncStorage.setItem('setupGruaData', JSON.stringify(setupGruaData));
     navigation.navigate('SetupAparejos', { setupGruaData, setupCargaData });
   };
-  
 
   const isInputsDisabled = !grua;
   const isContinuarDisabled = !grua || !radioIzaje || !radioMontaje;
