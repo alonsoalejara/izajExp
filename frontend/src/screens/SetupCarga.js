@@ -39,45 +39,45 @@ const SetupCarga = () => {
   const handleNavigateToSetupGrua = () => {
     const pesoNum = parseFloat(peso);
     const alturaNum = parseFloat(altura);
-    
+
     let cargaData = {
       ...carga,
       peso: pesoNum,
       alto: alturaNum,
     };
-    
+
     if (forma === 'Cilindro') {
       cargaData = {
-      ...cargaData,
-      diametro: parseFloat(diametro),
-      largo: 0,
-      ancho: 0,
+        ...cargaData,
+        diametro: parseFloat(diametro),
+        largo: 0,
+        ancho: 0,
       };
     } else if (forma === 'Cuadrado') {
       cargaData = {
-      ...cargaData,
-      largo: alturaNum,
-      ancho: alturaNum,
-      diametro: 0
+        ...cargaData,
+        largo: alturaNum,
+        ancho: alturaNum,
+        diametro: 0
       };
     } else {
       const largoNum = parseFloat(largo);
       const anchoNum = parseFloat(ancho);
       cargaData = {
-      ...cargaData,
-      largo: largoNum,
-      ancho: anchoNum,
-      diametro: 0
+        ...cargaData,
+        largo: largoNum,
+        ancho: anchoNum,
+        diametro: 0
       };
     }
-    
+
     console.log("1. Datos que se están pasando a SetupGrua:");
     for (const key in cargaData) {
       if (cargaData.hasOwnProperty(key)) {
-        console.log(`  ${key}: ${cargaData[key]}`);
+        console.log(`  ${key}: ${cargaData[key]}`);
       }
     }
-    
+
     if (largo === ancho && ancho === altura && largo !== '') {
       Alert.alert(
         "Dimensiones de un cubo detectadas",
@@ -105,11 +105,11 @@ const SetupCarga = () => {
         ]
       );
     } else {
-        if (validateInputs()) {
-          navigation.navigate('SetupGrua', { setupCargaData: cargaData });
-        }
+      if (validateInputs()) {
+        navigation.navigate('SetupGrua', { setupCargaData: cargaData });
       }
-    };
+    }
+  };
 
   const altoLabel = forma === 'Cilindro' ? 'altura' : forma === 'Cuadrado' ? 'lado' : 'alto';
 
@@ -122,11 +122,11 @@ const SetupCarga = () => {
     ancho
   );
   const cg = geometry?.cg;
-  const { d1x, d2x, d1y, d2y } = geometry?.dimensions || { d1x: 0, d2x: 0, d1y: 0, d2y: 0 };
+  const { d1x, d2x, d1y, d2y, d1z, d2z } = geometry?.dimensions || { d1x: 0, d2x: 0, d1y: 0, d2y: 0, d1z: 0, d2z: 0 };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Components.Header />
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}>
           <View style={styles.titleContainer}>
@@ -250,7 +250,6 @@ const SetupCarga = () => {
                 />
               </View>
             )}
-            {/* Se muestra la sección de CG y dimensiones solo si se han ingresado los valores necesarios */}
             {geometry && (
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5, marginBottom: 10 }}>
                 {/* Columna izquierda: Centro de gravedad */}
@@ -265,12 +264,21 @@ const SetupCarga = () => {
                 {/* Columna derecha: Dimensiones D1 y D2 */}
                 <View style={{ flex: 1, alignItems: 'flex-end', paddingRight: 20 }}>
                   <Text style={{ fontWeight: 'bold' }}>Dimensiones:</Text>
-                  <Text>Eje X: D1: {d1x.toFixed(1)} | D2: {d2x.toFixed(1)}</Text>
-                  <Text>Eje Y: D1: {d1y.toFixed(1)} | D2: {d2y.toFixed(1)}</Text>
+                  {forma === 'Cilindro' ? (
+                    <>
+                      <Text>Eje X/Y: D1: {d1x.toFixed(1)} | D2: {d2x.toFixed(1)}</Text>
+                      <Text>Eje Z: D1: {d1z.toFixed(1)} | D2: {d2z.toFixed(1)}</Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text>Eje X: D1: {d1x.toFixed(1)} | D2: {d2x.toFixed(1)}</Text>
+                      <Text>Eje Y: D1: {d1y.toFixed(1)} | D2: {d2y.toFixed(1)}</Text>
+                    </>
+                  )}
                 </View>
               </View>
             )}
-            <View style={[styles.visualizationCargaContainer, { marginBottom: 40 }]}>
+            <View style={[styles.visualizationCargaContainer, { marginBottom: 40, marginTop: 20 }]}>
               <RenderForma
                 forma={carga.forma}
                 dimensiones={{
@@ -286,7 +294,7 @@ const SetupCarga = () => {
             <Components.Button
               label="Continuar"
               onPress={handleNavigateToSetupGrua}
-              style={{ marginTop: -15, marginBottom: 30, left: -25, width: 330, alignSelf: 'center' }}
+              style={{ marginTop: 5, marginBottom: 30, left: -25, width: 330, alignSelf: 'center' }}
             />
             <BS.BSForma
               isVisible={isFormaVisible}

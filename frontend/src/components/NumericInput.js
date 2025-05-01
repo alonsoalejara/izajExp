@@ -2,18 +2,18 @@ import React, { useRef, useEffect } from 'react';
 import { TextInput, View, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const NumericInput = ({ 
-  value, 
-  onChangeText, 
-  placeholder, 
-  style, 
-  onEndEditing, 
-  editable = true, 
-  showControls = false, 
-  showClearButton = true 
+const NumericInput = ({
+  value,
+  onChangeText,
+  placeholder,
+  style,
+  onEndEditing,
+  editable = true,
+  showControls = false,
+  showClearButton = true
 }) => {
-  
-  const intervalRef = useRef(null); 
+
+  const intervalRef = useRef(null);
   // Usamos una ref para mantener el valor numérico actual
   const currentValueRef = useRef(parseInt(value) || 0);
 
@@ -60,6 +60,7 @@ const NumericInput = ({
       <TextInput
         style={[styles.input, { textAlign: 'center' }]}
         placeholder={placeholder}
+        placeholderTextColor="#aaaaaa"
         value={value}
         onChangeText={onChangeText}
         keyboardType="numeric"
@@ -69,7 +70,7 @@ const NumericInput = ({
 
       {showControls && (
         <View style={styles.controls}>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPressIn={() => startChanging(handleIncrement)}
             onPressOut={stopChanging}
             disabled={!editable}
@@ -77,7 +78,7 @@ const NumericInput = ({
             <Icon name="chevron-up" size={25} color={editable ? "#ccc" : "#aaa"} />
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             onPressIn={() => startChanging(handleDecrement)}
             onPressOut={stopChanging}
             disabled={!editable}

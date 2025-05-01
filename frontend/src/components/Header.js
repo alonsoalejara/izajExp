@@ -10,7 +10,7 @@ const Header = () => {
       borderRadius: 150,
       position: 'absolute',
       bottom: '84%',
-      left: '37%',
+      left: '38%',
       transform: [{ translateX: -250 }],
       justifyContent: 'center',
       alignItems: 'center',

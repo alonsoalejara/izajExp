@@ -26,7 +26,7 @@ const RenderForma = ({ forma, dimensiones }) => {
           
           {/* Líneas representando dimensiones sin valores numéricos */}
           {renderDimension('Z: Alto', { x1: 25, y1: 11, x2: 70, y2: 11, textX: 10, textY: 75, textStyle: { top: 70, left: 130 } })}
-          {renderDimension('X: Ancho', { x1: 100, y1: 40, x2: 100, y2: 90, textX: 75, textY: 19, textStyle: { top: -9, right: 20 } })}
+          {renderDimension('X: Ancho', { x1: 100, y1: 40, x2: 100, y2: 90, textX: 75, textY: 19, textStyle: { top: -14, right: 35 } })}
           {renderDimension('Y: Largo', { x1: 3, y1: 68, x2: 25, y2: 90.5, textX: 105, textY: 65, textStyle: { top: 65, right: 60 } })}
         </Svg>
       );
@@ -41,8 +41,8 @@ const RenderForma = ({ forma, dimensiones }) => {
 
           {/* Líneas representando dimensiones sin valores numéricos */}
           {renderDimension('Z:Alto', { x1: 140, y1: 50, x2: 140, y2: 91, textX: 10, textY: 75, textStyle: { top: 86, left: 180 } })}
-          {renderDimension('X:Ancho', { x1: 100, y1: 10, x2: 20, y2: 10, textX: 45, textY: 55, textStyle: { top: 0, right: 20 } })}
-          {renderDimension('Y:Largo', { x1: 3, y1: 68, x2: 25, y2: 90.5, textX: 105, textY: 65, textStyle: { top: 75, right: 60 } })}
+          {renderDimension('X:Ancho', { x1: 100, y1: 10, x2: 20, y2: 10, textX: 45, textY: 55, textStyle: { top: -8, right: 35 } })}
+          {renderDimension('Y:Largo', { x1: 3, y1: 68, x2: 25, y2: 90.5, textX: 105, textY: 65, textStyle: { top: 60, right: 45 } })}
         </Svg>
       );
 
