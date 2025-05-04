@@ -106,9 +106,14 @@ export const inclinacionMapAlturas = {
     "14": 10,
   },
   altura10: {
-    // Aquí irán los datos para la altura 10
-    "7": /* Valor para radio 7 y altura 10 */ 88, // Ejemplo
-    "8": /* Valor para radio 8 y altura 10 */ 87, // Ejemplo
-    // ... más datos para la altura 10
+    "1": 75,
+    "2": 70,
+    "3": 64,
+    "4": 60,
+    "5": 50,
+    "6": 40,
+    "7": 30,
+    "8": 20,
+    "9": 10,
   },
 };

@@ -197,14 +197,15 @@ const storagePositionsMap = {
     "10": { bottom: 1540, right: 390 },
   },
   altura10: {
-    "75": { bottom: 350, right: -135 },
-    "70": { bottom: 340, right: -90 },
-    "60": { bottom: 300, right: -45 },
-    "50": { bottom: 280, right: -20 },
-    "40": { bottom: 240, right: 5 },
-    "30": { bottom: 200, right: 0 },
-    "20": { bottom: 150, right: -5 },
-    "10": { bottom: 100, right: 20 },
+    "75": { bottom: 1180, right: -245 },
+    "70": { bottom: 1190, right: -180 },
+    "64": { bottom: 1190, right: -150 },
+    "60": { bottom: 1230, right: -85 },
+    "50": { bottom: 1280, right: -30 },
+    "40": { bottom: 1340, right: -5 },
+    "30": { bottom: 1410, right: 35 },
+    "20": { bottom: 1490, right: 85 },
+    "10": { bottom: 1570, right: 130 },
   },
 };
 

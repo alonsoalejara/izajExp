@@ -188,12 +188,13 @@ const containerDimensionsMap = {
   altura10: {
     "75": { bottom: 350, right: -135 },
     "70": { bottom: 340, right: -90 },
+    "64": { bottom: 340, right: -100 },
     "60": { bottom: 300, right: -45 },
     "50": { bottom: 280, right: -20 },
-    "40": { bottom: 240, right: 5 },
-    "30": { bottom: 200, right: 0 },
-    "20": { bottom: 150, right: -5 },
-    "10": { bottom: 100, right: 20 },
+    "40": { bottom: 250, right: -50 },
+    "30": { bottom: 210, right: -30 },
+    "20": { bottom: 170, right: -5 },
+    "10": { bottom: 130, right: 20 },
   },
 };
 
