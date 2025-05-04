@@ -111,6 +111,7 @@ const SetupCarga = () => {
     }
   };
 
+
   const altoLabel = forma === 'Cilindro' ? 'altura' : forma === 'Cuadrado' ? 'lado' : 'alto';
 
   // Se calcula la geometría (CG y dimensiones D1/D2) usando el nuevo módulo.

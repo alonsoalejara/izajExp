@@ -103,14 +103,14 @@ const styles = StyleSheet.create({
   // Errores
   inputField: {
     width: 150,
-    marginBottom: 5, // Espacio entre el error y el input
+    top: 5,
+    marginBottom: -3, // Espacio entre el error y el input
   },
   errorText: {
-    top: 13,
+    top: -12,
     left: 1,
     color: 'red',
     fontSize: 16,
-    marginBottom: 3, // Espacio entre el error y el input
   },
   // Aparejos
   selectedManiobraContainer: {
