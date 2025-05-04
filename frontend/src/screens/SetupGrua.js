@@ -12,7 +12,7 @@ import { getGruaIllustrationStyle } from '../utils/gruaStyles';
 import { getAlturaType } from '../logic/alturaLogic';
 import { validateSetupGrua } from '../utils/validation/validationCrane';
 import { inclinacionMapAlturas } from '../utils/inclinacionMapAlturas';
-import { evaluateMovement } from '../data/loadCapacity';
+import { evaluateMovement, capacityTables } from '../data/loadCapacity';
 
 const SetupGrua = () => {
   const navigation = useNavigation();
@@ -34,6 +34,8 @@ const SetupGrua = () => {
   const [usuarioId, setUsuarioId] = useState(null);
   const [movementEval, setMovementEval] = useState(null);
   const [capacidadLevanteCalc, setCapacidadLevanteCalc] = useState(null);
+  const [radioIzajeError, setRadioIzajeError] = useState(false); // Nuevo estado para error de radio de izaje
+  const [radioMontajeError, setRadioMontajeError] = useState(false); // Nuevo estado para error de radio de montaje
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -51,15 +53,16 @@ const SetupGrua = () => {
   useEffect(() => {
     const izajeVal   = parseFloat(radioIzaje)   || 0;
     const montajeVal = parseFloat(radioMontaje) || 0;
-    const boomLength = parseFloat(largoPluma)   || 0;
+    const boomLengthStr = largoPluma?.split(' ')[0]; // Obtiene solo el número del largo de pluma
+    const boomLengthNum = parseFloat(boomLengthStr) || 0;
     const pesoCargaVal = parseFloat(setupCargaData.peso) || 0;
 
-    // Cálculo de capacidad de levante inicial y final
-    const initialEval = evaluateMovement(izajeVal, pesoCargaVal, boomLength);
-    const finalEval   = evaluateMovement(montajeVal, pesoCargaVal, boomLength);
+    const hasRadioIzaje = radioIzaje !== '';
+    const hasRadioMontaje = radioMontaje !== '';
 
-    const capInicial = initialEval.details?.capacityAvailable;
-    const capFinal   = finalEval.details?.capacityAvailable;
+    const capInicial = hasRadioIzaje && boomLengthNum ? evaluateMovement(izajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
+    const capFinal   = hasRadioMontaje && boomLengthNum ? evaluateMovement(montajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
+    
     const menorCapacidad = (capInicial != null && capFinal != null)
       ? Math.min(capInicial, capFinal)
       : capInicial ?? capFinal;
@@ -71,20 +74,29 @@ const SetupGrua = () => {
       `${capInicial?.toFixed(1) ?? 'N/A'} t`
     );
     console.log(
-      `Capacidad final  (radio montaje ${montajeVal} m): ` +
+      `Capacidad final   (radio montaje ${montajeVal} m): ` +
       `${capFinal?.toFixed(1) ?? 'N/A'} t`
     );
     console.log(
       `Capacidad de levante asignada: ${menorCapacidad?.toFixed(1) ?? 'N/A'} t`
     );
 
-    // Calcular y guardar el radio de trabajo máximo
-    const maxRadio = Math.max(izajeVal, montajeVal);
-    setRadioTrabajoMaximo(maxRadio.toString());
+    // Calcular y guardar el radio de trabajo máximo solo si alguno de los radios tiene valor
+    let maxRadio = 0;
+    if (hasRadioIzaje || hasRadioMontaje) {
+      maxRadio = Math.max(izajeVal, montajeVal);
+      setRadioTrabajoMaximo(maxRadio.toString());
+    } else {
+      setRadioTrabajoMaximo(''); // O null, dependiendo de tu lógica
+      setMovementEval(null); // Limpiar la evaluación si no hay radios
+      setRadioIzajeError(false); // Limpiar errores
+      setRadioMontajeError(false);
+      return; // Salir del useEffect para no evaluar con radio 0
+    }
 
-    // Evaluar movementEval con el radio máximo
-    if (!isNaN(maxRadio) && !isNaN(pesoCargaVal) && boomLength) {
-      setMovementEval(evaluateMovement(maxRadio, pesoCargaVal, boomLength));
+    // Evaluar movementEval con el radio máximo solo si hay un largo de pluma
+    if (!isNaN(maxRadio) && !isNaN(pesoCargaVal) && boomLengthNum) {
+      setMovementEval(evaluateMovement(maxRadio, pesoCargaVal, boomLengthNum));
     } else {
       setMovementEval(null);
     }
@@ -100,7 +112,28 @@ const SetupGrua = () => {
     } else {
       setAnguloInclinacionVisual(75);
     }
+
+    // Validar radios
+    validateRadios(boomLengthStr, radioIzaje, setRadioIzajeError);
+    validateRadios(boomLengthStr, radioMontaje, setRadioMontajeError);
+
   }, [radioIzaje, radioMontaje, grua, largoPluma, setupCargaData]);
+
+  const validateRadios = (boomLength, radio, setError) => {
+    if (!boomLength || !capacityTables[boomLength]) {
+      setError(false); // No hay tabla para validar o boomLength no definido
+      return;
+    }
+
+    const radios = Object.keys(capacityTables[boomLength]).map(Number).sort((a, b) => a - b);
+    const radioVal = parseFloat(radio);
+
+    if (radio && (isNaN(radioVal) || radioVal < radios[0] || radioVal > radios[radios.length - 1])) {
+      setError(true);
+    } else {
+      setError(false);
+    }
+  };
 
   const openModal = setter => setter(true);
 
@@ -141,7 +174,7 @@ const SetupGrua = () => {
   };
 
   const isInputsDisabled = !grua;
-  const isContinuarDisabled = !grua || !radioIzaje || !radioMontaje;
+  const isContinuarDisabled = !grua || !radioIzaje || !radioMontaje || radioIzajeError || radioMontajeError;
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -202,10 +235,10 @@ const SetupGrua = () => {
                   <Components.NumericInput
                     value={radioIzaje}
                     onChangeText={setRadioIzaje}
-                    placeholder="Radio de izaje"
+                    placeholder="Radio"
                     editable={!isInputsDisabled}
                     showControls={false}
-                    style={[styles.inputField, { width: 160, marginTop: 10 } , errorRadioIzaje && { borderColor: 'red', borderWidth: 3 }]}
+                    style={[styles.inputField, { width: 160, marginTop: 10 } , radioIzajeError && { borderColor: 'red', borderWidth: 3 }]}
                   />
                   {errorRadioIzaje && <Text style={styles.errorText}>{errorRadioIzaje}</Text>}
                 </View>
@@ -214,24 +247,30 @@ const SetupGrua = () => {
                   <Components.NumericInput
                     value={radioMontaje}
                     onChangeText={setRadioMontaje}
-                    placeholder="Radio de montaje"
+                    placeholder="Radio"
                     editable={!isInputsDisabled}
                     showControls={false}
-                    style={[styles.inputField, { width: 160, marginTop: 10 }, errorRadioMontaje && { borderColor: 'red', borderWidth: 3 }]}
+                    style={[styles.inputField, { width: 160, marginTop: 10 }, radioMontajeError && { borderColor: 'red', borderWidth: 3 }]}
                   />
                   {errorRadioMontaje && <Text style={styles.errorText}>{errorRadioMontaje}</Text>}
                 </View>
               </View>
 
+              {movementEval && (
+                <Text
+                  style={[
+                    styles.labelText,
+                    { marginLeft: 8 },
+                    !movementEval.optimum && { color: 'red' }, // Aplica color rojo si !optimum
+                  ]}
+                >
+                  Optimal: {movementEval.message}
+                </Text>
+              )}
               {/* Visualización */}
               <View style={styles.inputWrapper}>
                 <Text style={[styles.labelText, { left: 8 }]}>Visualización de la grúa:</Text>
               </View>
-              {movementEval && (
-                <Text style={[styles.labelText, { marginLeft: 8 }]}>
-                  Optimal: {movementEval.message}
-                </Text>
-              )}
               {grua ? (
                 <View style={{ width: 150, height: 39, justifyContent: 'center' }}>
                   <Text style={[styles.labelText, { textAlign: 'center' }]}>
