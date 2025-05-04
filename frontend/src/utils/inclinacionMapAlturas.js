@@ -31,31 +31,46 @@ export const inclinacionMapAlturas = {
     "6": 75,
     "7": 73,
     "8": 70,
-    "9": 68,  // Disminución de 2
-    "10": 65, // Disminución de 3
-    "11": 63, // Disminución de 2
-    "12": 61, // Disminución de 2
+    "9": 68,
+    "10": 65,
+    "11": 63,
+    "12": 61,
     "13": 60,
-    "14": 58,  // Disminución de 2
-    "15": 55, // Disminución de 3
-    "16": 52, // Disminución de 3
+    "14": 58,
+    "15": 55,
+    "16": 52,
     "17": 50,
-    "18": 47,  // Disminución de 3
-    "19": 43, // Disminución de 4
+    "18": 47,
+    "19": 43,
     "20": 40,
-    "21": 37,  // Disminución de 3
-    "22": 33, // Disminución de 4
+    "21": 37,
+    "22": 33,
     "23": 30,
-    "24": 25,  // Disminución de 5
+    "24": 25,
     "25": 20,
     "26": 10,
   },
   
   altura24: {
-    // Aquí irán los datos para la altura 24
-    "7": /* Valor para radio 7 y altura 24 */ 80, // Ejemplo
-    "8": /* Valor para radio 8 y altura 24 */ 79, // Ejemplo
-    // ... más datos para la altura 24
+    "4": 75,
+    "5": 74,
+    "6": 72,
+    "7": 70,
+    "8": 67,
+    "9": 64,
+    "10": 62,
+    "11": 60,
+    "12": 56,
+    "13": 53,
+    "14": 50,
+    "15": 46,
+    "16": 42,
+    "17": 40,
+    "18": 35,
+    "19": 30,
+    "20": 22,
+    "21": 20,
+    "22": 10,
   },
   altura19: {
     // Aquí irán los datos para la altura 19
