@@ -91,10 +91,19 @@ export const inclinacionMapAlturas = {
     "18": 10,
   },
   altura15: {
-    // Aquí irán los datos para la altura 15
-    "7": /* Valor para radio 7 y altura 15 */ 85, // Ejemplo
-    "8": /* Valor para radio 8 y altura 15 */ 84, // Ejemplo
-    // ... más datos para la altura 15
+    "2": 75,
+    "3": 72,
+    "4": 70,
+    "5": 63,
+    "6": 60,
+    "7": 57,
+    "8": 50,
+    "9": 45,
+    "10": 40,
+    "11": 30,
+    "12": 25,
+    "13": 20,
+    "14": 10,
   },
   altura10: {
     // Aquí irán los datos para la altura 10
