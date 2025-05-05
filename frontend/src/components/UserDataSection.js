@@ -58,27 +58,27 @@ const UserDataSection = () => {
     <View style={styles.userInfoContainer}>
       <View>
         <View style={styles.infoContainer}>
-          <Icon name="person-2" size={25} color="#ff0000" style={styles.icon} />
+          <Icon name="person-2" size={25} color="#cc0000" style={styles.icon} />
           <Text style={styles.value}>{user.username} {user.nombre} {user.apellido || ''}</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Icon name="workspace-premium" size={25} color="#ff0000" style={styles.icon} />
+          <Icon name="workspace-premium" size={25} color="#cc0000" style={styles.icon} />
           <Text style={styles.value}>{user.position}</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Icon name="work" size={25} color="#ff0000" style={styles.icon} />
+          <Icon name="work" size={25} color="#cc0000" style={styles.icon} />
           <Text style={styles.value}>{user.specialty}</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Icon name="credit-card" size={25} color="#ff0000" style={styles.icon} />
+          <Icon name="credit-card" size={25} color="#cc0000" style={styles.icon} />
           <Text style={styles.value}>{user.rut}</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Icon name="email" size={26} color="#ff0000" style={styles.icon} />
+          <Icon name="email" size={26} color="#cc0000" style={styles.icon} />
           <Text style={styles.value}>{user.email}</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Icon name="phone-iphone" size={25} color="#ff0000" style={styles.icon} />
+          <Icon name="phone-iphone" size={25} color="#cc0000" style={styles.icon} />
           <Text style={styles.value}>{user.phone}</Text>
         </View>
       </View>

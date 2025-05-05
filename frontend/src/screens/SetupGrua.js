@@ -183,7 +183,7 @@ const SetupGrua = () => {
         <View style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View style={styles.titleContainer}>
-              <Text style={styles.sectionTitle}>Configurar grúa</Text>
+              <Text style={[styles.sectionTitle, { top: 5 }]}>Configurar grúa</Text>
             </View>
             <View style={styles.container}>
               {/* Selección de grúa */}

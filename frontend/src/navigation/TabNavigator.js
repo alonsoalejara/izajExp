@@ -62,7 +62,7 @@ function TabNavigator() {
           paddingTop: 12,
           justifyContent: 'center',
         },
-        tabBarActiveTintColor: 'red',
+        tabBarActiveTintColor: '#cc0000',
         tabBarInactiveTintColor: '#ddd',
         tabBarShowLabel: false,
         headerShown: false,

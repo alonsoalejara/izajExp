@@ -295,7 +295,7 @@ const SetupCarga = () => {
             <Components.Button
               label="Continuar"
               onPress={handleNavigateToSetupGrua}
-              style={{ marginTop: 5, marginBottom: 30, left: -25, width: 330, alignSelf: 'center' }}
+              style={{ left: -25, marginBottom: -20, width: 330, alignSelf: 'center' }}
             />
             <BS.BSForma
               isVisible={isFormaVisible}

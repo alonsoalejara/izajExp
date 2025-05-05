@@ -97,13 +97,13 @@ const BottomSheetStyles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedRadioButton: {
-    borderColor: '#ff0000',
+    borderColor: '#cc0000',
   },
   selectedCircle: {
     width: 11,
     height: 11,
     borderRadius: 6,
-    backgroundColor: '#ff0000',
+    backgroundColor: '#cc0000',
   },
   /* Titulo */
   titleContainer: {
@@ -240,7 +240,7 @@ const BottomSheetStyles = StyleSheet.create({
   /* Botones de acción */
   button: {
     top: 270,
-    backgroundColor: "#ff0000",
+    backgroundColor: "#cc0000",
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 30,

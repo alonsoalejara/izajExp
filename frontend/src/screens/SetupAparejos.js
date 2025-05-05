@@ -145,11 +145,11 @@ const SetupAparejos = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Components.Header />
         <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
           <View style={styles.titleContainer}>
-            <Text style={styles.sectionTitle}>Configuración de aparejos</Text>
+            <Text style={[styles.sectionTitle, { top: 5, marginBottom: 20 }]}>Configuración de aparejos</Text>
           </View>
 
           <View style={styles.container}>
@@ -275,7 +275,7 @@ const SetupAparejos = () => {
             />
 
             {/* Botones */}
-            <View style={[styles.buttonContainer, { top: 10, right: 40 }]}>
+            <View style={[styles.buttonContainer, { top: 255, right: 40 }]}>
               <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]} />
               <Components.Button label="Continuar" onPress={handleNavigate} disabled={!cantidadGrilletes || (cantidadNumero === 1 && (!medidaS1 || medidaS1 === '')) || (cantidadNumero > 1 && (!medidaS1 || medidaS1 === '' || !medidaS2 || medidaS2 === ''))} style={[styles.button, { width: '50%', right: 45 }]} />
             </View>

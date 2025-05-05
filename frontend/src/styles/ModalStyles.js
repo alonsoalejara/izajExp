@@ -76,7 +76,7 @@ const ModalStyles = StyleSheet.create({
   },
    selectedOption: {
     borderWidth: 1,
-    borderColor: '#ff0000',
+    borderColor: '#cc0000',
     backgroundColor: '#ffb3b3',
   },
   optionText: {
@@ -85,7 +85,7 @@ const ModalStyles = StyleSheet.create({
   },
   selectedOptionText: {
     fontWeight: '500',
-    color: '#ff0000', 
+    color: '#cc0000', 
   },
   buttonText: {
     ...CommonStyles.buttonText,
@@ -100,12 +100,12 @@ const ModalStyles = StyleSheet.create({
   },
   closeButtonText: {
     ...CommonStyles.text,
-    color: '#ee0000',
+    color: '#cc0000',
     fontSize: 16,
   },
   saveButton: {
     ...CommonStyles.button,
-    backgroundColor: '#ee0000',
+    backgroundColor: '#cc0000',
     padding: 10,
   },
   modalButtons: {
@@ -160,7 +160,7 @@ const ModalStyles = StyleSheet.create({
   
     // Estilo para el ítem seleccionado
     selectedMenuItem: {
-      backgroundColor: '#ee0000',  // Cambia el color de fondo cuando el ítem está seleccionado
+      backgroundColor: '#cc0000',  // Cambia el color de fondo cuando el ítem está seleccionado
     },
   
     // Estilo para el texto de un ítem seleccionado
