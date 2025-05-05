@@ -209,7 +209,7 @@ function AdminPanel() {
                 onPress={() => handlePressButton(section)}
               >
                 <Text
-                  style={[styles.buttonText, activeSection === section && { color: '#cc0000' }]}
+                  style={[styles.buttonText, activeSection === section && { color: '#ee0000' }]}
                 >
                   {section}
                 </Text>

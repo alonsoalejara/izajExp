@@ -73,7 +73,7 @@ const Header = () => {
       >
         <Svg style={styles.gradient}>
           <LinearGradient id="grad1" x1="0%" y1="100%" x2="0%" y2="0%">
-            <Stop offset="14%" stopColor="red" stopOpacity="0.6" />
+            <Stop offset="14%" stopColor="#ff0000" stopOpacity="0.8" />
             <Stop offset="9%" stopColor="black" stopOpacity="0.8" />
           </LinearGradient>
           <Rect width="100%" height="100%" fill="url(#grad1)" />

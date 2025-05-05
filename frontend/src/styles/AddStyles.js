@@ -157,13 +157,13 @@ const styles = StyleSheet.create({
     },
     // Error styles
     errorText: {
-      color: '#cc0000',
+      color: '#ee0000',
       fontSize: 14,
       marginBottom: 5,
       marginTop: -15,
     },
     errorInput: {
-      borderColor: '#cc0000',
+      borderColor: '#ee0000',
       borderWidth: 1,
       borderRadius: 10,
       marginBottom: 30,

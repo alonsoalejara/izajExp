@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         height: 2,
-        backgroundColor: '#cc0000',
+        backgroundColor: '#ee0000',
       },
     /* Contenedor para botón Crear*/
     createButtonContainer: {

@@ -126,7 +126,7 @@ const Profile = () => {
           <Svg style={styles.gradient}>
             <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
               <Stop offset="80%" stopColor="white" stopOpacity="0.6" />
-              <Stop offset="70%" stopColor="#cc0000" stopOpacity="0.8" />
+              <Stop offset="70%" stopColor="#ee0000" stopOpacity="0.8" />
             </LinearGradient>
             <Rect width="100%" height="100%" fill="url(#grad1)" />
           </Svg>
@@ -143,10 +143,10 @@ const Profile = () => {
         {['MisDatos', 'MisPlanes'].map((section) => (
           <TouchableOpacity
             key={section}
-            style={[styles.userButton, selectedButton === section && { color: '#cc0000' }]}
+            style={[styles.userButton, selectedButton === section && { color: '#ee0000' }]}
             onPress={() => handlePressButton(section)}
           >
-            <Text style={[styles.userButtonText, selectedButton === section && { color: '#cc0000' }]}>
+            <Text style={[styles.userButtonText, selectedButton === section && { color: '#ee0000' }]}>
               {section === 'MisDatos' ? 'Mis Datos' : 'Mis Planes'}
             </Text>
             <Animated.View

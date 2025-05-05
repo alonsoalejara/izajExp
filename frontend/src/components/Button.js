@@ -11,7 +11,7 @@ const Button = ({ label, onPress, isCancel, style }) => {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#cc0000',
+    backgroundColor: '#ee0000',
     paddingVertical: 13,
     marginBottom: 18,
     marginLeft: 55,
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   cancelButtonText: {
-    color: '#cc0000',
+    color: '#ee0000',
     fontSize: 17,
     fontWeight: 'bold',
   },

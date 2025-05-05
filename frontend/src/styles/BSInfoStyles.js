@@ -87,10 +87,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   redText: {
-    color: '#cc0000',
+    color: '#ee0000',
   },
   closeButton: {
-    backgroundColor: '#cc0000',
+    backgroundColor: '#ee0000',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

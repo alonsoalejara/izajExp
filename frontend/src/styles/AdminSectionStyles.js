@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
       },
       actionButton: {
         width: 120,
-        backgroundColor: '#cc0000',
+        backgroundColor: '#ee0000',
         paddingVertical: 10,
         borderRadius: 5,
         justifyContent: 'center',

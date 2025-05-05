@@ -32,7 +32,7 @@ const CommonStyles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonPrimary: {
-    backgroundColor: '#cc0000', // Rojo
+    backgroundColor: '#ee0000', // Rojo
   },
   buttonDanger: {
     backgroundColor: '#f44336', // Rojo claro
@@ -92,7 +92,7 @@ const CommonStyles = StyleSheet.create({
   // Resultado
   result: {
     fontSize: 16,
-    color: '#cc0000', // Color rojo para resultado
+    color: '#ee0000', // Color rojo para resultado
     marginTop: 5,
   },
 

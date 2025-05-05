@@ -110,10 +110,10 @@ const CollabProfile = () => {
         {['Datos', 'Planes'].map((section) => (
           <TouchableOpacity
             key={section}
-            style={[styles.userButton, selectedButton === section && { color: '#cc0000' }]}
+            style={[styles.userButton, selectedButton === section && { color: '#ee0000' }]}
             onPress={() => handlePressButton(section)}
           >
-            <Text style={[styles.userButtonText, selectedButton === section && { color: '#cc0000' }]}>
+            <Text style={[styles.userButtonText, selectedButton === section && { color: '#ee0000' }]}>
               {section}
             </Text>
             <Animated.View
