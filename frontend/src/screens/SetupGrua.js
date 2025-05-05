@@ -51,18 +51,52 @@ const SetupGrua = () => {
   }, []);
 
   useEffect(() => {
-    const izajeVal   = parseFloat(radioIzaje)   || 0;
-    const montajeVal = parseFloat(radioMontaje) || 0;
+    const izajeVal     = parseFloat(radioIzaje)     || 0;
+    const montajeVal   = parseFloat(radioMontaje)   || 0;
     const boomLengthStr = largoPluma?.split(' ')[0]; // Obtiene solo el número del largo de pluma
     const boomLengthNum = parseFloat(boomLengthStr) || 0;
-    const pesoCargaVal = parseFloat(setupCargaData.peso) || 0;
+    const pesoCargaVal  = parseFloat(setupCargaData.peso) || 0;
 
+    const hasGrua = !!grua;
     const hasRadioIzaje = radioIzaje !== '';
     const hasRadioMontaje = radioMontaje !== '';
 
-    const capInicial = hasRadioIzaje && boomLengthNum ? evaluateMovement(izajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
-    const capFinal   = hasRadioMontaje && boomLengthNum ? evaluateMovement(montajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
-    
+    const esRadioIzajeValido = !radioIzajeError && hasRadioIzaje;
+    const esRadioMontajeValido = !radioMontajeError && hasRadioMontaje;
+
+    let movimientoOptimo = false;
+    let mensajeMovimiento = '';
+
+    if (hasGrua && hasRadioIzaje && hasRadioMontaje && esRadioIzajeValido && esRadioMontajeValido) {
+      // Si ambos radios son válidos y se han ingresado, considerar el movimiento óptimo
+      const capacidadIzaje = evaluateMovement(izajeVal, pesoCargaVal, boomLengthNum);
+      const capacidadMontaje = evaluateMovement(montajeVal, pesoCargaVal, boomLengthNum);
+
+      if (capacidadIzaje.optimum && capacidadMontaje.optimum) {
+        movimientoOptimo = true;
+        mensajeMovimiento = 'Movimiento óptimo';
+      } else if (!capacidadIzaje.optimum) {
+        mensajeMovimiento = 'Radio de izaje fuera de rango o capacidad insuficiente';
+      } else if (!capacidadMontaje.optimum) {
+        mensajeMovimiento = 'Radio de montaje fuera de rango o capacidad insuficiente';
+      } else {
+        mensajeMovimiento = 'Verificar radios y capacidad'; // Caso improbable si las validaciones previas son correctas
+      }
+      setMovementEval({ optimum: movimientoOptimo, message: mensajeMovimiento });
+
+    } else if (hasGrua && (!hasRadioIzaje || !hasRadioMontaje)) {
+      mensajeMovimiento = 'Ingrese ambos radios de trabajo.';
+      setMovementEval({ optimum: false, message: mensajeMovimiento });
+    } else if (hasGrua && (radioIzajeError || radioMontajeError)) {
+      mensajeMovimiento = 'Uno o ambos radios ingresados son inválidos.';
+      setMovementEval({ optimum: false, message: mensajeMovimiento });
+    } else {
+      setMovementEval(null); // No evaluar si no hay grúa seleccionada
+    }
+
+    const capInicial  = hasRadioIzaje && boomLengthNum ? evaluateMovement(izajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
+    const capFinal    = hasRadioMontaje && boomLengthNum ? evaluateMovement(montajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
+
     const menorCapacidad = (capInicial != null && capFinal != null)
       ? Math.min(capInicial, capFinal)
       : capInicial ?? capFinal;
@@ -81,24 +115,13 @@ const SetupGrua = () => {
       `Capacidad de levante asignada: ${menorCapacidad?.toFixed(1) ?? 'N/A'} t`
     );
 
-    // Calcular y guardar el radio de trabajo máximo solo si alguno de los radios tiene valor
+    // Calcular y guardar el radio de trabajo máximo solo si ambos radios tienen valor y son válidos
     let maxRadio = 0;
-    if (hasRadioIzaje || hasRadioMontaje) {
+    if (esRadioIzajeValido && esRadioMontajeValido) {
       maxRadio = Math.max(izajeVal, montajeVal);
       setRadioTrabajoMaximo(maxRadio.toString());
     } else {
       setRadioTrabajoMaximo(''); // O null, dependiendo de tu lógica
-      setMovementEval(null); // Limpiar la evaluación si no hay radios
-      setRadioIzajeError(false); // Limpiar errores
-      setRadioMontajeError(false);
-      return; // Salir del useEffect para no evaluar con radio 0
-    }
-
-    // Evaluar movementEval con el radio máximo solo si hay un largo de pluma
-    if (!isNaN(maxRadio) && !isNaN(pesoCargaVal) && boomLengthNum) {
-      setMovementEval(evaluateMovement(maxRadio, pesoCargaVal, boomLengthNum));
-    } else {
-      setMovementEval(null);
     }
 
     // Ajustar ángulo de inclinación visual si es Terex RT555
