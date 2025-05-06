@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TouchableWithoutFeedback, TouchableOpacity, Keyboard, ScrollView, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
+import BSTipoManiobra from '../components/bottomSheets/BSTipoManiobra'; // Asegúrate de que la ruta sea correcta
 
 const SetupAparejos = () => {
   const navigation = useNavigation();
@@ -23,9 +24,13 @@ const SetupAparejos = () => {
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
+  const [isTipoAparejoModalVisible, setTipoAparejoModalVisible] = useState(false); // Nuevo estado para el modal de tipo de aparejo
 
   const [anguloSeleccionado, setAnguloSeleccionado] = useState(null);
   const [tableData, setTableData] = useState([]);
+  const [tipoAparejoSeleccionado, setTipoAparejoSeleccionado] = useState(''); // Estado para almacenar el tipo de aparejo seleccionado
+  const [tipoAparejoLabel, setTipoAparejoLabel] = useState('Selección del tipo de aparejo:'); // Nuevo estado para el label
+  const [tipoManiobraSeleccionadoSolo, setTipoManiobraSeleccionadoSolo] = useState(''); // Nuevo estado para el tipo de maniobra
 
   // Convertimos cantidad a número para comparaciones
   const cantidadNumero = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
@@ -48,35 +53,52 @@ const SetupAparejos = () => {
     if (route.params?.setupRadioData) setSetupRadioData(route.params.setupRadioData);
   }, [route.params]);
 
+  const handleManiobraSeleccionada = useCallback((maniobra) => {
+    setManiobraSeleccionada(prev => ({
+      // Mantiene la cantidad anterior
+      cantidad: prev?.cantidad || '',
+      // Actualiza solo el tipo seleccionado
+      tipo: {
+        type: maniobra.type,
+        cantidades: maniobra.cantidades
+      }
+    }));
+  
+    // Actualiza el nombre del tipo (Eslinga o Estrobo)
+    setTipoManiobraSeleccionadoSolo(maniobra.type);
+  
+    // Limpia el tipo de aparejo seleccionado
+    setTipoAparejoSeleccionado('');
+  }, []);
+
   useEffect(() => {
-    if (maniobraSeleccionada.cantidad && maniobraSeleccionada.tipo?.cantidades) {
-      const total = Object.values(maniobraSeleccionada.tipo.cantidades).reduce((sum, qty) => sum + qty, 0);
-      setCantidadGrilletes(total.toString());
-
-      const rows = [];
-      let count = 0;
-      const half = total > 1 ? total / 2 : 0;
-
-      Object.entries(maniobraSeleccionada.tipo.cantidades).forEach(([dia, qty]) => {
-        for (let i = 0; i < qty; i++) {
-          const label = total === 1 ? 'S1' : count < half ? 'S1' : 'S2';
-          rows.push({
-            key: `${maniobraSeleccionada.tipo.type}-${dia}-${i}`,
-            item: `${label}: ${maniobraSeleccionada.tipo.type} de ${dia} mm`,
-            etiqueta: label,
-          });
-          count++;
-        }
-      });
-      setTableData(rows);
+    if (tipoManiobraSeleccionadoSolo === 'Eslinga') {
+      setTipoAparejoLabel('Selección del tipo de eslinga:');
+    } else if (tipoManiobraSeleccionadoSolo === 'Estrobo') {
+      setTipoAparejoLabel('Selección del tipo de estrobo:');
     } else {
-      setCantidadGrilletes('');
-      setTableData([]);
+      setTipoAparejoLabel('Selección del tipo de aparejo:');
     }
-    // Reset measures on maniobra change
+  }, [tipoManiobraSeleccionadoSolo]);
+
+  useEffect(() => {
+    if (!maniobraSeleccionada?.cantidad) {
+      setTableData([]);
+      return;
+    }
+
+    const nuevaTabla = Array.from({ length: maniobraSeleccionada.cantidad }, (_, index) => ({
+      key: index + 1,
+      // Puedes agregar aquí los valores iniciales para cada fila
+    }));
+
+    setTableData(nuevaTabla);
+  }, [maniobraSeleccionada.cantidad]);
+
+  useEffect(() => {
     setMedidaS1('');
     setMedidaS2('');
-  }, [maniobraSeleccionada]);
+  }, [maniobraSeleccionada.cantidad]);
 
   useEffect(() => {
     if (cantidadNumero === 1) {
@@ -84,6 +106,26 @@ const SetupAparejos = () => {
     }
   }, [cantidadNumero]);
 
+  useEffect(() => {
+    if (!maniobraSeleccionada?.cantidad) {
+      setTableData([]);
+      return;
+    }
+  
+    const nuevaTabla = Array.from({ length: maniobraSeleccionada.cantidad }, (_, index) => ({
+      key: index + 1,
+      // Puedes agregar aquí los valores iniciales para cada fila
+    }));
+  
+    setTableData(nuevaTabla);
+  }, [maniobraSeleccionada.cantidad]);
+
+  useEffect(() => {
+    // toma la cantidad de maniobras y la vuelca en cantidadGrilletes
+    // si no hay cantidad, la deja vacía
+    setCantidadGrilletes(maniobraSeleccionada.cantidad || '');
+  }, [maniobraSeleccionada.cantidad]);
+  
   const handleNavigate = () => {
     const grilletePulgada = Object.keys(tipoGrillete)
       .filter(dia => tipoGrillete[dia] > 0)
@@ -97,6 +139,7 @@ const SetupAparejos = () => {
       anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
       medidaS1Maniobra: medidaS1,
       medidaS2Maniobra: medidaS2,
+      tipoAparejo: tipoAparejoSeleccionado,
     };
 
     navigation.navigate('Tablas', {
@@ -107,14 +150,13 @@ const SetupAparejos = () => {
     });
   };
 
-
   const grilleteSummary = Object.entries(tipoGrillete)
     .filter(([, qty]) => qty > 0)
-    .map(([dia, qty]) => `${qty}x${dia}\"`)
+    .map(([dia]) => `${dia}"`)
     .join(', ');
 
   const renderAngulos = () => (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10, marginTop: 30, left: -25 }}>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-around', top: 5, right: 25 }}>
       {['60', '45', '30'].map(angle => (
         <TouchableOpacity
           key={angle}
@@ -155,7 +197,7 @@ const SetupAparejos = () => {
           <View style={styles.container}>
             {/* Selección de maniobra */}
             <View style={styles.inputWrapper}>
-              <Text style={styles.labelText}>Maniobra: (cantidad y tipo)</Text>
+              <Text style={styles.labelText}>Maniobra (cantidad y tipo de aparejos):</Text>
             </View>
             <View style={styles.inputContainer}>
               <Components.ConfigButton
@@ -170,17 +212,47 @@ const SetupAparejos = () => {
                 value={maniobraSeleccionada.tipo?.type || ''}
                 onPress={() => openModal(setManiobraModalVisible)}
                 placeholder="Esl./Estr."
+                disabled={!maniobraSeleccionada.cantidad}
                 width={150}
               />
             </View>
 
-           {/* Medidas S1 y S2 */}
-           {maniobraSeleccionada.cantidad !== '' && (
+            {/* Nuevo label y botón de Tipo de aparejos */}
+            <View style={styles.inputWrapper}>
+              <Text style={styles.labelText}>{tipoAparejoLabel}</Text>
+            </View>
+            <Components.ConfigButton
+              label="Tipo de aparejos"
+              value={tipoAparejoSeleccionado || ''}
+              onPress={() => openModal(setTipoAparejoModalVisible)}
+              placeholder="Tipo de aparejos"
+              width="101%"
+              align="center"
+              style={{ marginTop: 14 }}
+              disabled={!tipoManiobraSeleccionadoSolo}
+            />
+
+            {/* Ángulos e imagen para 2 o 4 maniobras */}
+            {maniobraSeleccionada.tipo?.cantidades && ['2', '4'].includes(maniobraSeleccionada.cantidad) && (
+              <>
+                <View style={[styles.inputWrapper, { top: -5 }]}>
+                  <Text style={styles.labelText}>Ángulos de trabajo (°):</Text>
+                </View>
+                {renderAngulos()}
+                <Image
+                  source={require('../../assets/esl-est-grade.png')}
+                  style={{ width: '100%', height: 100, resizeMode: 'contain', marginVertical: 10 }}
+                />
+              </>
+            )}
+
+            {/* Medidas S1 y S2 */}
+            {maniobraSeleccionada.cantidad !== '' && (
               <>
                 <View style={styles.inputWrapper}>
                   <Text style={styles.labelText}>Medidas de maniobra (m):</Text>
                 </View>
-                <View style={styles.inputContainer}>
+                <View style={[styles.inputContainer, { marginBottom: 10 }]}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.labelText}>Medida S1 (metros):</Text>
                     <Components.NumericInput
@@ -188,7 +260,7 @@ const SetupAparejos = () => {
                       onChangeText={setMedidaS1}
                       placeholder="Medida S1"
                       keyboardType="numeric"
-                      style={{ width: '100%' }}
+                      style={{ width: '100%', top: 25, backgroundColor: '#fff' }}
                       showControls={false}
                       showClearButton={true}
                     />
@@ -200,7 +272,7 @@ const SetupAparejos = () => {
                       onChangeText={setMedidaS2}
                       placeholder="Medida S2"
                       keyboardType="numeric"
-                      style={{ width: '100%', backgroundColor: cantidadNumero === 1 ? '#eee' : '#fff' }}
+                      style={{ width: '100%', top: 25, backgroundColor: cantidadNumero === 1 ? '#eee' : '#fff' }}
                       editable={cantidadNumero !== 1}
                       showControls={false}
                       showClearButton={cantidadNumero !== 1}
@@ -210,27 +282,17 @@ const SetupAparejos = () => {
               </>
             )}
 
-            {/* Ángulos e imagen para 2 o 4 maniobras */}
-            {maniobraSeleccionada.tipo?.cantidades && ['2', '4'].includes(maniobraSeleccionada.cantidad) && (
-              <>
-                {renderAngulos()}
-                <Image
-                  source={require('../../assets/esl-est-grade.png')}
-                  style={{ width: '100%', height: 100, resizeMode: 'contain', marginVertical: 10 }}
-                />
-              </>
-            )}
-
             {/* Sección Grillete */}
-            <View style={styles.inputWrapper}>
-              <Text style={styles.labelText}>Grillete: (cantidad)</Text>
+            <View style={[styles.inputWrapper, { top: 25 }]}>
+            <Text style={styles.labelText}>Grillete: (cantidad)</Text>
             </View>
-            <View style={styles.inputContainer}>
+            <View style={[styles.inputContainer, { marginBottom: 20 }]}>
               <Components.NumericInput
                 label="Cantidad"
                 value={cantidadGrilletes}
                 placeholder="Cantidad"
                 editable={false}
+                style={{ width: '50%', height: '77%', top: 30, backgroundColor: '#fff' }}
                 showControls={false}
                 showClearButton={false}
               />
@@ -239,7 +301,7 @@ const SetupAparejos = () => {
                 value={grilleteSummary}
                 onPress={() => openModal(setGrilleteModalVisible)}
                 placeholder="Tipo Grillete"
-                width={150}
+                style={{ width: '48%', top: 25, backgroundColor: '#fff' }}
                 disabled={!cantidadGrilletes}
               />
             </View>
@@ -270,12 +332,19 @@ const SetupAparejos = () => {
             <BS.BSManiobra
               isVisible={isManiobraModalVisible}
               onClose={() => setManiobraModalVisible(false)}
-              onSelect={tipoData => setManiobraSeleccionada(prev => ({ ...prev, tipo: tipoData, cantidades: tipoData.cantidades }))}
+              onSelect={handleManiobraSeleccionada}
               maxManiobra={parseInt(maniobraSeleccionada.cantidad, 10)}
+            />
+            {/* Nuevo modal para Tipo de aparejo */}
+            <BSTipoManiobra
+              isVisible={isTipoAparejoModalVisible}
+              onClose={() => setTipoAparejoModalVisible(false)}
+              onSelect={tipo => setTipoAparejoSeleccionado(tipo)}
+              tipoManiobra={tipoManiobraSeleccionadoSolo}
             />
 
             {/* Botones */}
-            <View style={[styles.buttonContainer, { top: 255, right: 40 }]}>
+            <View style={[styles.buttonContainer, { top: 45, right: 40 }]}>
               <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]} />
               <Components.Button label="Continuar" onPress={handleNavigate} disabled={!cantidadGrilletes || (cantidadNumero === 1 && (!medidaS1 || medidaS1 === '')) || (cantidadNumero > 1 && (!medidaS1 || medidaS1 === '' || !medidaS2 || medidaS2 === ''))} style={[styles.button, { width: '50%', right: 45 }]} />
             </View>

@@ -2,24 +2,48 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Modal, View, Text, TouchableOpacity, Animated, ScrollView, Dimensions, Alert } from 'react-native';
 import styles from '../../styles/BottomSheetStyles';
 import IconFA from 'react-native-vector-icons/FontAwesome';
-import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 import Components from '../Components.index';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
-  const [tipoManiobra, setTipoManiobra] = useState(null);
-  const bottomSheetHeight = SCREEN_HEIGHT * 0.4;
+const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra }) => {
+  const [tipoAparejoSeleccionado, setTipoAparejoSeleccionado] = useState(null);
+  const [opcionesTipoAparejo, setOpcionesTipoAparejo] = useState([]);
+  const bottomSheetHeight = SCREEN_HEIGHT * 0.8;
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   useEffect(() => {
-    if (isVisible) {
-      setTipoManiobra(null); // Reiniciar selección al abrir
-      openBottomSheet();
+    if (tipoManiobra === 'Estrobo') {
+      setOpcionesTipoAparejo(['Cable de acero superloop']);
+      setTipoAparejoSeleccionado('Cable de acero superloop'); // Selección automática
+      if (isVisible) {
+        openBottomSheet();
+      } else {
+        closeBottomSheet();
+      }
+    } else if (tipoManiobra === 'Eslinga') {
+      setOpcionesTipoAparejo([
+        'Tubulares de poliester',
+        'Planas ojo-ojo de poliester',
+        'Tubulares trenzadas de poliester',
+        'Tubulares para carga pesada',
+      ]);
+      setTipoAparejoSeleccionado(null); // No seleccionar nada por defecto
+      if (isVisible) {
+        openBottomSheet();
+      } else {
+        closeBottomSheet();
+      }
     } else {
-      closeBottomSheet();
+      setOpcionesTipoAparejo([]);
+      setTipoAparejoSeleccionado(null);
+      if (isVisible) {
+        openBottomSheet();
+      } else {
+        closeBottomSheet();
+      }
     }
-  }, [isVisible]);
+  }, [isVisible, tipoManiobra]);
 
   const openBottomSheet = () => {
     Animated.timing(positionY, {
@@ -37,16 +61,18 @@ const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
     }).start(() => onClose());
   };
 
-  const handleSelectManiobra = (tipo) => {
-    setTipoManiobra(tipo);
+  const handleSeleccionarTipo = (tipo) => {
+    setTipoAparejoSeleccionado(tipo);
   };
 
   const handleConfirmar = () => {
-    if (tipoManiobra) {
-      onSelect({ type: tipoManiobra, cantidades: { [tipoManiobra]: parseInt(maxManiobra, 10) || 1 } }); // Enviar el objeto con type
+    if (tipoAparejoSeleccionado) {
+      onSelect(tipoAparejoSeleccionado);
       closeBottomSheet();
+    } else if (tipoManiobra === 'Eslinga') {
+      Alert.alert("Selecciona un tipo", "Debes elegir un tipo de eslinga.");
     } else {
-      Alert.alert("Selecciona un tipo", "Debes elegir entre Eslinga o Estrobo.");
+      closeBottomSheet(); // Si es estrobo, ya está seleccionado, solo cerrar
     }
   };
 
@@ -59,20 +85,24 @@ const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
         <View style={styles.dragLine}></View>
         <View style={styles.modalHeader}>
           <IconFA name="angle-left" size={35} color="#333" style={styles.backIcon} onPress={closeBottomSheet} />
-          <Text style={[styles.modalTitle, { marginLeft: 40 }]}>Seleccionar Tipo de Maniobra</Text>
+          <Text style={[styles.modalTitle, { marginLeft: 40 }]}>Seleccionar Tipo de Aparejo</Text>
         </View>
         <View style={styles.separatorLine}></View>
         <ScrollView style={styles.optionsContainer}>
-          {['Eslinga', 'Estrobo'].map((tipo) => (
-            <TouchableOpacity key={tipo} style={styles.optionButton} onPress={() => handleSelectManiobra(tipo)}>
+          {opcionesTipoAparejo.map((tipo) => (
+            <TouchableOpacity key={tipo} style={styles.optionButton} onPress={() => handleSeleccionarTipo(tipo)}>
               <View style={styles.optionContent}>
                 <View style={styles.optionTextContainer}>
-                  <IconMC name="transit-connection" size={30} color="#333" style={styles.icon} />
                   <Text style={styles.optionText}>{tipo}</Text>
                 </View>
                 <View style={styles.radioContainer}>
-                  <View style={[styles.radioButton, tipoManiobra === tipo && styles.selectedRadioButton]}>
-                    {tipoManiobra === tipo && <View style={styles.selectedCircle} />}
+                  <View
+                    style={[
+                      styles.radioButton,
+                      tipoAparejoSeleccionado === tipo && styles.selectedRadioButton,
+                    ]}
+                  >
+                    {tipoAparejoSeleccionado === tipo && <View style={styles.selectedCircle} />}
                   </View>
                 </View>
               </View>
@@ -87,4 +117,4 @@ const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
   );
 };
 
-export default BSManiobra;
+export default BSTipoManiobra;
