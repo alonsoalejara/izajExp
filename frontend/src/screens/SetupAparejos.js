@@ -5,7 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
-import BSTipoManiobra from '../components/bottomSheets/BSTipoManiobra'; // Asegúrate de que la ruta sea correcta
 
 const SetupAparejos = () => {
   const navigation = useNavigation();
@@ -24,15 +23,18 @@ const SetupAparejos = () => {
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
-  const [isTipoAparejoModalVisible, setTipoAparejoModalVisible] = useState(false); // Nuevo estado para el modal de tipo de aparejo
+  const [isTipoAparejoModalVisible, setTipoAparejoModalVisible] = useState(false);
 
   const [anguloSeleccionado, setAnguloSeleccionado] = useState(null);
   const [tableData, setTableData] = useState([]);
-  const [tipoAparejoSeleccionado, setTipoAparejoSeleccionado] = useState(''); // Estado para almacenar el tipo de aparejo seleccionado
-  const [tipoAparejoLabel, setTipoAparejoLabel] = useState('Selección del tipo de aparejo:'); // Nuevo estado para el label
-  const [tipoManiobraSeleccionadoSolo, setTipoManiobraSeleccionadoSolo] = useState(''); // Nuevo estado para el tipo de maniobra
+  const [tipoAparejoSeleccionado, setTipoAparejoSeleccionado] = useState('');
+  const [tipoAparejoLabel, setTipoAparejoLabel] = useState('Selección del tipo de aparejo:');
+  const [tipoManiobraSeleccionadoSolo, setTipoManiobraSeleccionadoSolo] = useState('');
 
-  // Convertimos cantidad a número para comparaciones
+  const [tipoWllLabel, setTipoWllLabel] = useState('Selección del aparejo según WLL:');
+  const [aparejoPorWLL, setAparejoPorWLL] = useState('');
+  const [isAparejoWLLModalVisible, setAparejoWLLModalVisible] = useState(false);
+
   const cantidadNumero = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
 
   const openModal = setter => setter(true);
@@ -55,20 +57,15 @@ const SetupAparejos = () => {
 
   const handleManiobraSeleccionada = useCallback((maniobra) => {
     setManiobraSeleccionada(prev => ({
-      // Mantiene la cantidad anterior
       cantidad: prev?.cantidad || '',
-      // Actualiza solo el tipo seleccionado
       tipo: {
         type: maniobra.type,
         cantidades: maniobra.cantidades
       }
     }));
-  
-    // Actualiza el nombre del tipo (Eslinga o Estrobo)
     setTipoManiobraSeleccionadoSolo(maniobra.type);
-  
-    // Limpia el tipo de aparejo seleccionado
     setTipoAparejoSeleccionado('');
+    setAparejoPorWLL(''); // Reinicia el WLL al cambiar el tipo de maniobra
   }, []);
 
   useEffect(() => {
@@ -82,6 +79,21 @@ const SetupAparejos = () => {
   }, [tipoManiobraSeleccionadoSolo]);
 
   useEffect(() => {
+    if (tipoManiobraSeleccionadoSolo === 'Eslinga') {
+      setTipoWllLabel('Selección de eslinga según WLL:');
+    } else if (tipoManiobraSeleccionadoSolo === 'Estrobo') {
+      setTipoWllLabel('Selección de estrobo según WLL:');
+    } else {
+      setTipoWllLabel('Selección del aparejo según WLL:');
+    }
+  }, [tipoManiobraSeleccionadoSolo]);
+
+  useEffect(() => {
+    // Reinicia el aparejoPorWLL cuando cambia el tipoAparejoSeleccionado
+    setAparejoPorWLL('');
+  }, [tipoAparejoSeleccionado]);
+
+  useEffect(() => {
     if (!maniobraSeleccionada?.cantidad) {
       setTableData([]);
       return;
@@ -89,7 +101,6 @@ const SetupAparejos = () => {
 
     const nuevaTabla = Array.from({ length: maniobraSeleccionada.cantidad }, (_, index) => ({
       key: index + 1,
-      // Puedes agregar aquí los valores iniciales para cada fila
     }));
 
     setTableData(nuevaTabla);
@@ -111,21 +122,18 @@ const SetupAparejos = () => {
       setTableData([]);
       return;
     }
-  
+
     const nuevaTabla = Array.from({ length: maniobraSeleccionada.cantidad }, (_, index) => ({
       key: index + 1,
-      // Puedes agregar aquí los valores iniciales para cada fila
     }));
-  
+
     setTableData(nuevaTabla);
   }, [maniobraSeleccionada.cantidad]);
 
   useEffect(() => {
-    // toma la cantidad de maniobras y la vuelca en cantidadGrilletes
-    // si no hay cantidad, la deja vacía
     setCantidadGrilletes(maniobraSeleccionada.cantidad || '');
   }, [maniobraSeleccionada.cantidad]);
-  
+
   const handleNavigate = () => {
     const grilletePulgada = Object.keys(tipoGrillete)
       .filter(dia => tipoGrillete[dia] > 0)
@@ -140,6 +148,7 @@ const SetupAparejos = () => {
       medidaS1Maniobra: medidaS1,
       medidaS2Maniobra: medidaS2,
       tipoAparejo: tipoAparejoSeleccionado,
+      aparejoPorWLL: aparejoPorWLL, // Incluye el aparejo por WLL en el payload
     };
 
     navigation.navigate('Tablas', {
@@ -232,6 +241,22 @@ const SetupAparejos = () => {
               disabled={!tipoManiobraSeleccionadoSolo}
             />
 
+            {/* Selección de aparejo por WLL */}
+            <View style={styles.inputWrapper}>
+              <Text style={styles.labelText}>{tipoWllLabel}</Text>
+            </View>
+
+            <Components.ConfigButton
+              label="Aparejo WLL"
+              value={aparejoPorWLL}
+              onPress={() => openModal(setAparejoWLLModalVisible)}
+              placeholder="Seleccione por WLL"
+              width="101%"
+              align="center"
+              style={{ marginTop: 14 }}
+              disabled={!tipoAparejoSeleccionado}
+            />
+
             {/* Ángulos e imagen para 2 o 4 maniobras */}
             {maniobraSeleccionada.tipo?.cantidades && ['2', '4'].includes(maniobraSeleccionada.cantidad) && (
               <>
@@ -284,7 +309,7 @@ const SetupAparejos = () => {
 
             {/* Sección Grillete */}
             <View style={[styles.inputWrapper, { top: 25 }]}>
-            <Text style={styles.labelText}>Grillete: (cantidad)</Text>
+              <Text style={styles.labelText}>Grillete: (cantidad)</Text>
             </View>
             <View style={[styles.inputContainer, { marginBottom: 20 }]}>
               <Components.NumericInput
@@ -336,11 +361,18 @@ const SetupAparejos = () => {
               maxManiobra={parseInt(maniobraSeleccionada.cantidad, 10)}
             />
             {/* Nuevo modal para Tipo de aparejo */}
-            <BSTipoManiobra
+            <BS.BSTipoManiobra
               isVisible={isTipoAparejoModalVisible}
               onClose={() => setTipoAparejoModalVisible(false)}
               onSelect={tipo => setTipoAparejoSeleccionado(tipo)}
               tipoManiobra={tipoManiobraSeleccionadoSolo}
+            />
+            {/* Modal para Aparejo por WLL */}
+            <BS.BSWLL
+              isVisible={isAparejoWLLModalVisible}
+              onClose={() => setAparejoWLLModalVisible(false)}
+              onSelect={setAparejoPorWLL}
+              tipoAparejo={tipoAparejoSeleccionado}
             />
 
             {/* Botones */}
