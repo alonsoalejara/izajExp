@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableWithoutFeedback, TouchableOpacity, Keyboard, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
+import { generarGrilleteSummary } from '../utils/grilleteUtils';
 
 const SetupAparejos = () => {
   const navigation = useNavigation();
@@ -30,6 +31,7 @@ const SetupAparejos = () => {
   const [isAparejoWLLModalVisible, setAparejoWLLModalVisible] = useState(false);
   const cantidadNumero = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
   const [tableData, setTableData] = useState([]);
+  const grilleteSummary = generarGrilleteSummary(tipoGrillete);
   const openModal = setter => setter(true);
 
   useEffect(() => {
@@ -42,47 +44,25 @@ const SetupAparejos = () => {
       }
     };
     fetchData();
-
     if (route.params?.setupCargaData) setSetupCargaData(route.params.setupCargaData);
     if (route.params?.setupGruaData) setSetupGruaData(route.params.setupGruaData);
     if (route.params?.setupRadioData) setSetupRadioData(route.params.setupRadioData);
   }, [route.params]);
 
-  const handleManiobraSeleccionada = useCallback((maniobra) => {
-    setManiobraSeleccionada(prev => ({
-      cantidad: prev?.cantidad || '',
-      tipo: {
-        type: maniobra.type,
-        cantidades: maniobra.cantidades
-      }
-    }));
-    setTipoManiobraSeleccionadoSolo(maniobra.type);
-    setTipoAparejoSeleccionado('');
-    setAparejoPorWLL(''); // Reinicia el WLL al cambiar el tipo de maniobra
-  }, []);
-
   useEffect(() => {
     if (tipoManiobraSeleccionadoSolo === 'Eslinga') {
       setTipoAparejoLabel('Selección del tipo de eslinga:');
-    } else if (tipoManiobraSeleccionadoSolo === 'Estrobo') {
-      setTipoAparejoLabel('Selección del tipo de estrobo:');
-    } else {
-      setTipoAparejoLabel('Selección del tipo de aparejo:');
-    }
-  }, [tipoManiobraSeleccionadoSolo]);
-
-  useEffect(() => {
-    if (tipoManiobraSeleccionadoSolo === 'Eslinga') {
       setTipoWllLabel('Selección de eslinga según WLL:');
     } else if (tipoManiobraSeleccionadoSolo === 'Estrobo') {
+      setTipoAparejoLabel('Selección del tipo de estrobo:');
       setTipoWllLabel('Selección de estrobo según WLL:');
     } else {
+      setTipoAparejoLabel('Selección del tipo de aparejo:');
       setTipoWllLabel('Selección del aparejo según WLL:');
     }
   }, [tipoManiobraSeleccionadoSolo]);
 
   useEffect(() => {
-    // Reinicia el aparejoPorWLL cuando cambia el tipoAparejoSeleccionado
     setAparejoPorWLL('');
   }, [tipoAparejoSeleccionado]);
 
@@ -91,13 +71,9 @@ const SetupAparejos = () => {
       setTableData([]);
       return;
     }
-
-    const nuevaTabla = Array.from({ length: maniobraSeleccionada.cantidad }, (_, index) => ({
-      key: index + 1,
-    }));
-
+    const nuevaTabla = Array.from({ length: maniobraSeleccionada.cantidad }, (_, index) => ({ key: index + 1 }));
     setTableData(nuevaTabla);
-  }, [maniobraSeleccionada.cantidad]);
+  }, [maniobraSeleccionada?.cantidad]);
 
   useEffect(() => {
     setMedidaS1('');
@@ -110,28 +86,17 @@ const SetupAparejos = () => {
     }
   }, [cantidadNumero]);
 
-  useEffect(() => {
-    if (!maniobraSeleccionada?.cantidad) {
-      setTableData([]);
-      return;
-    }
-
-    const nuevaTabla = Array.from({ length: maniobraSeleccionada.cantidad }, (_, index) => ({
-      key: index + 1,
-    }));
-
-    setTableData(nuevaTabla);
-  }, [maniobraSeleccionada.cantidad]);
-
-  useEffect(() => {
-    setCantidadGrilletes(maniobraSeleccionada.cantidad || '');
-  }, [maniobraSeleccionada.cantidad]);
+  const handleManiobraSeleccionada = useCallback((maniobra) => {
+    setManiobraSeleccionada(prev => ({ cantidad: prev?.cantidad || '', tipo: { type: maniobra.type, cantidades: maniobra.cantidades } }));
+    setTipoManiobraSeleccionadoSolo(maniobra.type);
+    setTipoAparejoSeleccionado('');
+    setAparejoPorWLL(''); // Reinicia el WLL al cambiar el tipo de maniobra
+  }, []);
 
   const handleNavigate = () => {
     const grilletePulgada = Object.keys(tipoGrillete)
       .filter(dia => tipoGrillete[dia] > 0)
       .join(', ');
-
     const payload = {
       cantidadManiobra: maniobraSeleccionada.cantidad,
       eslingaOEstrobo: maniobraSeleccionada.tipo?.type || '',
@@ -143,7 +108,6 @@ const SetupAparejos = () => {
       tipoAparejo: tipoAparejoSeleccionado,
       aparejoPorWLL: aparejoPorWLL, // Incluye el aparejo por WLL en el payload
     };
-
     navigation.navigate('Tablas', {
       setupGruaData,
       setupCargaData,
@@ -152,55 +116,14 @@ const SetupAparejos = () => {
     });
   };
 
-  const grilleteSummary = Object.entries(tipoGrillete)
-    .filter(([, qty]) => qty > 0)
-    .map(([dia]) => `${dia}"`)
-    .join(', ');
-
-  const renderAngulos = () => (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-around', top: 5, right: 25 }}>
-      {['60', '45', '30'].map(angle => (
-        <TouchableOpacity
-          key={angle}
-          style={{ flexDirection: 'row', alignItems: 'center' }}
-          onPress={() => setAnguloSeleccionado(angle)}
-        >
-          <View
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: 10,
-              borderWidth: 2,
-              borderColor: '#ee0000',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: 5,
-            }}
-          >
-            {anguloSeleccionado === angle && (
-              <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: '#ee0000' }} />
-            )}
-          </View>
-          <Text>{angle}°</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Components.Header />
         <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
-          <View style={styles.titleContainer}>
-            <Text style={[styles.sectionTitle, { top: 5, marginBottom: 20 }]}>Configuración de aparejos</Text>
-          </View>
-
+          <View style={styles.titleContainer}><Text style={[styles.sectionTitle, { top: 5, marginBottom: 20 }]}>Configuración de aparejos</Text></View>
           <View style={styles.container}>
-            {/* Selección de maniobra */}
-            <View style={styles.inputWrapper}>
-              <Text style={styles.labelText}>Maniobra (cantidad y tipo de aparejos):</Text>
-            </View>
+            <View style={styles.inputWrapper}><Text style={styles.labelText}>Maniobra (cantidad y tipo de aparejos):</Text></View>
             <View style={styles.inputContainer}>
               <Components.ConfigButton
                 label="Cantidad"
@@ -219,7 +142,6 @@ const SetupAparejos = () => {
               />
             </View>
 
-            {/* Nuevo label y botón de Tipo de aparejos */}
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>{tipoAparejoLabel}</Text>
             </View>
@@ -230,15 +152,13 @@ const SetupAparejos = () => {
               placeholder="Tipo de aparejos"
               width="101%"
               align="center"
-              style={{ marginTop: 14 }}
+              style={styles.configButton}
               disabled={!tipoManiobraSeleccionadoSolo}
             />
 
-            {/* Selección de aparejo por WLL */}
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>{tipoWllLabel}</Text>
             </View>
-
             <Components.ConfigButton
               label="Aparejo WLL"
               value={aparejoPorWLL}
@@ -246,30 +166,26 @@ const SetupAparejos = () => {
               placeholder="Seleccione por WLL"
               width="101%"
               align="center"
-              style={{ marginTop: 14 }}
+              style={styles.configButton}
               disabled={!tipoAparejoSeleccionado}
             />
 
-            {/* Ángulos e imagen para 2 o 4 maniobras */}
             {maniobraSeleccionada.tipo?.cantidades && ['2', '4'].includes(maniobraSeleccionada.cantidad) && (
-              <>
+              <View>
                 <View style={[styles.inputWrapper, { top: -5 }]}>
                   <Text style={styles.labelText}>Ángulos de trabajo (°):</Text>
                 </View>
-                {renderAngulos()}
+                <Components.RenderAngulos anguloSeleccionado={anguloSeleccionado} setAnguloSeleccionado={setAnguloSeleccionado} />
                 <Image
                   source={require('../../assets/esl-est-grade.png')}
-                  style={{ width: '100%', height: 100, resizeMode: 'contain', marginVertical: 10 }}
+                  style={styles.eslingaImage}
                 />
-              </>
+              </View>
             )}
 
-            {/* Medidas S1 y S2 */}
             {maniobraSeleccionada.cantidad !== '' && (
-              <>
-                <View style={styles.inputWrapper}>
-                  <Text style={styles.labelText}>Medidas de maniobra (m):</Text>
-                </View>
+              <View>
+                <View style={styles.inputWrapper}><Text style={styles.labelText}>Medidas de maniobra (m):</Text></View>
                 <View style={[styles.inputContainer, { marginBottom: 10 }]}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.labelText}>Medida S1 (metros):</Text>
@@ -278,7 +194,7 @@ const SetupAparejos = () => {
                       onChangeText={setMedidaS1}
                       placeholder="Medida S1"
                       keyboardType="numeric"
-                      style={{ width: '100%', top: 25, backgroundColor: '#fff' }}
+                      style={styles.numericInput}
                       showControls={false}
                       showClearButton={true}
                     />
@@ -290,17 +206,16 @@ const SetupAparejos = () => {
                       onChangeText={setMedidaS2}
                       placeholder="Medida S2"
                       keyboardType="numeric"
-                      style={{ width: '100%', top: 25, backgroundColor: cantidadNumero === 1 ? '#eee' : '#fff' }}
+                      style={[styles.numericInput, cantidadNumero === 1 && styles.disabledInput]}
                       editable={cantidadNumero !== 1}
                       showControls={false}
                       showClearButton={cantidadNumero !== 1}
                     />
                   </View>
                 </View>
-              </>
+              </View>
             )}
 
-            {/* Sección Grillete */}
             <View style={[styles.inputWrapper, { top: 25 }]}>
               <Text style={styles.labelText}>Grillete: (cantidad)</Text>
             </View>
@@ -310,7 +225,7 @@ const SetupAparejos = () => {
                 value={cantidadGrilletes}
                 placeholder="Cantidad"
                 editable={false}
-                style={{ width: '50%', height: '77%', top: 30, backgroundColor: '#fff' }}
+                style={styles.grilleteCantidadInput}
                 showControls={false}
                 showClearButton={false}
               />
@@ -319,23 +234,19 @@ const SetupAparejos = () => {
                 value={grilleteSummary}
                 onPress={() => openModal(setGrilleteModalVisible)}
                 placeholder="Tipo Grillete"
-                style={{ width: '48%', top: 25, backgroundColor: '#fff' }}
+                style={styles.grilleteTipoButton}
                 disabled={!cantidadGrilletes}
               />
             </View>
 
-            {/* Lista de grilletes */}
             {Object.keys(tipoGrillete).length > 0 && (
               <View style={styles.selectedManiobraContainer}>
                 {Object.entries(tipoGrillete).map(([dia, qty]) => (
-                  <Text key={dia} style={styles.selectedManiobraText}>
-                    {`${qty} grillete(s) de ${dia}\"`}
-                  </Text>
+                  <Text key={dia} style={styles.selectedManiobraText}>{`${qty} grillete(s) de ${dia}\"`}</Text>
                 ))}
               </View>
             )}
 
-            {/* Modals */}
             <BS.BSGrillete
               isVisible={isGrilleteModalVisible}
               onClose={() => setGrilleteModalVisible(false)}
@@ -353,14 +264,12 @@ const SetupAparejos = () => {
               onSelect={handleManiobraSeleccionada}
               maxManiobra={parseInt(maniobraSeleccionada.cantidad, 10)}
             />
-            {/* Nuevo modal para Tipo de aparejo */}
             <BS.BSTipoManiobra
               isVisible={isTipoAparejoModalVisible}
               onClose={() => setTipoAparejoModalVisible(false)}
               onSelect={tipo => setTipoAparejoSeleccionado(tipo)}
               tipoManiobra={tipoManiobraSeleccionadoSolo}
             />
-            {/* Modal para Aparejo por WLL */}
             <BS.BSWLL
               isVisible={isAparejoWLLModalVisible}
               onClose={() => setAparejoWLLModalVisible(false)}
@@ -368,10 +277,14 @@ const SetupAparejos = () => {
               tipoAparejo={tipoAparejoSeleccionado}
             />
 
-            {/* Botones */}
             <View style={[styles.buttonContainer, { top: 45, right: 40 }]}>
-              <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]} />
-              <Components.Button label="Continuar" onPress={handleNavigate} disabled={!cantidadGrilletes || (cantidadNumero === 1 && (!medidaS1 || medidaS1 === '')) || (cantidadNumero > 1 && (!medidaS1 || medidaS1 === '' || !medidaS2 || medidaS2 === ''))} style={[styles.button, { width: '50%', right: 45 }]} />
+              <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={styles.volverButton} />
+              <Components.Button
+                label="Continuar"
+                onPress={handleNavigate}
+                disabled={!cantidadGrilletes || (cantidadNumero === 1 && (!medidaS1 || medidaS1 === '')) || (cantidadNumero > 1 && (!medidaS1 || medidaS1 === '' || !medidaS2 || medidaS2 === ''))}
+                style={styles.continuarButton}
+              />
             </View>
           </View>
         </ScrollView>

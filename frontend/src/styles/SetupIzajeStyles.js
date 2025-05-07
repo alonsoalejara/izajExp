@@ -124,7 +124,42 @@ const styles = StyleSheet.create({
     color: '#333',
     marginVertical: 5,
   },
-  
+  configButton: {
+    marginTop: 14,
+  },
+  eslingaImage: {
+    width: '100%',
+    height: 100,
+    resizeMode: 'contain',
+    marginVertical: 10,
+  },
+  numericInput: {
+    width: '100%',
+    top: 25,
+    backgroundColor: '#fff',
+  },
+  disabledInput: {
+    backgroundColor: '#eee',
+  },
+  grilleteCantidadInput: {
+    width: '50%',
+    height: '77%',
+    top: 30,
+    backgroundColor: '#fff',
+  },
+  grilleteTipoButton: {
+    width: '48%',
+    top: 25,
+    backgroundColor: '#fff',
+  },
+  volverButton: {
+    backgroundColor: 'transparent',
+    marginRight: -50,
+  },
+  continuarButton: {
+    width: '50%',
+    right: 45,
+  },
 });
 
 export default styles;
