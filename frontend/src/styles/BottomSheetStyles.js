@@ -59,18 +59,16 @@ const BottomSheetStyles = StyleSheet.create({
     paddingVertical: 15,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   optionContent: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
   },
   optionTextContainer: {
     flexDirection: 'row',           
-    justifyContent: 'space-between',
-    alignItems: 'center',           
+    alignItems: 'center',
     flex: 1,                        
   },
   icon: {
@@ -80,12 +78,12 @@ const BottomSheetStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '400',
     color: '#333',
+    flexShrink: 1,
   },
   radioContainer: {
+    marginLeft: 10,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'flex-end',
-    width: 230,
-    
   },
   radioButton: {
     width: 19,

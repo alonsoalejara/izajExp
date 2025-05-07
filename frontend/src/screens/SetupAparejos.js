@@ -9,34 +9,27 @@ import Components from '../components/Components.index';
 const SetupAparejos = () => {
   const navigation = useNavigation();
   const route = useRoute();
-
   const [setupGruaData, setSetupGruaData] = useState({});
   const [setupCargaData, setSetupCargaData] = useState({});
   const [setupRadioData, setSetupRadioData] = useState({});
-
   const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null, cantidades: {} });
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState({});
   const [medidaS1, setMedidaS1] = useState('');
   const [medidaS2, setMedidaS2] = useState('');
-
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
   const [isTipoAparejoModalVisible, setTipoAparejoModalVisible] = useState(false);
-
   const [anguloSeleccionado, setAnguloSeleccionado] = useState(null);
-  const [tableData, setTableData] = useState([]);
   const [tipoAparejoSeleccionado, setTipoAparejoSeleccionado] = useState('');
   const [tipoAparejoLabel, setTipoAparejoLabel] = useState('Selección del tipo de aparejo:');
   const [tipoManiobraSeleccionadoSolo, setTipoManiobraSeleccionadoSolo] = useState('');
-
   const [tipoWllLabel, setTipoWllLabel] = useState('Selección del aparejo según WLL:');
   const [aparejoPorWLL, setAparejoPorWLL] = useState('');
   const [isAparejoWLLModalVisible, setAparejoWLLModalVisible] = useState(false);
-
   const cantidadNumero = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
-
+  const [tableData, setTableData] = useState([]);
   const openModal = setter => setter(true);
 
   useEffect(() => {
@@ -214,7 +207,7 @@ const SetupAparejos = () => {
                 value={maniobraSeleccionada.cantidad || ''}
                 onPress={() => openModal(setCantidadModalVisible)}
                 placeholder="Maniobras"
-                width={150}
+                width={165}
               />
               <Components.ConfigButton
                 label="Tipo"
@@ -222,7 +215,7 @@ const SetupAparejos = () => {
                 onPress={() => openModal(setManiobraModalVisible)}
                 placeholder="Esl./Estr."
                 disabled={!maniobraSeleccionada.cantidad}
-                width={150}
+                width={160}
               />
             </View>
 
