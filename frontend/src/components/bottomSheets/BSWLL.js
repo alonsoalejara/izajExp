@@ -5,6 +5,7 @@ import styles from '../../styles/BottomSheetStyles';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import Components from '../Components.index';
 import tubularPoliesterData from '../../data/tubularPoliesterData';
+import tubularTrenzadasPoliesterData from '../../data/tubularTrenzadasPoliesterData';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -41,19 +42,28 @@ const BSWLL = ({
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   useEffect(() => {
-    // 1) Calcular las opciones dependiendo del tipo de aparejo
+    const ang = anguloSeleccionado || 0;
+
     if (tipoAparejo === 'Tubulares de poliester') {
-      const ang = anguloSeleccionado || 0;
+      // Para tubularPoliesterData
       setOpcionesWLL(
-           tubularPoliesterData.map(item => {
-             const ton = item.toneladas[ang] ?? item.toneladas[0];
-             // extraer el nombre antes de cualquier paréntesis, p.ej. "Naranja"
-             const base = item.nombre.split('(')[0].trim();
-             // formatear siempre con el ángulo y tonelaje, incluso para 0°
-             return `${base} (${ang}°: ${ton} ton)`;
-           })
-         );
-        
+        tubularPoliesterData.map(item => {
+          const ton = item.toneladas[ang] ?? item.toneladas[0];
+          const base = item.nombre.split('(')[0].trim();
+          return `${base} (${ang}°: ${ton} ton)`;
+        })
+      );
+
+    } else if (tipoAparejo === 'Tubulares trenzadas de poliester') {
+      // Para tubularTrenzadasPoliesterData
+      setOpcionesWLL(
+        tubularTrenzadasPoliesterData.map(item => {
+          const ton = item.toneladas[ang] ?? item.toneladas[0];
+          const base = item.nombre.split('(')[0].trim();
+          return `${base} (${ang}°: ${ton} ton)`;
+        })
+      );
+
     } else {
       // otros casos
       switch (tipoAparejo) {
@@ -68,16 +78,6 @@ const BSWLL = ({
             '8" - Azul Oscuro',
             '10" - Naranja',
             '12" - Naranja'
-          ]);
-          break;
-        case 'Tubulares trenzadas de poliester':
-          setOpcionesWLL([
-            'Naranja (0°: 38.6 ton)',
-            'Naranja (0°: 47.8 ton)',
-            'Naranja (0°: 62.1 ton)',
-            'Naranja (0°: 81.7 ton)',
-            'Naranja (0°: 101.8 ton)',
-            'Naranja (0°: 138.8 ton)'
           ]);
           break;
         case 'Tubulares para carga pesada':
@@ -118,14 +118,6 @@ const BSWLL = ({
       }).start(() => onClose());
     }
   }, [isVisible, tipoAparejo, anguloSeleccionado]);
-
-  const openBottomSheet = () => {
-    Animated.timing(positionY, {
-      toValue: SCREEN_HEIGHT - bottomSheetHeight,
-      duration: 300,
-      useNativeDriver: false
-    }).start();
-  };
 
   const closeBottomSheet = () => {
     Animated.timing(positionY, {
