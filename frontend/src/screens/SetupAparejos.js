@@ -275,6 +275,7 @@ const SetupAparejos = () => {
               onClose={() => setAparejoWLLModalVisible(false)}
               onSelect={setAparejoPorWLL}
               tipoAparejo={tipoAparejoSeleccionado}
+              anguloSeleccionado={anguloSeleccionado}
             />
 
             <View style={[styles.buttonContainer, { top: 45, right: 40 }]}>
