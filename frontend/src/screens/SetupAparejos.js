@@ -16,8 +16,6 @@ const SetupAparejos = () => {
   const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null, cantidades: {} });
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState({});
-  const [medidaS1, setMedidaS1] = useState('');
-  const [medidaS2, setMedidaS2] = useState('');
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
@@ -75,17 +73,6 @@ const SetupAparejos = () => {
     setTableData(nuevaTabla);
   }, [maniobraSeleccionada?.cantidad]);
 
-  useEffect(() => {
-    setMedidaS1('');
-    setMedidaS2('');
-  }, [maniobraSeleccionada.cantidad]);
-
-  useEffect(() => {
-    if (cantidadNumero === 1) {
-      setMedidaS2('0');
-    }
-  }, [cantidadNumero]);
-
   const handleManiobraSeleccionada = useCallback((maniobra) => {
     setManiobraSeleccionada(prev => ({ cantidad: prev?.cantidad || '', tipo: { type: maniobra.type, cantidades: maniobra.cantidades } }));
     setTipoManiobraSeleccionadoSolo(maniobra.type);
@@ -103,8 +90,6 @@ const SetupAparejos = () => {
       cantidadGrilletes,
       tipoGrillete: grilletePulgada,
       anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
-      medidaS1Maniobra: medidaS1,
-      medidaS2Maniobra: medidaS2,
       tipoAparejo: tipoAparejoSeleccionado,
       aparejoPorWLL: aparejoPorWLL, // Incluye el aparejo por WLL en el payload
     };
@@ -115,6 +100,10 @@ const SetupAparejos = () => {
       setupAparejosData: payload,
     });
   };
+
+  useEffect(() => {
+    setCantidadGrilletes(maniobraSeleccionada.cantidad || '');
+  }, [maniobraSeleccionada.cantidad]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -166,7 +155,8 @@ const SetupAparejos = () => {
               width="101%"
               align="center"
               style={styles.configButton}
-              disabled={!tipoManiobraSeleccionadoSolo}
+              disab
+              led={!tipoManiobraSeleccionadoSolo}
             />
 
             <View style={styles.inputWrapper}>
@@ -183,41 +173,8 @@ const SetupAparejos = () => {
               disabled={!tipoAparejoSeleccionado}
             />
 
-            {maniobraSeleccionada.cantidad !== '' && (
-              <View>
-                <View style={styles.inputWrapper}><Text style={styles.labelText}>Medidas de maniobra (m):</Text></View>
-                <View style={[styles.inputContainer, { marginBottom: 10 }]}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.labelText}>Medida S1 (metros):</Text>
-                    <Components.NumericInput
-                      value={medidaS1}
-                      onChangeText={setMedidaS1}
-                      placeholder="Medida S1"
-                      keyboardType="numeric"
-                      style={styles.numericInput}
-                      showControls={false}
-                      showClearButton={true}
-                    />
-                  </View>
-                  <View style={{ flex: 1, marginLeft: 10 }}>
-                    <Text style={styles.labelText}>Medida S2 (metros):</Text>
-                    <Components.NumericInput
-                      value={medidaS2}
-                      onChangeText={setMedidaS2}
-                      placeholder="Medida S2"
-                      keyboardType="numeric"
-                      style={[styles.numericInput, cantidadNumero === 1 && styles.disabledInput]}
-                      editable={cantidadNumero !== 1}
-                      showControls={false}
-                      showClearButton={cantidadNumero !== 1}
-                    />
-                  </View>
-                </View>
-              </View>
-            )}
-
             <View style={[styles.inputWrapper, { top: 25 }]}>
-              <Text style={styles.labelText}>Grillete: (cantidad)</Text>
+              <Text style={styles.labelText}>Grillete: (cantidad y tipo)</Text>
             </View>
             <View style={[styles.inputContainer, { marginBottom: 20 }]}>
               <Components.NumericInput
@@ -284,7 +241,7 @@ const SetupAparejos = () => {
               <Components.Button
                 label="Continuar"
                 onPress={handleNavigate}
-                disabled={!cantidadGrilletes || (cantidadNumero === 1 && (!medidaS1 || medidaS1 === '')) || (cantidadNumero > 1 && (!medidaS1 || medidaS1 === '' || !medidaS2 || medidaS2 === ''))}
+                disabled={!cantidadGrilletes}
                 style={styles.continuarButton}
               />
             </View>
