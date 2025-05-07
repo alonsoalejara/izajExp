@@ -276,6 +276,7 @@ const SetupAparejos = () => {
               onSelect={setAparejoPorWLL}
               tipoAparejo={tipoAparejoSeleccionado}
               anguloSeleccionado={anguloSeleccionado}
+              cantidadManiobra={cantidadNumero}
             />
 
             <View style={[styles.buttonContainer, { top: 45, right: 40 }]}>

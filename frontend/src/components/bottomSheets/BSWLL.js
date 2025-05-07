@@ -1,11 +1,21 @@
 // BSWLL.js
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, View, Text, TouchableOpacity, Animated, ScrollView, Dimensions, Alert } from 'react-native';
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  Animated,
+  ScrollView,
+  Dimensions,
+  Alert
+} from 'react-native';
 import styles from '../../styles/BottomSheetStyles';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import Components from '../Components.index';
 import tubularPoliesterData from '../../data/tubularPoliesterData';
 import tubularTrenzadasPoliesterData from '../../data/tubularTrenzadasPoliesterData';
+import tubularCargaPesadaData from '../../data/tubularCargaPesadaData';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -34,7 +44,8 @@ const BSWLL = ({
   onClose,
   onSelect,
   tipoAparejo,
-  anguloSeleccionado
+  anguloSeleccionado,
+  cantidadManiobra
 }) => {
   const [opcionesWLL, setOpcionesWLL] = useState([]);
   const [selectedWLL, setSelectedWLL] = useState(null);
@@ -42,68 +53,56 @@ const BSWLL = ({
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   useEffect(() => {
-    const ang = anguloSeleccionado || 0;
+    const ang = anguloSeleccionado ?? 0;
+    let opciones = [];
 
+    // 1) Tubulares de poliester
     if (tipoAparejo === 'Tubulares de poliester') {
-      // Para tubularPoliesterData
-      setOpcionesWLL(
-        tubularPoliesterData.map(item => {
-          const ton = item.toneladas[ang] ?? item.toneladas[0];
-          const base = item.nombre.split('(')[0].trim();
-          return `${base} (${ang}°: ${ton} ton)`;
-        })
-      );
+      opciones = tubularPoliesterData.map(item => {
+        const ton = item.toneladas[ang] ?? item.toneladas[0];
+        const base = item.nombre.split('(')[0].trim();
+        return `${base} (${ang}°: ${ton} ton)`;
+      });
 
+    // 2) Tubulares trenzadas de poliester
     } else if (tipoAparejo === 'Tubulares trenzadas de poliester') {
-      // Para tubularTrenzadasPoliesterData
-      setOpcionesWLL(
-        tubularTrenzadasPoliesterData.map(item => {
-          const ton = item.toneladas[ang] ?? item.toneladas[0];
-          const base = item.nombre.split('(')[0].trim();
-          return `${base} (${ang}°: ${ton} ton)`;
-        })
-      );
+      opciones = tubularTrenzadasPoliesterData.map(item => {
+        const ton = item.toneladas[ang] ?? item.toneladas[0];
+        const base = item.nombre.split('(')[0].trim();
+        return `${base} (${ang}°: ${ton} ton)`;
+      });
 
-    } else {
-      // otros casos
-      switch (tipoAparejo) {
-        case 'Planas ojo-ojo de poliester':
-          setOpcionesWLL([
-            '1" - Violeta',
-            '2" - Verde',
-            '3" - Amarillo',
-            '4" - Gris',
-            '5" - Rojo',
-            '6" - Café',
-            '8" - Azul Oscuro',
-            '10" - Naranja',
-            '12" - Naranja'
-          ]);
-          break;
-        case 'Tubulares para carga pesada':
-          setOpcionesWLL([
-            'Naranja (0°: 50 ton)',
-            'Naranja (0°: 60 ton)',
-            'Naranja (0°: 70 ton)',
-            'Naranja (0°: 80 ton)',
-            'Naranja (0°: 90 ton)',
-            'Naranja (0°: 100 ton)',
-            'Naranja (0°: 110 ton)',
-            'Naranja (0°: 120 ton)',
-            'Naranja (0°: 130 ton)',
-            'Naranja (0°: 140 ton)',
-            'Naranja (0°: 150 ton)'
-          ]);
-          break;
-        default:
-          setOpcionesWLL([]);
-      }
+    // 3) Tubulares para carga pesada
+    } else if (tipoAparejo === 'Tubulares para carga pesada') {
+      opciones = tubularCargaPesadaData.map(item => {
+        const ton = item.toneladas[ang] ?? item.toneladas[0];
+        const base = item.nombre.split('(')[0].trim();
+        return `${base} (${ang}°: ${ton} ton)`;
+      });
+
+    // 4) Planas ojo-ojo de poliester — solo si cantidadManiobra === 1
+    } else if (
+      tipoAparejo === 'Planas ojo-ojo de poliester' &&
+      cantidadManiobra === 1
+    ) {
+      opciones = [
+        '1" - Violeta',
+        '2" - Verde',
+        '3" - Amarillo',
+        '4" - Gris',
+        '5" - Rojo',
+        '6" - Café',
+        '8" - Azul Oscuro',
+        '10" - Naranja',
+        '12" - Naranja'
+      ];
     }
 
-    // 2) Resetear selección
+    // Aplicar
+    setOpcionesWLL(opciones);
     setSelectedWLL(null);
 
-    // 3) Animar apertura o cierre
+    // Animación de apertura / cierre
     if (isVisible) {
       Animated.timing(positionY, {
         toValue: SCREEN_HEIGHT - bottomSheetHeight,
@@ -117,7 +116,7 @@ const BSWLL = ({
         useNativeDriver: false
       }).start(() => onClose());
     }
-  }, [isVisible, tipoAparejo, anguloSeleccionado]);
+  }, [isVisible, tipoAparejo, anguloSeleccionado, cantidadManiobra]);
 
   const closeBottomSheet = () => {
     Animated.timing(positionY, {
@@ -148,7 +147,6 @@ const BSWLL = ({
         ]}
       >
         <View style={styles.dragLine} />
-
         <View style={styles.modalHeader}>
           <IconFA
             name="angle-left"
@@ -161,9 +159,7 @@ const BSWLL = ({
             Seleccione WLL
           </Text>
         </View>
-
         <View style={styles.separatorLine} />
-
         <ScrollView
           style={styles.optionsContainer}
           contentContainerStyle={{ paddingBottom: 50 }}
@@ -205,9 +201,7 @@ const BSWLL = ({
             </TouchableOpacity>
           ))}
         </ScrollView>
-
         <View style={{ flexGrow: 1 }} />
-
         <Components.Button
           label="Confirmar"
           onPress={handleConfirm}

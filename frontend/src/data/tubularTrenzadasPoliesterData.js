@@ -1,4 +1,4 @@
-// 0, 30,45 y 65 corresponden a los angulos de trabajo, 
+// 0, 30,45 y 60 corresponden a los angulos de trabajo, 
 // sus valores son las toneladas que puede soportar el aparejo según el color que tiene
 export default [
     {
