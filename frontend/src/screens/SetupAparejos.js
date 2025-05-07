@@ -142,6 +142,19 @@ const SetupAparejos = () => {
               />
             </View>
 
+            {maniobraSeleccionada.tipo?.cantidades && ['2', '4'].includes(maniobraSeleccionada.cantidad) && (
+              <View>
+                <View style={[styles.inputWrapper, { top: -5 }]}>
+                  <Text style={styles.labelText}>Ángulos de trabajo (°):</Text>
+                </View>
+                <Components.RenderAngulos anguloSeleccionado={anguloSeleccionado} setAnguloSeleccionado={setAnguloSeleccionado} />
+                <Image
+                  source={require('../../assets/esl-est-grade.png')}
+                  style={styles.eslingaImage}
+                />
+              </View>
+            )}
+
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>{tipoAparejoLabel}</Text>
             </View>
@@ -169,19 +182,6 @@ const SetupAparejos = () => {
               style={styles.configButton}
               disabled={!tipoAparejoSeleccionado}
             />
-
-            {maniobraSeleccionada.tipo?.cantidades && ['2', '4'].includes(maniobraSeleccionada.cantidad) && (
-              <View>
-                <View style={[styles.inputWrapper, { top: -5 }]}>
-                  <Text style={styles.labelText}>Ángulos de trabajo (°):</Text>
-                </View>
-                <Components.RenderAngulos anguloSeleccionado={anguloSeleccionado} setAnguloSeleccionado={setAnguloSeleccionado} />
-                <Image
-                  source={require('../../assets/esl-est-grade.png')}
-                  style={styles.eslingaImage}
-                />
-              </View>
-            )}
 
             {maniobraSeleccionada.cantidad !== '' && (
               <View>
