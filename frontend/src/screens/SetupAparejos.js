@@ -21,7 +21,7 @@ const SetupAparejos = () => {
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
   const [isTipoAparejoModalVisible, setTipoAparejoModalVisible] = useState(false);
-  const [anguloSeleccionado, setAnguloSeleccionado] = useState(null);
+  const [anguloSeleccionado, setAnguloSeleccionado] = useState('0');
   const [tipoAparejoSeleccionado, setTipoAparejoSeleccionado] = useState('');
   const [tipoAparejoLabel, setTipoAparejoLabel] = useState('Selección del tipo de aparejo:');
   const [tipoManiobraSeleccionadoSolo, setTipoManiobraSeleccionadoSolo] = useState('');

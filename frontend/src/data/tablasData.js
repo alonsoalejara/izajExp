@@ -69,7 +69,7 @@ export const obtenerDatosTablas = (datosRecibidos) => {
     ? Number(((pesoTotal / capacidadLevante) * 100).toFixed(1))
     : 0;
 
-  const anguloTrabajo = cantidadManiobra > 1 && datosRecibidos.anguloEslinga ? datosRecibidos.anguloEslinga : 'N/A';
+  const anguloTrabajo = cantidadManiobra > 1 && datosRecibidos.anguloEslinga ? datosRecibidos.anguloEslinga : '0°';
 
   const datosTablaManiobra = [
     { descripcion: 'Peso elemento',       cantidad: { valor: pesoEquipo,        unidad: 'ton' } },
