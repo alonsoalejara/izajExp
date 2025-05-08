@@ -2,14 +2,13 @@ import { grilleteOptions } from '../data/grilleteData';
 import { maniobraOptions } from '../data/maniobraData';
 
 export const obtenerDatosTablas = (datosRecibidos) => {
-  console.log("Datos recibidos en obtenerDatosTablas:", datosRecibidos);
-  console.log("Tipo de grillete en datosRecibidos:", datosRecibidos.tipoGrillete);
-  console.log("Cantidad de grilletes en datosRecibidos:", datosRecibidos.cantidadGrilletes);
-  console.log("Largo S1 en datosRecibidos:", datosRecibidos.medidaS1Maniobra);
-  console.log("Largo S2 en datosRecibidos:", datosRecibidos.medidaS2Maniobra);
-  console.log("Ángulo de trabajo en datosRecibidos:", datosRecibidos.anguloEslinga);
-  console.log("Capacidad de levante en datosRecibidos:", datosRecibidos.capacidadLevante);
-
+  console.log("Datos recibidos en obtenerDatosTablas:");
+  // Mostrar los datos de entrada de forma ordenada
+  for (const key in datosRecibidos) {
+    if (Object.hasOwnProperty.call(datosRecibidos, key)) {
+      console.log(`  ${key}: ${datosRecibidos[key]}`);
+    }
+  }
   const radioIzaje = parseFloat(datosRecibidos.radioIzaje) || 0;
   const radioMontaje = parseFloat(datosRecibidos.radioMontaje) || 0;
   const radioMaximo = Math.max(radioIzaje, radioMontaje);
@@ -90,8 +89,6 @@ export const obtenerDatosTablas = (datosRecibidos) => {
     { descripcion: 'Contrapeso', cantidad: `${datosRecibidos.contrapeso || 0} ton` },
   ];
   
-  console.log("datosTablaPesoAparejos antes de retornar:", datosTablaPesoAparejos);
-
   return {
     datosTablaManiobra,
     datosTablaGrua,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import Components from '../components/Components.index';
 import styles from '../styles/SetupIzajeStyles';
@@ -20,21 +20,8 @@ const SetupPlan = () => {
   const [errors, setErrors] = useState({});
   const [isJefeAreaModalVisible, setIsJefeAreaModalVisible] = useState(false);
   const [isSupervisorModalVisible, setIsSupervisorModalVisible] = useState(false);
-  const [nuevoResponsableNombreError, setNuevoResponsableNombreError] = useState('');
-  const [nuevoResponsableRolError, setNuevoResponsableRolError] = useState('');
 
   const navigation = useNavigation();
-
-  useEffect(() => {
-    // Esto asegura que los errores se recalculen cuando cambian los estados.
-    const calculatedErrors = validatePlan(
-      nombreProyecto,
-      supervisorSeleccionado,
-      jefeAreaSeleccionado,
-      responsablesAdicionales
-    );
-    setErrors(calculatedErrors);
-  }, [nombreProyecto, supervisorSeleccionado, jefeAreaSeleccionado, responsablesAdicionales]);
 
   const handleNombreProyectoChange = (text) => {
     setNombreProyecto(text);
@@ -54,7 +41,7 @@ const SetupPlan = () => {
 
   const confirmarNuevoResponsable = () => {
     let nuevosErrores = {};
-    let hayErrores = false; // Variable para controlar si hay errores
+    let hayErrores = false;
 
     if (!nuevoResponsableNombre.trim()) {
       nuevosErrores.nuevoResponsableNombre = 'Nombre del responsable es requerido';
@@ -76,9 +63,8 @@ const SetupPlan = () => {
 
     if (Object.keys(nuevosErrores).length > 0) {
       setErrors(prevErrors => ({ ...prevErrors, ...nuevosErrores }));
-      return; // No continuar si hay errores
+      return;
     }
-
 
     if (nuevoResponsableNombre.trim() && nuevoResponsableRol.trim() && !hayErrores) {
       if (responsablesAdicionales.length < 2) {
@@ -97,8 +83,6 @@ const SetupPlan = () => {
     setIsAddingResponsable(false);
     setNuevoResponsableNombre('');
     setNuevoResponsableRol('');
-    setNuevoResponsableNombreError('');
-    setNuevoResponsableRolError('');
     setErrors({});
   };
 
@@ -140,7 +124,6 @@ const SetupPlan = () => {
       navigation.navigate('SetupCarga', dataToSend);
     } else {
       setErrors(currentErrors);
-      Alert.alert('Campos incompletos', 'Por favor, complete todos los campos requeridos.');
     }
   };
 

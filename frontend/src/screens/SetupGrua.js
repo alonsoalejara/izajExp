@@ -18,7 +18,6 @@ const SetupGrua = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const initialCargaData = route.params?.setupCargaData;
-
   const [setupCargaData, setSetupCargaData] = useState(initialCargaData || {});
   const [isGruaModalVisible, setGruaModalVisible] = useState(false);
   const [isLargoPlumaModalVisible, setLargoPlumaModalVisible] = useState(false);
@@ -34,8 +33,8 @@ const SetupGrua = () => {
   const [usuarioId, setUsuarioId] = useState(null);
   const [movementEval, setMovementEval] = useState(null);
   const [capacidadLevanteCalc, setCapacidadLevanteCalc] = useState(null);
-  const [radioIzajeError, setRadioIzajeError] = useState(false); // Nuevo estado para error de radio de izaje
-  const [radioMontajeError, setRadioMontajeError] = useState(false); // Nuevo estado para error de radio de montaje
+  const [radioIzajeError, setRadioIzajeError] = useState(false);
+  const [radioMontajeError, setRadioMontajeError] = useState(false);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -51,8 +50,8 @@ const SetupGrua = () => {
   }, []);
 
   useEffect(() => {
-    const izajeVal     = parseFloat(radioIzaje)     || 0;
-    const montajeVal   = parseFloat(radioMontaje)   || 0;
+    const izajeVal       = parseFloat(radioIzaje)       || 0;
+    const montajeVal     = parseFloat(radioMontaje)     || 0;
     const boomLengthStr = largoPluma?.split(' ')[0]; // Obtiene solo el número del largo de pluma
     const boomLengthNum = parseFloat(boomLengthStr) || 0;
     const pesoCargaVal  = parseFloat(setupCargaData.peso) || 0;
@@ -102,18 +101,6 @@ const SetupGrua = () => {
       : capInicial ?? capFinal;
 
     setCapacidadLevanteCalc(menorCapacidad);
-
-    console.log(
-      `Capacidad inicial (radio izaje ${izajeVal} m): ` +
-      `${capInicial?.toFixed(1) ?? 'N/A'} t`
-    );
-    console.log(
-      `Capacidad final   (radio montaje ${montajeVal} m): ` +
-      `${capFinal?.toFixed(1) ?? 'N/A'} t`
-    );
-    console.log(
-      `Capacidad de levante asignada: ${menorCapacidad?.toFixed(1) ?? 'N/A'} t`
-    );
 
     // Calcular y guardar el radio de trabajo máximo solo si ambos radios tienen valor y son válidos
     let maxRadio = 0;
@@ -167,8 +154,6 @@ const SetupGrua = () => {
     setErrorGrua(errors.grua || '');
     setErrorRadioIzaje(errIz ? 'Este campo es requerido' : '');
     setErrorRadioMontaje(errMont ? 'Este campo es requerido' : '');
-
-    console.log("2. Datos que se están pasando a SetupAparejos:");
     const setupGruaData = {
       nombreGrua: grua?.nombre || '',
       largoPluma,
@@ -191,7 +176,6 @@ const SetupGrua = () => {
         console.log(`  ${key}: ${setupGruaData[key]}`);
       }
     }
-    console.log("Datos de setupGruaData antes de guardar:", setupGruaData);
     await AsyncStorage.setItem('setupGruaData', JSON.stringify(setupGruaData));
     navigation.navigate('SetupAparejos', { setupGruaData, setupCargaData });
   };

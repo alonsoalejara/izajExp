@@ -36,7 +36,7 @@ const SetupCarga = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNavigateToSetupGrua = () => {
+  const handleContinuar = () => {
     const pesoNum = parseFloat(peso);
     const alturaNum = parseFloat(altura);
 
@@ -71,7 +71,6 @@ const SetupCarga = () => {
       };
     }
 
-    console.log("1. Datos que se están pasando a SetupGrua:");
     for (const key in cargaData) {
       if (cargaData.hasOwnProperty(key)) {
         console.log(`  ${key}: ${cargaData[key]}`);
@@ -111,11 +110,7 @@ const SetupCarga = () => {
     }
   };
 
-
   const altoLabel = forma === 'Cilindro' ? 'altura' : forma === 'Cuadrado' ? 'lado' : 'alto';
-
-  // Se calcula la geometría (CG y dimensiones D1/D2) usando el nuevo módulo.
-  // Para el caso de 'Cilindro', se pasa el diámetro en lugar del largo.
   const geometry = calculateGeometry(
     forma,
     altura,
@@ -291,12 +286,23 @@ const SetupCarga = () => {
             </View>
             {/* Renderizamos el componente para las imágenes */}
             <RenderCG forma={forma} />
-            {/* Botón "Continuar" */}
-            <Components.Button
-              label="Continuar"
-              onPress={handleNavigateToSetupGrua}
-              style={{ left: -25, marginBottom: -20, width: 330, alignSelf: 'center' }}
-            />
+            {/* Botones */}
+            <View style={[styles.buttonContainer, { right: 40, marginTop: 15 }]}>
+              <Components.Button
+                label="Volver"
+                onPress={() => navigation.goBack()}
+                isCancel
+                style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
+              />
+              <Components.Button
+                label="Continuar"
+                onPress={handleContinuar}
+                style={[
+                  styles.button,
+                  { width: '50%', right: 45 },
+                ]}
+              />
+            </View>
             <BS.BSForma
               isVisible={isFormaVisible}
               onClose={() => setIsFormaVisible(false)}
