@@ -11,6 +11,7 @@ import AdminPanel from './AdminPanel';
 import CollabProfile from './CollabProfile';
 import CollabTablas from './CollabTablas';
 import EditCollab from './EditCollab';
+import Firma from './Firma';
 
 const Screens = {
   Home,
@@ -26,6 +27,7 @@ const Screens = {
   Tablas,
   CollabTablas,
   EditCollab,
+  Firma,
 };
 
 export default Screens;

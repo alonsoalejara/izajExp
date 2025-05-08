@@ -85,6 +85,11 @@ const App = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="Firma"
+            component={Screens.Firma}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="CollabProfile"
             component={Screens.CollabProfile}
             options={{ headerShown: false }}
