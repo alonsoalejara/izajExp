@@ -4,6 +4,7 @@ import Profile from './Profile';
 import SetupGrua from './SetupGrua';
 import SetupAparejos from './SetupAparejos';
 import SetupCarga from './SetupCarga';
+import SetupPlan from './SetupPlan';
 import GruaIzaje from './GruaIzaje';
 import Tablas from './Tablas';
 import AdminPanel from './AdminPanel';
@@ -19,6 +20,7 @@ const Screens = {
   SetupGrua,
   SetupAparejos,
   SetupCarga,
+  SetupPlan,
   GruaIzaje,
   AdminPanel,
   Tablas,

@@ -70,6 +70,11 @@ const App = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="SetupCarga"
+            component={Screens.SetupCarga}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="SetupGrua"
             component={Screens.SetupGrua}
             options={{ headerShown: false }}

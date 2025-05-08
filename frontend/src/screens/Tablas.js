@@ -216,17 +216,6 @@ const Tablas = ({ route, navigation }) => {
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Tablas</Text>
       </View>
-      <View style={{ paddingHorizontal: 20, marginBottom: 10, top: 150 }}>
-        <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 5 }}>Ingrese nombre del proyecto:</Text>
-        <Components.NumericInput
-          value={nombreProyecto}
-          onChangeText={setNombreProyecto}
-          placeholder="Nombre del proyecto"
-          style={{ width: '100%' }}
-          showControls={false}
-          showClearButton={true}
-        />
-      </View>
       <View style={styles.labelContainer}>
         <Text style={styles.labelText}>Datos:</Text>
       </View>

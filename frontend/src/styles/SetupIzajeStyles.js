@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 10, 
+    marginHorizontal: 10,
     marginVertical: 20,
   },
   // Titulos y textos
@@ -159,6 +159,64 @@ const styles = StyleSheet.create({
   continuarButton: {
     width: '50%',
     right: 45,
+  },
+  // Estilos para la sección de responsables adicionales en SetupPlan.js
+  responsablesAdicionalesContainer: {
+    marginTop: 0,
+  },
+  responsableAdicionalItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    padding: 0,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  responsableAdicionalInfo: {
+    flexDirection: 'column',
+  },
+  responsableAdicionalNombre: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  responsableAdicionalRol: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  eliminarIcon: {
+    marginLeft: 10,
+  },
+  agregarResponsableBoton: {
+    backgroundColor: 'transparent',
+    borderRadius: 5,
+    padding: 0,
+    left: -153,
+    alignItems: 'center',
+  },
+  agregarResponsableInputContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 5,
+  },
+  agregarResponsableInput: {
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  agregarResponsableBotones: {
+    top: 40,
+    left: -60,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  continuarButtonContainer: {
+    position: 'absolute',
+    bottom: 30,
+    left: 0,
+    right: 50,
+    alignItems: 'center',
   },
 });
 

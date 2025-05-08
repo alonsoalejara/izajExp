@@ -131,14 +131,14 @@ const SetupCarga = () => {
         <Components.Header />
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}>
           <View style={styles.titleContainer}>
-            <Text style={styles.sectionTitle}>Cálculo de maniobras menores</Text>
+            <Text style={[styles.sectionTitle, { top: 5 }]}>Carga</Text>
           </View>
           <View style={[styles.container, { flexGrow: 1 }]}>
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>Seleccione forma:</Text>
             </View>
             {errors.forma && (
-              <Text style={[styles.errorText, { marginTop: -17, left: -0.4 }]}>{errors.forma}</Text>
+              <Text style={[styles.errorText, { marginTop: -17, top: 12, left: -0.4 }]}>{errors.forma}</Text>
             )}
             <Components.ConfigButton
               placeholder="Configurar Forma"
