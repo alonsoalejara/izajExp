@@ -198,15 +198,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 5,
   },
-  agregarResponsableInput: {
-    borderWidth: 1,
-    borderColor: 'white',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  },
   agregarResponsableBotones: {
-    top: 40,
+    marginTop: 30,
+    top: 15,
     left: -60,
     flexDirection: 'row',
     justifyContent: 'space-around',

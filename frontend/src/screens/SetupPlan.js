@@ -1,37 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import Components from '../components/Components.index';
 import styles from '../styles/SetupIzajeStyles';
 import { validatePlan } from '../utils/validation/validatePlan';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Asegúrate de tener esta librería instalada
-import { useNavigation } from '@react-navigation/native'; // Importa useNavigation
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
+import BS from '../components/bottomSheets/BS.index';
 
 const SetupPlan = () => {
   const [nombreProyecto, setNombreProyecto] = useState('');
   const [supervisorSeleccionado, setSupervisorSeleccionado] = useState('');
+  const [supervisorObjeto, setSupervisorObjeto] = useState(null);
   const [jefeAreaSeleccionado, setJefeAreaSeleccionado] = useState('');
+  const [jefeAreaObjeto, setJefeAreaObjeto] = useState(null);
   const [responsablesAdicionales, setResponsablesAdicionales] = useState([]);
   const [isAddingResponsable, setIsAddingResponsable] = useState(false);
   const [nuevoResponsableNombre, setNuevoResponsableNombre] = useState('');
   const [nuevoResponsableRol, setNuevoResponsableRol] = useState('');
   const [errors, setErrors] = useState({});
+  const [isJefeAreaModalVisible, setIsJefeAreaModalVisible] = useState(false);
+  const [isSupervisorModalVisible, setIsSupervisorModalVisible] = useState(false);
+  const [nuevoResponsableNombreError, setNuevoResponsableNombreError] = useState('');
+  const [nuevoResponsableRolError, setNuevoResponsableRolError] = useState('');
 
-  const navigation = useNavigation(); // Inicializa navigation
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    // Esto asegura que los errores se recalculen cuando cambian los estados.
+    const calculatedErrors = validatePlan(
+      nombreProyecto,
+      supervisorSeleccionado,
+      jefeAreaSeleccionado,
+      responsablesAdicionales
+    );
+    setErrors(calculatedErrors);
+  }, [nombreProyecto, supervisorSeleccionado, jefeAreaSeleccionado, responsablesAdicionales]);
 
   const handleNombreProyectoChange = (text) => {
     setNombreProyecto(text);
-    const validationErrors = validatePlan(text);
-    setErrors(validationErrors);
   };
 
   const handleSeleccionarSupervisor = () => {
-    console.log('Seleccionar Supervisor');
-    // Implementa tu lógica de selección aquí
+    setIsSupervisorModalVisible(true);
   };
 
   const handleSeleccionarJefeArea = () => {
-    console.log('Seleccionar Jefe de Área');
-    // Implementa tu lógica de selección aquí
+    setIsJefeAreaModalVisible(true);
   };
 
   const agregarNuevoResponsable = () => {
@@ -39,17 +53,43 @@ const SetupPlan = () => {
   };
 
   const confirmarNuevoResponsable = () => {
-    if (nuevoResponsableNombre.trim() && nuevoResponsableRol.trim()) {
-      if (responsablesAdicionales.length < 2) { // Máximo 2 responsables adicionales para total 4
+    let nuevosErrores = {};
+    let hayErrores = false; // Variable para controlar si hay errores
+
+    if (!nuevoResponsableNombre.trim()) {
+      nuevosErrores.nuevoResponsableNombre = 'Nombre del responsable es requerido';
+      hayErrores = true;
+    }
+    if (!nuevoResponsableRol.trim()) {
+      nuevosErrores.nuevoResponsableRol = 'Rol del responsable es requerido';
+      hayErrores = true;
+    }
+    if (nuevoResponsableNombre.length > 100) {
+      nuevosErrores.nuevoResponsableNombre = 'El nombre no puede tener más de 100 caracteres';
+      hayErrores = true;
+    }
+
+    if (nuevoResponsableRol.length > 30) {
+      nuevosErrores.nuevoResponsableRol = 'El rol no puede tener más de 30 caracteres';
+      hayErrores = true;
+    }
+
+    if (Object.keys(nuevosErrores).length > 0) {
+      setErrors(prevErrors => ({ ...prevErrors, ...nuevosErrores }));
+      return; // No continuar si hay errores
+    }
+
+
+    if (nuevoResponsableNombre.trim() && nuevoResponsableRol.trim() && !hayErrores) {
+      if (responsablesAdicionales.length < 2) {
         setResponsablesAdicionales([...responsablesAdicionales, { nombre: nuevoResponsableNombre, rol: nuevoResponsableRol }]);
         setNuevoResponsableNombre('');
         setNuevoResponsableRol('');
         setIsAddingResponsable(false);
+        setErrors({});
       } else {
         Alert.alert('Límite alcanzado', 'Solo se pueden agregar hasta 2 responsables adicionales.');
       }
-    } else {
-      Alert.alert('Campos incompletos', 'Por favor, ingrese nombre y rol del responsable.');
     }
   };
 
@@ -57,6 +97,9 @@ const SetupPlan = () => {
     setIsAddingResponsable(false);
     setNuevoResponsableNombre('');
     setNuevoResponsableRol('');
+    setNuevoResponsableNombreError('');
+    setNuevoResponsableRolError('');
+    setErrors({});
   };
 
   const eliminarResponsableAdicional = (index) => {
@@ -79,16 +122,40 @@ const SetupPlan = () => {
   const totalResponsables = 2 + responsablesAdicionales.length;
 
   const handleContinuar = () => {
-    // Recopila los datos a enviar
-    const dataToSend = {
-      nombreProyecto: nombreProyecto,
-      supervisor: supervisorSeleccionado,
-      jefeArea: jefeAreaSeleccionado,
-      responsablesAdicionales: responsablesAdicionales,
-    };
+    const currentErrors = validatePlan(
+      nombreProyecto,
+      supervisorSeleccionado,
+      jefeAreaSeleccionado,
+      responsablesAdicionales
+    );
 
-    // Navega a SetupCarga.js y envía los datos como parámetros de ruta
-    navigation.navigate('SetupCarga', dataToSend);
+    if (Object.keys(currentErrors).length === 0) {
+      const dataToSend = {
+        nombreProyecto: nombreProyecto,
+        supervisor: supervisorObjeto,
+        jefeArea: jefeAreaObjeto,
+        responsablesAdicionales: responsablesAdicionales,
+      };
+      console.log('Datos a enviar a SetupCarga:', dataToSend);
+      navigation.navigate('SetupCarga', dataToSend);
+    } else {
+      setErrors(currentErrors);
+      Alert.alert('Campos incompletos', 'Por favor, complete todos los campos requeridos.');
+    }
+  };
+
+  const handleJefeAreaSelect = (jefe) => {
+    const nombreCompleto = `${jefe.nombre} ${jefe.apellido || ''}`;
+    setJefeAreaSeleccionado(nombreCompleto);
+    setJefeAreaObjeto(jefe);
+    setIsJefeAreaModalVisible(false);
+  };
+
+  const handleSupervisorSelect = (supervisor) => {
+    const nombreCompleto = `${supervisor.nombre} ${supervisor.apellido || ''}`;
+    setSupervisorSeleccionado(nombreCompleto);
+    setSupervisorObjeto(supervisor);
+    setIsSupervisorModalVisible(false);
   };
 
   return (
@@ -114,7 +181,7 @@ const SetupPlan = () => {
                 showClearButton={true}
               />
               {errors.nombreProyecto && (
-                <Text style={[styles.errorText, { marginTop: 5 }]}>{errors.nombreProyecto}</Text>
+                <Text style={[styles.errorText, { top: -55 }]}>{errors.nombreProyecto}</Text>
               )}
             </View>
 
@@ -126,6 +193,9 @@ const SetupPlan = () => {
                 onPress={handleSeleccionarSupervisor}
                 style={{ width: '100%' }}
               />
+              {errors.supervisorSeleccionado && (
+                <Text style={[styles.errorText, { top: -88 }]}>{errors.supervisorSeleccionado}</Text>
+              )}
             </View>
 
             <View style={{ marginTop: 0 }}>
@@ -136,6 +206,9 @@ const SetupPlan = () => {
                 onPress={handleSeleccionarJefeArea}
                 style={{ width: '100%' }}
               />
+              {errors.jefeAreaSeleccionado && (
+                <Text style={[styles.errorText, { top: -89 }]}>{errors.jefeAreaSeleccionado}</Text>
+              )}
             </View>
 
             <View style={styles.responsablesAdicionalesContainer}>
@@ -157,7 +230,7 @@ const SetupPlan = () => {
                   <Text style={[styles.labelText, { top: 9 }]}>Nombre completo del responsable:</Text>
                   <Components.NumericInput
                     style={[
-                      styles.agregarResponsableInput,
+                      { width: '100%', top: 25 },
                       errors.nuevoResponsableNombre && { borderColor: 'red', borderWidth: 1 },
                     ]}
                     placeholder="Nombre"
@@ -167,12 +240,12 @@ const SetupPlan = () => {
                     showClearButton={true}
                   />
                   {errors.nuevoResponsableNombre && (
-                    <Text style={styles.errorText}>{errors.nuevoResponsableNombre}</Text>
+                    <Text style={[styles.errorText, { top: -55 }]}>{errors.nuevoResponsableNombre}</Text>
                   )}
                   <Text style={[styles.labelText, { top: 9, marginTop: 30 }]}>Rol del responsable:</Text>
                   <Components.NumericInput
                     style={[
-                      styles.agregarResponsableInput,
+                      { width: '100%', top: 25 },
                       errors.nuevoResponsableRol && { borderColor: 'red', borderWidth: 1 },
                     ]}
                     placeholder="Rol"
@@ -182,7 +255,7 @@ const SetupPlan = () => {
                     showClearButton={true}
                   />
                   {errors.nuevoResponsableRol && (
-                    <Text style={styles.errorText}>{errors.nuevoResponsableRol}</Text>
+                    <Text style={[styles.errorText, { top: -55 }]}>{errors.nuevoResponsableRol}</Text>
                   )}
                   <View style={styles.agregarResponsableBotones}>
                     <Components.Button label="Cancelar" onPress={cancelarNuevoResponsable} isCancel style={{ backgroundColor: 'transparent', width: '45%' }} />
@@ -198,11 +271,24 @@ const SetupPlan = () => {
               )}
             </View>
           </View>
-          {/* Botón Continuar en la parte baja */}
+          {/* Botón Continuar */}
           <View style={styles.continuarButtonContainer}>
             <Components.Button label="Continuar" onPress={handleContinuar} />
           </View>
         </ScrollView>
+
+        {/* Modal para seleccionar Jefe de Área */}
+        <BS.BSJefeArea
+          isVisible={isJefeAreaModalVisible}
+          onClose={() => setIsJefeAreaModalVisible(false)}
+          onSelect={handleJefeAreaSelect}
+        />
+        {/* Modal para seleccionar Supervisor */}
+        <BS.BSSupervisor
+          isVisible={isSupervisorModalVisible}
+          onClose={() => setIsSupervisorModalVisible(false)}
+          onSelect={handleSupervisorSelect}
+        />
       </View>
     </TouchableWithoutFeedback>
   );
