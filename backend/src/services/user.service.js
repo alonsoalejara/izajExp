@@ -87,10 +87,27 @@ async function deleteUser(id) {
   }
 }
 
+async function updateSignature(id, signature) {
+  try {
+    const user = await User.findById(id);
+    if (!user) return [null, 'Usuario no existe'];
+
+    user.signature = signature;          // puede ser string o null
+    await user.save();
+    // Excluimos password
+    const { password, ...safe } = user.toObject();
+    return [safe, null];
+  } catch (error) {
+    handleError(error, 'user.service -> updateSignature');
+    return [null, 'Error actualizando la firma'];
+  }
+}
+
 export const UserService = {
   getUsers,
   createUser,
   getUserById,
   updateUser,
   deleteUser,
+  updateSignature,
 };

@@ -103,10 +103,41 @@ async function deleteUser(req, res) {
   }
 }
 
+async function saveSignature(req, res) {
+  try {
+    const userId = req.params.id;
+    const { signature } = req.body;
+    if (!signature) return respondError(req, res, 400, 'Se requiere la firma');
+
+    const [updatedUser, err] = await UserService.updateSignature(userId, signature);
+    if (err) return respondError(req, res, 400, err);
+
+    respondSuccess(req, res, 200, updatedUser);
+  } catch (error) {
+    handleError(error, 'user.controller -> saveSignature');
+    respondError(req, res, 500, 'No se pudo guardar la firma');
+  }
+}
+
+async function deleteSignature(req, res) {
+  try {
+    const userId = req.params.id;
+    const [updatedUser, err] = await UserService.updateSignature(userId, null);
+    if (err) return respondError(req, res, 400, err);
+
+    respondSuccess(req, res, 200, updatedUser);
+  } catch (error) {
+    handleError(error, 'user.controller -> deleteSignature');
+    respondError(req, res, 500, 'No se pudo eliminar la firma');
+  }
+}
+
 export const UserController = {
   getUsers,
   createUser,
   getUserById,
   updateUser,
   deleteUser,
+  saveSignature,
+  deleteSignature,
 };

@@ -18,4 +18,8 @@ router.post("/", isAdmin, UserController.createUser);
 router.put("/:id", isAdmin, UserController.updateUser);
 router.delete("/:id", isAdmin, UserController.deleteUser);
 
+// Rutas para manejar la firma
+router.post('/:id/signature', UserController.saveSignature);
+router.delete('/:id/signature', UserController.deleteSignature);
+
 export default router;
