@@ -1,60 +1,66 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import SignatureCanvas from 'react-native-signature-canvas';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Button from '../components/Button';
+import { useRoute } from '@react-navigation/native';
 
 const Firma = ({ navigation }) => {
-  const [signature, setSignature] = useState(null);
+  const route = useRoute();
+  const { onSave, signature: existingSignature } = route.params || {};
+  const [signature, setSignature] = useState(existingSignature || null);
   const sign = useRef(null);
 
-    const handleSave = () => {
-        if (signature) {
-             Alert.alert("Firma Guardada", "Firma guardada exitosamente");
-            navigation.goBack();
-        } else {
-            Alert.alert("Error", "Por favor, dibuja tu firma antes de guardar.");
-        }
-    };
+  const handleSave = () => {
+    if (sign.current) {
+      sign.current.readSignature(); // esto dispara onOK
+    }
+  };
+
+  const handleOK = (base64) => {
+    setSignature(base64);
+    onSave(base64);
+    Alert.alert('Firma Guardada', 'Firma guardada exitosamente');
+    navigation.goBack();
+  };
 
   const handleClear = () => {
     if (sign.current) {
-      sign.current.clear();
+      sign.current.clearSignature();
       setSignature(null);
     }
   };
 
   return (
-    <View style={firmaStyles.container}>
-      {/* Botón para regresar */}
+    <View style={styles.container}>
       <TouchableOpacity
-        style={firmaStyles.backButton}
+        style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
         <Icon name="keyboard-arrow-left" size={30} color="#000" />
       </TouchableOpacity>
 
-      <Text style={firmaStyles.title}>Firma</Text>
-      <Text style={firmaStyles.subtitle}>Por favor, firma en el área designada.</Text>
+      <Text style={styles.title}>Firma</Text>
+      <Text style={styles.subtitle}>Por favor, firma en el área designada.</Text>
 
-      {/* Área de firma */}
-      <View style={firmaStyles.signatureContainer}>
+      <View style={styles.signatureContainer}>
         <SignatureCanvas
           ref={sign}
-          style={firmaStyles.signatureCanvas}
+          style={styles.signatureCanvas}
           penColor="#000"
-          onOK={(img) => {setSignature(img.base64);}}
-          onEmpty={() => {Alert.alert("Firma vacía", "No se ha detectado ninguna firma.");}}
-          onClear={() => {setSignature(null);}}
+          dataURL={existingSignature ? `data:image/png;base64,${existingSignature}` : null}
+          autoClear={false}
+          onOK={handleOK}
+          onEmpty={() => Alert.alert('Firma vacía', 'No se ha detectado ninguna firma.')}
+          onClear={() => setSignature(null)}
         />
       </View>
 
-      {/* Botones de acción */}
-      <View style={firmaStyles.buttonContainer}>
+      <View style={styles.buttonContainer}>
         <Button
           label="Borrar"
           onPress={handleClear}
-          style={{ width: '40%', backgroundColor: '#e5e7eb', marginRight: 0 }}
+          style={{ width: '40%', backgroundColor: '#e5e7eb' }}
           textStyle={{ color: '#374151' }}
         />
         <Button
@@ -64,46 +70,38 @@ const Firma = ({ navigation }) => {
         />
       </View>
 
-      {/* Botón Cancelar */}
       <Button
         label="Cancelar"
         onPress={() => navigation.goBack()}
-        isCancel={true}
-        style={{ backgroundColor: 'transparent', marginTop: 20, right: 20 ,alignSelf: 'center' }}
+        isCancel
       />
     </View>
   );
 };
 
-// Adaptación de estilos de AddStyles.js
-const firmaStyles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start', // Cambiado para alinear al inicio
-    backgroundColor: '#fff',
     padding: 20,
+    backgroundColor: '#fff',
+    alignItems: 'center'
   },
   backButton: {
     position: 'absolute',
     top: 20,
     left: 10,
-    zIndex: 10,
+    zIndex: 10
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#000',
-    marginTop: 60, // Ajustado para dar espacio al botón de atrás
-    marginBottom: 10,
-    alignSelf: 'flex-start', // Alineado a la izquierda
+    marginTop: 60,
+    alignSelf: 'flex-start'
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
     marginBottom: 20,
-    alignSelf: 'flex-start', // Alineado a la izquierda
-
+    alignSelf: 'flex-start'
   },
   signatureContainer: {
     width: '100%',
@@ -111,38 +109,15 @@ const firmaStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    marginBottom: 20,
-    backgroundColor: '#f8f8f8', // Color de fondo del área de firma
+    backgroundColor: '#f8f8f8',
+    marginBottom: 20
   },
-  signatureCanvas: {
-    width: '100%',
-    height: '100%',
-  },
+  signatureCanvas: { flex: 1, width: '100%', height: '100%' },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 10,
-    right: 45,
-  },
-  input: { // No se usa directamente, pero se deja por si se necesita en el futuro
-    width: '100%',
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    color: '#000',
-  },
-  errorInput: {
-    borderColor: 'red',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-    marginBottom: 10,
-  },
+    width: '100%'
+  }
 });
 
 export default Firma;
