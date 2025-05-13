@@ -10,14 +10,13 @@ const NumericInput = ({
   onEndEditing,
   editable = true,
   showControls = false,
-  showClearButton = true
+  showClearButton = true,
+  keyboardType = "numeric" // Propiedad keyboardType con valor por defecto
 }) => {
 
   const intervalRef = useRef(null);
-  // Usamos una ref para mantener el valor numérico actual
   const currentValueRef = useRef(parseInt(value) || 0);
 
-  // Cada vez que el valor (prop) cambie, actualizamos la ref
   useEffect(() => {
     currentValueRef.current = parseInt(value) || 0;
   }, [value]);
@@ -40,9 +39,7 @@ const NumericInput = ({
   };
 
   const startChanging = (changeFunction) => {
-    // Aplica el cambio inmediatamente
     changeFunction();
-    // Y luego inicia un intervalo que aplica el cambio cada 100ms
     intervalRef.current = setInterval(() => {
       changeFunction();
     }, 100);
@@ -63,7 +60,7 @@ const NumericInput = ({
         placeholderTextColor="#aaaaaa"
         value={value}
         onChangeText={onChangeText}
-        keyboardType="numeric"
+        keyboardType={keyboardType} // Usa la prop keyboardType
         onEndEditing={onEndEditing}
         editable={editable}
       />

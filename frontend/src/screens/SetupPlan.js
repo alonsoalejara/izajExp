@@ -162,6 +162,7 @@ const SetupPlan = () => {
                 ]}
                 showControls={false}
                 showClearButton={true}
+                keyboardType="default" 
               />
               {errors.nombreProyecto && (
                 <Text style={[styles.errorText, { top: -55 }]}>{errors.nombreProyecto}</Text>
@@ -221,6 +222,7 @@ const SetupPlan = () => {
                     onChangeText={setNuevoResponsableNombre}
                     showControls={false}
                     showClearButton={true}
+                    keyboardType="default" 
                   />
                   {errors.nuevoResponsableNombre && (
                     <Text style={[styles.errorText, { top: -55 }]}>{errors.nuevoResponsableNombre}</Text>
@@ -236,6 +238,7 @@ const SetupPlan = () => {
                     onChangeText={setNuevoResponsableRol}
                     showControls={false}
                     showClearButton={true}
+                    keyboardType="default" 
                   />
                   {errors.nuevoResponsableRol && (
                     <Text style={[styles.errorText, { top: -55 }]}>{errors.nuevoResponsableRol}</Text>
@@ -248,7 +251,7 @@ const SetupPlan = () => {
               ) : (
                 totalResponsables < 4 && (
                   <TouchableOpacity onPress={agregarNuevoResponsable} style={styles.agregarResponsableBoton}>
-                    <Icon name="plus-square" size={30} color="green" />
+                    <Icon name="plus-square" size={30} color="green" top={5} left={10} />
                   </TouchableOpacity>
                 )
               )}
