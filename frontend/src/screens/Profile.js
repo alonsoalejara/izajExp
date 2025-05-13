@@ -278,6 +278,7 @@ const Profile = () => {
                 style={{
                   width: 300,
                   height: 150,
+                  top: 20,
                   borderRadius: 20,
                   borderWidth: 1,
                   borderColor: '#ccc',
@@ -304,14 +305,14 @@ const Profile = () => {
               <View
                 style={{
                   flexDirection: 'row',
-                  marginTop: 30,
+                  marginTop: 40,
                   justifyContent: 'space-between',
                   width: 250,
-                  left: -70,    
+                  left: -75,    
                 }}
               >
                 <Components.Button
-                  label="Editar Firma"
+                  label="Cambiar Firma"
                   onPress={handleEditSignature}
                   style={{ width: 140 }}
                 />
@@ -329,7 +330,7 @@ const Profile = () => {
                 <Components.Button
                   label="Registrar Firma"
                   onPress={handleEditSignature}
-                  style={{ width: 200 }}
+                  style={{ width: 200, left: -25 }}
                 />
               </View>
             </>

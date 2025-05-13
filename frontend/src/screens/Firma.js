@@ -13,7 +13,7 @@ const Firma = ({ navigation }) => {
 
   const handleSave = () => {
     if (sign.current) {
-      sign.current.readSignature(); // esto dispara onOK
+      sign.current.readSignature();
     }
   };
 
@@ -37,7 +37,7 @@ const Firma = ({ navigation }) => {
         style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
-        <Icon name="keyboard-arrow-left" size={30} color="#000" />
+        <Icon name="keyboard-arrow-left" size={40} color="#000" />
       </TouchableOpacity>
 
       <Text style={styles.title}>Firma</Text>
@@ -58,7 +58,7 @@ const Firma = ({ navigation }) => {
 
       <View style={styles.buttonContainer}>
         <Button
-          label="Borrar"
+          label="Limpiar"
           onPress={handleClear}
           style={{ width: '40%', backgroundColor: '#e5e7eb' }}
           textStyle={{ color: '#374151' }}
@@ -74,6 +74,7 @@ const Firma = ({ navigation }) => {
         label="Cancelar"
         onPress={() => navigation.goBack()}
         isCancel
+        style={{ width: '100%', marginTop: 10, backgroundColor: 'white', left: -20, fontSize: 16 }}
       />
     </View>
   );
@@ -88,18 +89,19 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: 20,
+    top: 45,
     left: 10,
     zIndex: 10
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginTop: 60,
+    marginTop: 90,
     alignSelf: 'flex-start'
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
+    marginTop: 10,
     marginBottom: 20,
     alignSelf: 'flex-start'
   },
@@ -114,6 +116,7 @@ const styles = StyleSheet.create({
   },
   signatureCanvas: { flex: 1, width: '100%', height: '100%' },
   buttonContainer: {
+    left: -45,
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%'

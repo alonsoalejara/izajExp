@@ -224,6 +224,14 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 16,
   },
+  // Datos vacios
+  userName: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+    marginTop: 20,
+    marginBottom: 0,
+  },
 });
 
 export default styles;
