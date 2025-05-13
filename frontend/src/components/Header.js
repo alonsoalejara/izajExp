@@ -27,10 +27,10 @@ const Header = () => {
       overflow: 'hidden',
     },
     image: {
-      width: '80%',
-      height: '80%',
-      top: 120,
-      left: 15,
+      width: '62%',
+      height: '62%',
+      top: 310,
+      left: 110,
       resizeMode: 'cover',
     },
     gradient: {
@@ -67,13 +67,13 @@ const Header = () => {
     <View style={styles.circleContainer}>
       <View style={styles.overlayCircle} />
       <ImageBackground
-        source={require('../../assets/grua-home.png')}
+        source={require('../../assets/plan.png')}
         style={styles.background}
         imageStyle={styles.image}
       >
         <Svg style={styles.gradient}>
           <LinearGradient id="grad1" x1="0%" y1="100%" x2="0%" y2="0%">
-            <Stop offset="14%" stopColor="#ff0000" stopOpacity="0.8" />
+            <Stop offset="14%" stopColor="#ff0000" stopOpacity="0.75" />
             <Stop offset="9%" stopColor="black" stopOpacity="0.8" />
           </LinearGradient>
           <Rect width="100%" height="100%" fill="url(#grad1)" />

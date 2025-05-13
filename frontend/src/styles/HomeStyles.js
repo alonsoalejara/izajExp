@@ -13,12 +13,12 @@ const HomeStyles = StyleSheet.create({
     position: 'relative',
   },
   image: {
-    width: '115%', 
-    height: '115%', 
+    width: '190%', 
+    height: '120%', 
     resizeMode: 'cover', 
     position: 'absolute',
-    top: -50,
-    left: -19,
+    top: -100,
+    left: -280,
   },
   gradient: {
     position: 'absolute',

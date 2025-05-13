@@ -77,7 +77,7 @@ const UserDataSection = () => {
           <Icon name="email" size={26} color="#ee0000" style={styles.icon} />
           <Text style={styles.value}>{user.email}</Text>
         </View>
-        <View style={styles.infoContainer}>
+        <View style={[styles.infoContainer, { borderBottomWidth: 0 }]}>
           <Icon name="phone-iphone" size={25} color="#ee0000" style={styles.icon} />
           <Text style={styles.value}>{user.phone}</Text>
         </View>

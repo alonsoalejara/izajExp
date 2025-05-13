@@ -177,18 +177,18 @@ const Profile = () => {
       {/* Header */}
       <View style={styles.circleContainer}>
         <ImageBackground
-          source={require('../../assets/grua-home.png')}
+          source={require('../../assets/capataz.png')}
           style={styles.background}
           imageStyle={styles.image}
         >
           <Svg style={styles.gradient}>
-            <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
-              <Stop offset="80%" stopColor="white" stopOpacity="0.6" />
-              <Stop offset="70%" stopColor="#ee0000" stopOpacity="0.8" />
+            <LinearGradient id="grad1" x1="0%" y1="95%" x2="0%" y2="0%">
+              <Stop offset="24%" stopColor="#ff0000" stopOpacity="0.75" />
+              <Stop offset="10%" stopColor="#880000" stopOpacity="0.9" />
             </LinearGradient>
             <Rect width="100%" height="100%" fill="url(#grad1)" />
           </Svg>
-          <Text style={styles.title}>Mi Perfil</Text>
+          <Text style={styles.title}>MI PERFIL</Text>
         </ImageBackground>
       </View>
 
@@ -244,7 +244,7 @@ const Profile = () => {
           </Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
           <Components.UserDataSection user={user} />
-          <View style={[styles.logoutContainer, { top: 10 }]}>
+          <View style={styles.logoutContainer}>
             <Components.Button
               label="Cerrar Sesión"
               onPress={handleSignOut}

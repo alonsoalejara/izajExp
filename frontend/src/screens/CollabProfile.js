@@ -68,14 +68,14 @@ const CollabProfile = () => {
       {/* Cabecera con imagen, gradiente y título con ícono para regresar */}
       <View style={styles.circleContainer}>
         <ImageBackground
-          source={require('../../assets/grua-home.png')}
+          source={require('../../assets/capataz.png')}
           style={styles.background}
           imageStyle={styles.image}
         >
           <Svg style={styles.gradient}>
-            <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
-              <Stop offset="80%" stopColor="white" stopOpacity="0.6" />
-              <Stop offset="70%" stopColor="red" stopOpacity="0.8" />
+            <LinearGradient id="grad1" x1="0%" y1="98%" x2="0%" y2="0%">
+              <Stop offset="24%" stopColor="#880000" stopOpacity="0.7" />
+              <Stop offset="10%" stopColor="#ff0000" stopOpacity="0.8" />
             </LinearGradient>
             <Rect width="100%" height="100%" fill="url(#grad1)" />
           </Svg>
@@ -85,15 +85,15 @@ const CollabProfile = () => {
               alignItems: 'center',
               position: 'absolute',
               top: 455,
-              left: 272,
+              left: 245,
               right: 0,
             }}
           >
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Icon name="keyboard-arrow-left" size={40} color="#fff" style={{ right: 150, bottom: 72 }} />
+              <Icon name="keyboard-arrow-left" size={40} color="#fff" style={{ right: 120, bottom: 75 }} />
             </TouchableOpacity>
-            <Text style={[styles.title, { flex: 1, textAlign: 'center', fontSize: 26 }]}>
-              Perfil
+            <Text style={[styles.title, { left: 0 }]}>
+              PERFIL
             </Text>
           </View>
         </ImageBackground>

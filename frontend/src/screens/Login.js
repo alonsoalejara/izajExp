@@ -97,18 +97,17 @@ export default function Login({ navigation }) {
       {/* Interfaz de usuario */}
       <View style={LoginStyles.circleContainer}>
         <ImageBackground
-          source={require("../../assets/grua-home.png")}
+          source={require("../../assets/new-grua-home.jpg")}
           style={LoginStyles.background}
           imageStyle={LoginStyles.image}
         >
           <Svg style={LoginStyles.gradient}>
-            <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+            <LinearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="0%">
               <Stop offset="10%" stopColor="white" stopOpacity="0.6" />
               <Stop offset="90%" stopColor="red" stopOpacity="0.8" />
             </LinearGradient>
             <Rect width="100%" height="100%" fill="url(#grad1)" />
           </Svg>
-          <Image source={require("../../assets/EI-Montajes.png")} style={LoginStyles.logo} resizeMode="contain" />
         </ImageBackground>
       </View>
 
