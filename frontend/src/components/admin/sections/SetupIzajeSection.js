@@ -120,7 +120,7 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPan
           </View>
         ))
       ) : (
-        <Text>No hay planes de izaje que mostrar.</Text>
+        <Text style={styles.emptyText}>No hay planes de izaje que mostrar.</Text>
       )}
     </View>
   );

@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
   value: {
     color: '#000',
     fontSize: 16,
+    fontWeight: '500',
     textAlign: 'left',
     flex: 1,
     flexShrink: 1,
@@ -225,7 +226,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   // Datos vacios
-  userName: {
+  emptyText: {
     fontSize: 16,
     fontWeight: '500',
     color: '#333',

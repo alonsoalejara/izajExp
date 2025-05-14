@@ -325,7 +325,7 @@ const Profile = () => {
             </>
           ) : (
             <>
-              <Text style={styles.userName}>No has registrado tu firma</Text>
+              <Text style={styles.emptyText}>No has registrado tu firma</Text>
               <View style={{ marginTop: 30 }}>
                 <Components.Button
                   label="Registrar Firma"

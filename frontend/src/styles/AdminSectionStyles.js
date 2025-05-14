@@ -98,7 +98,13 @@ const styles = StyleSheet.create({
         top: 11, 
         resizeMode: 'cover',
       },
-      
+      emptyText: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: '#333',
+        marginTop: 20,
+        left: 35,
+      }  
 });
 
 export default styles;
