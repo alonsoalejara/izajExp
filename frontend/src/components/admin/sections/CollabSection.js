@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import styles from '../../../styles/AdminSectionStyles'; 
+import styles from '../../../styles/AdminSectionStyles';
 import getApiUrl from '../../../utils/apiUrl';
 import Components from '../../../components/Components.index';
 import { useNavigation } from '@react-navigation/native';
@@ -51,25 +51,25 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
     }
   };
 
-  const colaboradoresFiltrados = colaboradores.filter(colaborador => 
+  const colaboradoresFiltrados = colaboradores.filter(colaborador =>
     !["admin", "admin2", "user"].includes(colaborador.username)
   );
 
   return (
     <View style={styles.section}>
       {colaboradoresFiltrados.map((colaborador, index) => (
-        <View key={colaborador._id || `colaborador-${index}`} style={[styles.card, { marginBottom: 10, top: -35 }]}>
+        <View key={colaborador._id || `colaborador-${index}`} style={[styles.card, { marginBottom: 0, top: 0 }]}>
           <TouchableOpacity onPress={() => handleCardPress(colaborador._id)}>
             <View style={styles.titleContainer}>
               <Text style={[styles.cardTitle, { fontSize: 22 }]}>
-                {colaborador.nombre} {colaborador.apellido} 
+                {colaborador.nombre} {colaborador.apellido}
               </Text>
               <View style={styles.profileCircle}>
-                <Image 
-                  source={require('../../../../assets/blank-user-image.png')} 
-                  style={[styles.profileImage, { top: 6 }]} 
+                <Image
+                  source={require('../../../../assets/blank-user-image.png')}
+                  style={[styles.profileImage, { top: 6 }]}
                 />
-              </View>            
+              </View>
             </View>
             <Text style={styles.cardDetail}>
               <Text style={styles.labelText}>RUT: </Text>{colaborador.rut}
@@ -82,34 +82,33 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
             </Text>
           </TouchableOpacity>
 
-          {selectedCard === colaborador._id && (
-            <View style={[styles.buttonContainerCard, { marginLeft: -110, marginTop: -10, marginBottom: -70, bottom: 0, top: 20, left: 0 }]}>
+        {selectedCard === colaborador._id && (
+            <View style={styles.buttonContainerCard}>
               {/* Botón "Ver" se muestra siempre */}
               <Components.Button
                 label="Ver"
                 onPress={() => {
-                  console.log('Datos pasados a CollabProfile:', colaborador);
                   navigation.push('CollabProfile', { userData: colaborador, fromCollab: true });
                 }}
                 isCancel={true}
-                style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '52%', marginHorizontal: -53 }]}
+                style={styles.button}
               />
               {/* Si el usuario NO tiene rol 'admin', se muestran Editar y Eliminar */}
               {!(colaborador.roles && colaborador.roles.includes('admin')) && (
-                <>
+                <View style={styles.multiButtonContainer}>
                   <Components.Button
                     label="Editar"
                     onPress={() => navigation.push('EditCollab', { userData: colaborador })}
                     isCancel={true}
-                    style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '52%', marginHorizontal: -53 }]}
+                    style={[styles.button, { left: -62 }]}
                   />
                   <Components.Button
                     label="Eliminar"
                     onPress={() => confirmDelete(colaborador._id)}
                     isCancel={true}
-                    style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '52%', marginHorizontal: -53 }]}
+                    style={[styles.button, { left: -119 }]}
                   />
-                </>
+                </View>
               )}
             </View>
           )}

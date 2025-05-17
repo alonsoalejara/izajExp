@@ -157,8 +157,7 @@ const styles = StyleSheet.create({
     marginRight: -50,
   },
   continuarButton: {
-    width: '50%',
-    right: 45,
+    width: '97%',
   },
   // Estilos para la sección de responsables adicionales en SetupPlan.js
   responsablesAdicionalesContainer: {

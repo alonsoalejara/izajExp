@@ -238,7 +238,7 @@ const Profile = () => {
 
       {/* Content */}
       {selectedButton === 'MisDatos' && (
-        <View style={[styles.userDataContainer, { top: -25 }]}>
+        <View style={[styles.userDataContainer, { top: -20 }]}>
           <Text style={styles.userName}>
             {user?.nombre} {user?.apellido}
           </Text>

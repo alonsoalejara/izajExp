@@ -25,8 +25,8 @@ const RenderForma = ({ forma, dimensiones }) => {
           <Polygon points="20,20 40,40 40,90 20,70" fill="darkgray" stroke="black" />
           
           {/* Líneas representando dimensiones sin valores numéricos */}
-          {renderDimension('Z: Alto', { x1: 25, y1: 11, x2: 70, y2: 11, textX: 10, textY: 75, textStyle: { top: 70, left: 130 } })}
-          {renderDimension('X: Ancho', { x1: 100, y1: 40, x2: 100, y2: 90, textX: 75, textY: 19, textStyle: { top: -14, right: 35 } })}
+          {renderDimension('Z: Alto', { x1: 25, y1: 13, x2: 70, y2: 13, textX: 10, textY: 75, textStyle: { top: 70, left: 130 } })}
+          {renderDimension('X: Ancho', { x1: 100, y1: 40, x2: 100, y2: 90, textX: 70, textY: 19, textStyle: { top: -5, right: 35 } })}
           {renderDimension('Y: Largo', { x1: 3, y1: 68, x2: 25, y2: 90.5, textX: 105, textY: 65, textStyle: { top: 65, right: 60 } })}
         </Svg>
       );
@@ -41,7 +41,7 @@ const RenderForma = ({ forma, dimensiones }) => {
 
           {/* Líneas representando dimensiones sin valores numéricos */}
           {renderDimension('Z:Alto', { x1: 140, y1: 50, x2: 140, y2: 91, textX: 10, textY: 75, textStyle: { top: 86, left: 180 } })}
-          {renderDimension('X:Ancho', { x1: 100, y1: 10, x2: 20, y2: 10, textX: 45, textY: 55, textStyle: { top: -8, right: 35 } })}
+          {renderDimension('X:Ancho', { x1: 100, y1: 10, x2: 20, y2: 10, textX: 45, textY: 55, textStyle: { top: 0, right: 35 } })}
           {renderDimension('Y:Largo', { x1: 3, y1: 68, x2: 25, y2: 90.5, textX: 105, textY: 65, textStyle: { top: 60, right: 45 } })}
         </Svg>
       );
@@ -72,8 +72,8 @@ const RenderForma = ({ forma, dimensiones }) => {
             <Ellipse cx="50" cy="90" rx="40" ry="15" fill="gray" stroke="black" />
       
             {/* Líneas de dimensiones */}
-            {renderDimension('X&Y: Diametro', { x1: 10, y1: 30, x2: 90, y2: 30, textX: 50, textY: 25, textStyle: { top: -40, left: -85 } })}
-            {renderDimension('Z: Altura', { x1: 95, y1: 30, x2: 95, y2: 90, textX: 105, textY: 60, textStyle: { top: -20, left: 100 } })}
+            {renderDimension('X&Y: Diametro', { x1: 10, y1: 30, x2: 90, y2: 30, textX: 50, textY: 25, textStyle: { top: 20, left: -85 } })}
+            {renderDimension('Z: Altura', { x1: 95, y1: 30, x2: 95, y2: 90, textX: 105, textY: 60, textStyle: { top: 40, left: 105 } })}
           </Svg>
         );
       

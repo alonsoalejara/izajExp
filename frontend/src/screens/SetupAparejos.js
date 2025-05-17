@@ -299,7 +299,7 @@ const SetupAparejos = () => {
                 label="Continuar"
                 onPress={handleNavigate}
                 disabled={isContinuarDisabled}
-                style={styles.continuarButton}
+                style={[styles.continuarButton, { width: '60%', left: -38 }]}
               />
             </View>
           </View>

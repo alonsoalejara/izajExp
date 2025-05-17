@@ -114,9 +114,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 0,
-    top: 290,
-    right: 0,
-    width: '100%',
+    top: 280,
+    left: 26,
+    width: '84%',
   },
   userButton: {
     flex: 1,
@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     width: '88%',
+    top: 5,
     right: 20,
   },
   /* Picker */

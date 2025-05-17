@@ -87,35 +87,42 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPan
               </View>
             </TouchableOpacity>
             {selectedSetup === setup._id && (
-              <View style={styles.cardExpandedDetails}>
-                <View style={[
-                  styles.buttonContainerCard,
-                  buttonContainerStyle
-                    ? buttonContainerStyle
-                    : { marginLeft: -110, marginTop: isAdminPanel ? -3 : 2, marginBottom: isAdminPanel ? -90 : -80, paddingBottom: 55, bottom: 0, top: 15, left: -5 }
-                ]}>
-                  <Components.Button
-                    label="Ver"
-                    onPress={() => navigation.navigate('CollabTablas', { setup })}
-                    isCancel={true}
-                    style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
-                  />
-                  <Components.Button
-                    label="Editar"
-                    onPress={() => console.log('Editar presionado')}
-                    isCancel={true}
-                    style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
-                  />
-                  {isAdminPanel && (
+             <View style={styles.cardExpandedDetails}>
+              <View style={styles.buttonContainerCard}>
+                <Components.Button
+                  label="Ver"
+                  onPress={() => navigation.navigate('CollabTablas', { setup })}
+                  isCancel={true}
+                  style={styles.button}
+                />
+                {/* Si el usuario NO es administrador, se muestran Editar y Eliminar */}
+                {!isAdminPanel && (
+                  <View style={styles.multiButtonContainer}>
+                    <Components.Button
+                      label="Editar"
+                      onPress={() => console.log('Editar presionado')}
+                      isCancel={true}
+                      style={[styles.button, { right: 60 }]}
+                    />
                     <Components.Button
                       label="Eliminar"
                       onPress={() => confirmDelete(setup._id)}
                       isCancel={true}
-                      style={[styles.button, { backgroundColor: 'transparent', width: '0%', height: '62%', marginHorizontal: -53 }]}
+                      style={[styles.button, { right: 120 }]}
                     />
-                  )}
-                </View>
+                  </View>
+                )}  
+                {/* Si el usuario ES administrador, solo se muestra el botón Eliminar */}
+                {isAdminPanel && (
+                  <Components.Button
+                    label="Eliminar"
+                    onPress={() => confirmDelete(setup._id)}
+                    isCancel={true}
+                    style={styles.button}
+                  />
+                )}
               </View>
+             </View>
             )}
           </View>
         ))

@@ -259,7 +259,7 @@ const SetupPlan = () => {
           </View>
           {/* Botón Continuar */}
           <View style={styles.continuarButtonContainer}>
-            <Components.Button label="Continuar" onPress={handleContinuar} />
+            <Components.Button label="Continuar" onPress={handleContinuar} style={styles.continuarButton}/>
           </View>
         </ScrollView>
 
