@@ -79,7 +79,7 @@ const BSLargoPluma = ({ isVisible, onClose, onSelect, isInputsDisabled }) => {
             style={styles.backIcon}
             onPress={closeBottomSheet}
           />
-          <Text style={[styles.modalTitle, { right: 30 }]}>Seleccionar Largo de Pluma</Text>
+          <Text style={[styles.modalTitle, { left: 50 }]}>Seleccionar largo de pluma</Text>
         </View>
 
         <View style={styles.separatorLine}></View>

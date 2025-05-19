@@ -109,7 +109,7 @@ const BSGrua = ({ isVisible, onClose, onSelect }) => {
             style={styles.backIcon}
             onPress={closeBottomSheet}
           />
-          <Text style={styles.modalTitle}>Seleccionar grúa</Text>
+          <Text style={[styles.modalTitle, { left: 80 }]}>Seleccionar grúa</Text>
         </View>
 
         <View style={styles.separatorLine}></View>

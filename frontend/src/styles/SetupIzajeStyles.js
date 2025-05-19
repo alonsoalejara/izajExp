@@ -119,10 +119,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Centra el contenido si es más corto
   },
   selectedManiobraText: {
-    fontSize: 16,
-    fontWeight: '400',
+    fontSize: 20,
+    fontWeight: '700',
     color: '#333',
-    marginVertical: 5,
+    marginVertical: 0,
   },
   configButton: {
     marginTop: 14,

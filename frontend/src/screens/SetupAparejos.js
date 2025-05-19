@@ -5,7 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
-import { generarGrilleteSummary } from '../utils/grilleteUtils';
 import { validateSetupAparejos } from '../utils/validation/validateAparejos';
 
 const SetupAparejos = () => {
@@ -16,7 +15,7 @@ const SetupAparejos = () => {
   const [setupRadioData, setSetupRadioData] = useState({});
   const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null, cantidades: {} });
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
-  const [tipoGrillete, setTipoGrillete] = useState({});
+  const [tipoGrillete, setTipoGrillete] = useState(''); // Cambiado a string para almacenar solo la pulgada seleccionada
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
@@ -30,7 +29,8 @@ const SetupAparejos = () => {
   const [isAparejoWLLModalVisible, setAparejoWLLModalVisible] = useState(false);
   const cantidadNumero = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
   const [tableData, setTableData] = useState([]);
-  const grilleteSummary = generarGrilleteSummary(tipoGrillete);
+  // Modificamos generarGrilleteSummary para que acepte un string
+  const grilleteSummary = tipoGrillete ? `${tipoGrillete}"` : '';
   const openModal = setter => setter(true);
 
   // Estados para los errores de validación
@@ -114,14 +114,11 @@ const SetupAparejos = () => {
     setErrorAnguloSeleccionado(errors.anguloSeleccionado || ''); // Actualizar el estado del error del ángulo
 
     if (Object.keys(errors).length === 0) {
-      const grilletePulgada = Object.keys(tipoGrillete)
-        .filter(dia => tipoGrillete[dia] > 0)
-        .join(', ');
       const payload = {
         cantidadManiobra: maniobraSeleccionada.cantidad,
         eslingaOEstrobo: maniobraSeleccionada.tipo?.type || '',
         cantidadGrilletes,
-        tipoGrillete: grilletePulgada,
+        tipoGrillete: tipoGrillete || '', // Enviamos directamente la pulgada seleccionada
         anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
         tipoAparejo: tipoAparejoSeleccionado,
         aparejoPorWLL: aparejoPorWLL,
@@ -139,8 +136,8 @@ const SetupAparejos = () => {
     !maniobraSeleccionada?.cantidad ||
     !maniobraSeleccionada?.tipo?.type ||
     !cantidadGrilletes ||
-    Object.keys(tipoGrillete).length === 0 ||
-    parseInt(cantidadGrilletes, 10) !== Object.values(tipoGrillete).reduce((sum, qty) => sum + qty, 0) ||
+    !tipoGrillete || // Ahora solo verificamos si se seleccionó un grillete
+    parseInt(cantidadGrilletes, 10) !== 1 || // Aseguramos que la cantidad de grilletes sea 1
     !tipoAparejoSeleccionado ||
     !aparejoPorWLL ||
     (['2', '4'].includes(maniobraSeleccionada?.cantidad) && !anguloSeleccionado); // Deshabilitar si es 2 o 4 y no hay ángulo seleccionado
@@ -219,10 +216,10 @@ const SetupAparejos = () => {
             />
             {errorAparejoPorWLL && <Text style={[styles.errorText, { top: 3 }]}>{errorAparejoPorWLL}</Text>}
 
-            <View style={[styles.inputWrapper, { top: 25 }]}>
+            <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>Grillete: (cantidad y tipo)</Text>
             </View>
-            <View style={[styles.inputContainer, { marginBottom: 20 }]}>
+            <View style={[styles.inputContainer, { top: -20 }]}>
               <Components.NumericInput
                 label="Cantidad"
                 value={cantidadGrilletes}
@@ -234,7 +231,7 @@ const SetupAparejos = () => {
               />
               <Components.ConfigButton
                 label="Grillete"
-                value={grilleteSummary}
+                value={grilleteSummary} // Usamos el nuevo grilleteSummary
                 onPress={() => openModal(setGrilleteModalVisible)}
                 placeholder="Tipo Grillete"
                 style={[styles.grilleteTipoButton, errorTipoGrillete ? { borderColor: 'red', borderWidth: 1 } : {}]}
@@ -244,25 +241,17 @@ const SetupAparejos = () => {
             {errorCantidadGrilletes && <Text style={[styles.errorText, { top: 3 }]}>{errorCantidadGrilletes}</Text>}
             {errorTipoGrillete && <Text style={[styles.errorText, { top: 3 }]}>{errorTipoGrillete}</Text>}
 
-            {Object.keys(tipoGrillete).length > 0 && (
-              <View style={styles.selectedManiobraContainer}>
-                {Object.entries(tipoGrillete).map(([dia, qty]) => (
-                  <Text key={dia} style={styles.selectedManiobraText}>{`${qty} grillete(s) de ${dia}\"`}</Text>
-                ))}
-              </View>
-            )}
-
             <BS.BSGrillete
               isVisible={isGrilleteModalVisible}
               onClose={() => setGrilleteModalVisible(false)}
-              onSelect={setTipoGrillete}
-              maxGrilletes={parseInt(cantidadGrilletes, 10)}
+              onSelect={setTipoGrillete} // Recibimos directamente la pulgada
             />
             <BS.BSCantidad
               isVisible={isCantidadModalVisible}
               onClose={() => setCantidadModalVisible(false)}
               onSelect={cantidad => {
                 setManiobraSeleccionada(prev => ({ ...prev, cantidad: cantidad.toString() }));
+                setCantidadGrilletes(cantidad.toString()); // Actualizamos también la cantidad de grilletes
                 setErrorCantidadManiobra(''); // Limpiar error al seleccionar
               }}
             />
@@ -293,7 +282,7 @@ const SetupAparejos = () => {
               cantidadManiobra={cantidadNumero}
             />
 
-            <View style={[styles.buttonContainer, { top: 45, right: 40 }]}>
+            <View style={[styles.buttonContainer, { marginBottom: -20, right: 40 }]}>
               <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={styles.volverButton} />
               <Components.Button
                 label="Continuar"

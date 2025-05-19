@@ -85,7 +85,7 @@ const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra }) => {
         <View style={styles.dragLine}></View>
         <View style={styles.modalHeader}>
           <IconFA name="angle-left" size={35} color="#333" style={styles.backIcon} onPress={closeBottomSheet} />
-          <Text style={[styles.modalTitle, { marginLeft: 40 }]}>Seleccionar Tipo de Aparejo</Text>
+          <Text style={[styles.modalTitle, { left: 50 }]}>Seleccionar Tipo de Aparejo</Text>
         </View>
         <View style={styles.separatorLine}></View>
         <ScrollView style={styles.optionsContainer}>

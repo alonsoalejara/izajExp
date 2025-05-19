@@ -45,7 +45,7 @@ const BottomSheetStyles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: '700',
-    marginLeft: 80,
+    left: 75,
     color: '#333',
   },
   separatorLine: {

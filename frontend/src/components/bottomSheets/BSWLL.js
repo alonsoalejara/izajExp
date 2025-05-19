@@ -61,7 +61,7 @@ const BSWLL = ({
       opciones = tubularPoliesterData.map(item => {
         const ton = item.toneladas[ang] ?? item.toneladas[0];
         const base = item.nombre.split('(')[0].trim();
-        return `${base} (${ang}°: ${ton} ton)`;
+        return `${base} (${ton} ton)`;
       });
 
     // 2) Tubulares trenzadas de poliester
@@ -155,7 +155,7 @@ const BSWLL = ({
             style={styles.backIcon}
             onPress={closeBottomSheet}
           />
-          <Text style={[styles.modalTitle, { marginLeft: 40 }]}>
+          <Text style={[styles.modalTitle, { left: 90 }]}>
             Seleccione WLL
           </Text>
         </View>

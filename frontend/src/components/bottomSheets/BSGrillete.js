@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, View, Text, TouchableOpacity, Animated, ScrollView, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, Animated, ScrollView, Dimensions, TouchableWithoutFeedback, Alert } from 'react-native';
 import styles from '../../styles/BottomSheetStyles';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import { grilleteOptions } from '../../data/grilleteData';
@@ -7,9 +7,8 @@ import Components from '../Components.index';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const BSGrillete = ({ isVisible, onClose, onSelect, maxGrilletes }) => {
-  // "cantidades" almacenará la cantidad seleccionada por cada tamaño
-  const [cantidades, setCantidades] = useState({});
+const BSGrillete = ({ isVisible, onClose, onSelect }) => {
+  const [selectedGrillete, setSelectedGrillete] = useState(null);
   const bottomSheetHeight = SCREEN_HEIGHT * 0.7;
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
@@ -37,21 +36,16 @@ const BSGrillete = ({ isVisible, onClose, onSelect, maxGrilletes }) => {
     }).start(() => onClose());
   };
 
-  const handleChangeCantidad = (pulgada, incremento) => {
-    const totalActual = Object.values(cantidades).reduce((sum, value) => sum + value, 0);
-    const nuevoTotal = totalActual + incremento;
-    if (incremento > 0 && maxGrilletes && nuevoTotal > maxGrilletes) {
-      return;
-    }
-    setCantidades((prevCantidades) => {
-      const nuevaCantidad = (prevCantidades[pulgada] || 0) + incremento;
-      if (nuevaCantidad < 0) return prevCantidades;
-      return { ...prevCantidades, [pulgada]: nuevaCantidad };
-    });
+  const handleSelect = (grillete) => {
+    setSelectedGrillete(grillete);
   };
 
   const handleConfirmar = () => {
-    onSelect(cantidades);
+    if (!selectedGrillete) {
+      Alert.alert('Seleccione un grillete', 'Debes elegir un tamaño de grillete.');
+      return;
+    }
+    onSelect(selectedGrillete);
     closeBottomSheet();
   };
 
@@ -72,23 +66,24 @@ const BSGrillete = ({ isVisible, onClose, onSelect, maxGrilletes }) => {
             style={styles.backIcon}
             onPress={closeBottomSheet}
           />
-          <Text style={[styles.modalTitle, { marginLeft: 40 }]}>Seleccionar Grilletes</Text>
+          <Text style={styles.modalTitle}>Seleccionar Grillete</Text>
         </View>
         <View style={styles.separatorLine}></View>
         <ScrollView style={styles.optionsContainer}>
           {grilleteOptions.map((grillete, index) => (
-            <View key={index} style={styles.listaItem}>
+            <TouchableOpacity key={index} style={styles.listaItem} onPress={() => handleSelect(grillete.pulgada)}>
               <Text style={styles.textoDiametro}>Grillete de {grillete.pulgada}"</Text>
-              <View style={styles.contadorContainer}>
-                <TouchableOpacity style={styles.botonContador} onPress={() => handleChangeCantidad(grillete.pulgada, -1)}>
-                  <Text style={styles.botonTexto}>-</Text>
-                </TouchableOpacity>
-                <Text style={styles.cantidadTexto}>{cantidades[grillete.pulgada] || 0}</Text>
-                <TouchableOpacity style={styles.botonContador} onPress={() => handleChangeCantidad(grillete.pulgada, 1)}>
-                  <Text style={styles.botonTexto}>+</Text>
-                </TouchableOpacity>
+              <View style={styles.radioContainer}>
+                <View
+                  style={[
+                    styles.radioButton,
+                    selectedGrillete === grillete.pulgada && styles.selectedRadioButton,
+                  ]}
+                >
+                  {selectedGrillete === grillete.pulgada && <View style={styles.selectedCircle} />}
+                </View>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
         <Components.Button label="Confirmar" onPress={handleConfirmar} style={{ margin: 20, top: -10, left: 10 }} />
