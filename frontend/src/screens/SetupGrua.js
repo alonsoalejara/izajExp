@@ -49,25 +49,27 @@ const SetupGrua = () => {
     fetchUserId();
   }, []);
 
-  useEffect(() => {
-    const izajeVal       = parseFloat(radioIzaje)       || 0;
-    const montajeVal     = parseFloat(radioMontaje)     || 0;
-    const boomLengthStr = largoPluma?.split(' ')[0]; // Obtiene solo el número del largo de pluma
+useEffect(() => {
+    const izajeVal        = parseFloat(radioIzaje)        || 0;
+    const montajeVal      = parseFloat(radioMontaje)      || 0;
+    const boomLengthStr = largoPluma?.split(' ')[0];
     const boomLengthNum = parseFloat(boomLengthStr) || 0;
-    const pesoCargaVal  = parseFloat(setupCargaData.peso) || 0;
+    const pesoCargaVal   = parseFloat(setupCargaData.peso) || 0;
 
     const hasGrua = !!grua;
     const hasRadioIzaje = radioIzaje !== '';
     const hasRadioMontaje = radioMontaje !== '';
 
-    const esRadioIzajeValido = !radioIzajeError && hasRadioIzaje;
-    const esRadioMontajeValido = !radioMontajeError && hasRadioMontaje;
+    const esRadioIzajeEnRango = validateRadioEnRango(boomLengthStr, radioIzaje);
+    const esRadioMontajeEnRango = validateRadioEnRango(boomLengthStr, radioMontaje);
+
+    setRadioIzajeError(!esRadioIzajeEnRango && hasRadioIzaje ? 'Radio fuera de rango' : '');
+    setRadioMontajeError(!esRadioMontajeEnRango && hasRadioMontaje ? 'Radio fuera de rango' : '');
 
     let movimientoOptimo = false;
     let mensajeMovimiento = '';
 
-    if (hasGrua && hasRadioIzaje && hasRadioMontaje && esRadioIzajeValido && esRadioMontajeValido) {
-      // Si ambos radios son válidos y se han ingresado, considerar el movimiento óptimo
+    if (hasGrua && hasRadioIzaje && hasRadioMontaje && esRadioIzajeEnRango && esRadioMontajeEnRango) {
       const capacidadIzaje = evaluateMovement(izajeVal, pesoCargaVal, boomLengthNum);
       const capacidadMontaje = evaluateMovement(montajeVal, pesoCargaVal, boomLengthNum);
 
@@ -75,26 +77,26 @@ const SetupGrua = () => {
         movimientoOptimo = true;
         mensajeMovimiento = 'Movimiento óptimo';
       } else if (!capacidadIzaje.optimum) {
-        mensajeMovimiento = 'Radio de izaje fuera de rango o capacidad insuficiente';
+        mensajeMovimiento = 'Radio de izaje fuera de capacidad';
       } else if (!capacidadMontaje.optimum) {
-        mensajeMovimiento = 'Radio de montaje fuera de rango o capacidad insuficiente';
+        mensajeMovimiento = 'Radio de montaje fuera de capacidad';
       } else {
-        mensajeMovimiento = 'Verificar radios y capacidad'; // Caso improbable si las validaciones previas son correctas
+        mensajeMovimiento = 'Verificar radios y capacidad';
       }
       setMovementEval({ optimum: movimientoOptimo, message: mensajeMovimiento });
 
     } else if (hasGrua && (!hasRadioIzaje || !hasRadioMontaje)) {
       mensajeMovimiento = 'Ingrese ambos radios de trabajo.';
       setMovementEval({ optimum: false, message: mensajeMovimiento });
-    } else if (hasGrua && (radioIzajeError || radioMontajeError)) {
-      mensajeMovimiento = 'Uno o ambos radios ingresados son inválidos.';
+    } else if (hasGrua && (!esRadioIzajeEnRango || !esRadioMontajeEnRango) && hasRadioIzaje && hasRadioMontaje) {
+      mensajeMovimiento = 'Uno o ambos radios ingresados están fuera del rango válido.';
       setMovementEval({ optimum: false, message: mensajeMovimiento });
     } else {
-      setMovementEval(null); // No evaluar si no hay grúa seleccionada
+      setMovementEval(null);
     }
 
-    const capInicial  = hasRadioIzaje && boomLengthNum ? evaluateMovement(izajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
-    const capFinal    = hasRadioMontaje && boomLengthNum ? evaluateMovement(montajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
+    const capInicial = esRadioIzajeEnRango && boomLengthNum ? evaluateMovement(izajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
+    const capFinal   = esRadioMontajeEnRango && boomLengthNum ? evaluateMovement(montajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
 
     const menorCapacidad = (capInicial != null && capFinal != null)
       ? Math.min(capInicial, capFinal)
@@ -102,16 +104,14 @@ const SetupGrua = () => {
 
     setCapacidadLevanteCalc(menorCapacidad);
 
-    // Calcular y guardar el radio de trabajo máximo solo si ambos radios tienen valor y son válidos
     let maxRadio = 0;
-    if (esRadioIzajeValido && esRadioMontajeValido) {
+    if (esRadioIzajeEnRango && esRadioMontajeEnRango) {
       maxRadio = Math.max(izajeVal, montajeVal);
       setRadioTrabajoMaximo(maxRadio.toString());
     } else {
-      setRadioTrabajoMaximo(''); // O null, dependiendo de tu lógica
+      setRadioTrabajoMaximo('');
     }
 
-    // Ajustar ángulo de inclinación visual si es Terex RT555
     if (grua?.nombre === "Terex RT555") {
       const alturaType = getAlturaType(largoPluma);
       const radioEntero = String(Math.floor(maxRadio));
@@ -123,28 +123,19 @@ const SetupGrua = () => {
       setAnguloInclinacionVisual(75);
     }
 
-    // Validar radios
-    validateRadios(boomLengthStr, radioIzaje, setRadioIzajeError);
-    validateRadios(boomLengthStr, radioMontaje, setRadioMontajeError);
-
   }, [radioIzaje, radioMontaje, grua, largoPluma, setupCargaData]);
 
-  const validateRadios = (boomLength, radio, setError) => {
-    if (!boomLength || !capacityTables[boomLength]) {
-      setError(false); // No hay tabla para validar o boomLength no definido
-      return;
+  const validateRadioEnRango = (boomLength, radio) => {
+    if (!boomLength || !capacityTables[boomLength] || !radio) {
+      return false;
     }
 
     const radios = Object.keys(capacityTables[boomLength]).map(Number).sort((a, b) => a - b);
     const radioVal = parseFloat(radio);
 
-    if (radio && (isNaN(radioVal) || radioVal < radios[0] || radioVal > radios[radios.length - 1])) {
-      setError(true);
-    } else {
-      setError(false);
-    }
+    return !isNaN(radioVal) && radioVal >= radios[0] && radioVal <= radios[radios.length - 1];
   };
-
+  
   const openModal = setter => setter(true);
 
   const handleNavigateToSetupAparejos = async () => {
