@@ -38,6 +38,7 @@ export const obtenerDatosTablas = (datosRecibidos) => {
         descripcion: datosRecibidos.eslingaOEstrobo.type || datosRecibidos.eslingaOEstrobo,
         largo: `${largo} m`,
         pesoUnitarioManiobra: `${pesoManiobraUnitario} ton`,
+        tension: 'N/A', // Añadimos la columna de tensión con valor N/A
         grillete: tipoGrillete !== 'N/A' ? tipoGrillete + '"' : 'N/A',
         pesoUnitarioGrillete: tipoGrillete !== 'N/A' ? `${pesoGrilleteUnitario} ton` : 'N/A',
         pesoTotalFila: `${pesoTotalFila.toFixed(2)} ton`,
@@ -52,6 +53,7 @@ export const obtenerDatosTablas = (datosRecibidos) => {
       descripcion: `Grillete de ${tipoGrillete}"`,
       largo: 'N/A',
       pesoUnitarioManiobra: 'N/A',
+      tension: 'N/A', // Añadimos la columna de tensión con valor N/A
       grillete: tipoGrillete + '"',
       pesoUnitarioGrillete: `${pesoGrilleteUnitario} ton`,
       pesoTotalFila: `${(pesoGrilleteUnitario * cantidadGrilletes).toFixed(2)} ton`,
@@ -89,9 +91,18 @@ export const obtenerDatosTablas = (datosRecibidos) => {
     { descripcion: 'Contrapeso', cantidad: `${datosRecibidos.contrapeso || 0} ton` },
   ];
 
+  // Datos para la tabla de información del proyecto
+  const datosTablaProyecto = [
+    { item: 1, descripcion: 'Nombre del proyecto', nombre: datosRecibidos.nombreProyecto || 'N/A' },
+    { item: 2, descripcion: 'Nombre del capataz', nombre: 'N/A' }, // Este dato no se recibe directamente
+    { item: 3, descripcion: 'Supervisor', nombre: datosRecibidos.supervisor?.nombreCompleto || 'N/A' },
+    { item: 4, descripcion: 'Jéfe Área', nombre: datosRecibidos.jefeArea?.nombreCompleto || 'N/A' },
+  ];
+
   return {
     datosTablaManiobra,
     datosTablaGrua,
     datosTablaPesoAparejos,
+    datosTablaProyecto, // Retornamos la tabla de información del proyecto
   };
 };

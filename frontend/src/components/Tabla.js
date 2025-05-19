@@ -9,7 +9,7 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
         <View style={styles.tableHeader}>
           <Text style={[styles.headerText, { flex: 0.5, textAlign: 'left', left: 10 }]}>Ítem</Text>
           <Text style={[styles.headerText, { flex: 1.5, textAlign: 'left', left: 10 }]}>Descripción</Text>
-          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: -50 }]}>Nombre</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Nombre</Text>
         </View>
       );
     } else if (titulo === "Cálculo de centro de gravedad:") {
@@ -21,19 +21,20 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
           <Text style={[styles.headerText, { flex: 1.5, textAlign: 'left', left: 10 }]}>Descripción</Text>
           {/* Columnas existentes */}
           <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>X: Ancho</Text>
-          <Text style={[styles.headerText, { flex: 1, textAlign: 'left' }]}>Y: Largo</Text>
-          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', right: 10 }]}>Z: Alto</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 15 }]}>Y: Largo</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', right: -20 }]}>Z: Alto</Text>
         </View>
       );
     } else if (titulo === "Aparejos") {
       return (
         <View style={styles.tableHeader}>
-          <Text style={[styles.headerText, { flex: 0.5, textAlign: 'left', left: 10 }]}>Ítem</Text>
-          <Text style={[styles.headerText, { flex: 1.5, textAlign: 'left', left: 18 }]}>Descripción</Text>
-          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 4 }]}>Largo</Text>
-          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 15 }]}>Peso Unit.</Text>
-          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 10 }]}>Grillete</Text>
-          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 20 }]}>Peso Unit.</Text>
+          <Text style={[styles.headerText, { flex: 0.6, textAlign: 'left', left: 8 }]}>Ítem</Text>
+          <Text style={[styles.headerText, { flex: 1.5, textAlign: 'left', left: 12 }]}>Descrip.</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 15 }]}>Largo</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 25 }]}>Peso</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 5 }]}>Tensión</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 2 }]}>Grillete</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 10 }]}>Peso</Text>
         </View>
       );
     } else {
@@ -59,33 +60,34 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
     if (titulo === "Información del proyecto") {
       return (
         <View key={index} style={styles.row}>
-          <Text style={[styles.cell, { flex: 0.5, textAlign: 'left', left: 20 }]}>{item.item}</Text>
-          <Text style={[styles.cell, { flex: 1.5, textAlign: 'left', left: 10 }]}>{item.descripcion}</Text>
-          <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: -50 }]}>{item.nombre}</Text>
+          <Text style={[styles.cell, { flex: 0.5, textAlign: 'left', left: 10 }]}>{item.item}</Text>
+          <Text style={[styles.cell, { flex: 1.5, textAlign: 'left', left: 20 }]}>{item.descripcion}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 20 }]}>{item.nombre}</Text>
         </View>
       );
     } else if (titulo === "Cálculo de centro de gravedad:") {
       return (
         <View key={index} style={styles.row}>
           {/* Valor de Ítem */}
-          <Text style={[styles.cell, { flex: 0.5, textAlign: 'left', left: 20 }]}>{item.item}</Text>
+          <Text style={[styles.cell, { flex: 0.5, textAlign: 'left', left: 10 }]}>{item.item}</Text>
           {/* Valor de Descripción */}
           <Text style={[styles.cell, { flex: 1.5, textAlign: 'left', left: 20 }]}>{item.descripcion}</Text>
           {/* Columnas existentes */}
-          <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 35 }]}>{item.X === 'N/A' ? '0' : item.X}</Text>
-          <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 25 }]}>{item.Y === 'N/A' ? '0' : item.Y}</Text>
-          <Text style={[styles.cell, { flex: 1, textAlign: 'left', right: -10 }]}>{item.Z === 'N/A' ? '0' : item.Z}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 20 }]}>{item.X === 'N/A' ? '0' : item.X}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 20 }]}>{item.Y === 'N/A' ? '0' : item.Y}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'left', right: -30 }]}>{item.Z === 'N/A' ? '0' : item.Z}</Text>
         </View>
       );
     } else if (titulo === "Aparejos") {
       return (
         <View key={index} style={styles.row}>
-          <Text style={[styles.cell, { flex: 0.5, textAlign: 'left', left: 20 }]}>{index + 1}</Text>
+          <Text style={[styles.cell, { flex: 0.5, textAlign: 'left', left: 12 }]}>{index + 1}</Text>
           <Text style={[styles.cell, { flex: 1.5, textAlign: 'left', left: 20 }]}>{item.descripcion}</Text>
-          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 10 }]}>{item.largo || 'N/A'}</Text>
-          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 3 }]}>{item.pesoUnitarioManiobra || 'N/A'}</Text>
-          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 18 }]}>{item.grillete || 'N/A'}</Text>
-          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 10 }]}>{item.pesoUnitarioGrillete || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 25 }]}>{item.largo || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 8 }]}>{item.pesoUnitarioManiobra || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 14 }]}>N/A</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 10 }]}>{item.grillete || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 5 }]}>{item.pesoUnitarioGrillete || 'N/A'}</Text>
         </View>
       );
     } else {

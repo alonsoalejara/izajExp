@@ -15,15 +15,15 @@ const Tablas = ({ route, navigation }) => {
   const [jefeAreaNombre, setJefeAreaNombre] = useState('');
 
   // Extraemos los datos recibidos de las pantallas anteriores
-  const { setupAparejosData, setupCargaData, setupGruaData, setupRadioData } = route.params || {};
+  const { setupAparejosData, setupCargaData, setupGruaData, setupRadioData, setupPlanData } = route.params || {};
 
   useEffect(() => {
-    if (route.params?.setupPlanData) {
-      setNombreProyecto(route.params.setupPlanData.nombreProyecto || '');
-      setSupervisorNombre(route.params.setupPlanData.supervisor?.nombreCompleto || '');
-      setJefeAreaNombre(route.params.setupPlanData.jefeArea?.nombreCompleto || '');
+    if (setupPlanData) {
+      setNombreProyecto(setupPlanData.nombreProyecto || '');
+      setSupervisorNombre(setupPlanData.supervisor?.nombreCompleto || '');
+      setJefeAreaNombre(setupPlanData.jefeArea?.nombreCompleto || '');
     }
-  }, [route.params]);
+  }, [setupPlanData]);
 
   // Fusionamos todos los datos en un único objeto para que obtenerDatosTablas los lea correctamente
   const combinedData = {
@@ -31,6 +31,7 @@ const Tablas = ({ route, navigation }) => {
     ...setupGruaData,
     ...setupRadioData,
     ...setupAparejosData,
+    ...setupPlanData, // Incluimos setupPlanData para que obtenerDatosTablas acceda a nombreProyecto, supervisor y jefeArea
     pesoEquipo: setupGruaData?.pesoEquipo,
     pesoGancho: setupGruaData?.pesoGancho,
   };
@@ -57,15 +58,7 @@ const Tablas = ({ route, navigation }) => {
     : null;
 
   // Ahora obtenemos las demás tablas…
-  const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos } = obtenerDatosTablas(combinedData);
-
-  // Datos para la tabla de información del proyecto
-  const datosTablaProyecto = [
-    { item: 1, descripcion: 'Nombre', nombre: 'Ejemplo' },
-    { item: 2, descripcion: 'Capataz', nombre: 'Juan Perez' },
-    { item: 3, descripcion: 'Supervisor', nombre: 'Tomás Soto' },
-    { item: 4, descripcion: 'Jéfe Área', nombre: 'Germán Aranis' },
-  ];
+  const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos, datosTablaProyecto } = obtenerDatosTablas(combinedData);
 
   // Datos para la nueva tabla XYZ
   const datosTablaXYZ = [
