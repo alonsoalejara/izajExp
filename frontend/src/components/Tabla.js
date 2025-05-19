@@ -4,7 +4,15 @@ import styles from '../styles/TablasStyles';
 
 const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
   const renderTableHeader = () => {
-    if (titulo === "Cálculo de centro de gravedad:") {
+    if (titulo === "Información del proyecto") {
+      return (
+        <View style={styles.tableHeader}>
+          <Text style={[styles.headerText, { flex: 0.5, textAlign: 'left', left: 10 }]}>Ítem</Text>
+          <Text style={[styles.headerText, { flex: 1.5, textAlign: 'left', left: 10 }]}>Descripción</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: -50 }]}>Nombre</Text>
+        </View>
+      );
+    } else if (titulo === "Cálculo de centro de gravedad:") {
       return (
         <View style={styles.tableHeader}>
           {/* Nueva columna Ítem */}
@@ -48,7 +56,15 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
   };
 
   const renderTableRow = (item, index) => {
-    if (titulo === "Cálculo de centro de gravedad:") {
+    if (titulo === "Información del proyecto") {
+      return (
+        <View key={index} style={styles.row}>
+          <Text style={[styles.cell, { flex: 0.5, textAlign: 'left', left: 20 }]}>{item.item}</Text>
+          <Text style={[styles.cell, { flex: 1.5, textAlign: 'left', left: 10 }]}>{item.descripcion}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: -50 }]}>{item.nombre}</Text>
+        </View>
+      );
+    } else if (titulo === "Cálculo de centro de gravedad:") {
       return (
         <View key={index} style={styles.row}>
           {/* Valor de Ítem */}
@@ -93,7 +109,7 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
         </View>
       );
     }
-  };  
+  };
 
   if (editable) {
     return (
@@ -105,7 +121,7 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
         </View>
         {data.map((item, index) => (
           <View key={item.key} style={styles.row}>
-            <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 10, top: 15, fontSize: '16', fontWeight: '500' }]}>{item.item}</Text>
+            <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 10, top: 15, fontSize: 16, fontWeight: '500' }]}>{item.item}</Text>
             <View style={[styles.cell, { flex: 1 }]}>
               <TextInput
                 style={{ borderWidth: 1, borderRadius: 5, borderColor: '#ccc', padding: 15 }}

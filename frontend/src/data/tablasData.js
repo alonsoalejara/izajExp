@@ -13,7 +13,7 @@ export const obtenerDatosTablas = (datosRecibidos) => {
   const radioMontaje = parseFloat(datosRecibidos.radioMontaje) || 0;
   const radioMaximo = Math.max(radioIzaje, radioMontaje);
   const medidaS1Maniobra = parseFloat(datosRecibidos.medidaS1Maniobra) || 0;
-  const medidaS2Maniobra = parseFloat(datosRecibidos.medidaS2Maniobra) || 0;  
+  const medidaS2Maniobra = parseFloat(datosRecibidos.medidaS2Maniobra) || 0;
   const cantidadManiobra = parseInt(datosRecibidos.cantidadManiobra, 10) || 0;
 
   const pesoManiobraUnitario = maniobraOptions.find(m => m.label === datosRecibidos.eslingaOEstrobo)?.peso || 0;
@@ -71,14 +71,14 @@ export const obtenerDatosTablas = (datosRecibidos) => {
   const anguloTrabajo = cantidadManiobra > 1 && datosRecibidos.anguloEslinga ? datosRecibidos.anguloEslinga : '0°';
 
   const datosTablaManiobra = [
-    { descripcion: 'Peso elemento',       cantidad: { valor: pesoEquipo,        unidad: 'ton' } },
+    { descripcion: 'Peso elemento',       cantidad: { valor: pesoEquipo,       unidad: 'ton' } },
     { descripcion: 'Peso aparejos',       cantidad: { valor: totalPesoAparejos.toFixed(2), unidad: 'ton' } },
-    { descripcion: 'Peso gancho',         cantidad: { valor: pesoGancho,       unidad: 'ton' } },
-    { descripcion: 'Peso cable',          cantidad: { valor: pesoCable,        unidad: 'ton' } },
-    { descripcion: 'Peso total',          cantidad: { valor: pesoTotal.toFixed(2),     unidad: 'ton' } },
-    { descripcion: 'Radio de trabajo máximo', cantidad: { valor: radioMaximo,     unidad: 'm'   } },
+    { descripcion: 'Peso gancho',         cantidad: { valor: pesoGancho,         unidad: 'ton' } },
+    { descripcion: 'Peso cable',          cantidad: { valor: pesoCable,          unidad: 'ton' } },
+    { descripcion: 'Peso total',          cantidad: { valor: pesoTotal.toFixed(2),       unidad: 'ton' } },
+    { descripcion: 'Radio de trabajo máximo', cantidad: { valor: radioMaximo,         unidad: 'm'   } },
     { descripcion: 'Ángulo de trabajo',   cantidad: anguloTrabajo },
-    { descripcion: 'Capacidad de levante',cantidad: { valor: capacidadLevante,   unidad: 'ton' } },
+    { descripcion: 'Capacidad de levante',cantidad: { valor: capacidadLevante,       unidad: 'ton' } },
     { descripcion: '% Utilización',       cantidad: { valor: porcentajeUtilizacion, unidad: '%' } },
   ];
 
@@ -88,7 +88,7 @@ export const obtenerDatosTablas = (datosRecibidos) => {
     { descripcion: 'Grado de inclinación', cantidad: datosRecibidos.anguloInclinacion || 'N/A' },
     { descripcion: 'Contrapeso', cantidad: `${datosRecibidos.contrapeso || 0} ton` },
   ];
-  
+
   return {
     datosTablaManiobra,
     datosTablaGrua,

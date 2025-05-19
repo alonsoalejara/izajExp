@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Alert, ScrollView } from 'react-native';
 import { generarPDF } from '../utils/PDF/PDFGenerator';
 import styles from '../styles/TablasStyles.js';
@@ -11,9 +11,19 @@ import { calculateGeometry } from '../utils/calculateGeometry';
 const Tablas = ({ route, navigation }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [nombreProyecto, setNombreProyecto] = useState('');
+  const [supervisorNombre, setSupervisorNombre] = useState('');
+  const [jefeAreaNombre, setJefeAreaNombre] = useState('');
 
   // Extraemos los datos recibidos de las pantallas anteriores
   const { setupAparejosData, setupCargaData, setupGruaData, setupRadioData } = route.params || {};
+
+  useEffect(() => {
+    if (route.params?.setupPlanData) {
+      setNombreProyecto(route.params.setupPlanData.nombreProyecto || '');
+      setSupervisorNombre(route.params.setupPlanData.supervisor?.nombreCompleto || '');
+      setJefeAreaNombre(route.params.setupPlanData.jefeArea?.nombreCompleto || '');
+    }
+  }, [route.params]);
 
   // Fusionamos todos los datos en un único objeto para que obtenerDatosTablas los lea correctamente
   const combinedData = {
@@ -48,6 +58,14 @@ const Tablas = ({ route, navigation }) => {
 
   // Ahora obtenemos las demás tablas…
   const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos } = obtenerDatosTablas(combinedData);
+
+  // Datos para la tabla de información del proyecto
+  const datosTablaProyecto = [
+    { item: 1, descripcion: 'Nombre', nombre: 'Ejemplo' },
+    { item: 2, descripcion: 'Capataz', nombre: 'Juan Perez' },
+    { item: 3, descripcion: 'Supervisor', nombre: 'Tomás Soto' },
+    { item: 4, descripcion: 'Jéfe Área', nombre: 'Germán Aranis' },
+  ];
 
   // Datos para la nueva tabla XYZ
   const datosTablaXYZ = [
@@ -220,6 +238,7 @@ const Tablas = ({ route, navigation }) => {
         <Text style={styles.labelText}>Datos:</Text>
       </View>
       <ScrollView style={styles.tableContainer}>
+        <Components.Tabla titulo="Información del proyecto" data={datosTablaProyecto} />
         <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
         <Components.Tabla titulo="Aparejos" data={datosTablaPesoAparejos} />
         <Components.Tabla titulo="Datos de la maniobra" data={datosTablaManiobra} />
