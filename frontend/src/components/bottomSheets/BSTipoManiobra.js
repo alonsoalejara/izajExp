@@ -14,8 +14,9 @@ const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra }) => {
 
   useEffect(() => {
     if (tipoManiobra === 'Estrobo') {
-      setOpcionesTipoAparejo(['Cable de acero superloop']);
-      setTipoAparejoSeleccionado('Cable de acero superloop'); // Selección automática
+      // *** CAMBIO CLAVE AQUÍ ***
+      setOpcionesTipoAparejo(['Cable de Acero Superloop']); // Capitalización correcta
+      setTipoAparejoSeleccionado('Cable de Acero Superloop'); // Capitalización correcta
       if (isVisible) {
         openBottomSheet();
       } else {
@@ -28,7 +29,7 @@ const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra }) => {
         'Tubulares trenzadas de poliester',
         'Tubulares para carga pesada',
       ]);
-      setTipoAparejoSeleccionado(null); // No seleccionar nada por defecto
+      setTipoAparejoSeleccionado(null);
       if (isVisible) {
         openBottomSheet();
       } else {
@@ -72,7 +73,7 @@ const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra }) => {
     } else if (tipoManiobra === 'Eslinga') {
       Alert.alert("Selecciona un tipo", "Debes elegir un tipo de eslinga.");
     } else {
-      closeBottomSheet(); // Si es estrobo, ya está seleccionado, solo cerrar
+      closeBottomSheet();
     }
   };
 

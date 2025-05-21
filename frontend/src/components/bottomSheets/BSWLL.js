@@ -1,25 +1,15 @@
-// BSWLL.js
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  TouchableOpacity,
-  Animated,
-  ScrollView,
-  Dimensions,
-  Alert
-} from 'react-native';
+import { Modal, View, Text, TouchableOpacity, Animated, ScrollView, Dimensions, Alert } from 'react-native';
 import styles from '../../styles/BottomSheetStyles';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import Components from '../Components.index';
 import tubularPoliesterData from '../../data/tubularPoliesterData';
 import tubularTrenzadasPoliesterData from '../../data/tubularTrenzadasPoliesterData';
 import tubularCargaPesadaData from '../../data/tubularCargaPesadaData';
+import cableAceroSuperloopData from '../../data/cableAceroSuperloopData'; // Asegúrate de que esta importación sea correcta
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Mapa de colores base a sus valores hex
 const colorMap = {
   Violeta: '#8e44ad',
   Verde: '#27ae60',
@@ -53,34 +43,30 @@ const BSWLL = ({
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   useEffect(() => {
-    const ang = anguloSeleccionado ?? 0;
+    const ang = anguloSeleccionado ? parseInt(anguloSeleccionado, 10) : 0;
     let opciones = [];
 
-    // 1) Tubulares de poliester
+    console.log('BSWLL - Recibido tipoAparejo (antes de la lógica):', tipoAparejo);
+    console.log('BSWLL - Angulo seleccionado:', anguloSeleccionado, 'parseado como:', ang);
+
     if (tipoAparejo === 'Tubulares de poliester') {
       opciones = tubularPoliesterData.map(item => {
-        const ton = item.toneladas[ang] ?? item.toneladas[0];
+        const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
         const base = item.nombre.split('(')[0].trim();
         return `${base} (${ton} ton)`;
       });
-
-    // 2) Tubulares trenzadas de poliester
     } else if (tipoAparejo === 'Tubulares trenzadas de poliester') {
       opciones = tubularTrenzadasPoliesterData.map(item => {
-        const ton = item.toneladas[ang] ?? item.toneladas[0];
+        const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
         const base = item.nombre.split('(')[0].trim();
         return `${base} (${ang}°: ${ton} ton)`;
       });
-
-    // 3) Tubulares para carga pesada
     } else if (tipoAparejo === 'Tubulares para carga pesada') {
       opciones = tubularCargaPesadaData.map(item => {
-        const ton = item.toneladas[ang] ?? item.toneladas[0];
+        const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
         const base = item.nombre.split('(')[0].trim();
         return `${base} (${ang}°: ${ton} ton)`;
       });
-
-    // 4) Planas ojo-ojo de poliester — solo si cantidadManiobra === 1
     } else if (
       tipoAparejo === 'Planas ojo-ojo de poliester' &&
       cantidadManiobra === 1
@@ -97,12 +83,26 @@ const BSWLL = ({
         '12" - Naranja'
       ];
     }
+    // LÓGICA PARA 'Cable de Acero Superloop' - ¡Volvemos a usar cableAceroSuperloopData!
+    else if (tipoAparejo === 'Cable de Acero Superloop') {
+        console.log('BSWLL - Procesando Cable de Acero Superloop data...');
+        opciones = cableAceroSuperloopData.map(item => {
+            // Asegúrate de que el ángulo 'ang' exista en las toneladas del item.
+            // Si no existe, puedes definir un comportamiento por defecto, como usar el valor para 0 grados.
+            const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
 
-    // Aplicar
+            // Aquí es donde construimos la string para mostrar.
+            // Utilizamos directamente item.nombre y el valor de tonelaje.
+            return `${item.nombre} (${ton} ton)`;
+        });
+        console.log('BSWLL - Opciones generadas para Cable de Acero Superloop:', opciones);
+    } else {
+        console.log('BSWLL - tipoAparejo no reconocido o no se cumplen las condiciones:', tipoAparejo);
+    }
+
     setOpcionesWLL(opciones);
     setSelectedWLL(null);
 
-    // Animación de apertura / cierre
     if (isVisible) {
       Animated.timing(positionY, {
         toValue: SCREEN_HEIGHT - bottomSheetHeight,
@@ -130,7 +130,7 @@ const BSWLL = ({
 
   const handleConfirm = () => {
     if (!selectedWLL) {
-      Alert.alert('Seleccione una opción', 'Debes elegir un color WLL.');
+      Alert.alert('Seleccione una opción', 'Debes elegir un aparejo por WLL.');
       return;
     }
     onSelect(selectedWLL);
@@ -171,17 +171,32 @@ const BSWLL = ({
               onPress={() => handleSelect(option)}
             >
               <View style={styles.optionContent}>
-                <View
-                  style={{
-                    width: 10,
-                    height: 20,
-                    borderRadius: 10,
-                    backgroundColor: getColorFromText(option),
-                    marginRight: 10,
-                    borderWidth: 1,
-                    borderColor: '#999'
-                  }}
-                />
+                {/* Lógica para el círculo de color/negro */}
+                {tipoAparejo === 'Cable de Acero Superloop' ? (
+                  <View
+                    style={{
+                      width: 10,
+                      height: 20,
+                      borderRadius: 10,
+                      backgroundColor: '#000000', // Color negro
+                      marginRight: 10,
+                      borderWidth: 1,
+                      borderColor: '#999'
+                    }}
+                  />
+                ) : (
+                  <View
+                    style={{
+                      width: 10,
+                      height: 20,
+                      borderRadius: 10,
+                      backgroundColor: getColorFromText(option),
+                      marginRight: 10,
+                      borderWidth: 1,
+                      borderColor: '#999'
+                    }}
+                  />
+                )}
                 <View style={styles.optionTextContainer}>
                   <Text style={styles.optionText}>{option}</Text>
                 </View>

@@ -15,8 +15,6 @@ export const validateSetupAparejos = (maniobraSeleccionada, cantidadGrilletes, t
   
     if (Object.keys(tipoGrillete).length === 0) {
       newErrors.tipoGrillete = 'Debe seleccionar el tipo de grillete.';
-    } else if (parseInt(cantidadGrilletes, 10) !== Object.values(tipoGrillete).reduce((sum, qty) => sum + qty, 0)) {
-      newErrors.tipoGrillete = 'La cantidad de grilletes seleccionados no coincide con la cantidad total.';
     }
   
     if (!tipoAparejoSeleccionado) {

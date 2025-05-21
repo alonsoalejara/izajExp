@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
-import { validateSetupAparejos } from '../utils/validation/validateAparejos';
+import { validateSetupAparejos } from '../utils/validation/validateAparejos'; // Mantendremos esta importación
 
 const SetupAparejos = () => {
   const navigation = useNavigation();
@@ -15,7 +15,7 @@ const SetupAparejos = () => {
   const [setupRadioData, setSetupRadioData] = useState({});
   const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null, cantidades: {} });
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
-  const [tipoGrillete, setTipoGrillete] = useState(''); // Cambiado a string para almacenar solo la pulgada seleccionada
+  const [tipoGrillete, setTipoGrillete] = useState('');
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
   const [isManiobraModalVisible, setManiobraModalVisible] = useState(false);
   const [isGrilleteModalVisible, setGrilleteModalVisible] = useState(false);
@@ -29,7 +29,6 @@ const SetupAparejos = () => {
   const [isAparejoWLLModalVisible, setAparejoWLLModalVisible] = useState(false);
   const cantidadNumero = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
   const [tableData, setTableData] = useState([]);
-  // Modificamos generarGrilleteSummary para que acepte un string
   const grilleteSummary = tipoGrillete ? `${tipoGrillete}"` : '';
   const openModal = setter => setter(true);
 
@@ -40,7 +39,7 @@ const SetupAparejos = () => {
   const [errorTipoGrillete, setErrorTipoGrillete] = useState('');
   const [errorTipoAparejo, setErrorTipoAparejo] = useState('');
   const [errorAparejoPorWLL, setErrorAparejoPorWLL] = useState('');
-  const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState(''); // Nuevo estado para el error del ángulo
+  const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,6 +56,7 @@ const SetupAparejos = () => {
     if (route.params?.setupRadioData) setSetupRadioData(route.params.setupRadioData);
   }, [route.params]);
 
+  // --- ARREGLO CLAVE: Reiniciar tipoAparejoSeleccionado y aparejoPorWLL cuando cambia tipoManiobraSeleccionadoSolo ---
   useEffect(() => {
     if (tipoManiobraSeleccionadoSolo === 'Eslinga') {
       setTipoAparejoLabel('Selección del tipo de eslinga:');
@@ -68,9 +68,13 @@ const SetupAparejos = () => {
       setTipoAparejoLabel('Selección del tipo de aparejo:');
       setTipoWllLabel('Selección del aparejo según WLL:');
     }
+    // Reiniciar selecciones de aparejo y WLL al cambiar el tipo de maniobra principal
+    setTipoAparejoSeleccionado('');
+    setAparejoPorWLL('');
   }, [tipoManiobraSeleccionadoSolo]);
 
   useEffect(() => {
+    // Si tipoAparejoSeleccionado cambia, reiniciamos aparejoPorWLL
     setAparejoPorWLL('');
   }, [tipoAparejoSeleccionado]);
 
@@ -84,41 +88,47 @@ const SetupAparejos = () => {
   }, [maniobraSeleccionada?.cantidad]);
 
   useEffect(() => {
+    // La cantidad de grilletes se setea con la cantidad de maniobras
     setCantidadGrilletes(maniobraSeleccionada.cantidad || '');
   }, [maniobraSeleccionada.cantidad]);
 
   const handleManiobraSeleccionada = useCallback((maniobra) => {
     setManiobraSeleccionada(prev => ({ cantidad: prev?.cantidad || '', tipo: { type: maniobra.type, cantidades: maniobra.cantidades } }));
     setTipoManiobraSeleccionadoSolo(maniobra.type);
-    setTipoAparejoSeleccionado('');
-    setAparejoPorWLL('');
-    setErrorTipoManiobra(''); // Limpiar error al seleccionar
+    // Estos ya se reinician en el useEffect de tipoManiobraSeleccionadoSolo
+    // setTipoAparejoSeleccionado('');
+    // setAparejoPorWLL('');
+    setErrorTipoManiobra('');
   }, []);
 
   const handleNavigate = () => {
+    // Llamar a la validación, pero la función validateSetupAparejos necesita ser modificada también.
+    // Esto se explica en la siguiente sección.
     const errors = validateSetupAparejos(
       maniobraSeleccionada,
-      cantidadGrilletes,
+      // Ya no es necesario validar cantidadGrilletes aquí si siempre es igual a cantidadManiobra
+      // y solo importa que se haya seleccionado un tipo de grillete.
+      cantidadGrilletes, // Se envía para consistencia, pero su validación interna cambiará.
       tipoGrillete,
       tipoAparejoSeleccionado,
       aparejoPorWLL,
-      anguloSeleccionado // Pasar el ángulo a la validación
+      anguloSeleccionado
     );
 
     setErrorCantidadManiobra(errors.cantidadManiobra || '');
     setErrorTipoManiobra(errors.tipoManiobra || '');
-    setErrorCantidadGrilletes(errors.cantidadGrilletes || '');
+    setErrorCantidadGrilletes(errors.cantidadGrilletes || ''); // Este error debería venir solo si está vacío
     setErrorTipoGrillete(errors.tipoGrillete || '');
     setErrorTipoAparejo(errors.tipoAparejo || '');
     setErrorAparejoPorWLL(errors.aparejoPorWLL || '');
-    setErrorAnguloSeleccionado(errors.anguloSeleccionado || ''); // Actualizar el estado del error del ángulo
+    setErrorAnguloSeleccionado(errors.anguloSeleccionado || '');
 
     if (Object.keys(errors).length === 0) {
       const payload = {
         cantidadManiobra: maniobraSeleccionada.cantidad,
         eslingaOEstrobo: maniobraSeleccionada.tipo?.type || '',
-        cantidadGrilletes,
-        tipoGrillete: tipoGrillete || '', // Enviamos directamente la pulgada seleccionada
+        cantidadGrilletes, // Se mantiene, ahora representa la cantidad de grilletes igual a la cantidad de maniobras
+        tipoGrillete: tipoGrillete || '',
         anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
         tipoAparejo: tipoAparejoSeleccionado,
         aparejoPorWLL: aparejoPorWLL,
@@ -135,12 +145,12 @@ const SetupAparejos = () => {
   const isContinuarDisabled =
     !maniobraSeleccionada?.cantidad ||
     !maniobraSeleccionada?.tipo?.type ||
-    !cantidadGrilletes ||
-    !tipoGrillete || // Ahora solo verificamos si se seleccionó un grillete
-    parseInt(cantidadGrilletes, 10) !== 1 || // Aseguramos que la cantidad de grilletes sea 1
+    // !cantidadGrilletes || // Esta línea ya no es necesaria, ya que se llena automáticamente
+    !tipoGrillete || // Solo validamos que se haya seleccionado un tipo de grillete
+    // parseInt(cantidadGrilletes, 10) !== 1 || // ¡ELIMINAMOS ESTA VALIDACIÓN!
     !tipoAparejoSeleccionado ||
     !aparejoPorWLL ||
-    (['2', '4'].includes(maniobraSeleccionada?.cantidad) && !anguloSeleccionado); // Deshabilitar si es 2 o 4 y no hay ángulo seleccionado
+    (['2', '4'].includes(maniobraSeleccionada?.cantidad) && !anguloSeleccionado);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -172,7 +182,7 @@ const SetupAparejos = () => {
             {errorCantidadManiobra && <Text style={[styles.errorText, { top: 5 }]}>{errorCantidadManiobra}</Text>}
             {errorTipoManiobra && <Text style={[styles.errorText, { top: 5 }]}>{errorTipoManiobra}</Text>}
 
-            {maniobraSeleccionada.tipo?.cantidades && ['2', '4'].includes(maniobraSeleccionada.cantidad) && (
+            {maniobraSeleccionada.tipo?.type && ['2', '4'].includes(maniobraSeleccionada.cantidad) && ( // Muestra si tipo está seleccionado y cantidad es 2 o 4
               <View>
                 <View style={[styles.inputWrapper, { top: -5 }]}>
                   <Text style={styles.labelText}>Ángulos de trabajo (°):</Text>
@@ -197,6 +207,7 @@ const SetupAparejos = () => {
               width="101%"
               align="center"
               style={[styles.configButton, errorTipoAparejo ? { borderColor: 'red', borderWidth: 1 } : {}]}
+              // Habilita este botón solo si se ha seleccionado un tipo de maniobra (Eslinga o Estrobo)
               disabled={!tipoManiobraSeleccionadoSolo}
             />
             {errorTipoAparejo && <Text style={[styles.errorText, { top: 3 }]}>{errorTipoAparejo}</Text>}
@@ -212,26 +223,27 @@ const SetupAparejos = () => {
               width="101%"
               align="center"
               style={[styles.configButton, errorAparejoPorWLL ? { borderColor: 'red', borderWidth: 1 } : {}]}
+              // Habilita este botón solo si se ha seleccionado un tipo de aparejo
               disabled={!tipoAparejoSeleccionado}
             />
             {errorAparejoPorWLL && <Text style={[styles.errorText, { top: 3 }]}>{errorAparejoPorWLL}</Text>}
 
-            <View style={styles.inputWrapper}>
+            <View style={[styles.inputWrapper, { top: 25 }]}>
               <Text style={styles.labelText}>Grillete: (cantidad y tipo)</Text>
             </View>
-            <View style={[styles.inputContainer, { top: -20 }]}>
+            <View style={[styles.inputContainer, { marginBottom: 20 }]}>
               <Components.NumericInput
                 label="Cantidad"
                 value={cantidadGrilletes}
                 placeholder="Cantidad"
-                editable={false}
+                editable={false} // Ya no se edita manualmente
                 style={[styles.grilleteCantidadInput, errorCantidadGrilletes ? { borderColor: 'red', borderWidth: 1 } : {}]}
-                showControls={false}
-                showClearButton={false}
+                showControls={false} // No se muestran controles
+                showClearButton={false} // No se muestra botón de limpiar
               />
               <Components.ConfigButton
                 label="Grillete"
-                value={grilleteSummary} // Usamos el nuevo grilleteSummary
+                value={grilleteSummary}
                 onPress={() => openModal(setGrilleteModalVisible)}
                 placeholder="Tipo Grillete"
                 style={[styles.grilleteTipoButton, errorTipoGrillete ? { borderColor: 'red', borderWidth: 1 } : {}]}
@@ -241,18 +253,24 @@ const SetupAparejos = () => {
             {errorCantidadGrilletes && <Text style={[styles.errorText, { top: 3 }]}>{errorCantidadGrilletes}</Text>}
             {errorTipoGrillete && <Text style={[styles.errorText, { top: 3 }]}>{errorTipoGrillete}</Text>}
 
+            {tipoGrillete && ( // Mostramos solo si tipoGrillete tiene un valor
+              <View style={styles.selectedManiobraContainer}>
+                <Text style={styles.selectedManiobraText}>{`${cantidadGrilletes} grillete(s) de ${tipoGrillete}"`}</Text>
+              </View>
+            )}
+
             <BS.BSGrillete
               isVisible={isGrilleteModalVisible}
               onClose={() => setGrilleteModalVisible(false)}
-              onSelect={setTipoGrillete} // Recibimos directamente la pulgada
+              onSelect={setTipoGrillete}
             />
             <BS.BSCantidad
               isVisible={isCantidadModalVisible}
               onClose={() => setCantidadModalVisible(false)}
               onSelect={cantidad => {
                 setManiobraSeleccionada(prev => ({ ...prev, cantidad: cantidad.toString() }));
-                setCantidadGrilletes(cantidad.toString()); // Actualizamos también la cantidad de grilletes
-                setErrorCantidadManiobra(''); // Limpiar error al seleccionar
+                setCantidadGrilletes(cantidad.toString()); // Aseguramos que cantidadGrilletes se actualice aquí
+                setErrorCantidadManiobra('');
               }}
             />
             <BS.BSManiobra
@@ -266,7 +284,7 @@ const SetupAparejos = () => {
               onClose={() => setTipoAparejoModalVisible(false)}
               onSelect={tipo => {
                 setTipoAparejoSeleccionado(tipo);
-                setErrorTipoAparejo(''); // Limpiar error al seleccionar
+                setErrorTipoAparejo('');
               }}
               tipoManiobra={tipoManiobraSeleccionadoSolo}
             />
@@ -275,7 +293,7 @@ const SetupAparejos = () => {
               onClose={() => setAparejoWLLModalVisible(false)}
               onSelect={wll => {
                 setAparejoPorWLL(wll);
-                setErrorAparejoPorWLL(''); // Limpiar error al seleccionar
+                setErrorAparejoPorWLL('');
               }}
               tipoAparejo={tipoAparejoSeleccionado}
               anguloSeleccionado={anguloSeleccionado}
