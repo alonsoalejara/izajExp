@@ -11,6 +11,7 @@ import { calculateGeometry } from '../utils/calculateGeometry';
 const Tablas = ({ route, navigation }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [nombreProyecto, setNombreProyecto] = useState('');
+  const [capatazNombre, setCapatazNombre] = useState('N/A'); // Estado para el nombre del capataz
   const [supervisorNombre, setSupervisorNombre] = useState('');
   const [jefeAreaNombre, setJefeAreaNombre] = useState('');
   const [userId, setUserId] = useState(null);
@@ -18,6 +19,7 @@ const Tablas = ({ route, navigation }) => {
   const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData } = route.params || {};
 
   console.log('Datos recibidos de SetupPlan.js:', {
+    capatazId: planData?.capataz?._id,
     supervisorId: planData?.supervisor?._id,
     jefeAreaId: planData?.jefeArea?._id,
   });
@@ -26,6 +28,7 @@ const Tablas = ({ route, navigation }) => {
     const fetchUserData = async () => {
       if (planData) {
         setNombreProyecto(planData.nombreProyecto || '');
+        setCapatazNombre(planData.capataz?.nombreCompleto || '');
         setSupervisorNombre(planData.supervisor?.nombreCompleto || '');
         setJefeAreaNombre(planData.jefeArea?.nombreCompleto || '');
 
@@ -68,6 +71,7 @@ const Tablas = ({ route, navigation }) => {
 
   const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos, datosTablaProyecto } = obtenerDatosTablas({
     ...combinedData,
+    capatazId: planData?.capataz?._id,
     supervisorId: planData?.supervisor?._id,
     jefeAreaId: planData?.jefeArea?._id,
   });
@@ -175,6 +179,7 @@ const Tablas = ({ route, navigation }) => {
                 aparejos,
                 datos,
                 cargas,
+                capataz: planData?.capataz?._id,
                 supervisor: planData?.supervisor?._id,
                 jefeArea: planData?.jefeArea?._id,
                 responsablesAdicionales: planData?.responsablesAdicionales?.map(resp => resp._id) || [],

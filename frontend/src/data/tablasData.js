@@ -96,15 +96,25 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
   ];
 
   const getFullName = (person) => {
-    if (person && person.nombre && person.apellido) {
+    if (!person) return 'N/A';
+
+    const tieneNombre = person.nombre && person.nombre.trim() !== '';
+    const tieneApellido = person.apellido && person.apellido.trim() !== '';
+
+    if (tieneNombre && tieneApellido) {
       return `${person.nombre} ${person.apellido}`;
     }
+
+    if (person.username && person.username.trim() !== '') {
+      return person.username;
+    }
+
     return 'N/A';
   };
 
   const datosTablaProyecto = [
     { item: 1, descripcion: 'Nombre Proyecto', nombre: datosRecibidos.nombreProyecto || 'N/A' },
-    { item: 2, descripcion: 'Capataz', nombre: 'N/A' },
+    { item: 2, descripcion: 'Capataz', nombre: getFullName(datosRecibidos.capataz) },
     {
       item: 3,
       descripcion: 'Supervisor',
