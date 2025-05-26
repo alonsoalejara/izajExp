@@ -103,8 +103,8 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
   };
 
   const datosTablaProyecto = [
-    { item: 1, descripcion: 'Nombre del proyecto', nombre: datosRecibidos.nombreProyecto || 'N/A' },
-    { item: 2, descripcion: 'Nombre del capataz', nombre: datosRecibidos.nombreCapataz || 'N/A' },
+    { item: 1, descripcion: 'Nombre Proyecto', nombre: datosRecibidos.nombreProyecto || 'N/A' },
+    { item: 2, descripcion: 'Capataz', nombre: datosRecibidos.nombreCapataz || 'N/A'},
     {
       item: 3,
       descripcion: 'Supervisor',

@@ -14,11 +14,11 @@ const Tablas = ({ route, navigation }) => {
   const [supervisorNombre, setSupervisorNombre] = useState('');
   const [jefeAreaNombre, setJefeAreaNombre] = useState('');
   const [capatazNombre, setCapatazNombre] = useState('N/A');
+  const [userId, setUserId] = useState(null);
 
   const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData } = route.params || {};
 
   console.log('Datos recibidos de SetupPlan.js:', {
-    ...planData,
     supervisorId: planData?.supervisor?._id,
     jefeAreaId: planData?.jefeArea?._id,
   });
@@ -30,16 +30,15 @@ const Tablas = ({ route, navigation }) => {
         setSupervisorNombre(planData.supervisor?.nombreCompleto || '');
         setJefeAreaNombre(planData.jefeArea?.nombreCompleto || '');
 
-        const userId = await AsyncStorage.getItem('usuarioId');
+        const storedUserId = await AsyncStorage.getItem('usuarioId');
+        setUserId(storedUserId);
 
-        if (userId) {
+        if (storedUserId) {
           try {
             const accessToken = await AsyncStorage.getItem('accessToken');
-            if (!accessToken) {
-              return;
-            }
+            if (!accessToken) return;
 
-            const response = await fetch(getApiUrl(`user/${userId}`), {
+            const response = await fetch(getApiUrl(`user/${storedUserId}`), {
               headers: {
                 'Authorization': `Bearer ${accessToken}`,
               },
@@ -56,6 +55,7 @@ const Tablas = ({ route, navigation }) => {
               setCapatazNombre('N/A');
             }
           } catch (error) {
+            console.error('Error al obtener el capataz:', error);
             setCapatazNombre('N/A');
           }
         }
@@ -97,6 +97,7 @@ const Tablas = ({ route, navigation }) => {
   const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos, datosTablaProyecto } = obtenerDatosTablas({
     ...combinedData,
     nombreCapataz: capatazNombre,
+    capatazId: userId,
     supervisorId: planData?.supervisor?._id,
     jefeAreaId: planData?.jefeArea?._id,
   });
@@ -196,9 +197,7 @@ const Tablas = ({ route, navigation }) => {
                 porcentajeUtilizacion: datosTablaManiobra.find(item => item.descripcion === '% Utilización')?.cantidad.valor || 0,
               };
 
-              const usuario =
-                (combinedData.usuario && combinedData.usuario.toString()) ||
-                (await AsyncStorage.getItem('usuarioId'));
+              const usuario = userId;
 
               const finalData = {
                 nombreProyecto,
