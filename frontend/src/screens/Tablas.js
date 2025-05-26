@@ -14,18 +14,22 @@ const Tablas = ({ route, navigation }) => {
   const [supervisorNombre, setSupervisorNombre] = useState('');
   const [jefeAreaNombre, setJefeAreaNombre] = useState('');
   const [capatazNombre, setCapatazNombre] = useState('N/A');
+
   const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData } = route.params || {};
 
-  console.log('Datos recibidos de SetupPlan.js:', planData);
+  console.log('Datos recibidos de SetupPlan.js:', {
+    ...planData,
+    supervisorId: planData?.supervisor?._id,
+    jefeAreaId: planData?.jefeArea?._id,
+  });
 
   useEffect(() => {
-    // Asegúrate de usar 'planData' aquí
-    if (planData) {
-      setNombreProyecto(planData.nombreProyecto || '');
-      setSupervisorNombre(planData.supervisor?.nombreCompleto || '');
-      setJefeAreaNombre(planData.jefeArea?.nombreCompleto || '');
+    const fetchUserData = async () => {
+      if (planData) {
+        setNombreProyecto(planData.nombreProyecto || '');
+        setSupervisorNombre(planData.supervisor?.nombreCompleto || '');
+        setJefeAreaNombre(planData.jefeArea?.nombreCompleto || '');
 
-      const fetchUserData = async () => {
         const userId = await AsyncStorage.getItem('usuarioId');
 
         if (userId) {
@@ -55,18 +59,18 @@ const Tablas = ({ route, navigation }) => {
             setCapatazNombre('N/A');
           }
         }
-      };
+      }
+    };
 
-      fetchUserData();
-    }
-  }, [planData]); // <-- Dependencia clave ahora es 'planData'
+    fetchUserData();
+  }, [planData]);
 
   const combinedData = {
     ...setupCargaData,
     ...setupGruaData,
     ...setupRadioData,
     ...setupAparejosData,
-    ...planData, // <-- Asegúrate de incluir planData aquí también
+    ...planData,
     pesoEquipo: setupGruaData?.pesoEquipo,
     pesoGancho: setupGruaData?.pesoGancho,
   };
@@ -92,7 +96,9 @@ const Tablas = ({ route, navigation }) => {
 
   const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos, datosTablaProyecto } = obtenerDatosTablas({
     ...combinedData,
-    nombreCapataz: capatazNombre
+    nombreCapataz: capatazNombre,
+    supervisorId: planData?.supervisor?._id,
+    jefeAreaId: planData?.jefeArea?._id,
   });
 
   const datosTablaXYZ = [
@@ -187,7 +193,7 @@ const Tablas = ({ route, navigation }) => {
                 radioTrabajoMax: datosTablaManiobra.find(item => item.descripcion === 'Radio de trabajo máximo')?.cantidad.valor || 0,
                 anguloTrabajo: datosTablaManiobra.find(item => item.descripcion === 'Ángulo de trabajo')?.cantidad || '0°',
                 capacidadLevante: datosTablaManiobra.find(item => item.descripcion === 'Capacidad de levante')?.cantidad.valor || 0,
-                porcentajeUtilizacion: 0,
+                porcentajeUtilizacion: datosTablaManiobra.find(item => item.descripcion === '% Utilización')?.cantidad.valor || 0,
               };
 
               const usuario =
@@ -200,6 +206,10 @@ const Tablas = ({ route, navigation }) => {
                 aparejos,
                 datos,
                 cargas,
+                supervisor: planData?.supervisor?._id,
+                jefeArea: planData?.jefeArea?._id,
+                responsablesAdicionales: planData?.responsablesAdicionales?.map(resp => resp._id) || [],
+                grua: setupGruaData?.grua?._id,
               };
 
               const accessToken = await AsyncStorage.getItem('accessToken');
@@ -226,6 +236,7 @@ const Tablas = ({ route, navigation }) => {
                 alert(`Error al guardar: ${data.message}`);
               }
             } catch (error) {
+              console.error('Error al guardar el plan de izaje:', error);
               alert('Hubo un error al guardar el plan de izaje.');
             }
           },

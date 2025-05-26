@@ -1,11 +1,15 @@
 import { grilleteOptions } from '../data/grilleteData';
 import { maniobraOptions } from '../data/maniobraData';
 
-export const obtenerDatosTablas = (datosRecibidos) => {
+export const obtenerDatosTablas = (datosRecibidos = {}) => {
   console.log("Datos recibidos en obtenerDatosTablas:");
   for (const key in datosRecibidos) {
     if (Object.hasOwnProperty.call(datosRecibidos, key)) {
-      console.log(`   ${key}: ${datosRecibidos[key]}`);
+      if (typeof datosRecibidos[key] === 'object' && datosRecibidos[key] !== null) {
+        console.log(`  ${key}: ${JSON.stringify(datosRecibidos[key])}`);
+      } else {
+        console.log(`  ${key}: ${datosRecibidos[key]}`);
+      }
     }
   }
 
@@ -91,18 +95,26 @@ export const obtenerDatosTablas = (datosRecibidos) => {
     { descripcion: 'Contrapeso', cantidad: `${datosRecibidos.contrapeso || 0} ton` },
   ];
 
+  const getFullName = (person) => {
+    if (person && person.nombre && person.apellido) {
+      return `${person.nombre} ${person.apellido}`;
+    }
+    return 'N/A';
+  };
+
   const datosTablaProyecto = [
     { item: 1, descripcion: 'Nombre del proyecto', nombre: datosRecibidos.nombreProyecto || 'N/A' },
+    { item: 2, descripcion: 'Nombre del capataz', nombre: datosRecibidos.nombreCapataz || 'N/A' },
     {
-      item: 2,
-      descripcion: 'Nombre del capataz',
-      nombre:
-        datosRecibidos.usuarioId?.nombre && datosRecibidos.usuarioId?.apellido
-          ? `${datosRecibidos.usuarioId.nombre} ${datosRecibidos.usuarioId.apellido}`
-          : 'N/A',
+      item: 3,
+      descripcion: 'Supervisor',
+      nombre: getFullName(datosRecibidos.supervisor),
     },
-    { item: 3, descripcion: 'Supervisor', nombre: datosRecibidos.supervisor?.nombreCompleto || 'N/A' },
-    { item: 4, descripcion: 'Jéfe Área', nombre: datosRecibidos.jefeArea?.nombreCompleto || 'N/A' },
+    {
+      item: 4,
+      descripcion: 'Jefe Área',
+      nombre: getFullName(datosRecibidos.jefeArea),
+    },
   ];
 
   return {
