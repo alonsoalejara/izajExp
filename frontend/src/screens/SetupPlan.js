@@ -45,7 +45,11 @@ const SetupPlan = () => {
         jefeArea: jefeAreaObjeto,
         responsablesAdicionales: [], // Se envía un array vacío
       };
-      console.log('Datos a enviar a SetupCarga:', dataToSend);
+
+      // --- CONSOLE.LOG PARA LOS DATOS ENVIADOS A SetupCarga.js ---
+      console.log('Datos enviados a SetupCarga.js desde SetupPlan.js:', dataToSend);
+      // --- FIN CONSOLE.LOG ---
+
       navigation.navigate('SetupCarga', dataToSend);
     } else {
       setErrors(currentErrors);

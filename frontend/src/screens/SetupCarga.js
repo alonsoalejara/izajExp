@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Importa useEffect
 import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native'; // Importa useRoute
 import Components from '../components/Components.index';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
@@ -11,6 +11,7 @@ import { calculateGeometry } from '../utils/calculateGeometry';
 
 const SetupCarga = () => {
   const navigation = useNavigation();
+  const route = useRoute(); // <-- Agrega esta línea para acceder a los parámetros
   const [peso, setPeso] = useState('');
   const [ancho, setAncho] = useState('');
   const [largo, setLargo] = useState('');
@@ -20,6 +21,18 @@ const SetupCarga = () => {
   const [isFormaVisible, setIsFormaVisible] = useState(false);
   const [carga, setCarga] = useState({ peso: '', largo: '', ancho: '', alto: '', forma: '' });
   const [errors, setErrors] = useState({});
+
+  // Nuevo estado para almacenar los datos de SetupPlan
+  const [planData, setPlanData] = useState(null); 
+
+  // Usa useEffect para capturar los datos de SetupPlan cuando la pantalla se carga
+  useEffect(() => {
+    if (route.params) {
+      setPlanData(route.params);
+      // Aquí puedes añadir un console.log para verificar que los datos de SetupPlan llegaron
+      console.log('Datos de SetupPlan recibidos en SetupCarga:', route.params);
+    }
+  }, [route.params]);
 
   const handleInputChange = (field, value) => {
     setCarga((prev) => ({ ...prev, [field]: value }));
@@ -31,7 +44,7 @@ const SetupCarga = () => {
   };
 
   const validateInputs = () => {
-    const newErrors = validateCarga(peso, largo, ancho, altura, forma);
+    const newErrors = validateCarga(peso, largo, ancho, altura, forma, diametro); 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -39,56 +52,43 @@ const SetupCarga = () => {
   const handleContinuar = () => {
     const pesoNum = parseFloat(peso);
     const alturaNum = parseFloat(altura);
+    const largoNum = parseFloat(largo);
+    const anchoNum = parseFloat(ancho);
+    const diametroNum = parseFloat(diametro);
 
     let cargaData = {
       ...carga,
       peso: pesoNum,
       alto: alturaNum,
+      largo: forma === 'Cuadrado' ? alturaNum : (forma === 'Cilindro' ? 0 : largoNum),
+      ancho: forma === 'Cuadrado' ? alturaNum : (forma === 'Cilindro' ? 0 : anchoNum),
+      diametro: forma === 'Cilindro' ? diametroNum : 0,
     };
 
-    if (forma === 'Cilindro') {
-      cargaData = {
-        ...cargaData,
-        diametro: parseFloat(diametro),
-        largo: 0,
-        ancho: 0,
-      };
-    } else if (forma === 'Cuadrado') {
-      cargaData = {
-        ...cargaData,
-        largo: alturaNum,
-        ancho: alturaNum,
-        diametro: 0
-      };
-    } else {
-      const largoNum = parseFloat(largo);
-      const anchoNum = parseFloat(ancho);
-      cargaData = {
-        ...cargaData,
-        largo: largoNum,
-        ancho: anchoNum,
-        diametro: 0
-      };
-    }
+    const navigateToNextScreen = () => {
+      if (validateInputs()) {
+        // Combina los datos de SetupPlan con los datos de carga
+        const allDataToSend = {
+          planData: planData, // Aquí están los datos de SetupPlan
+          setupCargaData: cargaData, // Y aquí los datos de SetupCarga
+        };
 
-    for (const key in cargaData) {
-      if (cargaData.hasOwnProperty(key)) {
-        console.log(`  ${key}: ${cargaData[key]}`);
+        // --- CONSOLE.LOG PARA LOS DATOS ENVIADOS A SetupGrua.js ---
+        console.log('Datos enviados a SetupGrua.js desde SetupCarga.js (incluyendo datos de Plan):', allDataToSend);
+        // --- FIN CONSOLE.LOG ---
+
+        navigation.navigate('SetupGrua', allDataToSend); // Envía ambos conjuntos de datos
       }
-    }
+    };
 
-    if (largo === ancho && ancho === altura && largo !== '') {
+    if (forma !== 'Cilindro' && largo === ancho && ancho === altura && largo !== '') {
       Alert.alert(
         "Dimensiones de un cubo detectadas",
         "Las dimensiones ingresadas corresponden a un cubo. ¿Desea cambiar la forma a 'Cuadrado'?",
         [
           {
             text: "No",
-            onPress: () => {
-              if (validateInputs()) {
-                navigation.navigate('SetupGrua', { setupCargaData: cargaData });
-              }
-            },
+            onPress: navigateToNextScreen,
             style: "cancel"
           },
           {
@@ -96,17 +96,20 @@ const SetupCarga = () => {
             onPress: () => {
               setForma("Cuadrado");
               handleInputChange('forma', "Cuadrado");
-              if (validateInputs()) {
-                navigation.navigate('SetupGrua', { setupCargaData: cargaData });
-              }
+              cargaData = {
+                ...cargaData,
+                forma: "Cuadrado",
+                largo: alturaNum,
+                ancho: alturaNum,
+                diametro: 0,
+              };
+              navigateToNextScreen();
             }
           }
         ]
       );
     } else {
-      if (validateInputs()) {
-        navigation.navigate('SetupGrua', { setupCargaData: cargaData });
-      }
+      navigateToNextScreen();
     }
   };
 
@@ -248,7 +251,6 @@ const SetupCarga = () => {
             )}
             {geometry && (
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5, marginBottom: 10 }}>
-                {/* Columna izquierda: Centro de gravedad */}
                 <View style={{ flex: 1 }}>
                   <View style={{ alignItems: 'flex-start' }}>
                     <Text style={{ fontWeight: 'bold' }}>Centro de gravedad:</Text>
@@ -257,7 +259,6 @@ const SetupCarga = () => {
                     </Text>
                   </View>
                 </View>
-                {/* Columna derecha: Dimensiones D1 y D2 */}
                 <View style={{ flex: 1, alignItems: 'flex-end', paddingRight: 20 }}>
                   <Text style={{ fontWeight: 'bold' }}>Dimensiones:</Text>
                   {forma === 'Cilindro' ? (
@@ -284,9 +285,7 @@ const SetupCarga = () => {
                 }}
               />
             </View>
-            {/* Renderizamos el componente para las imágenes */}
             <RenderCG forma={forma} />
-            {/* Botones */}
             <View style={[styles.buttonContainer, { right: 40, marginTop: 15 }]}>
               <Components.Button
                 label="Volver"

@@ -13,30 +13,64 @@ const Tablas = ({ route, navigation }) => {
   const [nombreProyecto, setNombreProyecto] = useState('');
   const [supervisorNombre, setSupervisorNombre] = useState('');
   const [jefeAreaNombre, setJefeAreaNombre] = useState('');
+  const [capatazNombre, setCapatazNombre] = useState('N/A');
+  const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData } = route.params || {};
 
-  // Extraemos los datos recibidos de las pantallas anteriores
-  const { setupAparejosData, setupCargaData, setupGruaData, setupRadioData, setupPlanData } = route.params || {};
+  console.log('Datos recibidos de SetupPlan.js:', planData);
 
   useEffect(() => {
-    if (setupPlanData) {
-      setNombreProyecto(setupPlanData.nombreProyecto || '');
-      setSupervisorNombre(setupPlanData.supervisor?.nombreCompleto || '');
-      setJefeAreaNombre(setupPlanData.jefeArea?.nombreCompleto || '');
-    }
-  }, [setupPlanData]);
+    // Asegúrate de usar 'planData' aquí
+    if (planData) {
+      setNombreProyecto(planData.nombreProyecto || '');
+      setSupervisorNombre(planData.supervisor?.nombreCompleto || '');
+      setJefeAreaNombre(planData.jefeArea?.nombreCompleto || '');
 
-  // Fusionamos todos los datos en un único objeto para que obtenerDatosTablas los lea correctamente
+      const fetchUserData = async () => {
+        const userId = await AsyncStorage.getItem('usuarioId');
+
+        if (userId) {
+          try {
+            const accessToken = await AsyncStorage.getItem('accessToken');
+            if (!accessToken) {
+              return;
+            }
+
+            const response = await fetch(getApiUrl(`user/${userId}`), {
+              headers: {
+                'Authorization': `Bearer ${accessToken}`,
+              },
+            });
+
+            if (response.ok) {
+              const userData = await response.json();
+              if (userData && userData.nombre && userData.apellido) {
+                setCapatazNombre(`${userData.nombre} ${userData.apellido}`);
+              } else {
+                setCapatazNombre('N/A');
+              }
+            } else {
+              setCapatazNombre('N/A');
+            }
+          } catch (error) {
+            setCapatazNombre('N/A');
+          }
+        }
+      };
+
+      fetchUserData();
+    }
+  }, [planData]); // <-- Dependencia clave ahora es 'planData'
+
   const combinedData = {
     ...setupCargaData,
     ...setupGruaData,
     ...setupRadioData,
     ...setupAparejosData,
-    ...setupPlanData, // Incluimos setupPlanData para que obtenerDatosTablas acceda a nombreProyecto, supervisor y jefeArea
+    ...planData, // <-- Asegúrate de incluir planData aquí también
     pesoEquipo: setupGruaData?.pesoEquipo,
     pesoGancho: setupGruaData?.pesoGancho,
   };
 
-  // Recalcular CG con los mismos parámetros que en SetupCarga
   const geometry = calculateGeometry(
     combinedData.forma,
     combinedData.alto,
@@ -46,7 +80,6 @@ const Tablas = ({ route, navigation }) => {
     combinedData.ancho
   );
 
-  // 📌 Cálculo de Posición Relativa (%) para el item 3
   const relX = geometry && combinedData.ancho
     ? ((geometry.cg.cgX / combinedData.ancho) * 100).toFixed(0)
     : null;
@@ -57,10 +90,11 @@ const Tablas = ({ route, navigation }) => {
     ? ((geometry.cg.cgZ / combinedData.alto) * 100).toFixed(0)
     : null;
 
-  // Ahora obtenemos las demás tablas…
-  const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos, datosTablaProyecto } = obtenerDatosTablas(combinedData);
+  const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos, datosTablaProyecto } = obtenerDatosTablas({
+    ...combinedData,
+    nombreCapataz: capatazNombre
+  });
 
-  // Datos para la nueva tabla XYZ
   const datosTablaXYZ = [
     {
       item: 1,
@@ -85,21 +119,15 @@ const Tablas = ({ route, navigation }) => {
     },
   ];
 
-  // Función que transforma los datos y llama a generarPDF
   const handlePDF = async () => {
-    console.log('Generando PDF...');
-
-    // Transformamos la tabla de Aparejos (CUADRO APAREJOS) agregando un número de item
     const rows = datosTablaPesoAparejos.map((row, index) => ({
       item: index + 1,
       descripcion: row.descripcion,
       cantidad: row.cantidad,
-      // Se elimina " kg" para que el template reciba un valor numérico
       pesoUnitario: parseFloat(row.pesoUnitario),
       pesoTotal: row.pesoTotal,
     }));
 
-    // Transformamos la tabla de Maniobra (CUADRO CARGA)
     const cargaRows = datosTablaManiobra.map((row, index) => ({
       item: index + 1,
       descripcion: row.descripcion,
@@ -109,40 +137,32 @@ const Tablas = ({ route, navigation }) => {
           : row.cantidad,
     }));
 
-    // Transformamos la tabla de la Grúa (CUADRO DATOS GRÚA)
     const datosGruaRows = datosTablaGrua.map((row, index) => ({
       item: index + 1,
       descripcion: row.descripcion,
       valor: row.cantidad,
     }));
 
-    // Calculamos el total de peso de aparejos
     const totalPesoAparejos = datosTablaPesoAparejos.reduce(
       (total, row) => total + parseFloat(row.pesoTotal.replace(' ton', '') || 0),
       0
     );
 
-    // Usamos el objeto grúa recibido en combinedData como selectedGrua
     const selectedGrua = combinedData.grua;
 
-    // Llamamos a la función que genera el PDF, pasando el nombre del proyecto
     await generarPDF(selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows, nombreProyecto);
   };
 
-  // Función para enviar el plan de izaje mediante POST y luego cambiar el estado
   const handleGuardar = async () => {
     Alert.alert(
       'Confirmar',
       '¿Estás seguro de guardar este plan de izaje?',
       [
-        { text: 'Cancelar', onPress: () => console.log('Cancelado'), style: 'cancel' },
+        { text: 'Cancelar', onPress: () => { }, style: 'cancel' },
         {
           text: 'Confirmar',
           onPress: async () => {
             try {
-              console.log('Guardando plan de izaje...');
-
-              // Transformamos la tabla de aparejos para que cada valor numérico sea del tipo adecuado
               const aparejos = datosTablaPesoAparejos.map(item => ({
                 descripcion: item.descripcion,
                 cantidad: item.cantidad,
@@ -150,7 +170,6 @@ const Tablas = ({ route, navigation }) => {
                 pesoTotal: parseFloat(item.pesoTotal.replace(' ton', '') || 0),
               }));
 
-              // Extraer datos para el objeto "datos" con conversión a número
               const datos = {
                 largoPluma:
                   parseFloat(combinedData.largoPluma) ||
@@ -159,7 +178,6 @@ const Tablas = ({ route, navigation }) => {
                 contrapeso: parseFloat(combinedData.grua?.contrapeso) || 0,
               };
 
-              // Extraer datos para el objeto "cargas" desde la tabla de maniobra
               const cargas = {
                 pesoEquipo: datosTablaManiobra.find(item => item.descripcion === 'Peso elemento')?.cantidad.valor || 0,
                 pesoAparejos: datosTablaManiobra.find(item => item.descripcion === 'Peso aparejos')?.cantidad.valor || 0,
@@ -172,12 +190,10 @@ const Tablas = ({ route, navigation }) => {
                 porcentajeUtilizacion: 0,
               };
 
-              // Aseguramos que 'usuario' sea un string usando la clave correcta de AsyncStorage
               const usuario =
                 (combinedData.usuario && combinedData.usuario.toString()) ||
                 (await AsyncStorage.getItem('usuarioId'));
 
-              // Construir el cuerpo de la petición
               const finalData = {
                 nombreProyecto,
                 usuario,
@@ -186,7 +202,6 @@ const Tablas = ({ route, navigation }) => {
                 cargas,
               };
 
-              // Obtener token de acceso para autorización
               const accessToken = await AsyncStorage.getItem('accessToken');
               if (!accessToken) {
                 alert('No autorizado. Por favor, inicie sesión nuevamente.');
@@ -211,7 +226,6 @@ const Tablas = ({ route, navigation }) => {
                 alert(`Error al guardar: ${data.message}`);
               }
             } catch (error) {
-              console.error('Error en la petición POST:', error);
               alert('Hubo un error al guardar el plan de izaje.');
             }
           },

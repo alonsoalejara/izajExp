@@ -5,14 +5,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
-import { validateSetupAparejos } from '../utils/validation/validateAparejos'; // Mantendremos esta importación
+import { validateSetupAparejos } from '../utils/validation/validateAparejos';
 
 const SetupAparejos = () => {
   const navigation = useNavigation();
   const route = useRoute();
+
+  // Captura todos los conjuntos de datos desde los parámetros de la ruta
+  const [planData, setPlanData] = useState({}); // <-- Nuevo estado para planData
   const [setupGruaData, setSetupGruaData] = useState({});
   const [setupCargaData, setSetupCargaData] = useState({});
-  const [setupRadioData, setSetupRadioData] = useState({});
+  const [setupRadioData, setSetupRadioData] = useState({}); // Aunque no se usa directamente en este componente, se puede mantener para pasarlo
+
   const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null, cantidades: {} });
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState('');
@@ -32,7 +36,6 @@ const SetupAparejos = () => {
   const grilleteSummary = tipoGrillete ? `${tipoGrillete}"` : '';
   const openModal = setter => setter(true);
 
-  // Estados para los errores de validación
   const [errorCantidadManiobra, setErrorCantidadManiobra] = useState('');
   const [errorTipoManiobra, setErrorTipoManiobra] = useState('');
   const [errorCantidadGrilletes, setErrorCantidadGrilletes] = useState('');
@@ -42,21 +45,43 @@ const SetupAparejos = () => {
   const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
 
   useEffect(() => {
-    const fetchData = async () => {
+    // Al cargar el componente, captura todos los parámetros que vienen de la ruta
+    if (route.params?.planData) {
+      setPlanData(route.params.planData);
+      console.log('Datos de SetupPlan recibidos en SetupAparejos:', route.params.planData);
+    }
+    if (route.params?.setupCargaData) {
+      setSetupCargaData(route.params.setupCargaData);
+      console.log('Datos de SetupCarga recibidos en SetupAparejos:', route.params.setupCargaData);
+    }
+    if (route.params?.setupGruaData) {
+      setSetupGruaData(route.params.setupGruaData);
+      console.log('Datos de SetupGrua recibidos en SetupAparejos:', route.params.setupGruaData);
+    }
+    if (route.params?.setupRadioData) {
+      setSetupRadioData(route.params.setupRadioData);
+      console.log('Datos de SetupRadio recibidos en SetupAparejos:', route.params.setupRadioData);
+    }
+
+    // Opcional: Si aún necesitas los datos de AsyncStorage para setupGruaData, puedes mantenerlo
+    // aunque lo ideal es pasarlos por ruta para mantener la coherencia
+    const fetchDataFromAsyncStorage = async () => {
       try {
         const data = await AsyncStorage.getItem('setupGruaData');
-        if (data) setSetupGruaData(JSON.parse(data));
+        if (data) {
+          // Solo si setupGruaData no vino por la ruta, o si quieres sobrescribir
+          if (!route.params?.setupGruaData) {
+            setSetupGruaData(JSON.parse(data));
+          }
+        }
       } catch (e) {
-        console.error('Error fetching setupGruaData:', e);
+        // console.error('Error fetching setupGruaData from AsyncStorage:', e);
       }
     };
-    fetchData();
-    if (route.params?.setupCargaData) setSetupCargaData(route.params.setupCargaData);
-    if (route.params?.setupGruaData) setSetupGruaData(route.params.setupGruaData);
-    if (route.params?.setupRadioData) setSetupRadioData(route.params.setupRadioData);
-  }, [route.params]);
+    fetchDataFromAsyncStorage();
 
-  // --- ARREGLO CLAVE: Reiniciar tipoAparejoSeleccionado y aparejoPorWLL cuando cambia tipoManiobraSeleccionadoSolo ---
+  }, [route.params]); // Dependencia clave para actualizar al recibir nuevos parámetros
+
   useEffect(() => {
     if (tipoManiobraSeleccionadoSolo === 'Eslinga') {
       setTipoAparejoLabel('Selección del tipo de eslinga:');
@@ -68,13 +93,11 @@ const SetupAparejos = () => {
       setTipoAparejoLabel('Selección del tipo de aparejo:');
       setTipoWllLabel('Selección del aparejo según WLL:');
     }
-    // Reiniciar selecciones de aparejo y WLL al cambiar el tipo de maniobra principal
     setTipoAparejoSeleccionado('');
     setAparejoPorWLL('');
   }, [tipoManiobraSeleccionadoSolo]);
 
   useEffect(() => {
-    // Si tipoAparejoSeleccionado cambia, reiniciamos aparejoPorWLL
     setAparejoPorWLL('');
   }, [tipoAparejoSeleccionado]);
 
@@ -88,27 +111,19 @@ const SetupAparejos = () => {
   }, [maniobraSeleccionada?.cantidad]);
 
   useEffect(() => {
-    // La cantidad de grilletes se setea con la cantidad de maniobras
     setCantidadGrilletes(maniobraSeleccionada.cantidad || '');
   }, [maniobraSeleccionada.cantidad]);
 
   const handleManiobraSeleccionada = useCallback((maniobra) => {
     setManiobraSeleccionada(prev => ({ cantidad: prev?.cantidad || '', tipo: { type: maniobra.type, cantidades: maniobra.cantidades } }));
     setTipoManiobraSeleccionadoSolo(maniobra.type);
-    // Estos ya se reinician en el useEffect de tipoManiobraSeleccionadoSolo
-    // setTipoAparejoSeleccionado('');
-    // setAparejoPorWLL('');
     setErrorTipoManiobra('');
   }, []);
 
   const handleNavigate = () => {
-    // Llamar a la validación, pero la función validateSetupAparejos necesita ser modificada también.
-    // Esto se explica en la siguiente sección.
     const errors = validateSetupAparejos(
       maniobraSeleccionada,
-      // Ya no es necesario validar cantidadGrilletes aquí si siempre es igual a cantidadManiobra
-      // y solo importa que se haya seleccionado un tipo de grillete.
-      cantidadGrilletes, // Se envía para consistencia, pero su validación interna cambiará.
+      cantidadGrilletes,
       tipoGrillete,
       tipoAparejoSeleccionado,
       aparejoPorWLL,
@@ -117,37 +132,43 @@ const SetupAparejos = () => {
 
     setErrorCantidadManiobra(errors.cantidadManiobra || '');
     setErrorTipoManiobra(errors.tipoManiobra || '');
-    setErrorCantidadGrilletes(errors.cantidadGrilletes || ''); // Este error debería venir solo si está vacío
+    setErrorCantidadGrilletes(errors.cantidadGrilletes || '');
     setErrorTipoGrillete(errors.tipoGrillete || '');
     setErrorTipoAparejo(errors.tipoAparejo || '');
     setErrorAparejoPorWLL(errors.aparejoPorWLL || '');
     setErrorAnguloSeleccionado(errors.anguloSeleccionado || '');
 
     if (Object.keys(errors).length === 0) {
-      const payload = {
+      const setupAparejosData = {
         cantidadManiobra: maniobraSeleccionada.cantidad,
         eslingaOEstrobo: maniobraSeleccionada.tipo?.type || '',
-        cantidadGrilletes, // Se mantiene, ahora representa la cantidad de grilletes igual a la cantidad de maniobras
+        cantidadGrilletes,
         tipoGrillete: tipoGrillete || '',
         anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
         tipoAparejo: tipoAparejoSeleccionado,
         aparejoPorWLL: aparejoPorWLL,
       };
-      navigation.navigate('Tablas', {
-        setupGruaData,
-        setupCargaData,
-        setupRadioData,
-        setupAparejosData: payload,
-      });
+
+      // Se combinan todos los datos recolectados hasta ahora
+      const allDataToSend = {
+        planData,         // Datos de SetupPlan
+        setupCargaData,   // Datos de SetupCarga
+        setupGruaData,    // Datos de SetupGrua
+        setupAparejosData // Datos de SetupAparejos
+      };
+
+      // --- CONSOLE.LOG PARA LOS DATOS ENVIADOS A Tablas.js ---
+      console.log('Datos enviados a Tablas.js desde SetupAparejos.js:', allDataToSend);
+      // --- FIN CONSOLE.LOG ---
+
+      navigation.navigate('Tablas', allDataToSend);
     }
   };
 
   const isContinuarDisabled =
     !maniobraSeleccionada?.cantidad ||
     !maniobraSeleccionada?.tipo?.type ||
-    // !cantidadGrilletes || // Esta línea ya no es necesaria, ya que se llena automáticamente
-    !tipoGrillete || // Solo validamos que se haya seleccionado un tipo de grillete
-    // parseInt(cantidadGrilletes, 10) !== 1 || // ¡ELIMINAMOS ESTA VALIDACIÓN!
+    !tipoGrillete ||
     !tipoAparejoSeleccionado ||
     !aparejoPorWLL ||
     (['2', '4'].includes(maniobraSeleccionada?.cantidad) && !anguloSeleccionado);
@@ -182,7 +203,7 @@ const SetupAparejos = () => {
             {errorCantidadManiobra && <Text style={[styles.errorText, { top: 5 }]}>{errorCantidadManiobra}</Text>}
             {errorTipoManiobra && <Text style={[styles.errorText, { top: 5 }]}>{errorTipoManiobra}</Text>}
 
-            {maniobraSeleccionada.tipo?.type && ['2', '4'].includes(maniobraSeleccionada.cantidad) && ( // Muestra si tipo está seleccionado y cantidad es 2 o 4
+            {maniobraSeleccionada.tipo?.type && ['2', '4'].includes(maniobraSeleccionada.cantidad) && (
               <View>
                 <View style={[styles.inputWrapper, { top: -5 }]}>
                   <Text style={styles.labelText}>Ángulos de trabajo (°):</Text>
@@ -207,7 +228,6 @@ const SetupAparejos = () => {
               width="101%"
               align="center"
               style={[styles.configButton, errorTipoAparejo ? { borderColor: 'red', borderWidth: 1 } : {}]}
-              // Habilita este botón solo si se ha seleccionado un tipo de maniobra (Eslinga o Estrobo)
               disabled={!tipoManiobraSeleccionadoSolo}
             />
             {errorTipoAparejo && <Text style={[styles.errorText, { top: 3 }]}>{errorTipoAparejo}</Text>}
@@ -223,7 +243,6 @@ const SetupAparejos = () => {
               width="101%"
               align="center"
               style={[styles.configButton, errorAparejoPorWLL ? { borderColor: 'red', borderWidth: 1 } : {}]}
-              // Habilita este botón solo si se ha seleccionado un tipo de aparejo
               disabled={!tipoAparejoSeleccionado}
             />
             {errorAparejoPorWLL && <Text style={[styles.errorText, { top: 3 }]}>{errorAparejoPorWLL}</Text>}
@@ -236,10 +255,10 @@ const SetupAparejos = () => {
                 label="Cantidad"
                 value={cantidadGrilletes}
                 placeholder="Cantidad"
-                editable={false} // Ya no se edita manualmente
+                editable={false}
                 style={[styles.grilleteCantidadInput, errorCantidadGrilletes ? { borderColor: 'red', borderWidth: 1 } : {}]}
-                showControls={false} // No se muestran controles
-                showClearButton={false} // No se muestra botón de limpiar
+                showControls={false}
+                showClearButton={false}
               />
               <Components.ConfigButton
                 label="Grillete"
@@ -253,7 +272,7 @@ const SetupAparejos = () => {
             {errorCantidadGrilletes && <Text style={[styles.errorText, { top: 3 }]}>{errorCantidadGrilletes}</Text>}
             {errorTipoGrillete && <Text style={[styles.errorText, { top: 3 }]}>{errorTipoGrillete}</Text>}
 
-            {tipoGrillete && ( // Mostramos solo si tipoGrillete tiene un valor
+            {tipoGrillete && (
               <View style={styles.selectedManiobraContainer}>
                 <Text style={styles.selectedManiobraText}>{`${cantidadGrilletes} grillete(s) de ${tipoGrillete}"`}</Text>
               </View>
@@ -269,7 +288,7 @@ const SetupAparejos = () => {
               onClose={() => setCantidadModalVisible(false)}
               onSelect={cantidad => {
                 setManiobraSeleccionada(prev => ({ ...prev, cantidad: cantidad.toString() }));
-                setCantidadGrilletes(cantidad.toString()); // Aseguramos que cantidadGrilletes se actualice aquí
+                setCantidadGrilletes(cantidad.toString());
                 setErrorCantidadManiobra('');
               }}
             />

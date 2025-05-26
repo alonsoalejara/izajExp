@@ -3,12 +3,12 @@ import { maniobraOptions } from '../data/maniobraData';
 
 export const obtenerDatosTablas = (datosRecibidos) => {
   console.log("Datos recibidos en obtenerDatosTablas:");
-  // Mostrar los datos de entrada de forma ordenada
   for (const key in datosRecibidos) {
     if (Object.hasOwnProperty.call(datosRecibidos, key)) {
-      console.log(`  ${key}: ${datosRecibidos[key]}`);
+      console.log(`   ${key}: ${datosRecibidos[key]}`);
     }
   }
+
   const radioIzaje = parseFloat(datosRecibidos.radioIzaje) || 0;
   const radioMontaje = parseFloat(datosRecibidos.radioMontaje) || 0;
   const radioMaximo = Math.max(radioIzaje, radioMontaje);
@@ -38,7 +38,7 @@ export const obtenerDatosTablas = (datosRecibidos) => {
         descripcion: datosRecibidos.eslingaOEstrobo.type || datosRecibidos.eslingaOEstrobo,
         largo: `${largo} m`,
         pesoUnitarioManiobra: `${pesoManiobraUnitario} ton`,
-        tension: 'N/A', // Añadimos la columna de tensión con valor N/A
+        tension: 'N/A',
         grillete: tipoGrillete !== 'N/A' ? tipoGrillete + '"' : 'N/A',
         pesoUnitarioGrillete: tipoGrillete !== 'N/A' ? `${pesoGrilleteUnitario} ton` : 'N/A',
         pesoTotalFila: `${pesoTotalFila.toFixed(2)} ton`,
@@ -53,7 +53,7 @@ export const obtenerDatosTablas = (datosRecibidos) => {
       descripcion: `Grillete de ${tipoGrillete}"`,
       largo: 'N/A',
       pesoUnitarioManiobra: 'N/A',
-      tension: 'N/A', // Añadimos la columna de tensión con valor N/A
+      tension: 'N/A',
       grillete: tipoGrillete + '"',
       pesoUnitarioGrillete: `${pesoGrilleteUnitario} ton`,
       pesoTotalFila: `${(pesoGrilleteUnitario * cantidadGrilletes).toFixed(2)} ton`,
@@ -73,15 +73,15 @@ export const obtenerDatosTablas = (datosRecibidos) => {
   const anguloTrabajo = cantidadManiobra > 1 && datosRecibidos.anguloEslinga ? datosRecibidos.anguloEslinga : '0°';
 
   const datosTablaManiobra = [
-    { descripcion: 'Peso elemento',       cantidad: { valor: pesoEquipo,       unidad: 'ton' } },
-    { descripcion: 'Peso aparejos',       cantidad: { valor: totalPesoAparejos.toFixed(2), unidad: 'ton' } },
-    { descripcion: 'Peso gancho',         cantidad: { valor: pesoGancho,         unidad: 'ton' } },
-    { descripcion: 'Peso cable',          cantidad: { valor: pesoCable,          unidad: 'ton' } },
-    { descripcion: 'Peso total',          cantidad: { valor: pesoTotal.toFixed(2),       unidad: 'ton' } },
-    { descripcion: 'Radio de trabajo máximo', cantidad: { valor: radioMaximo,         unidad: 'm'   } },
-    { descripcion: 'Ángulo de trabajo',   cantidad: anguloTrabajo },
-    { descripcion: 'Capacidad de levante',cantidad: { valor: capacidadLevante,       unidad: 'ton' } },
-    { descripcion: '% Utilización',       cantidad: { valor: porcentajeUtilizacion, unidad: '%' } },
+    { descripcion: 'Peso elemento', cantidad: { valor: pesoEquipo, unidad: 'ton' } },
+    { descripcion: 'Peso aparejos', cantidad: { valor: totalPesoAparejos.toFixed(2), unidad: 'ton' } },
+    { descripcion: 'Peso gancho', cantidad: { valor: pesoGancho, unidad: 'ton' } },
+    { descripcion: 'Peso cable', cantidad: { valor: pesoCable, unidad: 'ton' } },
+    { descripcion: 'Peso total', cantidad: { valor: pesoTotal.toFixed(2), unidad: 'ton' } },
+    { descripcion: 'Radio de trabajo máximo', cantidad: { valor: radioMaximo, unidad: 'm' } },
+    { descripcion: 'Ángulo de trabajo', cantidad: anguloTrabajo },
+    { descripcion: 'Capacidad de levante', cantidad: { valor: capacidadLevante, unidad: 'ton' } },
+    { descripcion: '% Utilización', cantidad: { valor: porcentajeUtilizacion, unidad: '%' } },
   ];
 
   const datosTablaGrua = [
@@ -91,10 +91,16 @@ export const obtenerDatosTablas = (datosRecibidos) => {
     { descripcion: 'Contrapeso', cantidad: `${datosRecibidos.contrapeso || 0} ton` },
   ];
 
-  // Datos para la tabla de información del proyecto
   const datosTablaProyecto = [
     { item: 1, descripcion: 'Nombre del proyecto', nombre: datosRecibidos.nombreProyecto || 'N/A' },
-    { item: 2, descripcion: 'Nombre del capataz', nombre: 'N/A' }, // Este dato no se recibe directamente
+    {
+      item: 2,
+      descripcion: 'Nombre del capataz',
+      nombre:
+        datosRecibidos.usuarioId?.nombre && datosRecibidos.usuarioId?.apellido
+          ? `${datosRecibidos.usuarioId.nombre} ${datosRecibidos.usuarioId.apellido}`
+          : 'N/A',
+    },
     { item: 3, descripcion: 'Supervisor', nombre: datosRecibidos.supervisor?.nombreCompleto || 'N/A' },
     { item: 4, descripcion: 'Jéfe Área', nombre: datosRecibidos.jefeArea?.nombreCompleto || 'N/A' },
   ];
@@ -103,6 +109,6 @@ export const obtenerDatosTablas = (datosRecibidos) => {
     datosTablaManiobra,
     datosTablaGrua,
     datosTablaPesoAparejos,
-    datosTablaProyecto, // Retornamos la tabla de información del proyecto
+    datosTablaProyecto,
   };
 };

@@ -6,7 +6,7 @@ import Components from '../Components.index';
 import tubularPoliesterData from '../../data/tubularPoliesterData';
 import tubularTrenzadasPoliesterData from '../../data/tubularTrenzadasPoliesterData';
 import tubularCargaPesadaData from '../../data/tubularCargaPesadaData';
-import cableAceroSuperloopData from '../../data/cableAceroSuperloopData'; // Asegúrate de que esta importación sea correcta
+import cableAceroSuperloopData from '../../data/cableAceroSuperloopData';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -46,9 +46,6 @@ const BSWLL = ({
     const ang = anguloSeleccionado ? parseInt(anguloSeleccionado, 10) : 0;
     let opciones = [];
 
-    console.log('BSWLL - Recibido tipoAparejo (antes de la lógica):', tipoAparejo);
-    console.log('BSWLL - Angulo seleccionado:', anguloSeleccionado, 'parseado como:', ang);
-
     if (tipoAparejo === 'Tubulares de poliester') {
       opciones = tubularPoliesterData.map(item => {
         const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
@@ -82,22 +79,11 @@ const BSWLL = ({
         '10" - Naranja',
         '12" - Naranja'
       ];
-    }
-    // LÓGICA PARA 'Cable de Acero Superloop' - ¡Volvemos a usar cableAceroSuperloopData!
-    else if (tipoAparejo === 'Cable de Acero Superloop') {
-        console.log('BSWLL - Procesando Cable de Acero Superloop data...');
+    } else if (tipoAparejo === 'Cable de Acero Superloop') {
         opciones = cableAceroSuperloopData.map(item => {
-            // Asegúrate de que el ángulo 'ang' exista en las toneladas del item.
-            // Si no existe, puedes definir un comportamiento por defecto, como usar el valor para 0 grados.
             const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
-
-            // Aquí es donde construimos la string para mostrar.
-            // Utilizamos directamente item.nombre y el valor de tonelaje.
             return `${item.nombre} (${ton} ton)`;
         });
-        console.log('BSWLL - Opciones generadas para Cable de Acero Superloop:', opciones);
-    } else {
-        console.log('BSWLL - tipoAparejo no reconocido o no se cumplen las condiciones:', tipoAparejo);
     }
 
     setOpcionesWLL(opciones);
@@ -171,14 +157,13 @@ const BSWLL = ({
               onPress={() => handleSelect(option)}
             >
               <View style={styles.optionContent}>
-                {/* Lógica para el círculo de color/negro */}
                 {tipoAparejo === 'Cable de Acero Superloop' ? (
                   <View
                     style={{
                       width: 10,
                       height: 20,
                       borderRadius: 10,
-                      backgroundColor: '#000000', // Color negro
+                      backgroundColor: '#000000',
                       marginRight: 10,
                       borderWidth: 1,
                       borderColor: '#999'

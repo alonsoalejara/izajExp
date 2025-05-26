@@ -17,8 +17,14 @@ import { evaluateMovement, capacityTables } from '../data/loadCapacity';
 const SetupGrua = () => {
   const navigation = useNavigation();
   const route = useRoute();
+
+  // Captura ambos conjuntos de datos desde los parámetros de la ruta
+  const initialPlanData = route.params?.planData; // <-- Nuevo: Captura los datos de SetupPlan
   const initialCargaData = route.params?.setupCargaData;
+
+  const [planData, setPlanData] = useState(initialPlanData || {}); // <-- Nuevo estado para planData
   const [setupCargaData, setSetupCargaData] = useState(initialCargaData || {});
+
   const [isGruaModalVisible, setGruaModalVisible] = useState(false);
   const [isLargoPlumaModalVisible, setLargoPlumaModalVisible] = useState(false);
   const [grua, setGrua] = useState('');
@@ -41,20 +47,24 @@ const SetupGrua = () => {
       try {
         const storedUsuarioId = await AsyncStorage.getItem('usuarioId');
         if (storedUsuarioId) setUsuarioId(storedUsuarioId);
-        else console.warn("No se encontró el usuarioId en AsyncStorage");
       } catch (error) {
-        console.error("Error al obtener usuarioId:", error);
+        // console.error("Error al obtener usuarioId:", error);
       }
     };
     fetchUserId();
-  }, []);
 
-useEffect(() => {
-    const izajeVal        = parseFloat(radioIzaje)        || 0;
-    const montajeVal      = parseFloat(radioMontaje)      || 0;
+    // Console.log para verificar los datos de SetupPlan y SetupCarga al cargar la pantalla
+    console.log('Datos de SetupPlan recibidos en SetupGrua:', initialPlanData);
+    console.log('Datos de SetupCarga recibidos en SetupGrua:', initialCargaData);
+
+  }, [initialPlanData, initialCargaData]); // Añade las dependencias para que se ejecute si cambian
+
+  useEffect(() => {
+    const izajeVal = parseFloat(radioIzaje) || 0;
+    const montajeVal = parseFloat(radioMontaje) || 0;
     const boomLengthStr = largoPluma?.split(' ')[0];
     const boomLengthNum = parseFloat(boomLengthStr) || 0;
-    const pesoCargaVal   = parseFloat(setupCargaData.peso) || 0;
+    const pesoCargaVal = parseFloat(setupCargaData.peso) || 0;
 
     const hasGrua = !!grua;
     const hasRadioIzaje = radioIzaje !== '';
@@ -96,7 +106,7 @@ useEffect(() => {
     }
 
     const capInicial = esRadioIzajeEnRango && boomLengthNum ? evaluateMovement(izajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
-    const capFinal   = esRadioMontajeEnRango && boomLengthNum ? evaluateMovement(montajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
+    const capFinal = esRadioMontajeEnRango && boomLengthNum ? evaluateMovement(montajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
 
     const menorCapacidad = (capInicial != null && capFinal != null)
       ? Math.min(capInicial, capFinal)
@@ -135,7 +145,7 @@ useEffect(() => {
 
     return !isNaN(radioVal) && radioVal >= radios[0] && radioVal <= radios[radios.length - 1];
   };
-  
+
   const openModal = setter => setter(true);
 
   const handleNavigateToSetupAparejos = async () => {
@@ -145,7 +155,9 @@ useEffect(() => {
     setErrorGrua(errors.grua || '');
     setErrorRadioIzaje(errIz ? 'Este campo es requerido' : '');
     setErrorRadioMontaje(errMont ? 'Este campo es requerido' : '');
-    const setupGruaData = {
+
+    // Se recolectan los datos a enviar
+    const dataToSend = {
       nombreGrua: grua?.nombre || '',
       largoPluma,
       anguloInclinacion: `${anguloInclinacionVisual}°`,
@@ -162,13 +174,22 @@ useEffect(() => {
         : grua?.capacidadLevante || '',
     };
 
-    for (const key in setupGruaData) {
-      if (Object.prototype.hasOwnProperty.call(setupGruaData, key)) {
-        console.log(`  ${key}: ${setupGruaData[key]}`);
-      }
+    // Combina todos los datos para enviar a SetupAparejos
+    const allDataToSend = {
+      planData: planData, // Datos de SetupPlan
+      setupCargaData: setupCargaData, // Datos de SetupCarga
+      setupGruaData: dataToSend, // Datos de SetupGrua
+    };
+
+    // --- CONSOLE.LOG PARA LOS DATOS ENVIADOS A SetupAparejos.js ---
+    console.log('Datos enviados a SetupAparejos.js desde SetupGrua.js:', allDataToSend);
+    // --- FIN CONSOLE.LOG ---
+
+    if (Object.keys(errors).length === 0 && !errIz && !errMont && !radioIzajeError && !radioMontajeError) {
+      await AsyncStorage.setItem('setupGruaData', JSON.stringify(dataToSend));
+      // Envía todos los datos combinados
+      navigation.navigate('SetupAparejos', allDataToSend);
     }
-    await AsyncStorage.setItem('setupGruaData', JSON.stringify(setupGruaData));
-    navigation.navigate('SetupAparejos', { setupGruaData, setupCargaData });
   };
 
   const isInputsDisabled = !grua;
@@ -236,7 +257,7 @@ useEffect(() => {
                     placeholder="Radio"
                     editable={!isInputsDisabled}
                     showControls={false}
-                    style={[styles.inputField, { width: 160, marginTop: 10 } , radioIzajeError && { borderColor: 'red', borderWidth: 3 }]}
+                    style={[styles.inputField, { width: 160, marginTop: 10 }, radioIzajeError && { borderColor: 'red', borderWidth: 3 }]}
                   />
                   {errorRadioIzaje && <Text style={styles.errorText}>{errorRadioIzaje}</Text>}
                 </View>
@@ -259,7 +280,7 @@ useEffect(() => {
                   style={[
                     styles.labelText,
                     { marginLeft: 8 },
-                    !movementEval.optimum && { color: 'red' }, // Aplica color rojo si !optimum
+                    !movementEval.optimum && { color: 'red' },
                   ]}
                 >
                   Optimal: {movementEval.message}
