@@ -47,8 +47,7 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
       // Fila de descripción principal (Item y Descripción)
       descripcionPrincipal: {
         item: i + 1,
-        // CAMBIO AQUÍ: Se quita aparejoWLL de la descripción en tablasData.js
-        descripcion: `${tipoEslingaOEstrobo} ${tipoAparejoDescripcion}`, // Ahora será "Eslinga Faja", "Estrobo Cadena"
+        descripcion: `${tipoEslingaOEstrobo} ${tipoAparejoDescripcion}`,
       },
       // Datos detallados para las filas siguientes
       detalles: [
@@ -62,7 +61,7 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
         },
         {
           label: 'Tensión',
-          valor: 'N/A', // Asumiendo que la tensión se calculará o se deja en N/A
+          valor: 'N/A', // O
         },
         {
           label: 'Grillete',
@@ -77,7 +76,6 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
   }
 
   // Si no hay aparejos de maniobra pero sí grilletes, agregarlos como un ítem independiente.
-  // Esto mantiene la lógica original de agregar grilletes si solo se seleccionaron grilletes.
   if (cantidadManiobra === 0 && datosRecibidos.tipoGrillete) {
     totalPesoAparejos += (pesoGrilleteUnitario * cantidadGrilletes);
     datosTablaAparejosIndividuales.push({
@@ -88,7 +86,7 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
       detalles: [
         { label: 'Largo', valor: 'N/A' },
         { label: 'Peso', valor: 'N/A' },
-        { label: 'Tensión', valor: 'N/A' },
+        { label: 'Tensión', valor: 'N/A' }, // O 'Cálculo Pendiente'
         { label: 'Grillete', valor: tipoGrillete + '"' },
         { label: 'Peso Grillete', valor: `${pesoGrilleteUnitario.toFixed(2)} ton` },
       ],

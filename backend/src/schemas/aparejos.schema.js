@@ -23,6 +23,26 @@ const aparejosBodySchema = Joi.object({
     "number.min": "El peso total no puede ser negativo.",
     "any.required": "El peso total es obligatorio.",
   }),
+  largo: Joi.number().min(0).required().messages({
+    "number.base": "El largo debe ser un número.",
+    "number.min": "El largo no puede ser negativo.",
+    "any.required": "El largo es obligatorio.",
+  }),
+  grillete: Joi.string().trim().required().messages({
+    "string.empty": "El grillete no puede estar vacío.",
+    "any.required": "El grillete es obligatorio.",
+    "string.base": "El grillete debe ser de tipo string.",
+  }),
+  pesoGrillete: Joi.number().min(0).required().messages({
+    "number.base": "El peso del grillete debe ser un número.",
+    "number.min": "El peso del grillete no puede ser negativo.",
+    "any.required": "El peso del grillete es obligatorio.",
+  }),
+  tension: Joi.string().trim().required().messages({
+    "string.empty": "La tensión no puede estar vacía.",
+    "any.required": "La tensión es obligatoria.",
+    "string.base": "La tensión debe ser de tipo string.",
+  }),
 }).messages({
   "object.unknown": "No se permiten propiedades adicionales.",
 });

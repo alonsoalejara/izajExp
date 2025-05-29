@@ -3,7 +3,6 @@ import { View, Text, Alert, ScrollView } from 'react-native';
 import { generarPDF } from '../utils/PDF/PDFGenerator';
 import styles from '../styles/TablasStyles.js';
 import Components from '../components/Components.index.js';
-// Asegúrate de importar correctamente la función de obtener datos
 import { obtenerDatosTablas } from '../data/tablasData';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getApiUrl from '../utils/apiUrl';
@@ -158,11 +157,10 @@ const Tablas = ({ route, navigation }) => {
                 cantidad: 1, // Cada entrada es un aparejo individual
                 pesoUnitario: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0),
                 pesoTotal: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) + parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
-                // Aquí puedes agregar otros detalles si la API lo requiere,
-                // como largo, tension, tipo de grillete, etc.
                 largo: parseFloat(item.detalles.find(d => d.label === 'Largo')?.valor.replace(' m', '') || 0),
                 grillete: item.detalles.find(d => d.label === 'Grillete')?.valor,
                 pesoGrillete: parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
+                tension: item.detalles.find(d => d.label === 'Tensión')?.valor || 'N/A', // Agregada la tensión
               }));
 
               const datos = {
@@ -184,7 +182,6 @@ const Tablas = ({ route, navigation }) => {
                 capacidadLevante: datosTablaManiobra.find(item => item.descripcion === 'Capacidad de levante')?.cantidad.valor || 0,
                 porcentajeUtilizacion: datosTablaManiobra.find(item => item.descripcion === '% Utilización')?.cantidad.valor || 0,
               };
-
 
               const finalData = {
                 nombreProyecto,

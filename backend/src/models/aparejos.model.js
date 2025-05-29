@@ -17,6 +17,22 @@ const aparejosSchema = new Schema(
         pesoTotal: {
             type: Number,
             required: true
+        },
+        largo: {
+            type: Number,
+            required: true
+        },
+        grillete: {
+            type: String,
+            required: true
+        },
+        pesoGrillete: {
+            type: Number,
+            required: true
+        },
+        tension: {
+            type: String,
+            required: true
         }
     },
     {

@@ -16,7 +16,7 @@ async function getAparejos() {
 
 async function createAparejo(aparejo) {
   try {
-    const { descripcion, cantidad, pesoUnitario, pesoTotal } = aparejo;
+    const { descripcion, cantidad, pesoUnitario, pesoTotal, largo, grillete, pesoGrillete, tension } = aparejo;
 
     const aparejoFound = await Aparejo.findOne({ descripcion });
     if (aparejoFound) return [null, "El aparejo ya existe"];
@@ -25,7 +25,11 @@ async function createAparejo(aparejo) {
       descripcion,
       cantidad,
       pesoUnitario,
-      pesoTotal
+      pesoTotal,
+      largo,
+      grillete,
+      pesoGrillete,
+      tension
     });
 
     await newAparejo.save();
@@ -50,7 +54,7 @@ async function getAparejoById(id) {
 
 async function updateAparejo(id, aparejo) {
   try {
-    const { descripcion, cantidad, pesoUnitario, pesoTotal } = aparejo;
+    const { descripcion, cantidad, pesoUnitario, pesoTotal, largo, grillete, pesoGrillete, tension } = aparejo; // Desestructuramos los nuevos campos
 
     const aparejoFound = await Aparejo.findById(id);
     if (!aparejoFound) {
@@ -60,11 +64,15 @@ async function updateAparejo(id, aparejo) {
 
     const aparejoUpdated = await Aparejo.findByIdAndUpdate(
       id,
-      { 
+      {
         descripcion,
         cantidad,
         pesoUnitario,
         pesoTotal,
+        largo,
+        grillete,
+        pesoGrillete,
+        tension
       },
       { new: true, runValidators: true }
     );
