@@ -20,49 +20,81 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
   const medidaS2Maniobra = parseFloat(datosRecibidos.medidaS2Maniobra) || 0;
   const cantidadManiobra = parseInt(datosRecibidos.cantidadManiobra, 10) || 0;
 
-  const pesoManiobraUnitario = maniobraOptions.find(m => m.label === datosRecibidos.eslingaOEstrobo)?.peso || 0;
+  // Obtener la descripción del tipo de aparejo (Eslinga/Estrobo) y su WLL.
+  const tipoAparejoDescripcion = datosRecibidos.tipoAparejo || 'N/A'; // Ej: "Faja", "Cadena"
+  const aparejoWLL = datosRecibidos.aparejoPorWLL || 'N/A'; // Ej: "10 ton", "2 ton"
+  const tipoEslingaOEstrobo = datosRecibidos.eslingaOEstrobo || 'N/A'; // Ej: "Eslinga", "Estrobo"
+
+  // Buscar el peso unitario de la maniobra (Eslinga/Estrobo)
+  const pesoManiobraUnitario = maniobraOptions.find(m => m.label === tipoEslingaOEstrobo)?.peso || 0;
 
   const tipoGrillete = datosRecibidos.tipoGrillete || 'N/A';
   const pesoGrilleteUnitario = grilleteOptions.find(g => g.pulgada === tipoGrillete)?.peso || 0;
   const cantidadGrilletes = parseFloat(datosRecibidos.cantidadGrilletes) || 0;
 
-  const datosTablaPesoAparejos = [];
+  const datosTablaAparejosIndividuales = [];
   let totalPesoAparejos = 0;
 
+  // Si hay aparejos de maniobra (eslingas/estrobo)
   for (let i = 0; i < cantidadManiobra; i++) {
-    if (datosRecibidos.eslingaOEstrobo) {
-      const itemLabel = cantidadManiobra === 1 ? 'S1' : cantidadManiobra === 2 ? (i === 0 ? 'S1' : 'S2') : cantidadManiobra === 4 ? (i < 2 ? 'S1' : 'S2') : `Ítem ${i + 1}`;
-      const largo = cantidadManiobra === 1 ? medidaS1Maniobra : cantidadManiobra === 2 ? (i === 0 ? medidaS1Maniobra : medidaS2Maniobra) : cantidadManiobra === 4 ? (i < 2 ? medidaS1Maniobra : medidaS2Maniobra) : 'N/A';
-      const pesoGrilleteFila = tipoGrillete !== 'N/A' ? pesoGrilleteUnitario : 0;
-      const pesoTotalFila = pesoManiobraUnitario + pesoGrilleteFila;
-      totalPesoAparejos += pesoTotalFila;
+    const itemLabel = `${tipoEslingaOEstrobo} ${i + 1}`; // Ej: "Eslinga 1", "Estrobo 2"
+    const largo = cantidadManiobra === 1 ? medidaS1Maniobra : cantidadManiobra === 2 ? (i === 0 ? medidaS1Maniobra : medidaS2Maniobra) : cantidadManiobra === 4 ? (i < 2 ? medidaS1Maniobra : medidaS2Maniobra) : 'N/A';
+    const pesoGrilleteFila = (tipoGrillete !== 'N/A' && i < cantidadGrilletes) ? pesoGrilleteUnitario : 0; // Asigna grilletes de forma individual
+    const pesoTotalAparejoIndividual = pesoManiobraUnitario + pesoGrilleteFila;
+    totalPesoAparejos += pesoTotalAparejoIndividual;
 
-      datosTablaPesoAparejos.push({
-        item: itemLabel,
-        descripcion: datosRecibidos.eslingaOEstrobo.type || datosRecibidos.eslingaOEstrobo,
-        largo: `${largo} m`,
-        pesoUnitarioManiobra: `${pesoManiobraUnitario} ton`,
-        tension: 'N/A',
-        grillete: tipoGrillete !== 'N/A' ? tipoGrillete + '"' : 'N/A',
-        pesoUnitarioGrillete: tipoGrillete !== 'N/A' ? `${pesoGrilleteUnitario} ton` : 'N/A',
-        pesoTotalFila: `${pesoTotalFila.toFixed(2)} ton`,
-      });
-    }
-  }
-
-  if (cantidadManiobra === 0 && datosRecibidos.tipoGrillete) {
-    totalPesoAparejos += (pesoGrilleteUnitario * cantidadGrilletes);
-    datosTablaPesoAparejos.push({
-      item: 'Grillete',
-      descripcion: `Grillete de ${tipoGrillete}"`,
-      largo: 'N/A',
-      pesoUnitarioManiobra: 'N/A',
-      tension: 'N/A',
-      grillete: tipoGrillete + '"',
-      pesoUnitarioGrillete: `${pesoGrilleteUnitario} ton`,
-      pesoTotalFila: `${(pesoGrilleteUnitario * cantidadGrilletes).toFixed(2)} ton`,
+    datosTablaAparejosIndividuales.push({
+      // Fila de descripción principal (Item y Descripción)
+      descripcionPrincipal: {
+        item: i + 1,
+        // CAMBIO AQUÍ: Se quita aparejoWLL de la descripción en tablasData.js
+        descripcion: `${tipoEslingaOEstrobo} ${tipoAparejoDescripcion}`, // Ahora será "Eslinga Faja", "Estrobo Cadena"
+      },
+      // Datos detallados para las filas siguientes
+      detalles: [
+        {
+          label: 'Largo',
+          valor: `${largo} m`,
+        },
+        {
+          label: 'Peso',
+          valor: `${pesoManiobraUnitario.toFixed(2)} ton`,
+        },
+        {
+          label: 'Tensión',
+          valor: 'N/A', // Asumiendo que la tensión se calculará o se deja en N/A
+        },
+        {
+          label: 'Grillete',
+          valor: (tipoGrillete !== 'N/A' && i < cantidadGrilletes) ? tipoGrillete + '"' : 'N/A',
+        },
+        {
+          label: 'Peso Grillete',
+          valor: (tipoGrillete !== 'N/A' && i < cantidadGrilletes) ? `${pesoGrilleteUnitario.toFixed(2)} ton` : 'N/A',
+        },
+      ],
     });
   }
+
+  // Si no hay aparejos de maniobra pero sí grilletes, agregarlos como un ítem independiente.
+  // Esto mantiene la lógica original de agregar grilletes si solo se seleccionaron grilletes.
+  if (cantidadManiobra === 0 && datosRecibidos.tipoGrillete) {
+    totalPesoAparejos += (pesoGrilleteUnitario * cantidadGrilletes);
+    datosTablaAparejosIndividuales.push({
+      descripcionPrincipal: {
+        item: 1, // Si solo hay grilletes, será el item 1
+        descripcion: `Grillete de ${tipoGrillete}"`,
+      },
+      detalles: [
+        { label: 'Largo', valor: 'N/A' },
+        { label: 'Peso', valor: 'N/A' },
+        { label: 'Tensión', valor: 'N/A' },
+        { label: 'Grillete', valor: tipoGrillete + '"' },
+        { label: 'Peso Grillete', valor: `${pesoGrilleteUnitario.toFixed(2)} ton` },
+      ],
+    });
+  }
+
 
   const pesoEquipo = parseFloat(datosRecibidos.peso) || 0;
   const pesoGancho = parseFloat(datosRecibidos.pesoGancho) || 0;
@@ -130,7 +162,7 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
   return {
     datosTablaManiobra,
     datosTablaGrua,
-    datosTablaPesoAparejos,
+    datosTablaAparejosIndividuales,
     datosTablaProyecto,
   };
 };

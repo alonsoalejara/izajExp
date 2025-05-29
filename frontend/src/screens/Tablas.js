@@ -3,6 +3,7 @@ import { View, Text, Alert, ScrollView } from 'react-native';
 import { generarPDF } from '../utils/PDF/PDFGenerator';
 import styles from '../styles/TablasStyles.js';
 import Components from '../components/Components.index.js';
+// Asegúrate de importar correctamente la función de obtener datos
 import { obtenerDatosTablas } from '../data/tablasData';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getApiUrl from '../utils/apiUrl';
@@ -11,18 +12,12 @@ import { calculateGeometry } from '../utils/calculateGeometry';
 const Tablas = ({ route, navigation }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [nombreProyecto, setNombreProyecto] = useState('');
-  const [capatazNombre, setCapatazNombre] = useState('N/A'); // Estado para el nombre del capataz
+  const [capatazNombre, setCapatazNombre] = useState('N/A');
   const [supervisorNombre, setSupervisorNombre] = useState('');
   const [jefeAreaNombre, setJefeAreaNombre] = useState('');
   const [userId, setUserId] = useState(null);
 
   const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData } = route.params || {};
-
-  console.log('Datos recibidos de SetupPlan.js:', {
-    capatazId: planData?.capataz?._id,
-    supervisorId: planData?.supervisor?._id,
-    jefeAreaId: planData?.jefeArea?._id,
-  });
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -69,7 +64,8 @@ const Tablas = ({ route, navigation }) => {
     ? ((geometry.cg.cgZ / combinedData.alto) * 100).toFixed(0)
     : null;
 
-  const { datosTablaManiobra, datosTablaGrua, datosTablaPesoAparejos, datosTablaProyecto } = obtenerDatosTablas({
+  // Actualiza la desestructuración para obtener la nueva variable
+  const { datosTablaManiobra, datosTablaGrua, datosTablaAparejosIndividuales, datosTablaProyecto } = obtenerDatosTablas({
     ...combinedData,
     capatazId: planData?.capataz?._id,
     supervisorId: planData?.supervisor?._id,
@@ -101,13 +97,30 @@ const Tablas = ({ route, navigation }) => {
   ];
 
   const handlePDF = async () => {
-    const rows = datosTablaPesoAparejos.map((row, index) => ({
-      item: index + 1,
-      descripcion: row.descripcion,
-      cantidad: row.cantidad,
-      pesoUnitario: parseFloat(row.pesoUnitario),
-      pesoTotal: row.pesoTotal,
-    }));
+    // La generación del PDF necesitará ser adaptada para la nueva estructura
+    // Por ahora, se mantendrá la lógica de antes pero ten en cuenta que necesitarás ajustarla.
+    const rows = datosTablaAparejosIndividuales.flatMap((aparejo, index) => {
+      const mainRow = {
+        item: aparejo.descripcionPrincipal.item,
+        descripcion: aparejo.descripcionPrincipal.descripcion,
+        cantidad: 1, // Ya que cada item es una "tabla" individual
+        pesoUnitario: parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0),
+        pesoTotal: parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) + parseFloat(aparejo.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
+      };
+
+      // Si deseas incluir los detalles de Largo, Tensión, etc. en el PDF,
+      // deberás agregarlos como filas adicionales o adaptar el generador de PDF.
+      return mainRow;
+    });
+
+    // Calcular el totalPesoAparejos desde la nueva estructura
+    const totalPesoAparejos = datosTablaAparejosIndividuales.reduce(
+      (total, aparejo) => total + (
+        parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) +
+        parseFloat(aparejo.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0)
+      ),
+      0
+    );
 
     const cargaRows = datosTablaManiobra.map((row, index) => ({
       item: index + 1,
@@ -124,11 +137,6 @@ const Tablas = ({ route, navigation }) => {
       valor: row.cantidad,
     }));
 
-    const totalPesoAparejos = datosTablaPesoAparejos.reduce(
-      (total, row) => total + parseFloat(row.pesoTotal.replace(' ton', '') || 0),
-      0
-    );
-
     const selectedGrua = combinedData.grua;
 
     await generarPDF(selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows, nombreProyecto);
@@ -144,11 +152,17 @@ const Tablas = ({ route, navigation }) => {
           text: 'Confirmar',
           onPress: async () => {
             try {
-              const aparejos = datosTablaPesoAparejos.map(item => ({
-                descripcion: item.descripcion,
-                cantidad: item.cantidad,
-                pesoUnitario: parseFloat(item.pesoUnitario),
-                pesoTotal: parseFloat(item.pesoTotal.replace(' ton', '') || 0),
+              // Adaptar la estructura de aparejos para guardar en la base de datos
+              const aparejos = datosTablaAparejosIndividuales.map(item => ({
+                descripcion: item.descripcionPrincipal.descripcion,
+                cantidad: 1, // Cada entrada es un aparejo individual
+                pesoUnitario: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0),
+                pesoTotal: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) + parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
+                // Aquí puedes agregar otros detalles si la API lo requiere,
+                // como largo, tension, tipo de grillete, etc.
+                largo: parseFloat(item.detalles.find(d => d.label === 'Largo')?.valor.replace(' m', '') || 0),
+                grillete: item.detalles.find(d => d.label === 'Grillete')?.valor,
+                pesoGrillete: parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
               }));
 
               const datos = {
@@ -229,7 +243,43 @@ const Tablas = ({ route, navigation }) => {
       <ScrollView style={styles.tableContainer}>
         <Components.Tabla titulo="Información del proyecto" data={datosTablaProyecto} />
         <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
-        <Components.Tabla titulo="Aparejos" data={datosTablaPesoAparejos} />
+        {/* Renderiza las tablas de aparejos individuales */}
+        <Text style={[styles.sectionTitle, { top: 10, left: 20 }]}>Aparejos</Text>
+        {datosTablaAparejosIndividuales.map((aparejo, index) => (
+          <View key={`aparejo-${index}`}>
+            {/* Primera fila: Item y Descripción */}
+            <View style={styles.tableSection}>
+              <View style={styles.tableHeader}>
+                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Ítem</Text>
+                <Text style={[styles.headerText, { flex: 2, textAlign: 'left' }]}>Descripción</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 10 }]}>{aparejo.descripcionPrincipal.item}</Text>
+                <Text style={[styles.cell, { flex: 2, textAlign: 'left' }]}>{aparejo.descripcionPrincipal.descripcion}</Text>
+              </View>
+            </View>
+
+            {/* Segunda "tabla" para los detalles del aparejo */}
+            <View style={[styles.tableSection, { marginTop: -10 }]}>
+              <View style={styles.tableHeader}>
+                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Largo</Text>
+                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Peso</Text>
+                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 20 }]}>Tensión</Text>
+                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 28 }]}>Grillete</Text>
+                <Text style={[styles.headerText, { flex: 2, textAlign: 'right', right: 10 }]}>Peso Grillete</Text>
+              </View>
+              <View style={styles.row}>
+                {aparejo.detalles.map((detail, detailIndex) => (
+                  <Text key={`detail-${index}-${detailIndex}`} style={[styles.cell, { flex: 1, right: 12 }]}>
+                    {detail.valor}
+                  </Text>
+                ))}
+              </View>
+            </View>
+            {/* Opcional: Separador visual entre aparejos si se ven muy juntos */}
+            <View style={{ marginTop: -10 }} />
+          </View>
+        ))}
         <Components.Tabla titulo="Datos de la maniobra" data={datosTablaManiobra} />
         <Components.Tabla titulo="Cálculo de centro de gravedad:" data={datosTablaXYZ} />
       </ScrollView>
