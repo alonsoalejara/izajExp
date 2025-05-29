@@ -17,14 +17,10 @@ import { evaluateMovement, capacityTables } from '../data/loadCapacity';
 const SetupGrua = () => {
   const navigation = useNavigation();
   const route = useRoute();
-
-  // Captura ambos conjuntos de datos desde los parámetros de la ruta
-  const initialPlanData = route.params?.planData; // <-- Nuevo: Captura los datos de SetupPlan
+  const initialPlanData = route.params?.planData;
   const initialCargaData = route.params?.setupCargaData;
-
-  const [planData, setPlanData] = useState(initialPlanData || {}); // <-- Nuevo estado para planData
+  const [planData, setPlanData] = useState(initialPlanData || {});
   const [setupCargaData, setSetupCargaData] = useState(initialCargaData || {});
-
   const [isGruaModalVisible, setGruaModalVisible] = useState(false);
   const [isLargoPlumaModalVisible, setLargoPlumaModalVisible] = useState(false);
   const [grua, setGrua] = useState('');
@@ -53,11 +49,10 @@ const SetupGrua = () => {
     };
     fetchUserId();
 
-    // Console.log para verificar los datos de SetupPlan y SetupCarga al cargar la pantalla
     console.log('Datos de SetupPlan recibidos en SetupGrua:', initialPlanData);
     console.log('Datos de SetupCarga recibidos en SetupGrua:', initialCargaData);
 
-  }, [initialPlanData, initialCargaData]); // Añade las dependencias para que se ejecute si cambian
+  }, [initialPlanData, initialCargaData]);
 
   useEffect(() => {
     const izajeVal = parseFloat(radioIzaje) || 0;
@@ -158,6 +153,7 @@ const SetupGrua = () => {
 
     // Se recolectan los datos a enviar
     const dataToSend = {
+      grua: grua,
       nombreGrua: grua?.nombre || '',
       largoPluma,
       anguloInclinacion: `${anguloInclinacionVisual}°`,
@@ -176,14 +172,12 @@ const SetupGrua = () => {
 
     // Combina todos los datos para enviar a SetupAparejos
     const allDataToSend = {
-      planData: planData, // Datos de SetupPlan
-      setupCargaData: setupCargaData, // Datos de SetupCarga
-      setupGruaData: dataToSend, // Datos de SetupGrua
+      planData: planData,
+      setupCargaData: setupCargaData,
+      setupGruaData: dataToSend,
     };
 
-    // --- CONSOLE.LOG PARA LOS DATOS ENVIADOS A SetupAparejos.js ---
     console.log('Datos enviados a SetupAparejos.js desde SetupGrua.js:', allDataToSend);
-    // --- FIN CONSOLE.LOG ---
 
     if (Object.keys(errors).length === 0 && !errIz && !errMont && !radioIzajeError && !radioMontajeError) {
       await AsyncStorage.setItem('setupGruaData', JSON.stringify(dataToSend));

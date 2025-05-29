@@ -63,7 +63,6 @@ const Tablas = ({ route, navigation }) => {
     ? ((geometry.cg.cgZ / combinedData.alto) * 100).toFixed(0)
     : null;
 
-  // Actualiza la desestructuración para obtener la nueva variable
   const { datosTablaManiobra, datosTablaGrua, datosTablaAparejosIndividuales, datosTablaProyecto } = obtenerDatosTablas({
     ...combinedData,
     capatazId: planData?.capataz?._id,
@@ -96,23 +95,17 @@ const Tablas = ({ route, navigation }) => {
   ];
 
   const handlePDF = async () => {
-    // La generación del PDF necesitará ser adaptada para la nueva estructura
-    // Por ahora, se mantendrá la lógica de antes pero ten en cuenta que necesitarás ajustarla.
     const rows = datosTablaAparejosIndividuales.flatMap((aparejo, index) => {
       const mainRow = {
         item: aparejo.descripcionPrincipal.item,
         descripcion: aparejo.descripcionPrincipal.descripcion,
-        cantidad: 1, // Ya que cada item es una "tabla" individual
+        cantidad: 1,
         pesoUnitario: parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0),
         pesoTotal: parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) + parseFloat(aparejo.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
       };
-
-      // Si deseas incluir los detalles de Largo, Tensión, etc. en el PDF,
-      // deberás agregarlos como filas adicionales o adaptar el generador de PDF.
       return mainRow;
     });
 
-    // Calcular el totalPesoAparejos desde la nueva estructura
     const totalPesoAparejos = datosTablaAparejosIndividuales.reduce(
       (total, aparejo) => total + (
         parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) +
@@ -151,16 +144,15 @@ const Tablas = ({ route, navigation }) => {
           text: 'Confirmar',
           onPress: async () => {
             try {
-              // Adaptar la estructura de aparejos para guardar en la base de datos
               const aparejos = datosTablaAparejosIndividuales.map(item => ({
                 descripcion: item.descripcionPrincipal.descripcion,
-                cantidad: 1, // Cada entrada es un aparejo individual
+                cantidad: 1,
                 pesoUnitario: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0),
                 pesoTotal: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) + parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
                 largo: parseFloat(item.detalles.find(d => d.label === 'Largo')?.valor.replace(' m', '') || 0),
                 grillete: item.detalles.find(d => d.label === 'Grillete')?.valor,
                 pesoGrillete: parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
-                tension: item.detalles.find(d => d.label === 'Tensión')?.valor || 'N/A', // Agregada la tensión
+                tension: item.detalles.find(d => d.label === 'Tensión')?.valor || 'N/A',
               }));
 
               const datos = {
@@ -175,7 +167,7 @@ const Tablas = ({ route, navigation }) => {
                 pesoEquipo: datosTablaManiobra.find(item => item.descripcion === 'Peso elemento')?.cantidad.valor || 0,
                 pesoAparejos: datosTablaManiobra.find(item => item.descripcion === 'Peso aparejos')?.cantidad.valor || 0,
                 pesoGancho: datosTablaManiobra.find(item => item.descripcion === 'Peso gancho')?.cantidad.valor || 0,
-                pesoCable: datosTablaManiobra.find(item => item.descripcion === 'Peso cable')?.cantidad?.valor || 'N/A',
+                pesoCable: datosTablaManiobra.find(item => item.descripcion === 'Peso cable')?.cantidad?.valor || 0,
                 pesoTotal: datosTablaManiobra.find(item => item.descripcion === 'Peso total')?.cantidad.valor || 0,
                 radioTrabajoMax: datosTablaManiobra.find(item => item.descripcion === 'Radio de trabajo máximo')?.cantidad.valor || 0,
                 anguloTrabajo: datosTablaManiobra.find(item => item.descripcion === 'Ángulo de trabajo')?.cantidad || '0°',
@@ -183,16 +175,33 @@ const Tablas = ({ route, navigation }) => {
                 porcentajeUtilizacion: datosTablaManiobra.find(item => item.descripcion === '% Utilización')?.cantidad.valor || 0,
               };
 
+              const centroGravedad = {
+                xAncho: parseFloat(combinedData.ancho) || 0,
+                yLargo: parseFloat(combinedData.largo) || 0,
+                zAlto: parseFloat(combinedData.alto) || 0,
+                xCG: geometry ? parseFloat(geometry.cg.cgX.toFixed(1)) : 0,
+                yCG: geometry ? parseFloat(geometry.cg.cgY.toFixed(1)) : 0,
+                zCG: geometry ? parseFloat(geometry.cg.cgZ.toFixed(1)) : 0,
+                xPR: relX !== null ? parseFloat(relX) : 0,
+                yPR: relY !== null ? parseFloat(relY) : 0,
+                zPR: relZ !== null ? parseFloat(relZ) : 0,
+              };
+
+              const gruaId = setupGruaData?.grua?._id;
+
               const finalData = {
                 nombreProyecto,
                 aparejos,
                 datos,
                 cargas,
+                centroGravedad,
                 capataz: planData?.capataz?._id,
                 supervisor: planData?.supervisor?._id,
                 jefeArea: planData?.jefeArea?._id,
-                grua: setupGruaData?.grua?._id,
+                grua: gruaId, // Usamos la variable gruaId aquí
               };
+
+              console.log('Datos enviados a la petición POST:', JSON.stringify(finalData, null, 2));
 
               const accessToken = await AsyncStorage.getItem('accessToken');
               if (!accessToken) {
@@ -240,11 +249,9 @@ const Tablas = ({ route, navigation }) => {
       <ScrollView style={styles.tableContainer}>
         <Components.Tabla titulo="Información del proyecto" data={datosTablaProyecto} />
         <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
-        {/* Renderiza las tablas de aparejos individuales */}
         <Text style={[styles.sectionTitle, { top: 10, left: 20 }]}>Aparejos</Text>
         {datosTablaAparejosIndividuales.map((aparejo, index) => (
           <View key={`aparejo-${index}`}>
-            {/* Primera fila: Item y Descripción */}
             <View style={styles.tableSection}>
               <View style={styles.tableHeader}>
                 <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Ítem</Text>
@@ -256,7 +263,6 @@ const Tablas = ({ route, navigation }) => {
               </View>
             </View>
 
-            {/* Segunda "tabla" para los detalles del aparejo */}
             <View style={[styles.tableSection, { marginTop: -10 }]}>
               <View style={[styles.tableHeader, { backgroundColor: '#ffeeee' }]}>
                 <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10, color: '#dd0000' }]}>Largo</Text>
@@ -273,7 +279,6 @@ const Tablas = ({ route, navigation }) => {
                 ))}
               </View>
             </View>
-            {/* Opcional: Separador visual entre aparejos si se ven muy juntos */}
             <View style={{ marginTop: -10 }} />
           </View>
         ))}
