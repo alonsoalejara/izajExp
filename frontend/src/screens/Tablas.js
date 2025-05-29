@@ -171,18 +171,15 @@ const Tablas = ({ route, navigation }) => {
                 porcentajeUtilizacion: datosTablaManiobra.find(item => item.descripcion === '% Utilización')?.cantidad.valor || 0,
               };
 
-              const usuario = userId; // Still sending userId for association
 
               const finalData = {
                 nombreProyecto,
-                usuario,
                 aparejos,
                 datos,
                 cargas,
                 capataz: planData?.capataz?._id,
                 supervisor: planData?.supervisor?._id,
                 jefeArea: planData?.jefeArea?._id,
-                responsablesAdicionales: planData?.responsablesAdicionales?.map(resp => resp._id) || [],
                 grua: setupGruaData?.grua?._id,
               };
 

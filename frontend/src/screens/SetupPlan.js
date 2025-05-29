@@ -106,7 +106,6 @@ const SetupPlan = () => {
         supervisor: supervisorObjeto,
         jefeArea: jefeAreaObjeto,
         capataz: capatazObjeto,
-        responsablesAdicionales: [],
       };
 
       console.log('Datos enviados a SetupCarga.js desde SetupPlan.js:', dataToSend);

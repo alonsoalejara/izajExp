@@ -9,7 +9,7 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
         <View style={styles.tableHeader}>
           <Text style={[styles.headerText, { flex: 0.5, textAlign: 'left', left: 10 }]}>Ítem</Text>
           <Text style={[styles.headerText, { flex: 1.5, textAlign: 'left', left: 0 }]}>Descripción</Text>
-          <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Nombre</Text>
+          <Text style={[styles.headerText, { flex: 1, textAlign: 'right', right: 10 }]}>Nombre</Text>
         </View>
       );
     } else if (titulo === "Cálculo de centro de gravedad:") {
@@ -62,7 +62,7 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
         <View key={index} style={styles.row}>
           <Text style={[styles.cell, { flex: 0.5, textAlign: 'left', left: 10 }]}>{item.item}</Text>
           <Text style={[styles.cell, { flex: 1.5, textAlign: 'left', left: 0 }]}>{item.descripcion}</Text>
-          <Text style={[styles.cell, { flex: 1, textAlign: 'right', left: 0 }]}>{item.nombre}</Text>
+          <Text style={[styles.cell, { flex: 1, textAlign: 'right', right: 10 }]}>{item.nombre}</Text>
         </View>
       );
     } else if (titulo === "Cálculo de centro de gravedad:") {
