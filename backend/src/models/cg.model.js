@@ -1,43 +1,40 @@
 import { Schema, model } from 'mongoose';
 
-const cargasSchema = new Schema(
+const cgSchema = new Schema(
     {
-        pesoEquipo: {
-            type: Schema.Types.ObjectId,
-            ref: 'Grua',
-            required: true
-        },
-        pesoAparejos: {
+        xAncho: {
             type: Number,
             required: true
         },
-        pesoGancho: {
-            type: Schema.Types.ObjectId,
-            ref: 'Grua',
-            required: true
-        },
-        pesoCable: {
+        yLargo: {
             type: Number,
             required: true
         },
-        pesoTotal: {
+        zAlto: {
             type: Number,
             required: true
         },
-        radioTrabajoMax: {
+        xCG: {
             type: Number,
             required: true
         },
-        anguloTrabajo: {
-            type: String,
+        yCG: {
+            type: Number,
             required: true
         },
-        capacidadLevante: {
-            type: Schema.Types.ObjectId,
-            ref: 'Grua',
+        zCG: {
+            type: Number,
             required: true
         },
-        porcentajeUtilizacion: {
+        xPR: {
+            type: Number,
+            required: true
+        },
+        yPR: {
+            type: Number,
+            required: true
+        },
+        zPR: {
             type: Number,
             required: true
         },
@@ -48,4 +45,4 @@ const cargasSchema = new Schema(
     }
 );
 
-export default model('Cargas', cargasSchema);
+export default model('CG', cgSchema);

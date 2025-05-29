@@ -5,40 +5,67 @@ import { handleError } from "../utils/errorHandler.js";
 
 async function getSetupIzajes() {
   try {
-    const setups = await SetupIzaje.find().populate('usuario', 'nombre apellido email specialty').exec();
+    const setups = await SetupIzaje.find()
+      .populate('capataz', 'nombreCompleto')
+      .populate('supervisor', 'nombreCompleto')
+      .populate('jefeArea', 'nombreCompleto')
+      .populate('grua', 'nombre modelo')
+      .exec();
     if (!setups) return [null, "No se encontraron configuraciones de izaje"];
     return [setups, null];
   } catch (error) {
     handleError(error, "setupIzaje.service -> getSetupIzajes");
+    return [null, error.message];
   }
 }
 
 async function createSetupIzaje(setupIzajeData) {
-    try {
-      const { usuario, aparejos, datos, cargas } = setupIzajeData;
-  
-      const newSetupIzaje = new SetupIzaje({
-        usuario,
-        aparejos,
-        datos,
-        cargas,
-      });
-  
-      await newSetupIzaje.save();
-      return [newSetupIzaje, null];
-    } catch (error) {
-      handleError(error, "setupIzaje.service -> createSetupIzaje");
-    }
+  try {
+    const {
+      nombreProyecto,
+      aparejos,
+      datos,
+      cargas,
+      centroGravedad,
+      capataz,
+      supervisor,
+      jefeArea,
+      grua
+    } = setupIzajeData;
+
+    const newSetupIzaje = new SetupIzaje({
+      nombreProyecto,
+      aparejos,
+      datos,
+      cargas,
+      centroGravedad,
+      capataz,
+      supervisor,
+      jefeArea,
+      grua
+    });
+
+    await newSetupIzaje.save();
+    return [newSetupIzaje, null];
+  } catch (error) {
+    handleError(error, "setupIzaje.service -> createSetupIzaje");
+    return [null, error.message];
   }
-  
+}
 
 async function getSetupIzajeById(id) {
   try {
-    const setupIzaje = await SetupIzaje.findById(id).populate('usuario', 'nombre apellido email specialty').exec();
+    const setupIzaje = await SetupIzaje.findById(id)
+      .populate('capataz', 'nombreCompleto')
+      .populate('supervisor', 'nombreCompleto')
+      .populate('jefeArea', 'nombreCompleto')
+      .populate('grua', 'nombre modelo')
+      .exec();
     if (!setupIzaje) return [null, "La configuración de izaje no existe"];
     return [setupIzaje, null];
   } catch (error) {
     handleError(error, "setupIzaje.service -> getSetupIzajeById");
+    return [null, error.message];
   }
 }
 
@@ -47,26 +74,48 @@ async function updateSetupIzaje(id, setupIzajeData) {
     const setupIzajeFound = await SetupIzaje.findById(id);
     if (!setupIzajeFound) return [null, "La configuración de izaje no existe"];
 
-    const { usuario, aparejos, datos, cargas } = setupIzajeData;
+    const {
+      nombreProyecto,
+      aparejos,
+      datos,
+      cargas,
+      centroGravedad,
+      capataz,
+      supervisor,
+      jefeArea,
+      grua
+    } = setupIzajeData;
 
-    // Actualizar la configuración de izaje
     const updatedSetupIzaje = await SetupIzaje.findByIdAndUpdate(
       id,
-      { usuario, aparejos, datos, cargas },
-      { new: true }
+      {
+        nombreProyecto,
+        aparejos,
+        datos,
+        cargas,
+        centroGravedad,
+        capataz,
+        supervisor,
+        jefeArea,
+        grua
+      },
+      { new: true, runValidators: true }
     );
 
     return [updatedSetupIzaje, null];
   } catch (error) {
     handleError(error, "setupIzaje.service -> updateSetupIzaje");
+    return [null, error.message];
   }
 }
 
 async function deleteSetupIzaje(id) {
   try {
-    return await SetupIzaje.findByIdAndDelete(id);
+    const deletedSetup = await SetupIzaje.findByIdAndDelete(id);
+    return [deletedSetup, null];
   } catch (error) {
     handleError(error, "setupIzaje.service -> deleteSetupIzaje");
+    return [null, error.message];
   }
 }
 
