@@ -253,7 +253,7 @@ const Tablas = ({ route, navigation }) => {
                 <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Ítem</Text>
                 <Text style={[styles.headerText, { flex: 2, textAlign: 'left' }]}>Descripción</Text>
               </View>
-              <View style={styles.row}>
+              <View style={[styles.row, { borderBottomWidth: 0 }]}>
                 <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 10 }]}>{aparejo.descripcionPrincipal.item}</Text>
                 <Text style={[styles.cell, { flex: 2, textAlign: 'left' }]}>{aparejo.descripcionPrincipal.descripcion}</Text>
               </View>
@@ -261,14 +261,14 @@ const Tablas = ({ route, navigation }) => {
 
             {/* Segunda "tabla" para los detalles del aparejo */}
             <View style={[styles.tableSection, { marginTop: -10 }]}>
-              <View style={styles.tableHeader}>
-                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Largo</Text>
-                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Peso</Text>
-                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 20 }]}>Tensión</Text>
-                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 28 }]}>Grillete</Text>
-                <Text style={[styles.headerText, { flex: 2, textAlign: 'right', right: 10 }]}>Peso Grillete</Text>
+              <View style={[styles.tableHeader, { backgroundColor: '#ffeeee' }]}>
+                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10, color: '#dd0000' }]}>Largo</Text>
+                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10, color: '#dd0000' }]}>Peso</Text>
+                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 20, color: '#dd0000' }]}>Tensión</Text>
+                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 28, color: '#dd0000' }]}>Grillete</Text>
+                <Text style={[styles.headerText, { flex: 2, textAlign: 'right', right: 10, color: '#dd0000' }]}>Peso Grillete</Text>
               </View>
-              <View style={styles.row}>
+              <View style={[styles.row, { borderBottomWidth: 0 }]}>
                 {aparejo.detalles.map((detail, detailIndex) => (
                   <Text key={`detail-${index}-${detailIndex}`} style={[styles.cell, { flex: 1, right: 12 }]}>
                     {detail.valor}

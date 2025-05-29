@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   },
   // Titulo de cada tabla
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '500',
     color: '#333',
     marginVertical: 10,
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   labelText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '500',
     color: '#333',
     marginTop: 10,
