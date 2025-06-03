@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Modal, View, Text, TouchableOpacity, PanResponder, Animated, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import styles from '../../styles/BottomSheetStyles';
 import getApiUrl from '../../utils/apiUrl';
-const axios = require('axios/dist/browser/axios.cjs');
+import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';

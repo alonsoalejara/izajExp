@@ -1,5 +1,5 @@
 import { AsyncStorage } from '@react-native-async-storage/async-storage';
-const axios = require('axios/dist/browser/axios.cjs');
+import axios from 'axios';
 import getApiUrl from './apiUrl';
 import Toast from 'react-native-toast-message';
 

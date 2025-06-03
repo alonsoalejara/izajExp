@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getApiUrl from '../utils/apiUrl';
-const axios = require('axios/dist/browser/axios.cjs');
+import axios from 'axios';
 
 export const useFetchData = (endpoint) => {
   const [data, setData] = useState([]);
