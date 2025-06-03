@@ -27,11 +27,24 @@
     "react-native": "0.79.2",
     "react-native-modal": "^13.0.1",
     "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "~4.10.0",
+    "react-native-screens": "~4.11.1",
     "react-native-signature-canvas": "^4.7.2",
     "react-native-svg": "15.11.2",
     "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "jwt-decode",
+          "base-64",
+          "lucide-react",
+          "react-native-vector-icons"
+        ],
+        "listUnknownPackages": false
+      }
+    }
+  }
 }

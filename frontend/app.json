@@ -32,10 +32,6 @@
       "expo-font",
       "expo-asset"
     ],
-    "packagerOpts": {
-      "dev": true,
-      "minify": false
-    },
     "extra": {
       "eas": {
         "projectId": "aa196964-4634-458c-b448-48a3e45a6c4d"
