@@ -19,7 +19,8 @@ const setupIzajeSchema = new Schema(
         grua: { type: Schema.Types.ObjectId, ref: 'Grua', required: true },
         datos: {
             largoPluma: { type: Number, required: true },
-            contrapeso: { type: Number, required: true }
+            contrapeso: { type: Number, required: true },
+            gradoInclinacion: { type: String, required: true }
         },
         cargas: {
             pesoEquipo: { type: Number, required: true },

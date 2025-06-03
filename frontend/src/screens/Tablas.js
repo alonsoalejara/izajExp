@@ -161,6 +161,7 @@ const Tablas = ({ route, navigation }) => {
                   parseFloat(datosTablaGrua.find(item => item.descripcion === 'Largo de pluma')?.cantidad) ||
                   0,
                 contrapeso: parseFloat(combinedData.grua?.contrapeso) || 0,
+                gradoInclinacion: combinedData.gradoInclinacion || '0°',
               };
 
               const cargas = {

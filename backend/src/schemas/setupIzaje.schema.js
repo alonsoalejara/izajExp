@@ -54,6 +54,11 @@ const datosSchema = Joi.object({
     "number.base": "El contrapeso debe ser un número.",
     "any.required": "El contrapeso es obligatorio.",
   }),
+  gradoInclinacion: Joi.string().trim().required().messages({
+    "string.empty": "El grado de inclinación no puede estar vacío.",
+    "any.required": "El grado de inclinación es obligatorio.",
+    "string.base": "El grado de inclinación debe ser de tipo string.",
+  }),
 });
 
 const cargaSchema = Joi.object({

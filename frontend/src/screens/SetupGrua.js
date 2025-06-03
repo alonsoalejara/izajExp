@@ -31,7 +31,7 @@ const SetupGrua = () => {
   const [radioMontaje, setRadioMontaje] = useState('');
   const [errorRadioMontaje, setErrorRadioMontaje] = useState('');
   const [radioTrabajoMaximo, setRadioTrabajoMaximo] = useState('');
-  const [anguloInclinacionVisual, setAnguloInclinacionVisual] = useState(75);
+  const [gradoInclinacionVisual, setGradoInclinacionVisual] = useState(75);
   const [usuarioId, setUsuarioId] = useState(null);
   const [movementEval, setMovementEval] = useState(null);
   const [capacidadLevanteCalc, setCapacidadLevanteCalc] = useState(null);
@@ -121,11 +121,11 @@ const SetupGrua = () => {
       const alturaType = getAlturaType(largoPluma);
       const radioEntero = String(Math.floor(maxRadio));
       const mapAlturas = inclinacionMapAlturas[alturaType] || {};
-      setAnguloInclinacionVisual(
+      setGradoInclinacionVisual(
         mapAlturas[radioEntero] !== undefined ? mapAlturas[radioEntero] : 75
       );
     } else {
-      setAnguloInclinacionVisual(75);
+      setGradoInclinacionVisual(75);
     }
 
   }, [radioIzaje, radioMontaje, grua, largoPluma, setupCargaData]);
@@ -156,7 +156,7 @@ const SetupGrua = () => {
       grua: grua,
       nombreGrua: grua?.nombre || '',
       largoPluma,
-      anguloInclinacion: `${anguloInclinacionVisual}°`,
+      gradoInclinacion: `${gradoInclinacionVisual}°`,
       radioIzaje,
       radioMontaje,
       radioTrabajoMaximo,
@@ -287,11 +287,11 @@ const SetupGrua = () => {
               {grua ? (
                 <View style={{ width: 150, height: 39, justifyContent: 'center' }}>
                   <Text style={[styles.labelText, { textAlign: 'center' }]}>
-                    Ángulo de inclinación
+                    Grado de inclinación
                   </Text>
                   <View style={{ alignItems: 'center' }}>
                     <Text style={{ fontSize: 18, color: '#333' }}>
-                      {anguloInclinacionVisual}°
+                      {gradoInclinacionVisual}°
                     </Text>
                   </View>
                 </View>
@@ -310,7 +310,7 @@ const SetupGrua = () => {
                     </View>
                     <GruaIllustration
                       alturaType={getAlturaType(largoPluma)}
-                      inclinacion={anguloInclinacionVisual}
+                      inclinacion={gradoInclinacionVisual}
                       radioTrabajoMaximo={radioTrabajoMaximo}
                       style={getGruaIllustrationStyle(largoPluma)}
                     />

@@ -33,7 +33,7 @@ const CollabTablas = ({ route }) => {
   const datosTablaGrua = [
     { descripcion: 'Grúa', cantidad: setup.grua?.nombre || 'N/A' },
     { descripcion: 'Largo de pluma', cantidad: setup.datos?.largoPluma || 'N/A' },
-    { descripcion: 'Grado de inclinación', cantidad: setup.datos?.anguloInclinacion || 'N/A' },
+    { descripcion: 'Grado de inclinación', cantidad: setup.datos?.gradoInclinacion || 'N/A' },
     { descripcion: 'Contrapeso', cantidad: `${setup.datos?.contrapeso || 0} ton` },
   ];
 
@@ -58,7 +58,7 @@ const CollabTablas = ({ route }) => {
     { descripcion: 'Peso cable', cantidad: `${setup.cargas?.pesoCable || 0} ton` },
     { descripcion: 'Peso total', cantidad: `${setup.cargas?.pesoTotal || 0} ton` },
     { descripcion: 'Radio de trabajo máximo', cantidad: `${setup.cargas?.radioTrabajoMax || 0} m` },
-    { descripcion: 'Ángulo de trabajo', cantidad: `${setup.cargas?.anguloTrabajo || 0}°` },
+    { descripcion: 'Ángulo de trabajo', cantidad: `${setup.cargas?.anguloTrabajo || 0}` },
     { descripcion: 'Capacidad de levante', cantidad: `${setup.cargas?.capacidadLevante || 0} ton` },
     { descripcion: '% Utilización', cantidad: `${setup.cargas?.porcentajeUtilizacion || 0} %` },
   ];

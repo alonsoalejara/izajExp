@@ -121,7 +121,7 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
   const datosTablaGrua = [
     { descripcion: 'Grúa', cantidad: datosRecibidos.nombreGrua || 'N/A' },
     { descripcion: 'Largo de pluma', cantidad: datosRecibidos.largoPluma || 'N/A' },
-    { descripcion: 'Grado de inclinación', cantidad: datosRecibidos.anguloInclinacion || 'N/A' },
+    { descripcion: 'Grado de inclinación', cantidad: datosRecibidos.gradoInclinacion || 'N/A' },
     { descripcion: 'Contrapeso', cantidad: `${datosRecibidos.contrapeso || 0} ton` },
   ];
 
