@@ -24,10 +24,10 @@ const CollabTablas = ({ route }) => {
   };
 
   const datosTablaProyecto = [
-    { descripcion: 'Nombre Proyecto', cantidad: setup.nombreProyecto || 'N/A' },
-    { descripcion: 'Capataz', cantidad: getFullName(setup.capataz) },
-    { descripcion: 'Supervisor', cantidad: getFullName(setup.supervisor) },
-    { descripcion: 'Jefe Área', cantidad: getFullName(setup.jefeArea) },
+    { item: 1, descripcion: 'Nombre Proyecto', nombre: setup.nombreProyecto || 'N/A' },
+    { item: 2, descripcion: 'Capataz', nombre: getFullName(setup.capataz) },
+    { item: 3, descripcion: 'Supervisor', nombre: getFullName(setup.supervisor) },
+    { item: 4, descripcion: 'Jefe Área', nombre: getFullName(setup.jefeArea) },
   ];
 
   const datosTablaGrua = [
@@ -118,15 +118,15 @@ const CollabTablas = ({ route }) => {
 
             <View style={[TablasStyles.tableSection, { marginTop: 10, marginHorizontal: 0 }]}>
               <View style={[TablasStyles.tableHeader, { backgroundColor: '#ffeeee' }]}>
-                <Text style={[TablasStyles.headerText, { flex: 1, color: '#dd0000' }]}>Largo</Text>
-                <Text style={[TablasStyles.headerText, { flex: 1, color: '#dd0000' }]}>Peso</Text>
-                <Text style={[TablasStyles.headerText, { flex: 1, color: '#dd0000' }]}>Tensión</Text>
-                <Text style={[TablasStyles.headerText, { flex: 1, color: '#dd0000' }]}>Grillete</Text>
-                <Text style={[TablasStyles.headerText, { flex: 2, color: '#dd0000', textAlign: 'right' }]}>Peso Grillete</Text>
+                <Text style={[TablasStyles.headerText, { flex: 1, color: '#dd0000', textAlign: 'left', left: 10 }]}>Largo</Text>
+                <Text style={[TablasStyles.headerText, { flex: 1, color: '#dd0000', textAlign: 'left', left: 15 }]}>Peso</Text>
+                <Text style={[TablasStyles.headerText, { flex: 1, color: '#dd0000', textAlign: 'left', left: 20 }]}>Tensión</Text>
+                <Text style={[TablasStyles.headerText, { flex: 1, color: '#dd0000', textAlign: 'left', left: 30 }]}>Grillete</Text>
+                <Text style={[TablasStyles.headerText, { flex: 2, color: '#dd0000', textAlign: 'right', right: 10 }]}>Peso Grillete</Text>
               </View>
               <View style={[TablasStyles.row, { borderBottomWidth: 0 }]}>
                 {aparejo.detalles.map((detail, detailIndex) => (
-                  <Text key={`detail-${index}-${detailIndex}`} style={[TablasStyles.cell, { flex: 1 }]}>
+                  <Text key={`detail-${index}-${detailIndex}`} style={[TablasStyles.cell, { flex: 1, right: 5 }]}>
                     {String(detail.valor)}
                   </Text>
                 ))}
