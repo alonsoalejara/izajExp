@@ -14,6 +14,7 @@ export default function GruaIllustration({ style, alturaType, inclinacion = 75, 
             <RT555.Boom alturaType={alturaType} inclinacion={inclinacion} radioTrabajoMaximo={radioTrabajoMaximo} />
             <RT555.CabinaGrua />
             <RT555.CraneHook />
+            <RT555.Rigging />
           </View>
         </View>
       </SafeAreaView>
