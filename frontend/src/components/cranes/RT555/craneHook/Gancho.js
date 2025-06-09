@@ -7,14 +7,13 @@ const ORIGINAL_CONTAINER_HEIGHT = 150;
 
 // Especificaciones originales de cada parte del gancho
 const HOOK_PARTS_ORIGINAL_SPECS = {
-  top: { bottom: 100, left: 4, width: 146, height: 40 },
-  right: { bottom: 20, right: 12, width: 60, height: 100, rotate: '16deg' },
-  left: { bottom: 22, left: 15, width: 60, height: 100, rotate: '-16deg' },
-  bottom: { bottom: 15, left: 33, width: 90, height: 70 },
-  center: { bottom: 30, left: 30, width: 90, height: 90 },
+  top: { bottom: 50.3, left: 62, width: 28, height: 100 },
+  right: { bottom: 14, right: 28, width: 90, height: 80 },
+  left: { bottom: 50, left: 89, width: 60, height: 100, rotate: '-16deg' },
+  center: { bottom: 0, left: 12, width: 130, height: 110 },
 };
 
-export default function GanchoGrua({
+export default function Gancho({
   position,
   containerWidth = ORIGINAL_CONTAINER_WIDTH,
   containerHeight = ORIGINAL_CONTAINER_HEIGHT,
@@ -53,47 +52,6 @@ export default function GanchoGrua({
             },
           ]}
         />
-        {/* Lado derecho */}
-        <View
-          style={[
-            styles.absolutePosition,
-            {
-              backgroundColor: color,
-              bottom: scaleValueY(HOOK_PARTS_ORIGINAL_SPECS.right.bottom),
-              right: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.right.right),
-              width: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.right.width),
-              height: scaleValueY(HOOK_PARTS_ORIGINAL_SPECS.right.height),
-              transform: [{ rotate: HOOK_PARTS_ORIGINAL_SPECS.right.rotate }],
-            },
-          ]}
-        />
-        {/* Lado izquierdo */}
-        <View
-          style={[
-            styles.absolutePosition,
-            {
-              backgroundColor: color,
-              bottom: scaleValueY(HOOK_PARTS_ORIGINAL_SPECS.left.bottom),
-              left: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.left.left),
-              width: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.left.width),
-              height: scaleValueY(HOOK_PARTS_ORIGINAL_SPECS.left.height),
-              transform: [{ rotate: HOOK_PARTS_ORIGINAL_SPECS.left.rotate }],
-            },
-          ]}
-        />
-        {/* Parte baja */}
-        <View
-          style={[
-            styles.absolutePosition,
-            {
-              backgroundColor: color,
-              bottom: scaleValueY(HOOK_PARTS_ORIGINAL_SPECS.bottom.bottom),
-              left: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.bottom.left),
-              width: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.bottom.width),
-              height: scaleValueY(HOOK_PARTS_ORIGINAL_SPECS.bottom.height),
-            },
-          ]}
-        />
         {/* Parte centro */}
         <View
           style={[
@@ -104,6 +62,34 @@ export default function GanchoGrua({
               left: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.center.left),
               width: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.center.width),
               height: scaleValueY(HOOK_PARTS_ORIGINAL_SPECS.center.height),
+              borderRadius: 100,
+            },
+          ]}
+        />
+        {/* Parche centro */}
+        <View
+          style={[
+            styles.absolutePosition,
+            {
+              backgroundColor: 'white',
+              bottom: scaleValueY(HOOK_PARTS_ORIGINAL_SPECS.right.bottom),
+              right: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.right.right),
+              width: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.right.width),
+              height: scaleValueY(HOOK_PARTS_ORIGINAL_SPECS.right.height),
+              borderRadius: 100,
+            },
+          ]}
+        />
+        {/* Parche forma de gancho */}
+        <View
+          style={[
+            styles.absolutePosition,
+            {
+              backgroundColor: 'white',
+              bottom: scaleValueY(HOOK_PARTS_ORIGINAL_SPECS.left.bottom),
+              left: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.left.left),
+              width: scaleValueX(HOOK_PARTS_ORIGINAL_SPECS.left.width),
+              height: scaleValueY(HOOK_PARTS_ORIGINAL_SPECS.left.height),
             },
           ]}
         />

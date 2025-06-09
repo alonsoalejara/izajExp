@@ -1,22 +1,31 @@
 import React from 'react';
 import { View } from 'react-native';
-import GanchoGrua from './GanchoGrua';
+import BaseGancho from './BaseGancho';
+import Gancho from './Gancho';
 
 const CraneHook = ({ position = { bottom: 301, left: -28 } }) => (
   <View style={[{ position: 'absolute' }, position]}>
-    {/* Gancho naranja tamaño normal */}
-    <GanchoGrua
-      position={{ bottom: 0, left: 0 }}
-      containerWidth={40}
-      containerHeight={40}
+    {/* Base gancho naranja tamaño normal */}
+    <BaseGancho
+      position={{ bottom: 11, left: -5 }}
+      containerWidth={30}
+      containerHeight={30}
       color="black"
     />
 
-    {/* Gancho negro más pequeño */}
-    <GanchoGrua
-      position={{ bottom: 1.1, left: -2.4 }}
-      containerWidth={35}
-      containerHeight={35}
+    {/* Borde negro de la base */}
+    <BaseGancho
+      position={{ bottom: 13, left: -7 }}
+      containerWidth={25}
+      containerHeight={25}
+      color="orange"
+    />
+
+    {/* Gancho naranja tamaño normal */}
+    <Gancho
+      position={{ bottom: -16, left: -7 }}
+      containerWidth={25}
+      containerHeight={30}
       color="orange"
     />
   </View>
