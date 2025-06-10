@@ -4,6 +4,7 @@ import CabinaGrua from './CabinaGrua';
 import Boom from './boom/Boom.index';
 import BaseGrua from './BaseGrua';
 import Rigging from './rigging/rigging.index';
+import CargaGrua from './CargaGrua';
 
 const RT555 = {
   RuedasGrua,
@@ -12,6 +13,7 @@ const RT555 = {
   Boom,
   BaseGrua,
   Rigging,
+  CargaGrua,
 };
 
 export default RT555;
