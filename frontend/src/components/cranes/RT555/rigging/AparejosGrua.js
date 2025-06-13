@@ -2,32 +2,31 @@ import React from 'react';
 import { View } from 'react-native';
 
 export default function AparejosGrua({ containerWidth = 470, containerHeight = 320 }) {
-  // Definimos las proporciones del triángulo y la línea central
-  const triangleHeightRatio = 0.93; // 93% de la altura del contenedor
-  const triangleBaseWidthRatio = 0.5; // 45% de la mitad del ancho del contenedor (total 90%)
-  const centralLineWidthRatio = 0.027; // Aproximadamente 2.7% del ancho del contenedor
+  const triangleHeightRatio = 0.93;
+  const triangleBaseWidthRatio = 0.5;
+  const centralLineWidthRatio = 0.027;
 
   const triangleHeight = containerHeight * triangleHeightRatio;
   const triangleBaseWidth = containerWidth * triangleBaseWidthRatio;
   const centralLineWidth = containerWidth * centralLineWidthRatio;
 
-  const borderWidth = 5; // Grosor del borde del triángulo, permanece fijo
+  const borderWidth = 5;
 
   return (
-    <View style={{ top: -340, left: -133 }}>
-      {/* Cuadrado base de ilustración (el contenedor elástico) */}
+    <View>
+      {/* Contenedor base */}
       <View
         style={{
           position: 'absolute',
           left: 0,
           bottom: 0,
-          width: containerWidth, // Usa el ancho de las props
-          height: containerHeight, // Usa la altura de las props
+          width: containerWidth,
+          height: containerHeight,
           backgroundColor: 'transparent',
         }}
       />
 
-      {/* Triángulo de Borde (negro) */}
+      {/* Triángulo negro borde */}
       <View
         style={{
           position: 'absolute',
@@ -46,7 +45,7 @@ export default function AparejosGrua({ containerWidth = 470, containerHeight = 3
         }}
       />
 
-      {/* Triángulo Principal (azul) */}
+      {/* Triángulo blanco interno */}
       <View
         style={{
           position: 'absolute',
@@ -65,7 +64,7 @@ export default function AparejosGrua({ containerWidth = 470, containerHeight = 3
         }}
       />
 
-      {/* Linea central */}
+      {/* Línea central */}
       <View
         style={{
           position: 'absolute',
@@ -73,7 +72,7 @@ export default function AparejosGrua({ containerWidth = 470, containerHeight = 3
           left: (containerWidth / 2) - (centralLineWidth / 2),
           width: centralLineWidth,
           height: triangleHeight,
-          backgroundColor: 'black',
+          backgroundColor: 'transparent',
           borderRadius: 5,
         }}
       />
