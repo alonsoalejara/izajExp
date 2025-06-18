@@ -27,7 +27,12 @@ const CollabProfile = () => {
     const fetchSetups = async () => {
       try {
         const token = await AsyncStorage.getItem('accessToken');
-        if (!token) return;
+        if (!token) {
+          console.warn('No se encontró token de acceso para la petición.');
+          setSetups([]);
+          return;
+        }
+
         const response = await fetch(getApiUrl('setupIzaje'), {
           method: 'GET',
           headers: {
@@ -35,12 +40,30 @@ const CollabProfile = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+
         const data = await response.json();
-        if (data && data.data) {
-          setSetups(data.data);
+
+        if (data) {
+          if (Array.isArray(data.data)) {
+            setSetups(data.data);
+          } else if (
+            data.data === null ||
+            data.data === undefined ||
+            (typeof data.data === 'string' && data.data.trim() === '')
+          ) {
+            console.warn('Respuesta vacía del backend.');
+            setSetups([]);
+          } else {
+            console.warn('La respuesta del backend no contiene un array válido:', data.data);
+            setSetups([]);
+          }
+        } else {
+          console.warn('Respuesta vacía del backend.');
+          setSetups([]);
         }
       } catch (error) {
-        console.error('Error al obtener los planes de izaje:', error);
+        console.warn('Error al obtener los planes de izaje:', error.message || error);
+        setSetups([]);
       }
     };
 
