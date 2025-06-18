@@ -17,7 +17,6 @@ function TabNavigator() {
     const fetchUserRoles = async () => {
       try {
         const rolesString = await AsyncStorage.getItem('roles');
-
         if (rolesString) {
           const rolesArray = JSON.parse(rolesString);
           setUserRoles(rolesArray.map(role => role.trim().toLowerCase()));
@@ -39,6 +38,10 @@ function TabNavigator() {
       </View>
     );
   }
+
+  const isJefe = userRoles.includes('jefe');
+  const isCapataz = userRoles.includes('capataz');
+  const isSupervisor = userRoles.includes('supervisor');
 
   return (
     <Tab.Navigator
@@ -69,14 +72,14 @@ function TabNavigator() {
       })}
     >
       <Tab.Screen name="User" component={Profile} />
-      
-      {userRoles.includes('jefe') ? (
-        <Tab.Screen name="Home" component={AdminPanel} options={{ headerShown: false }} />
-      ) : (
-        console.log('Acceso denegado a AdminPanel. Roles actuales:', userRoles)
+
+      {isJefe && (
+        <Tab.Screen name="Home" component={AdminPanel} />
       )}
-      
-      <Tab.Screen name="Settings" component={SetupPlan} />
+
+      {isCapataz && (
+        <Tab.Screen name="Settings" component={SetupPlan} />
+      )}
     </Tab.Navigator>
   );
 }
