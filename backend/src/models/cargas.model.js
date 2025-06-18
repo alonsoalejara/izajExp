@@ -3,8 +3,7 @@ import { Schema, model } from 'mongoose';
 const cargasSchema = new Schema(
     {
         pesoEquipo: {
-            type: Schema.Types.ObjectId,
-            ref: 'Grua',
+            type: Number,
             required: true
         },
         pesoAparejos: {
@@ -12,13 +11,14 @@ const cargasSchema = new Schema(
             required: true
         },
         pesoGancho: {
-            type: Schema.Types.ObjectId,
-            ref: 'Grua',
-            required: true
+            type: Number,
+            required: [true, 'El peso del gancho es obligatorio'],
+            min: [0, 'El peso no puede ser negativo'],
         },
         pesoCable: {
             type: Number,
-            required: true
+            required: [true, 'El peso del gancho es obligatorio'],
+            min: [0, 'El peso no puede ser negativo'],
         },
         pesoTotal: {
             type: Number,
@@ -33,9 +33,9 @@ const cargasSchema = new Schema(
             required: true
         },
         capacidadLevante: {
-            type: Schema.Types.ObjectId,
-            ref: 'Grua',
-            required: true
+            type: Number,
+            required: [true, 'La capacidad de levante es obligatoria'],
+            min: [0, 'La capacidad de levante no puede ser negativa'],
         },
         porcentajeUtilizacion: {
             type: Number,

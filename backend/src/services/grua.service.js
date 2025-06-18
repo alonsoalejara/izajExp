@@ -15,17 +15,13 @@ async function getGruas() {
 
 async function createGrua(grua) {
   try {
-    const { nombre, pesoEquipo, pesoGancho, pesoCable, capacidadLevante, largoPluma, contrapeso } = grua;
+    const { nombre, largoPluma, contrapeso } = grua;
 
     const gruaFound = await Grua.findOne({ nombre });
     if (gruaFound) return [null, "La grúa ya existe"];
 
     const newGrua = new Grua({ 
       nombre, 
-      pesoEquipo, 
-      pesoGancho,
-      pesoCable,
-      capacidadLevante, 
       largoPluma, 
       contrapeso 
     });
@@ -50,7 +46,7 @@ async function getGruaById(id) {
 
 async function updateGrua(id, grua) {
   try {
-    const { nombre, pesoEquipo, pesoGancho, pesoCable, capacidadLevante, largoPluma, contrapeso } = grua;
+    const { nombre, largoPluma, contrapeso } = grua;
 
     const gruaUpdated = await Grua.findByIdAndUpdate(
       id,

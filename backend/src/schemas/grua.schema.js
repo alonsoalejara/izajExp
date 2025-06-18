@@ -8,26 +8,6 @@ const gruaBodySchema = Joi.object({
     "any.required": "El nombre de la grúa es obligatorio.",
     "string.base": "El nombre de la grúa debe ser de tipo string.",
   }),
-  pesoEquipo: Joi.number().min(0).required().messages({
-    "number.base": "El peso del equipo debe ser un número.",
-    "number.min": "El peso del equipo no puede ser negativo.",
-    "any.required": "El peso del equipo es obligatorio.",
-  }),
-  pesoGancho: Joi.number().min(0).required().messages({
-    "number.base": "El peso del gancho debe ser un número.",
-    "number.min": "El peso del gancho no puede ser negativo.",
-    "any.required": "El peso del gancho es obligatorio.",
-  }),
-  pesoCable: Joi.number().min(0).required().messages({
-    "number.base": "El peso del cable debe ser un número.",
-    "number.min": "El peso del cable no puede ser negativo.",
-    "any.required": "El peso del cable es obligatorio.",
-  }),
-  capacidadLevante: Joi.number().min(0).required().messages({
-    "number.base": "La capacidad de levante debe ser un número.",
-    "number.min": "La capacidad de levante no puede ser negativa.",
-    "any.required": "La capacidad de levante es obligatoria.",
-  }),
   largoPluma: Joi.number().min(0).required().messages({
     "number.base": "El largo de la pluma debe ser un número.",
     "number.min": "El largo de la pluma no puede ser negativo.",

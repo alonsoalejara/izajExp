@@ -17,10 +17,13 @@ const CraneSection = ({ gruas }) => {
                 <Image source={require('../../../../assets/blank-crane-image.png')} style={styles.profileImage} />
               </View>            
             </View>
-            <Text style={styles.cardDetail}><Text style={styles.labelText}>Peso del Equipo: </Text>{grua.pesoEquipo} kg</Text>
-            <Text style={styles.cardDetail}><Text style={styles.labelText}>Peso del Gancho: </Text>{grua.pesoGancho} kg</Text>
-            <Text style={styles.cardDetail}><Text style={styles.labelText}>Capacidad de Levante: </Text>{grua.capacidadLevante} kg</Text>
-            <Text style={styles.cardDetail}><Text style={styles.labelText}>Largo de la Pluma: </Text>{grua.largoPluma} m</Text>
+            <Text style={styles.cardDetail}><Text style={styles.labelText}>Largos de la Pluma:</Text></Text>
+            <Text style={styles.cardDetail}><Text style={styles.labelText}></Text>10.5 m</Text>
+            <Text style={styles.cardDetail}><Text style={styles.labelText}></Text>15.4 m</Text>
+            <Text style={styles.cardDetail}><Text style={styles.labelText}></Text>19.8 m</Text>
+            <Text style={styles.cardDetail}><Text style={styles.labelText}></Text>24.3 m</Text>                      
+            <Text style={styles.cardDetail}><Text style={styles.labelText}></Text>26.9 m</Text>
+            <Text style={styles.cardDetail}><Text style={styles.labelText}></Text>33.5 m</Text>
             <Text style={styles.cardDetail}><Text style={styles.labelText}>Contrapeso: </Text>{grua.contrapeso} toneladas</Text>
           </TouchableOpacity>
         </View>

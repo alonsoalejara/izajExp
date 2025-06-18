@@ -70,7 +70,7 @@ function TabNavigator() {
     >
       <Tab.Screen name="User" component={Profile} />
       
-      {userRoles.includes('admin') ? (
+      {userRoles.includes('jefe') ? (
         <Tab.Screen name="Home" component={AdminPanel} options={{ headerShown: false }} />
       ) : (
         console.log('Acceso denegado a AdminPanel. Roles actuales:', userRoles)

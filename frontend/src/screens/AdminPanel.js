@@ -32,22 +32,27 @@ function AdminPanel() {
   const { data: gruas = [], refetch: refetchGruas } = useFetchData('grua');
   const { data: setupIzajes = [], refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
 
-  useEffect(() => {
-    const checkUserRole = async () => {
-      try {
-        const accessToken = await AsyncStorage.getItem('accessToken');
-        const roles = await AsyncStorage.getItem('roles');
-        setIsAdmin(accessToken && roles?.includes('admin'));
-        if (!accessToken || !roles?.includes('admin')) {
-          navigation.navigate('Login');
-        }
-      } catch (error) {
-        console.error('Error al verificar el rol del usuario:', error);
+useEffect(() => {
+  const checkUserRole = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      const rolesString = await AsyncStorage.getItem('roles');
+
+      const roles = JSON.parse(rolesString);
+      const isAdminUser = roles && Array.isArray(roles) && roles.includes('jefe');
+
+      setIsAdmin(accessToken && isAdminUser);
+
+      if (!accessToken || !isAdminUser) {
         navigation.navigate('Login');
       }
-    };
-    checkUserRole();
-  }, [navigation]);
+    } catch (error) {
+      console.error('Error al verificar el rol del usuario:', error);
+      navigation.navigate('Login');
+    }
+  };
+  checkUserRole();
+}, [navigation]);
 
   useEffect(() => {
     setGruasState(gruas || []);

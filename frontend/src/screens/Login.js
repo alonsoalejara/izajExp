@@ -63,12 +63,12 @@ export default function Login({ navigation }) {
                         // Navegación basada en el rol
                         const role = roles[0];
                         console.log("🛤️ Role del usuario:", role);
-                        if (role === "user" || role === "admin") {
-                            console.log("✅ Redirigiendo a Tabs...");
-                            navigation.navigate("Tabs");
+                        if (["jefe", "supervisor", "capataz"].includes(role)) {
+                          console.log("✅ Redirigiendo a Tabs...");
+                          navigation.navigate("Tabs");
                         } else {
-                            console.warn("⚠️ Rol de usuario no reconocido");
-                            Alert.alert("Error", "Rol de usuario no reconocido");
+                          console.warn("⚠️ Rol de usuario no reconocido");
+                          Alert.alert("Error", "Rol de usuario no reconocido");
                         }
                     } else {
                         console.error("❌ Tokens de autenticación no recibidos correctamente");
