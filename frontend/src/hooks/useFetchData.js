@@ -11,24 +11,43 @@ export const useFetchData = (endpoint) => {
     setIsLoading(true);
     try {
       const accessToken = await AsyncStorage.getItem('accessToken');
-    
-      if (accessToken) {
-        const apiUrl = getApiUrl(endpoint);
-    
-        const response = await axios.get(apiUrl, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-    
-        if (response.data && Array.isArray(response.data.data)) {
+
+      if (!accessToken) {
+        // Solo advertencia ligera, no error en consola
+        console.warn('No se encontró token de acceso para la petición.');
+        setData([]);
+        return;
+      }
+
+      const apiUrl = getApiUrl(endpoint);
+
+      const response = await axios.get(apiUrl, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      if (response.data) {
+        if (Array.isArray(response.data.data)) {
           setData(response.data.data);
+        } else if (
+          response.data.data === null ||
+          response.data.data === undefined ||
+          (typeof response.data.data === 'string' && response.data.data.trim() === '')
+        ) {
+          console.warn('Respuesta vacía del backend.');
+          setData([]);
         } else {
-          console.error('No se encontró un array válido en la respuesta');
+          // Datos no son array ni vacíos
+          console.warn('La respuesta del backend no contiene un array válido:', response.data.data);
+          setData([]);
         }
       } else {
-        console.error('No access token found');
+        console.warn('Respuesta vacía del backend.');
+        setData([]);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      // Aquí puedes loguear el error si quieres, o solo advertir
+      console.warn('Error al obtener datos:', error.message || error);
+      setData([]);
     } finally {
       setIsLoading(false);
     }
