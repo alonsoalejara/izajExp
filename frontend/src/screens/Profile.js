@@ -30,6 +30,7 @@ const Profile = () => {
       try {
         const token = await AsyncStorage.getItem('accessToken');
         if (!token) return;
+
         const res = await fetch(getApiUrl('setupIzaje'), {
           method: 'GET',
           headers: {
@@ -37,12 +38,29 @@ const Profile = () => {
             Authorization: `Bearer ${token}`
           },
         });
-        const json = await res.json();
-        if (json?.data) setSetups(json.data);
+
+        const text = await res.text(); // primero leemos como texto
+
+        console.log('Status:', res.status);
+        console.log('Raw response from setupIzaje:', text);
+
+        if (!text) {
+          console.warn('Respuesta vacía del backend.');
+          return;
+        }
+
+        const json = JSON.parse(text); // intentamos parsear si hay contenido
+
+        if (json?.data) {
+          setSetups(json.data);
+        } else {
+          console.warn('Respuesta JSON sin propiedad "data":', json);
+        }
       } catch (e) {
         console.error('Error al obtener los planes de izaje:', e);
       }
     }
+
     fetchSetups();
   }, []);
 
