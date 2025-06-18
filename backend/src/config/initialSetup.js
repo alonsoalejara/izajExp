@@ -1,48 +1,49 @@
-"use strict";
-// Importa el modelo de datos 'User'
 import User from "../models/user.model.js";
 import { ROLES } from "../constants/roles.constants.js";
 
-/**
- * Crea los usuarios por defecto en la base de datos.
- * @async
- * @function createUsers
- * @returns {Promise<void>}
- */
 async function createUsers() {
   try {
-    // Verifica si ya existen usuarios en la base de datos
     const count = await User.estimatedDocumentCount();
     if (count > 0) return;
 
-    // Crea usuarios predeterminados con roles como cadenas de texto
     await Promise.all([
       new User({
-        nombre: "user",
-        apellido: "role",
-        rut: "00000000-0",
-        email: "user@email.com",
-        position: "Supervisor",
-        specialty: "Estructura",
-        phone: "+56900000000",
-        password: await User.encryptPassword("user123"),
-        roles: [ROLES.USER], // Asigna el rol 'user' directamente
+        nombre: "Juan",
+        apellido: "Capataz",
+        rut: "12345678-9",
+        email: "capataz@email.com",
+        position: "Capataz",
+        specialty: "Piping",
+        phone: "+56912345678",
+        password: await User.encryptPassword("capataz123"),
+        roles: [ROLES.CAPATAZ],
       }).save(),
       new User({
-        nombre: "admin",
-        apellido: "role",
-        rut: "11111111-1",
-        email: "admin@email.com",
+        nombre: "Laura",
+        apellido: "Jefe",
+        rut: "98765432-1",
+        email: "jefe@email.com",
         position: "Jefe Área",
         specialty: "Obras Civiles",
-        phone: "+56911111111",
-        password: await User.encryptPassword("admin123"),
-        roles: [ROLES.ADMIN], // Asigna el rol 'admin' directamente
+        phone: "+56987654321",
+        password: await User.encryptPassword("jefe123"),
+        roles: [ROLES.JEFE],
+      }).save(),
+      new User({
+        nombre: "Carlos",
+        apellido: "Supervisor",
+        rut: "19283746-5",
+        email: "supervisor@email.com",
+        position: "Supervisor",
+        specialty: "Estructura",
+        phone: "+56919283746",
+        password: await User.encryptPassword("supervisor123"),
+        roles: [ROLES.SUPERVISOR],
       }).save(),
     ]);
-    console.log("* => Usuarios creados exitosamente");
+    console.log("* => Usuarios jefe, capataz y supervisor creados exitosamente");
   } catch (error) {
-    console.error(error);
+    console.error("Error al crear usuarios iniciales:", error);
   }
 }
 

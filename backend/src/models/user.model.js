@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcryptjs from "bcryptjs";
 const { genSalt, hash, compare } = bcryptjs;
-import { ROLES } from "../constants/roles.constants.js";
+import { ROLE_VALUES } from "../constants/roles.constants.js";
 
 const { Schema } = mongoose;
 
@@ -73,7 +73,7 @@ const userSchema = new Schema(
     roles: [
       {
         type: String,
-        enum: [ROLES.USER, ROLES.ADMIN], // Roles predefinidos usando las constantes
+        enum: ROLE_VALUES,
         required: true,
       },
     ],
