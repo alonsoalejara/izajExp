@@ -130,7 +130,7 @@ const EditCollab = () => {
                 email,
                 position,
                 specialty,
-                roles: position === "Jefe Área" ? ['admin'] : ['user'],
+                roles: position === "Jefe Área" ? ['jefe'] : ['capataz'],
               };
   
               const accessToken = await AsyncStorage.getItem('accessToken');

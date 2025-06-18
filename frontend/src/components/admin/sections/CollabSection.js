@@ -93,8 +93,8 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
                 isCancel={true}
                 style={styles.button}
               />
-              {/* Si el usuario NO tiene rol 'admin', se muestran Editar y Eliminar */}
-              {!(colaborador.roles && colaborador.roles.includes('admin')) && (
+              {/* Si el usuario NO tiene rol 'jefe', se muestran Editar y Eliminar */}
+              {!(colaborador.roles && colaborador.roles.includes('jefe')) && (
                 <View style={styles.multiButtonContainer}>
                   <Components.Button
                     label="Editar"

@@ -48,7 +48,7 @@ const AddCollabSpecial = ({ navigation, route }) => {
       position,
       specialty,
       email,
-      roles: position === "Jefe Área" ? ['admin'] : ['user'],
+      roles: position === "Jefe Área" ? ['jefe'] : ['capataz'],
       password: generarPassword(),
     };
 
