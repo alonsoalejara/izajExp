@@ -18,6 +18,14 @@ const Tablas = ({ route, navigation }) => {
 
   const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData } = route.params || {};
 
+  console.log('Datos recibidos desde las pantallas de configuración:');
+  console.log('planData:', planData);
+  console.log('setupCargaData:', setupCargaData);
+  console.log('setupGruaData:', setupGruaData);
+  console.log('setupAparejosData:', setupAparejosData);
+  console.log('setupRadioData:', setupRadioData);
+
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (planData) {
@@ -65,10 +73,14 @@ const Tablas = ({ route, navigation }) => {
 
   const { datosTablaManiobra, datosTablaGrua, datosTablaAparejosIndividuales, datosTablaProyecto } = obtenerDatosTablas({
     ...combinedData,
-    capatazId: planData?.capataz?._id,
-    supervisorId: planData?.supervisor?._id,
-    jefeAreaId: planData?.jefeArea?._id,
+    pesoGancho: 0.5,
+    pesoCable: 0.3,
+    peso: setupCargaData?.peso || 0,
+    capataz: planData?.capataz,
+    supervisor: planData?.supervisor,
+    jefeArea: planData?.jefeArea,
   });
+
 
   const datosTablaXYZ = [
     {
