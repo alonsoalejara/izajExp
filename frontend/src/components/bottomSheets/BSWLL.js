@@ -5,13 +5,14 @@ import IconFA from 'react-native-vector-icons/FontAwesome';
 import Components from '../Components.index';
 import tubularPoliesterData from '../../data/tubularPoliesterData';
 import tubularTrenzadasPoliesterData from '../../data/tubularTrenzadasPoliesterData';
+import ojoPoliesterData from '../../data/ojoPoliesterData';
 import tubularCargaPesadaData from '../../data/tubularCargaPesadaData';
 import cableAceroSuperloopData from '../../data/cableAceroSuperloopData';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const colorMap = {
-  Violeta: '#8e44ad',
+  Violeta: '#cba2f0',
   Verde: '#27ae60',
   Amarillo: '#f1c40f',
   Gris: '#7f8c8d',
@@ -21,6 +22,19 @@ const colorMap = {
   'Azul Oscuro': '#2c3e50',
   Naranja: '#e67e22'
 };
+
+const colorPorPulgada = {
+  '1 pulgada': colorMap.Violeta,
+  '2 pulgadas': colorMap.Verde,
+  '3 pulgadas': colorMap.Amarillo,
+  '4 pulgadas': colorMap.Gris,
+  '5 pulgadas': colorMap.Rojo,
+  '6 pulgadas': colorMap.Café,
+  '8 pulgadas': colorMap.Violeta,
+  '10 pulgadas': colorMap.Naranja,
+  '12 pulgadas': colorMap.Naranja
+};
+
 
 const getColorFromText = text => {
   const found = Object.keys(colorMap).find(name =>
@@ -39,6 +53,10 @@ const BSWLL = ({
 }) => {
   const [opcionesWLL, setOpcionesWLL] = useState([]);
   const [selectedWLL, setSelectedWLL] = useState(null);
+  const [showCapas, setShowCapas] = useState(false);
+  const [selectedCapa, setSelectedCapa] = useState(null);
+  const [capasDisponibles, setCapasDisponibles] = useState([]);
+
   const bottomSheetHeight = SCREEN_HEIGHT * 0.9;
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
@@ -64,30 +82,23 @@ const BSWLL = ({
         const base = item.nombre.split('(')[0].trim();
         return `${base} (${ang}°: ${ton} ton)`;
       });
-    } else if (
-      tipoAparejo === 'Planas ojo-ojo de poliester' &&
-      cantidadManiobra === 1
-    ) {
-      opciones = [
-        '1" - Violeta',
-        '2" - Verde',
-        '3" - Amarillo',
-        '4" - Gris',
-        '5" - Rojo',
-        '6" - Café',
-        '8" - Azul Oscuro',
-        '10" - Naranja',
-        '12" - Naranja'
-      ];
+    } else if (tipoAparejo === 'Planas ojo-ojo de poliester') {
+      opciones = Object.keys(ojoPoliesterData).map(pulgada => {
+        const capas = ojoPoliesterData[pulgada];
+        return `${pulgada}`;
+      });
     } else if (tipoAparejo === 'Cable de Acero Superloop') {
-        opciones = cableAceroSuperloopData.map(item => {
-            const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
-            return `${item.nombre} (${ton} ton)`;
-        });
+      opciones = cableAceroSuperloopData.map(item => {
+        const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
+        return `${item.nombre} (${ton} ton)`;
+      });
     }
 
     setOpcionesWLL(opciones);
     setSelectedWLL(null);
+    setShowCapas(false);
+    setSelectedCapa(null);
+    setCapasDisponibles([]);
 
     if (isVisible) {
       Animated.timing(positionY, {
@@ -112,14 +123,30 @@ const BSWLL = ({
     }).start(() => onClose());
   };
 
-  const handleSelect = option => setSelectedWLL(option);
+  const handleSelect = option => {
+    setSelectedWLL(option);
+    if (tipoAparejo === 'Planas ojo-ojo de poliester') {
+      const pulgadas = option.split('(')[0].trim();
+      setCapasDisponibles(ojoPoliesterData[pulgadas] || []);
+      setShowCapas(true);
+      setSelectedCapa(null);
+    } else {
+      setShowCapas(false);
+      setSelectedCapa(null);
+    }
+  };
 
   const handleConfirm = () => {
     if (!selectedWLL) {
       Alert.alert('Seleccione una opción', 'Debes elegir un aparejo por WLL.');
       return;
     }
-    onSelect(selectedWLL);
+    if (showCapas && !selectedCapa) {
+      Alert.alert('Seleccione una opción', 'Debes elegir la cantidad de capas.');
+      return;
+    }
+    const resultadoFinal = showCapas ? `${selectedWLL} - ${selectedCapa}` : selectedWLL;
+    onSelect(resultadoFinal);
     closeBottomSheet();
   };
 
@@ -141,9 +168,7 @@ const BSWLL = ({
             style={styles.backIcon}
             onPress={closeBottomSheet}
           />
-          <Text style={[styles.modalTitle, { left: 90 }]}>
-            Seleccione WLL
-          </Text>
+          <Text style={[styles.modalTitle, { left: 90 }]}>Seleccione WLL</Text>
         </View>
         <View style={styles.separatorLine} />
         <ScrollView
@@ -151,54 +176,80 @@ const BSWLL = ({
           contentContainerStyle={{ paddingBottom: 50 }}
         >
           {opcionesWLL.map(option => (
-            <TouchableOpacity
-              key={option}
-              style={styles.optionButton}
-              onPress={() => handleSelect(option)}
-            >
-              <View style={styles.optionContent}>
-                {tipoAparejo === 'Cable de Acero Superloop' ? (
+            <View key={option}>
+              <TouchableOpacity
+                style={styles.optionButton}
+                onPress={() => handleSelect(option)}
+              >
+                <View style={styles.optionContent}>
                   <View
                     style={{
                       width: 10,
                       height: 20,
                       borderRadius: 10,
-                      backgroundColor: '#000000',
+                      backgroundColor:
+                        tipoAparejo === 'Planas ojo-ojo de poliester'
+                        ? colorPorPulgada[option] || '#ccc'
+                        : getColorFromText(option),
                       marginRight: 10,
                       borderWidth: 1,
                       borderColor: '#999'
                     }}
                   />
-                ) : (
-                  <View
-                    style={{
-                      width: 10,
-                      height: 20,
-                      borderRadius: 10,
-                      backgroundColor: getColorFromText(option),
-                      marginRight: 10,
-                      borderWidth: 1,
-                      borderColor: '#999'
-                    }}
-                  />
-                )}
-                <View style={styles.optionTextContainer}>
-                  <Text style={styles.optionText}>{option}</Text>
-                </View>
-                <View style={styles.radioContainer}>
-                  <View
-                    style={[
-                      styles.radioButton,
-                      selectedWLL === option && styles.selectedRadioButton
-                    ]}
-                  >
-                    {selectedWLL === option && (
-                      <View style={styles.selectedCircle} />
-                    )}
+                  <View style={styles.optionTextContainer}>
+                    <Text style={styles.optionText}>{option}</Text>
+                  </View>
+                  <View style={styles.radioContainer}>
+                    <View
+                      style={[
+                        styles.radioButton,
+                        selectedWLL === option && styles.selectedRadioButton
+                      ]}
+                    >
+                      {selectedWLL === option && (
+                        <View style={styles.selectedCircle} />
+                      )}
+                    </View>
                   </View>
                 </View>
-              </View>
-            </TouchableOpacity>
+              </TouchableOpacity>
+
+              {showCapas && selectedWLL === option && (
+                <View style={{ paddingLeft: 35, marginBottom: 10 }}>
+                  <Text style={{ marginBottom: 5, fontWeight: 'bold' }}>
+                    Seleccione cantidad de capas:
+                  </Text>
+                  {capasDisponibles.map(capa => (
+                    <TouchableOpacity
+                      key={capa}
+                      style={[
+                        styles.optionButton,
+                        selectedCapa === capa && styles.selectedRadioButton
+                      ]}
+                      onPress={() => setSelectedCapa(capa)}
+                    >
+                      <View style={styles.optionContent}>
+                        <View style={styles.optionTextContainer}>
+                          <Text style={styles.optionText}>{capa}</Text>
+                        </View>
+                        <View style={styles.radioContainer}>
+                          <View
+                            style={[
+                              styles.radioButton,
+                              selectedCapa === capa && styles.selectedRadioButton
+                            ]}
+                          >
+                            {selectedCapa === capa && (
+                              <View style={styles.selectedCircle} />
+                            )}
+                          </View>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
           ))}
         </ScrollView>
         <View style={{ flexGrow: 1 }} />
