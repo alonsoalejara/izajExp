@@ -1,5 +1,18 @@
 import { Schema, model } from 'mongoose';
 
+const revisionHistorySchema = new Schema({
+    revisionDate: {
+        type: Date,
+        required: true,
+        default: Date.now,
+    },
+    modifiedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        default: null,
+    },
+}, { _id: false });
+
 const setupIzajeSchema = new Schema(
     {
         nombreProyecto: { type: String, required: true },
@@ -43,7 +56,17 @@ const setupIzajeSchema = new Schema(
             xPR: { type: Number, required: true },
             yPR: { type: Number, required: true },
             zPR: { type: Number, required: true }
-        }
+        },
+        revisionCount: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 3,
+        },
+        revisionHistory: {
+            type: [revisionHistorySchema],
+            default: [],
+        },
     },
     {
         timestamps: true,

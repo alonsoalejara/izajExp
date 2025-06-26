@@ -58,14 +58,21 @@ async function getSetupIzajeById(req, res) {
 
 async function updateSetupIzaje(req, res) {
   try {
-    const { params, body } = req;
+    const { params, body, user } = req; // Asume que el usuario autenticado está en req.user
     const { error: paramsError } = setupIzajeIdSchema.validate(params);
     if (paramsError) return respondError(req, res, 400, paramsError.message);
 
     const { error: bodyError } = setupIzajeBodySchema.validate(body);
     if (bodyError) return respondError(req, res, 400, bodyError.message);
 
-    const [updatedSetupIzaje, setupIzajeError] = await SetupIzajeService.updateSetupIzaje(params.id, body);
+    // Obtener el ID del usuario desde el objeto req (proporcionado por un middleware de autenticación)
+    const userId = user._id; // O user.id, dependiendo de cómo se guarde en tu middleware
+
+    const [updatedSetupIzaje, setupIzajeError] = await SetupIzajeService.updateSetupIzaje(
+      params.id,
+      body,
+      userId // Pasa el ID del usuario al servicio
+    );
 
     if (setupIzajeError) return respondError(req, res, 400, setupIzajeError);
 

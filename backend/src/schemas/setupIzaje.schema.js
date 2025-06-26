@@ -140,6 +140,16 @@ const centroGravedadSchema = Joi.object({
   }),
 });
 
+const revisionHistoryEntrySchema = Joi.object({
+  revisionDate: Joi.date().required().messages({
+    "date.base": "La fecha de revisión debe ser una fecha válida.",
+    "any.required": "La fecha de revisión es obligatoria.",
+  }),
+  modifiedBy: Joi.string().pattern(/^(?:[0-9a-fA-F]{24}|[0-9a-fA-F]{12})$/).optional().messages({
+    "string.pattern.base": "El ID del usuario que modificó debe ser un ObjectId válido.",
+  }),
+});
+
 const setupIzajeBodySchema = Joi.object({
   nombreProyecto: Joi.string().trim().required().messages({
     "string.empty": "El nombre del proyecto no puede estar vacío.",

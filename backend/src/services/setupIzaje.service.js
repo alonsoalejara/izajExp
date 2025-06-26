@@ -33,6 +33,7 @@ async function createSetupIzaje(setupIzajeData) {
       grua
     } = setupIzajeData;
 
+    // Al crear, revisionCount se establece en 0 por defecto en el modelo
     const newSetupIzaje = new SetupIzaje({
       nombreProyecto,
       aparejos,
@@ -69,35 +70,31 @@ async function getSetupIzajeById(id) {
   }
 }
 
-async function updateSetupIzaje(id, setupIzajeData) {
+async function updateSetupIzaje(id, setupIzajeData, userId) {
   try {
     const setupIzajeFound = await SetupIzaje.findById(id);
     if (!setupIzajeFound) return [null, "La configuración de izaje no existe"];
 
-    const {
-      nombreProyecto,
-      aparejos,
-      datos,
-      cargas,
-      centroGravedad,
-      capataz,
-      supervisor,
-      jefeArea,
-      grua
-    } = setupIzajeData;
+    // Verificar si se ha alcanzado el límite de revisiones
+    if (setupIzajeFound.revisionCount >= 3) {
+      return [null, "Este plan de izaje ya alcanzó el número máximo de revisiones (3)."];
+    }
 
+    // Incrementar el contador de revisiones
+    setupIzajeData.revisionCount = (setupIzajeFound.revisionCount || 0) + 1;
+
+    // Agregar entrada al historial de revisiones
+    const revisionEntry = {
+      revisionDate: new Date(),
+      modifiedBy: userId, // Usamos el userId pasado desde el controlador
+    };
+
+    // Usar $push para añadir al array sin sobrescribir
     const updatedSetupIzaje = await SetupIzaje.findByIdAndUpdate(
       id,
       {
-        nombreProyecto,
-        aparejos,
-        datos,
-        cargas,
-        centroGravedad,
-        capataz,
-        supervisor,
-        jefeArea,
-        grua
+        ...setupIzajeData, // Incluye todos los campos de setupIzajeData
+        $push: { revisionHistory: revisionEntry }, // Agrega la nueva entrada al historial
       },
       { new: true, runValidators: true }
     );

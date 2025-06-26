@@ -11,36 +11,43 @@ import { calculateGeometry } from '../utils/calculateGeometry';
 const Tablas = ({ route, navigation }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [nombreProyecto, setNombreProyecto] = useState('');
-  const [capatazNombre, setCapatazNombre] = useState('N/A');
+  const [capatazNombre, setCapataazNombre] = useState('N/A');
   const [supervisorNombre, setSupervisorNombre] = useState('');
   const [jefeAreaNombre, setJefeAreaNombre] = useState('');
   const [userId, setUserId] = useState(null);
+  const [planId, setPlanId] = useState(null);
 
-  const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData } = route.params || {};
+  // Asegúrate de que `existingPlanId` se pase desde la pantalla anterior si estás editando
+  const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData, existingPlanId } = route.params || {};
 
   console.log('Datos recibidos desde las pantallas de configuración:');
-  console.log('planData:', planData);
-  console.log('setupCargaData:', setupCargaData);
-  console.log('setupGruaData:', setupGruaData);
-  console.log('setupAparejosData:', setupAparejosData);
-  console.log('setupRadioData:', setupRadioData);
-
+  console.log('planData:', planData);
+  console.log('setupCargaData:', setupCargaData);
+  console.log('setupGruaData:', setupGruaData);
+  console.log('setupAparejosData:', setupAparejosData);
+  console.log('setupRadioData:', setupRadioData);
+  console.log('existingPlanId:', existingPlanId); // Para depuración
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (planData) {
         setNombreProyecto(planData.nombreProyecto || '');
-        setCapatazNombre(planData.capataz?.nombreCompleto || '');
+        setCapataazNombre(planData.capataz?.nombreCompleto || '');
         setSupervisorNombre(planData.supervisor?.nombreCompleto || '');
         setJefeAreaNombre(planData.jefeArea?.nombreCompleto || '');
 
         const storedUserId = await AsyncStorage.getItem('usuarioId');
         setUserId(storedUserId);
       }
+      // Establecer el ID del plan si viene como parámetro (estamos editando)
+      if (existingPlanId) {
+        setPlanId(existingPlanId);
+        setIsSaved(true); // Si hay un ID existente, el plan ya se considera "guardado"
+      }
     };
 
     fetchUserData();
-  }, [planData]);
+  }, [planData, existingPlanId]); // Añadir existingPlanId como dependencia
 
   const combinedData = {
     ...setupCargaData,
@@ -80,7 +87,6 @@ const Tablas = ({ route, navigation }) => {
     supervisor: planData?.supervisor,
     jefeArea: planData?.jefeArea,
   });
-
 
   const datosTablaXYZ = [
     {
@@ -149,7 +155,7 @@ const Tablas = ({ route, navigation }) => {
   const handleGuardar = async () => {
     Alert.alert(
       'Confirmar',
-      '¿Estás seguro de guardar este plan de izaje?',
+      `¿Estás seguro de ${planId ? 'actualizar' : 'guardar'} este plan de izaje?`,
       [
         { text: 'Cancelar', onPress: () => { }, style: 'cancel' },
         {
@@ -211,10 +217,10 @@ const Tablas = ({ route, navigation }) => {
                 capataz: planData?.capataz?._id,
                 supervisor: planData?.supervisor?._id,
                 jefeArea: planData?.jefeArea?._id,
-                grua: gruaId, // Usamos la variable gruaId aquí
+                grua: gruaId,
               };
 
-              console.log('Datos enviados a la petición POST:', JSON.stringify(finalData, null, 2));
+              console.log('Datos enviados a la petición:', JSON.stringify(finalData, null, 2));
 
               const accessToken = await AsyncStorage.getItem('accessToken');
               if (!accessToken) {
@@ -222,8 +228,20 @@ const Tablas = ({ route, navigation }) => {
                 return;
               }
 
-              const response = await fetch(getApiUrl('setupIzaje/'), {
-                method: 'POST',
+              let apiUrl = getApiUrl('setupIzaje/');
+              let httpMethod = 'POST';
+
+              if (planId) {
+                // Si tenemos un planId, estamos actualizando un plan existente
+                apiUrl = `${apiUrl}${planId}`; // URL para PUT: /api/setupIzaje/:id
+                httpMethod = 'PUT'; // Método HTTP para actualización
+                console.log(`Realizando petición PUT a: ${apiUrl}`); // Para depuración
+              } else {
+                console.log(`Realizando petición POST a: ${apiUrl}`); // Para depuración
+              }
+
+              const response = await fetch(apiUrl, {
+                method: httpMethod,
                 headers: {
                   'Content-Type': 'application/json',
                   Authorization: `Bearer ${accessToken}`,
@@ -234,14 +252,20 @@ const Tablas = ({ route, navigation }) => {
               const data = await response.json();
 
               if (response.ok) {
-                alert('Plan de izaje guardado exitosamente.');
+                // Si la operación fue exitosa
+                alert(`Plan de izaje ${planId ? 'actualizado' : 'guardado'} exitosamente.`);
                 setIsSaved(true);
+                // Si se acaba de crear un plan (POST), guarda su ID para futuras actualizaciones
+                if (!planId && data._id) {
+                  setPlanId(data._id); // Guarda el ID del nuevo plan
+                }
               } else {
-                alert(`Error al guardar: ${data.message}`);
+                // Manejo de errores del backend (ej. límite de revisiones alcanzado)
+                alert(`Error al ${planId ? 'actualizar' : 'guardar'}: ${data.message || 'Error desconocido'}`);
               }
             } catch (error) {
-              console.error('Error al guardar el plan de izaje:', error);
-              alert('Hubo un error al guardar el plan de izaje.');
+              console.error('Error al manejar el plan de izaje:', error);
+              alert('Hubo un error al guardar/actualizar el plan de izaje.');
             }
           },
         },
