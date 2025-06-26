@@ -6,13 +6,31 @@ import styles from '../../../styles/AdminSectionStyles';
 import getApiUrl from '../../../utils/apiUrl';
 import Components from '../../../components/Components.index';
 
-const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPanel, buttonContainerStyle }) => {
+const SetupIzajeSection = ({
+  setupIzaje = [],
+  setSetups,
+  currentUser,
+  isAdminPanel,
+  buttonContainerStyle,
+}) => {
   const navigation = useNavigation();
   const [selectedSetup, setSelectedSetup] = useState(null);
-  
-  // Filtramos verificando que setup.usuario exista
+
+  const userRole = currentUser?.roles?.[0]; // extrae el primer rol
+  console.log('Rol del usuario:', userRole);
+  console.log('Todos los capataces:', setupIzaje.map(s => s.capataz?._id));
+
   const filteredSetups = currentUser
-    ? setupIzaje.filter(setup => setup.usuario && setup.usuario._id === currentUser._id)
+    ? setupIzaje.filter((setup) => {
+        if (userRole === 'capataz') {
+          return setup.capataz && setup.capataz._id === currentUser._id;
+        } else if (userRole === 'supervisor') {
+          return setup.supervisor && setup.supervisor._id === currentUser._id;
+        } else if (userRole === 'jefe') {
+          return setup.jefeArea && setup.jefeArea._id === currentUser._id;
+        }
+        return false;
+      })
     : setupIzaje;
 
   const formatDate = (dateString) => {
@@ -62,67 +80,65 @@ const SetupIzajeSection = ({ setupIzaje = [], setSetups, currentUser, isAdminPan
 
   return (
     <View style={styles.section}>
-      {(filteredSetups && Array.isArray(filteredSetups) && filteredSetups.length > 0) ? (
+      {filteredSetups && filteredSetups.length > 0 ? (
         filteredSetups.map((setup) => (
           <View key={setup._id} style={styles.card}>
-            <TouchableOpacity onPress={() => setSelectedSetup(selectedSetup === setup._id ? null : setup._id)}>
+            <TouchableOpacity
+              onPress={() => setSelectedSetup(selectedSetup === setup._id ? null : setup._id)}
+            >
               <Text style={[styles.cardTitle, { fontWeight: '700' }]}>
-                Supervisor: <Text style={{ fontWeight: '400' }}>
-                  {setup.usuario?.nombre && setup.usuario?.apellido
-                    ? `${setup.usuario.nombre} ${setup.usuario.apellido}`
-                    : 'No disponible'}
+                Proyecto:{' '}
+                <Text style={{ fontWeight: '400' }}>
+                  {setup.nombreProyecto || 'Sin nombre'}
                 </Text>
               </Text>
               <Text style={[styles.cardDetail, { fontWeight: '700', color: '#777' }]}>
-                Especialidad: <Text style={{ fontWeight: '400' }}>
-                  {setup.usuario?.specialty || 'No disponible'}
+                Fecha:{' '}
+                <Text style={{ fontWeight: '400' }}>
+                  {setup.createdAt ? formatDate(setup.createdAt) : 'No disponible'}
                 </Text>
               </Text>
-              <View>
-                <Text style={[styles.labelText, { top: 8, fontWeight: 'bold', fontSize: 16, color: '#777' }]}>
-                  Fecha: <Text style={{ fontWeight: '400' }}>
-                    {setup.createdAt ? formatDate(setup.createdAt) : 'No disponible'}
-                  </Text>
-                </Text>
-              </View>
             </TouchableOpacity>
+
             {selectedSetup === setup._id && (
-             <View style={styles.cardExpandedDetails}>
-              <View style={styles.buttonContainerCard}>
-                <Components.Button
-                  label="Ver"
-                  onPress={() => navigation.navigate('CollabTablas', { setup })}
-                  isCancel={true}
-                  style={styles.button}
-                />
-                {/* Si el usuario NO es administrador, se muestran Editar y Eliminar */}
-                {!isAdminPanel && (
-                  <View style={styles.multiButtonContainer}>
-                    <Components.Button
-                      label="Editar"
-                      onPress={() => console.log('Editar presionado')}
-                      isCancel={true}
-                      style={[styles.button, { right: 60 }]}
-                    />
+              <View style={styles.cardExpandedDetails}>
+                <View style={styles.buttonContainerCard}>
+                  <Components.Button
+                    label="Ver"
+                    onPress={() => navigation.navigate('CollabTablas', { setup })}
+                    isCancel={true}
+                    style={styles.button}
+                  />
+
+                  {/* Mostrar Editar/Eliminar solo si NO es capataz y NO es adminPanel */}
+                  {!isAdminPanel && userRole !== 'capataz' && (
+                    <View style={styles.multiButtonContainer}>
+                      <Components.Button
+                        label="Editar"
+                        onPress={() => console.log('Editar presionado')}
+                        isCancel={true}
+                        style={[styles.button, { right: 60 }]}
+                      />
+                      <Components.Button
+                        label="Eliminar"
+                        onPress={() => confirmDelete(setup._id)}
+                        isCancel={true}
+                        style={[styles.button, { right: 120 }]}
+                      />
+                    </View>
+                  )}
+
+                  {/* Mostrar Eliminar en adminPanel sin restricciones */}
+                  {isAdminPanel && (
                     <Components.Button
                       label="Eliminar"
                       onPress={() => confirmDelete(setup._id)}
                       isCancel={true}
-                      style={[styles.button, { right: 120 }]}
+                      style={styles.button}
                     />
-                  </View>
-                )}  
-                {/* Si el usuario ES administrador, solo se muestra el botón Eliminar */}
-                {isAdminPanel && (
-                  <Components.Button
-                    label="Eliminar"
-                    onPress={() => confirmDelete(setup._id)}
-                    isCancel={true}
-                    style={styles.button}
-                  />
-                )}
+                  )}
+                </View>
               </View>
-             </View>
             )}
           </View>
         ))

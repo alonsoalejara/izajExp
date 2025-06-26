@@ -57,9 +57,9 @@ async function createSetupIzaje(setupIzajeData) {
 async function getSetupIzajeById(id) {
   try {
     const setupIzaje = await SetupIzaje.findById(id)
-      .populate('capataz', 'username nombre apellido')
-      .populate('supervisor', 'username nombre apellido')
-      .populate('jefeArea', 'username nombre apellido')
+      .populate('capataz', 'username nombre apellido roles')
+      .populate('supervisor', 'username nombre apellido roles')
+      .populate('jefeArea', 'username nombre apellido roles ')
       .populate('grua', 'nombre modelo')
       .exec();
     if (!setupIzaje) return [null, "La configuración de izaje no existe"];
