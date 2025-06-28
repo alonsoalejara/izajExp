@@ -35,7 +35,6 @@ const colorPorPulgada = {
   '12 pulgadas': colorMap.Naranja
 };
 
-
 const getColorFromText = text => {
   const found = Object.keys(colorMap).find(name =>
     text.toLowerCase().includes(name.toLowerCase())
@@ -83,10 +82,16 @@ const BSWLL = ({
         return `${base} (${ang}°: ${ton} ton)`;
       });
     } else if (tipoAparejo === 'Planas ojo-ojo de poliester') {
-      opciones = Object.keys(ojoPoliesterData).map(pulgada => {
-        const capas = ojoPoliesterData[pulgada];
-        return `${pulgada}`;
-      });
+      if (cantidadManiobra === 1) {
+        opciones = Object.keys(ojoPoliesterData).map(pulgada => {
+          return `${pulgada}`;
+        });
+      } else {
+        opciones = [];
+        if (selectedWLL && selectedWLL.includes('pulgada')) {
+             setSelectedWLL(null);
+        }
+      }
     } else if (tipoAparejo === 'Cable de Acero Superloop') {
       opciones = cableAceroSuperloopData.map(item => {
         const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
@@ -175,82 +180,86 @@ const BSWLL = ({
           style={styles.optionsContainer}
           contentContainerStyle={{ paddingBottom: 50 }}
         >
-          {opcionesWLL.map(option => (
-            <View key={option}>
-              <TouchableOpacity
-                style={styles.optionButton}
-                onPress={() => handleSelect(option)}
-              >
-                <View style={styles.optionContent}>
-                  <View
-                    style={{
-                      width: 10,
-                      height: 20,
-                      borderRadius: 10,
-                      backgroundColor:
-                        tipoAparejo === 'Planas ojo-ojo de poliester'
-                        ? colorPorPulgada[option] || '#ccc'
-                        : getColorFromText(option),
-                      marginRight: 10,
-                      borderWidth: 1,
-                      borderColor: '#999'
-                    }}
-                  />
-                  <View style={styles.optionTextContainer}>
-                    <Text style={styles.optionText}>{option}</Text>
-                  </View>
-                  <View style={styles.radioContainer}>
+          {opcionesWLL.map(option => {
+            const isOjoOjoPoliester = tipoAparejo === 'Planas ojo-ojo de poliester';
+            
+            return (
+              <View key={option}>
+                <TouchableOpacity
+                  style={styles.optionButton}
+                  onPress={() => handleSelect(option)}
+                >
+                  <View style={styles.optionContent}>
                     <View
-                      style={[
-                        styles.radioButton,
-                        selectedWLL === option && styles.selectedRadioButton
-                      ]}
-                    >
-                      {selectedWLL === option && (
-                        <View style={styles.selectedCircle} />
-                      )}
+                      style={{
+                        width: 10,
+                        height: 20,
+                        borderRadius: 10,
+                        backgroundColor:
+                          isOjoOjoPoliester
+                          ? colorPorPulgada[option] || '#ccc'
+                          : getColorFromText(option),
+                        marginRight: 10,
+                        borderWidth: 1,
+                        borderColor: '#999'
+                      }}
+                    />
+                    <View style={styles.optionTextContainer}>
+                      <Text style={styles.optionText}>{option}</Text>
+                    </View>
+                    <View style={styles.radioContainer}>
+                      <View
+                        style={[
+                          styles.radioButton,
+                          selectedWLL === option && styles.selectedRadioButton
+                        ]}
+                      >
+                        {selectedWLL === option && (
+                          <View style={styles.selectedCircle} />
+                        )}
+                      </View>
                     </View>
                   </View>
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
 
-              {showCapas && selectedWLL === option && (
-                <View style={{ paddingLeft: 35, marginBottom: 10 }}>
-                  <Text style={{ marginBottom: 5, fontWeight: 'bold' }}>
-                    Seleccione cantidad de capas:
-                  </Text>
-                  {capasDisponibles.map(capa => (
-                    <TouchableOpacity
-                      key={capa}
-                      style={[
-                        styles.optionButton,
-                        selectedCapa === capa && styles.selectedRadioButton
-                      ]}
-                      onPress={() => setSelectedCapa(capa)}
-                    >
-                      <View style={styles.optionContent}>
-                        <View style={styles.optionTextContainer}>
-                          <Text style={styles.optionText}>{capa}</Text>
-                        </View>
-                        <View style={styles.radioContainer}>
-                          <View
-                            style={[
-                              styles.radioButton,
-                              selectedCapa === capa && styles.selectedRadioButton
-                            ]}
-                          >
-                            {selectedCapa === capa && (
-                              <View style={styles.selectedCircle} />
-                            )}
+                {showCapas && selectedWLL === option && (
+                  <View style={{ paddingLeft: 35, marginBottom: 10 }}>
+                    <Text style={{ marginBottom: 5, fontWeight: 'bold' }}>
+                      Seleccione cantidad de capas:
+                    </Text>
+                    {capasDisponibles.map(capa => (
+                      <TouchableOpacity
+                        key={capa}
+                        style={[
+                          styles.optionButton,
+                          selectedCapa === capa && styles.selectedRadioButton
+                        ]}
+                        onPress={() => setSelectedCapa(capa)}
+                      >
+                        <View style={styles.optionContent}>
+                          <View style={styles.optionTextContainer}>
+                            <Text style={styles.optionText}>{capa}</Text>
+                          </View>
+                          <View style={styles.radioContainer}>
+                            <View
+                              style={[
+                                styles.radioButton,
+                                selectedCapa === capa && styles.selectedRadioButton
+                              ]}
+                            >
+                              {selectedCapa === capa && (
+                                <View style={styles.selectedCircle} />
+                              )}
+                            </View>
                           </View>
                         </View>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-            </View>
-          ))}
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+            );
+          })}
         </ScrollView>
         <View style={{ flexGrow: 1 }} />
         <Components.Button

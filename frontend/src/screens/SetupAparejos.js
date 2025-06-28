@@ -306,6 +306,7 @@ const SetupAparejos = () => {
                 setErrorTipoAparejo('');
               }}
               tipoManiobra={tipoManiobraSeleccionadoSolo}
+              cantidadManiobra={cantidadNumero}
             />
             <BS.BSWLL
               isVisible={isAparejoWLLModalVisible}

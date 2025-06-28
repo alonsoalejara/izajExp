@@ -6,7 +6,7 @@ import Components from '../Components.index';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra }) => {
+const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra, cantidadManiobra }) => {
   const [tipoAparejoSeleccionado, setTipoAparejoSeleccionado] = useState(null);
   const [opcionesTipoAparejo, setOpcionesTipoAparejo] = useState([]);
   const bottomSheetHeight = SCREEN_HEIGHT * 0.8;
@@ -14,21 +14,24 @@ const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra }) => {
 
   useEffect(() => {
     if (tipoManiobra === 'Estrobo') {
-      // *** CAMBIO CLAVE AQUÍ ***
-      setOpcionesTipoAparejo(['Cable de Acero Superloop']); // Capitalización correcta
-      setTipoAparejoSeleccionado('Cable de Acero Superloop'); // Capitalización correcta
+      setOpcionesTipoAparejo(['Cable de Acero Superloop']);
+      setTipoAparejoSeleccionado('Cable de Acero Superloop');
       if (isVisible) {
         openBottomSheet();
       } else {
         closeBottomSheet();
       }
     } else if (tipoManiobra === 'Eslinga') {
-      setOpcionesTipoAparejo([
+      let opciones = [
         'Tubulares de poliester',
         'Planas ojo-ojo de poliester',
         'Tubulares trenzadas de poliester',
         'Tubulares para carga pesada',
-      ]);
+      ];
+      if (cantidadManiobra !== 1) {
+        opciones = opciones.filter(opcion => opcion !== 'Planas ojo-ojo de poliester');
+      }
+      setOpcionesTipoAparejo(opciones);
       setTipoAparejoSeleccionado(null);
       if (isVisible) {
         openBottomSheet();
@@ -44,7 +47,7 @@ const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra }) => {
         closeBottomSheet();
       }
     }
-  }, [isVisible, tipoManiobra]);
+  }, [isVisible, tipoManiobra, cantidadManiobra]);
 
   const openBottomSheet = () => {
     Animated.timing(positionY, {
