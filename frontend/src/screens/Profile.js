@@ -16,10 +16,10 @@ const Profile = () => {
   const [setupIzaje, setSetups] = useState([]);
   const [hasSignature, setHasSignature] = useState(false);
 
-  // Definir los roles que pueden ver la sección de firma
+  // Define los roles que pueden ver la sección de firma
   const ROLES_CON_FIRMA = ['Supervisor', 'Jefe'];
+  const CAPATAZ_ROLE = 'capataz';
 
-  // Extrae userId del JWT sin jwt-decode
   const extractUserId = (token) => {
     const payload = token.split('.')[1];
     const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
@@ -27,7 +27,6 @@ const Profile = () => {
     return JSON.parse(json).id;
   };
 
-  // Fetch setups
   useEffect(() => {
     async function fetchSetups() {
       try {
@@ -44,11 +43,8 @@ const Profile = () => {
 
         const text = await res.text();
 
-        console.log('Status:', res.status);
-        console.log('Raw response from setupIzaje:', text);
-
         if (!text) {
-          console.warn('Respuesta vacía del backend.');
+          console.warn('Respuesta vacía del backend para setups.');
           return;
         }
 
@@ -57,23 +53,23 @@ const Profile = () => {
         if (json?.data) {
           setSetups(json.data);
         } else {
-          console.warn('Respuesta JSON sin propiedad "data":', json);
+          console.warn('Respuesta JSON sin propiedad "data" para setups:', json);
         }
       } catch (e) {
         console.error('Error al obtener los planes de izaje:', e);
       }
     }
-
     fetchSetups();
   }, []);
 
-  // Fetch user data
   useEffect(() => {
     async function fetchUser() {
       try {
         const token = await AsyncStorage.getItem('accessToken');
         if (!token) return;
+
         const userId = extractUserId(token);
+
         const res = await fetch(getApiUrl(`user/${userId}`), {
           method: 'GET',
           headers: {
@@ -82,14 +78,16 @@ const Profile = () => {
           },
         });
         const json = await res.json();
+
         if (json?.data) {
           setUser(json.data);
           setHasSignature(!!json.data.signature);
 
-          // Si el usuario es Capataz, nos aseguramos de que no vea "Mi Firma" como pestaña seleccionada inicialmente.
-          // Si el botón seleccionado actualmente es 'MiFirma' y el usuario es Capataz,
-          // lo cambiamos a 'MisDatos'.
-          if (json.data.rol === 'Capataz' && selectedButton === 'MiFirma') {
+          // Accede al rol del usuario desde el array 'roles'
+          const userRole = json.data.roles && json.data.roles.length > 0 ? json.data.roles[0] : null;
+          const userRoleLowerCase = userRole ? userRole.toLowerCase() : null;
+
+          if (userRoleLowerCase === CAPATAZ_ROLE && selectedButton === 'MiFirma') {
             setSelectedButton('MisDatos');
           }
         }
@@ -98,10 +96,9 @@ const Profile = () => {
       }
     }
     fetchUser();
-  }, [selectedButton]); // Añadir selectedButton como dependencia para re-evaluar si el rol cambia la selección
+  }, [selectedButton]);
 
 
-  // Button animations
   const animations = useRef({
     MisDatos: new Animated.Value(0),
     MisPlanes: new Animated.Value(0),
@@ -109,13 +106,19 @@ const Profile = () => {
   });
 
   const handlePressButton = (button) => {
-    // Si el usuario es Capataz y el botón es 'MiFirma', no permitimos la acción.
-    if (user?.rol === 'Capataz' && button === 'MiFirma') {
+    // Accede al rol del usuario desde el array 'roles'
+    const currentUserRole = user?.roles && user.roles.length > 0 ? user.roles[0] : null;
+    const userRoleLowerCase = currentUserRole ? currentUserRole.toLowerCase() : null;
+
+    if (userRoleLowerCase === CAPATAZ_ROLE && button === 'MiFirma') {
       return;
     }
     setSelectedButton(button);
     const buttonsToAnimate = ['MisDatos', 'MisPlanes'];
-    if (user?.rol && ROLES_CON_FIRMA.includes(user.rol)) {
+
+    const rolesConFirmaLowerCase = ROLES_CON_FIRMA.map(role => role.toLowerCase());
+
+    if (userRoleLowerCase && rolesConFirmaLowerCase.includes(userRoleLowerCase)) {
       buttonsToAnimate.push('MiFirma');
     }
 
@@ -128,7 +131,6 @@ const Profile = () => {
     });
   };
 
-  // Actions
   const handleSignOut = () => {
     Alert.alert('Cerrar Sesión', '¿Estás seguro de que deseas cerrar sesión?', [
       { text: 'Cancelar', style: 'cancel' },
@@ -190,7 +192,7 @@ const Profile = () => {
               method: 'DELETE',
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
+                'Authorization': `Bearer ${token}`
               },
             });
             if (res.ok) {
@@ -211,15 +213,19 @@ const Profile = () => {
     ]);
   };
 
-  // Determinar qué botones mostrar
+  // Determina qué botones mostrar basado en el rol del usuario
+  const currentUserRole = user?.roles && user.roles.length > 0 ? user.roles[0] : null;
+  const userRoleLowerCase = currentUserRole ? currentUserRole.toLowerCase() : null;
+  const rolesConFirmaLowerCase = ROLES_CON_FIRMA.map(role => role.toLowerCase());
+
   const visibleButtons = ['MisDatos', 'MisPlanes'];
-  if (user?.rol && ROLES_CON_FIRMA.includes(user.rol)) {
+
+  if (userRoleLowerCase && rolesConFirmaLowerCase.includes(userRoleLowerCase)) {
     visibleButtons.push('MiFirma');
   }
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.circleContainer}>
         <ImageBackground
           source={require('../../assets/capataz.png')}
@@ -237,7 +243,6 @@ const Profile = () => {
         </ImageBackground>
       </View>
 
-      {/* Profile Image */}
       <Image
         source={
           user?.profileImage ||
@@ -246,7 +251,6 @@ const Profile = () => {
         style={styles.profileImage}
       />
 
-      {/* Tabs */}
       <View style={styles.userButtonsContainer}>
         {visibleButtons.map((section) => (
           <TouchableOpacity
@@ -281,7 +285,6 @@ const Profile = () => {
         ))}
       </View>
 
-      {/* Content */}
       {selectedButton === 'MisDatos' && (
         <View style={[styles.userDataContainer, { top: -20 }]}>
           <Text style={styles.userName}>
@@ -313,8 +316,7 @@ const Profile = () => {
         </View>
       )}
 
-      {/* Renderizar "Mi Firma" solo si el rol lo permite */}
-      {selectedButton === 'MiFirma' && user?.rol && ROLES_CON_FIRMA.includes(user.rol) && (
+      {selectedButton === 'MiFirma' && userRoleLowerCase && rolesConFirmaLowerCase.includes(userRoleLowerCase) && (
         <View
           style={[styles.userDataContainer, { top: 300, alignItems: 'center' }]}
         >
@@ -375,7 +377,7 @@ const Profile = () => {
               <View style={{ marginTop: 30 }}>
                 <Components.Button
                   label="Registrar Firma"
-                  onPress={handleAddSignature} // Cambiado a handleAddSignature para la primera vez
+                  onPress={handleAddSignature}
                   style={{ width: 200, left: -25 }}
                 />
               </View>
