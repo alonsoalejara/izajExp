@@ -16,6 +16,9 @@ const Profile = () => {
   const [setupIzaje, setSetups] = useState([]);
   const [hasSignature, setHasSignature] = useState(false);
 
+  // Definir los roles que pueden ver la sección de firma
+  const ROLES_CON_FIRMA = ['Supervisor', 'Jefe'];
+
   // Extrae userId del JWT sin jwt-decode
   const extractUserId = (token) => {
     const payload = token.split('.')[1];
@@ -39,7 +42,7 @@ const Profile = () => {
           },
         });
 
-        const text = await res.text(); // primero leemos como texto
+        const text = await res.text();
 
         console.log('Status:', res.status);
         console.log('Raw response from setupIzaje:', text);
@@ -49,7 +52,7 @@ const Profile = () => {
           return;
         }
 
-        const json = JSON.parse(text); // intentamos parsear si hay contenido
+        const json = JSON.parse(text);
 
         if (json?.data) {
           setSetups(json.data);
@@ -82,13 +85,21 @@ const Profile = () => {
         if (json?.data) {
           setUser(json.data);
           setHasSignature(!!json.data.signature);
+
+          // Si el usuario es Capataz, nos aseguramos de que no vea "Mi Firma" como pestaña seleccionada inicialmente.
+          // Si el botón seleccionado actualmente es 'MiFirma' y el usuario es Capataz,
+          // lo cambiamos a 'MisDatos'.
+          if (json.data.rol === 'Capataz' && selectedButton === 'MiFirma') {
+            setSelectedButton('MisDatos');
+          }
         }
       } catch (e) {
         console.error('Error al obtener los datos del usuario:', e);
       }
     }
     fetchUser();
-  }, []);
+  }, [selectedButton]); // Añadir selectedButton como dependencia para re-evaluar si el rol cambia la selección
+
 
   // Button animations
   const animations = useRef({
@@ -96,9 +107,19 @@ const Profile = () => {
     MisPlanes: new Animated.Value(0),
     MiFirma: new Animated.Value(0),
   });
+
   const handlePressButton = (button) => {
+    // Si el usuario es Capataz y el botón es 'MiFirma', no permitimos la acción.
+    if (user?.rol === 'Capataz' && button === 'MiFirma') {
+      return;
+    }
     setSelectedButton(button);
-    ['MisDatos', 'MisPlanes', 'MiFirma'].forEach((b) => {
+    const buttonsToAnimate = ['MisDatos', 'MisPlanes'];
+    if (user?.rol && ROLES_CON_FIRMA.includes(user.rol)) {
+      buttonsToAnimate.push('MiFirma');
+    }
+
+    buttonsToAnimate.forEach((b) => {
       Animated.timing(animations.current[b], {
         toValue: b === button ? 1 : 0,
         duration: 300,
@@ -151,9 +172,9 @@ const Profile = () => {
     navigation.navigate('Firma', { onSave: handleSaveSignature });
   const handleEditSignature = () =>
     navigation.navigate('Firma', {
-    onSave: handleSaveSignature,
-    signature: user.signature
-  });
+      onSave: handleSaveSignature,
+      signature: user.signature
+    });
 
 
   const handleDeleteSignature = async () => {
@@ -190,6 +211,12 @@ const Profile = () => {
     ]);
   };
 
+  // Determinar qué botones mostrar
+  const visibleButtons = ['MisDatos', 'MisPlanes'];
+  if (user?.rol && ROLES_CON_FIRMA.includes(user.rol)) {
+    visibleButtons.push('MiFirma');
+  }
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -221,7 +248,7 @@ const Profile = () => {
 
       {/* Tabs */}
       <View style={styles.userButtonsContainer}>
-        {['MisDatos', 'MisPlanes', 'MiFirma'].map((section) => (
+        {visibleButtons.map((section) => (
           <TouchableOpacity
             key={section}
             onPress={() => handlePressButton(section)}
@@ -236,8 +263,8 @@ const Profile = () => {
               {section === 'MisDatos'
                 ? 'Mis Datos'
                 : section === 'MisPlanes'
-                ? 'Mis Planes'
-                : 'Mi Firma'}
+                  ? 'Mis Planes'
+                  : 'Mi Firma'}
             </Text>
             <Animated.View
               style={[
@@ -286,7 +313,8 @@ const Profile = () => {
         </View>
       )}
 
-      {selectedButton === 'MiFirma' && (
+      {/* Renderizar "Mi Firma" solo si el rol lo permite */}
+      {selectedButton === 'MiFirma' && user?.rol && ROLES_CON_FIRMA.includes(user.rol) && (
         <View
           style={[styles.userDataContainer, { top: 300, alignItems: 'center' }]}
         >
@@ -314,7 +342,7 @@ const Profile = () => {
                   }}
                   style={{
                     top: 50,
-                    width: '180%',  // Ajustar aquí el tamaño de la imagen dentro del contenedor
+                    width: '180%',
                     height: '180%',
                     resizeMode: 'contain',
                   }}
@@ -326,7 +354,7 @@ const Profile = () => {
                   marginTop: 40,
                   justifyContent: 'space-between',
                   width: 250,
-                  left: -75,    
+                  left: -75,
                 }}
               >
                 <Components.Button
@@ -347,7 +375,7 @@ const Profile = () => {
               <View style={{ marginTop: 30 }}>
                 <Components.Button
                   label="Registrar Firma"
-                  onPress={handleEditSignature}
+                  onPress={handleAddSignature} // Cambiado a handleAddSignature para la primera vez
                   style={{ width: 200, left: -25 }}
                 />
               </View>
