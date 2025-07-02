@@ -1,24 +1,22 @@
 import { Schema, model } from 'mongoose';
 
-const revisionHistorySchema = new Schema({
-    revisionDate: {
-        type: Date,
-        required: true,
-        default: Date.now,
-    },
-    modifiedBy: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        default: null,
-    },
-}, { _id: false });
-
 const setupIzajeSchema = new Schema(
     {
         nombreProyecto: { type: String, required: true },
         capataz: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         supervisor: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         jefeArea: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        firmaSupervisor: {
+            type: String,
+            required: [true, 'La firma del supervisor es obligatoria'],
+            default: null // Aunque es requerido, un valor por defecto para inicialización.
+                          // Se espera que la aplicación envíe el valor real.
+        },
+        firmaJefeArea: {
+            type: String,
+            required: [true, 'La firma del jefe de área es obligatoria'],
+            default: null // Similar al anterior
+        },
         aparejos: [{
             descripcion: { type: String, required: true },
             cantidad: { type: Number, required: true },
@@ -56,16 +54,6 @@ const setupIzajeSchema = new Schema(
             xPR: { type: Number, required: true },
             yPR: { type: Number, required: true },
             zPR: { type: Number, required: true }
-        },
-        revisionCount: {
-            type: Number,
-            default: 0,
-            min: 0,
-            max: 3,
-        },
-        revisionHistory: {
-            type: [revisionHistorySchema],
-            default: [],
         },
     },
     {
