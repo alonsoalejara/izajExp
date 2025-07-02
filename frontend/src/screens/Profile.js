@@ -16,8 +16,8 @@ const Profile = () => {
   const [setupIzaje, setSetups] = useState([]);
   const [hasSignature, setHasSignature] = useState(false);
 
-  // Define los roles que pueden ver la sección de firma
   const ROLES_CON_FIRMA = ['Supervisor', 'Jefe'];
+  const ROLES_BOTON_HOLA_MUNDO = ['Supervisor', 'Jefe'];
   const CAPATAZ_ROLE = 'capataz';
 
   const extractUserId = (token) => {
@@ -83,7 +83,6 @@ const Profile = () => {
           setUser(json.data);
           setHasSignature(!!json.data.signature);
 
-          // Accede al rol del usuario desde el array 'roles'
           const userRole = json.data.roles && json.data.roles.length > 0 ? json.data.roles[0] : null;
           const userRoleLowerCase = userRole ? userRole.toLowerCase() : null;
 
@@ -106,7 +105,6 @@ const Profile = () => {
   });
 
   const handlePressButton = (button) => {
-    // Accede al rol del usuario desde el array 'roles'
     const currentUserRole = user?.roles && user.roles.length > 0 ? user.roles[0] : null;
     const userRoleLowerCase = currentUserRole ? currentUserRole.toLowerCase() : null;
 
@@ -213,16 +211,20 @@ const Profile = () => {
     ]);
   };
 
-  // Determina qué botones mostrar basado en el rol del usuario
   const currentUserRole = user?.roles && user.roles.length > 0 ? user.roles[0] : null;
   const userRoleLowerCase = currentUserRole ? currentUserRole.toLowerCase() : null;
   const rolesConFirmaLowerCase = ROLES_CON_FIRMA.map(role => role.toLowerCase());
+  const rolesBotonHolaMundoLowerCase = ROLES_BOTON_HOLA_MUNDO.map(role => role.toLowerCase());
 
   const visibleButtons = ['MisDatos', 'MisPlanes'];
 
   if (userRoleLowerCase && rolesConFirmaLowerCase.includes(userRoleLowerCase)) {
     visibleButtons.push('MiFirma');
   }
+
+  const handleHolaMundoPress = () => {
+    Alert.alert("Planes", "¡Aquí estarán los planes firmados!");
+  };
 
   return (
     <View style={styles.container}>
@@ -307,11 +309,33 @@ const Profile = () => {
           <ScrollView
             contentContainerStyle={{ paddingBottom: 310, marginBottom: 20 }}
           >
+            {/* Texto "Pendientes" añadido aquí */}
+            <Text style={{
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: '#333',
+              marginBottom: 10, // Espacio entre el texto y las cards
+              marginLeft: 55.5, // Un poco de margen para alinearse con las cards
+            }}>Pendientes</Text>
+
             <Section.SetupIzajeSection
               setupIzaje={setupIzaje}
               setSetups={setSetups}
               currentUser={user}
             />
+            {/* Solo para Supervisor o Jefe, usando Components.Button */}
+            {userRoleLowerCase && rolesBotonHolaMundoLowerCase.includes(userRoleLowerCase) && (
+              <Components.Button
+                label="Firmados"
+                onPress={handleHolaMundoPress}
+                style={{
+                  width: 120,
+                  left: -32,
+                  alignSelf: 'center',
+                  marginTop: 5,
+                }}
+              />
+            )}
           </ScrollView>
         </View>
       )}
