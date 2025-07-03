@@ -2,19 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, Alert, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
-import Components from '../components/Components.index'; // Asegúrate de que esta ruta sea correcta
-import TablasStyles from '../styles/TablasStyles'; // Asegúrate de que esta ruta sea correcta
+import Components from '../components/Components.index';
+import TablasStyles from '../styles/TablasStyles';
 
 const CollabTablas = ({ route }) => {
-  const { setup, currentUserSignature, currentUser } = route.params; // ¡Asegúrate de pasar 'currentUser' también!
+  const { setup, currentUserSignature, currentUser } = route.params;
   const navigation = useNavigation();
-
   const [showSmallButtons, setShowSmallButtons] = useState(true);
-
-  // Inicializa los estados de las firmas.
-  // Priorizamos la firma que ya está en el 'setup', pero si no hay, inicializamos a null.
-  const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(setup.supervisor?.signature || null);
-  const [appliedJefeAreaSignature, setAppliedJefeAreaSignature] = useState(setup.jefeArea?.signature || null);
+  const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(null);
+  const [appliedJefeAreaSignature, setAppliedJefeAreaSignature] = useState(null);
 
   // --- CONSOLE LOGS DE INICIO (Mantengo tus logs para depuración) ---
   console.log('--- CollabTablas Component Mount/Re-render ---');
@@ -128,42 +124,57 @@ const CollabTablas = ({ route }) => {
   ];
 
   const handleFirmarPlan = () => {
-    console.log('--- handleFirmarPlan llamado ---');
-    console.log('currentUserSignature en handleFirmarPlan:', currentUserSignature ? 'Firma presente' : 'Firma NO presente');
-    console.log('currentUser en handleFirmarPlan:', currentUser ? `ID: ${currentUser._id}, Position: ${currentUser.position}` : 'NO presente');
+    let signatureToUse = currentUserSignature || currentUser?.signature;
 
-    if (!currentUserSignature) {
-      Alert.alert("Error de Firma", "No se encontró una firma para el usuario actual.");
-      return;
+    // Si no viene por params, intenta obtener desde el `setup` según el rol
+    const userId = currentUser?._id;
+    const supervisorId = setup?.supervisor?._id;
+    const jefeAreaId = setup?.jefeArea?._id;
+
+    if (!signatureToUse && userId && supervisorId && jefeAreaId) {
+        if (userId === supervisorId) {
+            signatureToUse = setup?.supervisor?.signature;
+            console.log("🪪 Firma obtenida desde `setup.supervisor.signature`");
+        } else if (userId === jefeAreaId) {
+            signatureToUse = setup?.jefeArea?.signature;
+            console.log("🪪 Firma obtenida desde `setup.jefeArea.signature`");
+        }
+    }
+
+    if (!signatureToUse) {
+      console.log('🚩 currentUser:', currentUser);
+      console.log('🚩 currentUserSignature:', currentUserSignature);
+      console.log('🚩 userId:', userId, 'supervisorId:', supervisorId, 'jefeAreaId:', jefeAreaId);
+
+        Alert.alert("Error de Firma", "No se encontró una firma para el usuario actual.");
+        return;
     }
 
     Alert.alert(
-      "Confirmar Firma",
-      "¿Deseas aplicar tu firma a este plan de izaje?",
-      [{
-        text: "Cancelar",
-        style: "cancel"
-      }, {
-        text: "Firmar",
-        onPress: () => {
-          setShowSmallButtons(false);
+        "Confirmar Firma",
+        "¿Deseas aplicar tu firma a este plan de izaje?",
+        [
+            { text: "Cancelar", style: "cancel" },
+            {
+                text: "Firmar",
+                onPress: () => {
+                    setShowSmallButtons(false);
 
-          // Lógica para aplicar la firma según el rol del usuario logeado
-          // Asumimos que `currentUser.position` o `currentUser.roles` determinan esto
-          if (currentUser?.position === 'Supervisor') { // O si usas 'roles', currentUser.roles.includes('supervisor')
-            setAppliedSupervisorSignature(currentUserSignature);
-            console.log('Firma de Supervisor aplicada.');
-          } else if (currentUser?.position === 'Jefe Área') { // O currentUser.roles.includes('jefeArea')
-            setAppliedJefeAreaSignature(currentUserSignature);
-            console.log('Firma de Jefe de Área aplicada.');
-          } else {
-            Alert.alert("Rol no reconocido", "Tu rol no te permite firmar en este documento.", [{ text: "OK" }]);
-          }
+                    const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
 
-          console.log('Estado actual de `appliedSupervisorSignature` DESPUÉS DE SET (inmediato):', appliedSupervisorSignature ? 'Firma presente' : 'Firma NO presente');
-          console.log('Estado actual de `appliedJefeAreaSignature` DESPUÉS DE SET (inmediato):', appliedJefeAreaSignature ? 'Firma presente' : 'Firma NO presente');
-        }
-      }]
+                    if (userRole === 'supervisor') {
+                        setAppliedSupervisorSignature(signatureToUse);
+                        console.log('✅ Firma de Supervisor aplicada.');
+                    } else if (userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') {
+                        setAppliedJefeAreaSignature(signatureToUse);
+                        console.log('✅ Firma de Jefe de Área aplicada.');
+                    } else {
+                        console.log('⚠️ Rol no identificado para firmar:', userRole);
+                        Alert.alert("Error de Rol", "Tu rol no permite firmar este plan o no se reconoce.");
+                    }
+                }
+            }
+        ]
     );
   };
 

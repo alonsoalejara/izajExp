@@ -37,7 +37,7 @@ const Profile = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -74,7 +74,7 @@ const Profile = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         });
         const json = await res.json();
@@ -97,6 +97,14 @@ const Profile = () => {
     fetchUser();
   }, [selectedButton]);
 
+  useEffect(() => {
+    if (user) {
+      console.log("🚩 user cargado en Profile:", user);
+      console.log("🚩 Firma del usuario:", user.signature);
+    } else {
+      console.log("🚩 user aún NO cargado en Profile");
+    }
+  }, [user]);
 
   const animations = useRef({
     MisDatos: new Animated.Value(0),
@@ -114,7 +122,7 @@ const Profile = () => {
     setSelectedButton(button);
     const buttonsToAnimate = ['MisDatos', 'MisPlanes'];
 
-    const rolesConFirmaLowerCase = ROLES_CON_FIRMA.map(role => role.toLowerCase());
+    const rolesConFirmaLowerCase = ROLES_CON_FIRMA.map((role) => role.toLowerCase());
 
     if (userRoleLowerCase && rolesConFirmaLowerCase.includes(userRoleLowerCase)) {
       buttonsToAnimate.push('MiFirma');
@@ -137,7 +145,7 @@ const Profile = () => {
         onPress: async () => {
           await AsyncStorage.removeItem('accessToken');
           navigation.replace('Login');
-        }
+        },
       },
     ]);
   };
@@ -150,14 +158,14 @@ const Profile = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ signature }),
       });
       if (res.ok) {
         setHasSignature(true);
         const fresh = await fetch(getApiUrl(`user/${userId}`), {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         const freshJson = await fresh.json();
         if (freshJson?.data) setUser(freshJson.data);
@@ -168,14 +176,8 @@ const Profile = () => {
     }
   };
 
-  const handleAddSignature = () =>
-    navigation.navigate('Firma', { onSave: handleSaveSignature });
-  const handleEditSignature = () =>
-    navigation.navigate('Firma', {
-      onSave: handleSaveSignature,
-      signature: user.signature
-    });
-
+  const handleAddSignature = () => navigation.navigate('Firma', { onSave: handleSaveSignature });
+  const handleEditSignature = () => navigation.navigate('Firma', { onSave: handleSaveSignature, signature: user.signature });
 
   const handleDeleteSignature = async () => {
     Alert.alert('Eliminar Firma', '¿Estás seguro de que deseas eliminar tu firma?', [
@@ -190,13 +192,13 @@ const Profile = () => {
               method: 'DELETE',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
               },
             });
             if (res.ok) {
               setHasSignature(false);
               const fresh = await fetch(getApiUrl(`user/${userId}`), {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
               });
               const freshJson = await fresh.json();
               if (freshJson?.data) setUser(freshJson.data);
@@ -206,28 +208,50 @@ const Profile = () => {
             console.error(e);
             Alert.alert('Error', 'Ocurrió un error al eliminar la firma.');
           }
-        }
+        },
       },
     ]);
   };
 
+  const handleNavigateToCollabTablas = (setup) => {
+    if (!user) {
+      Alert.alert("Espere", "Los datos del usuario aún se están cargando.");
+      return;
+    }
+    if (!user.signature) {
+      Alert.alert("Sin firma", "No se encontró una firma para el usuario actual.");
+      return;
+    }
+    navigation.navigate('CollabTablas', {
+      setup,
+      currentUserSignature: user.signature,
+      currentUser: user,
+    });
+  };
+
+  // Función para manejar el clic en el botón "Planes firmados"
+  const handlePlanesFirmadosPress = () => {
+    Alert.alert("Planes Firmados", "Acá estarán los planes ya firmados");
+  };
+
   const currentUserRole = user?.roles && user.roles.length > 0 ? user.roles[0] : null;
   const userRoleLowerCase = currentUserRole ? currentUserRole.toLowerCase() : null;
-  const rolesConFirmaLowerCase = ROLES_CON_FIRMA.map(role => role.toLowerCase());
-  const rolesBotonHolaMundoLowerCase = ROLES_BOTON_HOLA_MUNDO.map(role => role.toLowerCase());
+  const rolesConFirmaLowerCase = ROLES_CON_FIRMA.map((role) => role.toLowerCase());
+  const rolesBotonHolaMundoLowerCase = ROLES_BOTON_HOLA_MUNDO.map((role) => role.toLowerCase());
 
   const visibleButtons = ['MisDatos', 'MisPlanes'];
-
   if (userRoleLowerCase && rolesConFirmaLowerCase.includes(userRoleLowerCase)) {
     visibleButtons.push('MiFirma');
   }
 
-  const handleHolaMundoPress = () => {
-    Alert.alert("Planes", "¡Aquí estarán los planes firmados!");
-  };
+  // Define los roles que deben ver el texto "Pendientes"
+  const ROLES_PARA_VER_PENDIENTES = ['supervisor', 'jefe'];
+  const shouldShowPendientes = userRoleLowerCase && ROLES_PARA_VER_PENDIENTES.includes(userRoleLowerCase);
+
 
   return (
     <View style={styles.container}>
+      {/* Encabezado con imagen */}
       <View style={styles.circleContainer}>
         <ImageBackground
           source={require('../../assets/capataz.png')}
@@ -245,14 +269,13 @@ const Profile = () => {
         </ImageBackground>
       </View>
 
+      {/* Imagen de perfil */}
       <Image
-        source={
-          user?.profileImage ||
-          require('../../assets/blank-user-image.png')
-        }
+        source={user?.profileImage || require('../../assets/blank-user-image.png')}
         style={styles.profileImage}
       />
 
+      {/* Botones de secciones */}
       <View style={styles.userButtonsContainer}>
         {visibleButtons.map((section) => (
           <TouchableOpacity
@@ -266,11 +289,7 @@ const Profile = () => {
                 selectedButton === section && { color: '#ee0000' },
               ]}
             >
-              {section === 'MisDatos'
-                ? 'Mis Datos'
-                : section === 'MisPlanes'
-                  ? 'Mis Planes'
-                  : 'Mi Firma'}
+              {section === 'MisDatos' ? 'Mis Datos' : section === 'MisPlanes' ? 'Mis Planes' : 'Mi Firma'}
             </Text>
             <Animated.View
               style={[
@@ -287,79 +306,70 @@ const Profile = () => {
         ))}
       </View>
 
+      {/* Sección MisDatos */}
       {selectedButton === 'MisDatos' && (
         <View style={[styles.userDataContainer, { top: -20 }]}>
-          <Text style={styles.userName}>
-            {user?.nombre} {user?.apellido}
-          </Text>
+          <Text style={styles.userName}>{user?.nombre} {user?.apellido}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
           <Components.UserDataSection user={user} />
           <View style={styles.logoutContainer}>
-            <Components.Button
-              label="Cerrar Sesión"
-              onPress={handleSignOut}
-              style={styles.logoutButton}
-            />
+            <Components.Button label="Cerrar Sesión" onPress={handleSignOut} style={styles.logoutButton} />
           </View>
         </View>
       )}
 
+      {/* Sección MisPlanes */}
       {selectedButton === 'MisPlanes' && (
         <View style={{ top: 300, flex: 1 }}>
-          <ScrollView
-            contentContainerStyle={{ paddingBottom: 310, marginBottom: 20 }}
-          >
-            {/* Texto "Pendientes" añadido aquí */}
-            <Text style={{
-              fontSize: 20,
-              fontWeight: 'bold',
-              color: '#333',
-              marginBottom: 10, // Espacio entre el texto y las cards
-              marginLeft: 55.5, // Un poco de margen para alinearse con las cards
-            }}>Pendientes</Text>
+          <ScrollView contentContainerStyle={{ paddingBottom: 310, marginBottom: 20 }}>
+            {shouldShowPendientes && (
+              <Text style={{
+                fontSize: 20,
+                fontWeight: 'bold',
+                color: '#333',
+                marginBottom: 10,
+                marginLeft: 55.5,
+              }}>Pendientes</Text>
+            )}
 
             <Section.SetupIzajeSection
               setupIzaje={setupIzaje}
               setSetups={setSetups}
               currentUser={user}
+              onViewPress={user ? handleNavigateToCollabTablas : () => Alert.alert("Cargando", "Espera a que se carguen tus datos antes de continuar.")}
             />
-            {/* Solo para Supervisor o Jefe, usando Components.Button */}
-            {userRoleLowerCase && rolesBotonHolaMundoLowerCase.includes(userRoleLowerCase) && (
+
+            {/* Botón "Planes firmados" */}
+            <View style={{ marginTop: 20, alignItems: 'center' }}>
               <Components.Button
-                label="Firmados"
-                onPress={handleHolaMundoPress}
-                style={{
-                  width: 120,
-                  left: -32,
-                  alignSelf: 'center',
-                  marginTop: 5,
-                }}
+                label="Planes firmados"
+                isCancel={true}
+                onPress={handlePlanesFirmadosPress}
+                style={{ width: 200, right: 32, backgroundColor: 'transparent' }}
               />
-            )}
+            </View>
+
           </ScrollView>
         </View>
       )}
 
+      {/* Sección MiFirma */}
       {selectedButton === 'MiFirma' && userRoleLowerCase && rolesConFirmaLowerCase.includes(userRoleLowerCase) && (
-        <View
-          style={[styles.userDataContainer, { top: 300, alignItems: 'center' }]}
-        >
+        <View style={[styles.userDataContainer, { top: 300, alignItems: 'center' }]}>
           {hasSignature && user.signature ? (
             <>
-              <View
-                style={{
-                  width: 300,
-                  height: 150,
-                  top: 20,
-                  borderRadius: 20,
-                  borderWidth: 1,
-                  borderColor: '#ccc',
-                  overflow: 'hidden',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#fff',
-                }}
-              >
+              <View style={{
+                width: 300,
+                height: 150,
+                top: 20,
+                borderRadius: 20,
+                borderWidth: 1,
+                borderColor: '#ccc',
+                overflow: 'hidden',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#fff',
+              }}>
                 <Image
                   source={{
                     uri: user.signature.startsWith('data:')
@@ -374,36 +384,22 @@ const Profile = () => {
                   }}
                 />
               </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  marginTop: 40,
-                  justifyContent: 'space-between',
-                  width: 250,
-                  left: -75,
-                }}
-              >
-                <Components.Button
-                  label="Cambiar Firma"
-                  onPress={handleEditSignature}
-                  style={{ width: 140 }}
-                />
-                <Components.Button
-                  label="Eliminar Firma"
-                  onPress={handleDeleteSignature}
-                  style={{ width: 140, backgroundColor: '#999', left: -40 }}
-                />
+              <View style={{
+                flexDirection: 'row',
+                marginTop: 40,
+                justifyContent: 'space-between',
+                width: 250,
+                left: -75,
+              }}>
+                <Components.Button label="Cambiar Firma" onPress={handleEditSignature} style={{ width: 140 }} />
+                <Components.Button label="Eliminar Firma" onPress={handleDeleteSignature} style={{ width: 140, backgroundColor: '#999', left: -40 }} />
               </View>
             </>
           ) : (
             <>
               <Text style={styles.emptyText}>No has registrado tu firma</Text>
               <View style={{ marginTop: 30 }}>
-                <Components.Button
-                  label="Registrar Firma"
-                  onPress={handleAddSignature}
-                  style={{ width: 200, left: -25 }}
-                />
+                <Components.Button label="Registrar Firma" onPress={handleAddSignature} style={{ width: 200, left: -25 }} />
               </View>
             </>
           )}
