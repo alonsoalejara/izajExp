@@ -7,8 +7,8 @@ async function getSetupIzajes() {
   try {
     const setups = await SetupIzaje.find()
       .populate('capataz', 'username nombre apellido')
-      .populate('supervisor', 'username nombre apellido')
-      .populate('jefeArea', 'username nombre apellido')
+      .populate('supervisor', 'username nombre apellido signature')
+      .populate('jefeArea', 'username nombre apellido signature')
       .populate('grua', 'nombre modelo')
       .exec();
     if (!setups) return [null, "No se encontraron configuraciones de izaje"];

@@ -16,8 +16,8 @@ const Profile = () => {
   const [setupIzaje, setSetups] = useState([]);
   const [hasSignature, setHasSignature] = useState(false);
 
-  const ROLES_CON_FIRMA = ['Supervisor', 'Jefe'];
-  const ROLES_BOTON_HOLA_MUNDO = ['Supervisor', 'Jefe'];
+  const ROLES_CON_FIRMA = ['supervisor', 'jefe'];
+  const ROLES_BOTON_HOLA_MUNDO = ['supervisor', 'jefe'];
   const CAPATAZ_ROLE = 'capataz';
 
   const extractUserId = (token) => {
