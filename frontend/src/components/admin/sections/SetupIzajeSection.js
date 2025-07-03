@@ -12,6 +12,7 @@ const SetupIzajeSection = ({
   currentUser,
   isAdminPanel,
   buttonContainerStyle,
+  onViewPress,
 }) => {
   const navigation = useNavigation();
   const [selectedSetup, setSelectedSetup] = useState(null);
@@ -105,7 +106,7 @@ const SetupIzajeSection = ({
                 <View style={styles.buttonContainerCard}>
                   <Components.Button
                     label="Ver"
-                    onPress={() => navigation.navigate('CollabTablas', { setup })}
+                    onPress={() => onViewPress(setup)}
                     isCancel={true}
                     style={styles.button}
                   />
