@@ -229,9 +229,7 @@ const Profile = () => {
     });
   };
 
-  // Función para manejar el clic en el botón "Planes firmados"
   const handlePlanesFirmadosPress = () => {
-    // Cambiamos la alerta por la navegación a la nueva pantalla
     navigation.navigate('PlanesFirmados');
   };
 
@@ -245,14 +243,15 @@ const Profile = () => {
     visibleButtons.push('MiFirma');
   }
 
-  // Define los roles que deben ver el texto "Pendientes"
   const ROLES_PARA_VER_PENDIENTES = ['supervisor', 'jefe'];
   const shouldShowPendientes = userRoleLowerCase && ROLES_PARA_VER_PENDIENTES.includes(userRoleLowerCase);
+
+  const ROLES_PARA_VER_BOTON_PLANES_FIRMADOS = ['supervisor', 'jefe'];
+  const shouldShowPlanesFirmadosButton = userRoleLowerCase && ROLES_PARA_VER_BOTON_PLANES_FIRMADOS.includes(userRoleLowerCase);
 
 
   return (
     <View style={styles.container}>
-      {/* Encabezado con imagen */}
       <View style={styles.circleContainer}>
         <ImageBackground
           source={require('../../assets/capataz.png')}
@@ -270,13 +269,11 @@ const Profile = () => {
         </ImageBackground>
       </View>
 
-      {/* Imagen de perfil */}
       <Image
         source={user?.profileImage || require('../../assets/blank-user-image.png')}
         style={styles.profileImage}
       />
 
-      {/* Botones de secciones */}
       <View style={styles.userButtonsContainer}>
         {visibleButtons.map((section) => (
           <TouchableOpacity
@@ -307,7 +304,6 @@ const Profile = () => {
         ))}
       </View>
 
-      {/* Sección MisDatos */}
       {selectedButton === 'MisDatos' && (
         <View style={[styles.userDataContainer, { top: -20 }]}>
           <Text style={styles.userName}>{user?.nombre} {user?.apellido}</Text>
@@ -319,7 +315,6 @@ const Profile = () => {
         </View>
       )}
 
-      {/* Sección MisPlanes */}
       {selectedButton === 'MisPlanes' && (
         <View style={{ top: 300, flex: 1 }}>
           <ScrollView contentContainerStyle={{ paddingBottom: 310, marginBottom: 20 }}>
@@ -340,21 +335,21 @@ const Profile = () => {
               onViewPress={user ? handleNavigateToCollabTablas : () => Alert.alert("Cargando", "Espera a que se carguen tus datos antes de continuar.")}
             />
 
-            {/* Botón "Planes firmados" */}
-            <View style={{ marginTop: 20, alignItems: 'center' }}>
-              <Components.Button
-                label="Planes firmados"
-                isCancel={true}
-                onPress={handlePlanesFirmadosPress} // Aquí llamamos a la función que navega
-                style={{ width: 200, right: 32, backgroundColor: 'transparent' }}
-              />
-            </View>
+            {shouldShowPlanesFirmadosButton && (
+              <View style={{ marginTop: 20, alignItems: 'center' }}>
+                <Components.Button
+                  label="Planes firmados"
+                  isCancel={true}
+                  onPress={handlePlanesFirmadosPress}
+                  style={{ width: 200, right: 32, backgroundColor: 'transparent' }}
+                />
+              </View>
+            )}
 
           </ScrollView>
         </View>
       )}
 
-      {/* Sección MiFirma */}
       {selectedButton === 'MiFirma' && userRoleLowerCase && rolesConFirmaLowerCase.includes(userRoleLowerCase) && (
         <View style={[styles.userDataContainer, { top: 300, alignItems: 'center' }]}>
           {hasSignature && user.signature ? (
