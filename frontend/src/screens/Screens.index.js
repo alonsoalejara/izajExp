@@ -12,6 +12,7 @@ import CollabProfile from './CollabProfile';
 import CollabTablas from './CollabTablas';
 import EditCollab from './EditCollab';
 import Firma from './Firma';
+import PlanesFirmados from './PlanesFirmados';
 
 const Screens = {
   Home,
@@ -28,6 +29,7 @@ const Screens = {
   CollabTablas,
   EditCollab,
   Firma,
+  PlanesFirmados,
 };
 
 export default Screens;

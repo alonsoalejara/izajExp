@@ -231,7 +231,8 @@ const Profile = () => {
 
   // Función para manejar el clic en el botón "Planes firmados"
   const handlePlanesFirmadosPress = () => {
-    Alert.alert("Planes Firmados", "Acá estarán los planes ya firmados");
+    // Cambiamos la alerta por la navegación a la nueva pantalla
+    navigation.navigate('PlanesFirmados');
   };
 
   const currentUserRole = user?.roles && user.roles.length > 0 ? user.roles[0] : null;
@@ -344,7 +345,7 @@ const Profile = () => {
               <Components.Button
                 label="Planes firmados"
                 isCancel={true}
-                onPress={handlePlanesFirmadosPress}
+                onPress={handlePlanesFirmadosPress} // Aquí llamamos a la función que navega
                 style={{ width: 200, right: 32, backgroundColor: 'transparent' }}
               />
             </View>
