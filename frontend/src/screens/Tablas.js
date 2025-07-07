@@ -16,8 +16,8 @@ const Tablas = ({ route, navigation }) => {
   const [jefeAreaNombre, setJefeAreaNombre] = useState('');
   const [userId, setUserId] = useState(null);
   const [planId, setPlanId] = useState(null);
+  const [currentVersion, setCurrentVersion] = useState(0);
 
-  // Asegúrate de que `existingPlanId` se pase desde la pantalla anterior si estás editando
   const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData, existingPlanId } = route.params || {};
 
   console.log('Datos recibidos desde las pantallas de configuración:');
@@ -26,7 +26,7 @@ const Tablas = ({ route, navigation }) => {
   console.log('setupGruaData:', setupGruaData);
   console.log('setupAparejosData:', setupAparejosData);
   console.log('setupRadioData:', setupRadioData);
-  console.log('existingPlanId:', existingPlanId); // Para depuración
+  console.log('existingPlanId:', existingPlanId);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -35,19 +35,19 @@ const Tablas = ({ route, navigation }) => {
         setCapataazNombre(planData.capataz?.nombreCompleto || '');
         setSupervisorNombre(planData.supervisor?.nombreCompleto || '');
         setJefeAreaNombre(planData.jefeArea?.nombreCompleto || '');
-
+        if (planData.version !== undefined) {
+          setCurrentVersion(planData.version);
+        }
         const storedUserId = await AsyncStorage.getItem('usuarioId');
         setUserId(storedUserId);
       }
-      // Establecer el ID del plan si viene como parámetro (estamos editando)
       if (existingPlanId) {
         setPlanId(existingPlanId);
-        setIsSaved(true); // Si hay un ID existente, el plan ya se considera "guardado"
+        setIsSaved(true);
       }
     };
-
     fetchUserData();
-  }, [planData, existingPlanId]); // Añadir existingPlanId como dependencia
+  }, [planData, existingPlanId]);
 
   const combinedData = {
     ...setupCargaData,
@@ -217,7 +217,10 @@ const Tablas = ({ route, navigation }) => {
                 capataz: planData?.capataz?._id,
                 supervisor: planData?.supervisor?._id,
                 jefeArea: planData?.jefeArea?._id,
+                firmaSupervisor: 'Firma pendiente',
+                firmaJefeArea: 'Firma pendiente',
                 grua: gruaId,
+                version: planId ? currentVersion : 0,
               };
 
               console.log('Datos enviados a la petición:', JSON.stringify(finalData, null, 2));
@@ -232,12 +235,11 @@ const Tablas = ({ route, navigation }) => {
               let httpMethod = 'POST';
 
               if (planId) {
-                // Si tenemos un planId, estamos actualizando un plan existente
-                apiUrl = `${apiUrl}${planId}`; // URL para PUT: /api/setupIzaje/:id
-                httpMethod = 'PUT'; // Método HTTP para actualización
-                console.log(`Realizando petición PUT a: ${apiUrl}`); // Para depuración
+                apiUrl = `${apiUrl}${planId}`;
+                httpMethod = 'PUT';
+                console.log(`Realizando petición PUT a: ${apiUrl}`);
               } else {
-                console.log(`Realizando petición POST a: ${apiUrl}`); // Para depuración
+                console.log(`Realizando petición POST a: ${apiUrl}`);
               }
 
               const response = await fetch(apiUrl, {
@@ -252,15 +254,15 @@ const Tablas = ({ route, navigation }) => {
               const data = await response.json();
 
               if (response.ok) {
-                // Si la operación fue exitosa
                 alert(`Plan de izaje ${planId ? 'actualizado' : 'guardado'} exitosamente.`);
                 setIsSaved(true);
-                // Si se acaba de crear un plan (POST), guarda su ID para futuras actualizaciones
                 if (!planId && data._id) {
-                  setPlanId(data._id); // Guarda el ID del nuevo plan
+                  setPlanId(data._id);
+                  if (data.version !== undefined) {
+                      setCurrentVersion(data.version);
+                  }
                 }
               } else {
-                // Manejo de errores del backend (ej. límite de revisiones alcanzado)
                 alert(`Error al ${planId ? 'actualizar' : 'guardar'}: ${data.message || 'Error desconocido'}`);
               }
             } catch (error) {
