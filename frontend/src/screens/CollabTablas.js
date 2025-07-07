@@ -4,6 +4,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import Components from '../components/Components.index';
 import TablasStyles from '../styles/TablasStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import getApiUrl from '../utils/apiUrl';
 
 const CollabTablas = ({ route }) => {
   const { setup, currentUserSignature, currentUser } = route.params;
@@ -11,6 +13,14 @@ const CollabTablas = ({ route }) => {
   const [showSmallButtons, setShowSmallButtons] = useState(true);
   const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(null);
   const [appliedJefeAreaSignature, setAppliedJefeAreaSignature] = useState(null);
+
+  // Efecto para inicializar las firmas si ya existen en el `setup`
+  useEffect(() => {
+    console.log('🔄 useEffect: Inicializando firmas con setup data.');
+    setAppliedSupervisorSignature(setup.firmaSupervisor && setup.firmaSupervisor !== 'Firma pendiente' ? setup.firmaSupervisor : null);
+    setAppliedJefeAreaSignature(setup.firmaJefeArea && setup.firmaJefeArea !== 'Firma pendiente' ? setup.firmaJefeArea : null);
+  }, [setup.firmaSupervisor, setup.firmaJefeArea]);
+
 
   const getFullName = (person) => {
     if (!person) return 'N/A';
@@ -91,58 +101,172 @@ const CollabTablas = ({ route }) => {
   ];
 
   const handleFirmarPlan = () => {
+    console.log('👉 handleFirmarPlan: Iniciando proceso de firma.');
     let signatureToUse = currentUserSignature || currentUser?.signature;
 
-    // Si no viene por params, intenta obtener desde el `setup` según el rol
     const userId = currentUser?._id;
     const supervisorId = setup?.supervisor?._id;
     const jefeAreaId = setup?.jefeArea?._id;
 
-    if (!signatureToUse && userId && supervisorId && jefeAreaId) {
-        if (userId === supervisorId) {
-            signatureToUse = setup?.supervisor?.signature;
-            console.log("🪪 Firma obtenida desde `setup.supervisor.signature`");
-        } else if (userId === jefeAreaId) {
-            signatureToUse = setup?.jefeArea?.signature;
-            console.log("🪪 Firma obtenida desde `setup.jefeArea.signature`");
-        }
+    console.log('ℹ️ currentUser ID:', userId);
+    console.log('ℹ️ supervisor ID del plan:', supervisorId);
+    console.log('ℹ️ jefeArea ID del plan:', jefeAreaId);
+    console.log('ℹ️ Versión actual del plan (desde setup):', setup?.version);
+    console.log('ℹ️ Firma del usuario actual (recibida o de perfil):', signatureToUse ? 'Presente' : 'Ausente');
+
+
+    // Si ya existe la firma del supervisor o jefe de área, y no es 'Firma pendiente', no permitir firmar
+    if ((userId === supervisorId && appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente') ||
+        (userId === jefeAreaId && appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente')) {
+        console.log('🛑 Firma ya aplicada por este rol.');
+        Alert.alert("Ya Firmado", "Este rol ya ha aplicado una firma a este plan.");
+        return;
     }
 
     if (!signatureToUse) {
-        Alert.alert("Error de Firma", "No se encontró una firma para el usuario actual.");
+        console.log('🛑 No se encontró una firma para el usuario.');
+        Alert.alert("Error de Firma", "No se encontró una firma para el usuario actual. Asegúrate de tener una firma registrada en tu perfil.");
         return;
     }
 
     Alert.alert(
-        "Confirmar Firma",
-        "¿Deseas aplicar tu firma a este plan de izaje?",
-        [
-            { text: "Cancelar", style: "cancel" },
-            {
-                text: "Firmar",
-                onPress: () => {
-                    setShowSmallButtons(false);
+      "Confirmar Firma",
+      "¿Deseas aplicar tu firma a este plan de izaje?",
+      [
+        { text: "Cancelar", style: "cancel", onPress: () => console.log('❌ Firma cancelada.') },
+        {
+          text: "Firmar",
+          onPress: async () => {
+            console.log('✅ Confirmación de firma recibida. Preparando para enviar PUT.');
+            setShowSmallButtons(false);
 
-                    const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
+            const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
+            
+            // Creamos una copia profunda de `setup` para empezar
+            let updateData = JSON.parse(JSON.stringify(setup)); 
 
-                    if (userRole === 'supervisor') {
-                        setAppliedSupervisorSignature(signatureToUse);
-                        console.log('✅ Firma de Supervisor aplicada.');
-                    } else if (userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') {
-                        setAppliedJefeAreaSignature(signatureToUse);
-                        console.log('✅ Firma de Jefe de Área aplicada.');
-                    } else {
-                        console.log('⚠️ Rol no identificado para firmar:', userRole);
-                        Alert.alert("Error de Rol", "Tu rol no permite firmar este plan o no se reconoce.");
-                    }
-                }
+            // ==============================================================
+            // PASO CLAVE: Construir el payload final con solo las propiedades esperadas
+            // EXCLUYENDO _id, createdAt, updatedAt y asegurando que las referencias sean IDs
+            // ==============================================================
+            const payload = {
+                // Incluye todas las propiedades que tu esquema SÍ espera para una ACTUALIZACIÓN.
+                nombreProyecto: updateData.nombreProyecto,
+                datos: updateData.datos,
+                cargas: updateData.cargas,
+                centroGravedad: updateData.centroGravedad,
+                
+                // **CORRECCIÓN CLAVE PARA APAREJOS**:
+                // Mapeamos los aparejos y excluimos su `_id` antes de enviarlos
+                aparejos: updateData.aparejos.map(aparejo => {
+                    const { _id, ...rest } = aparejo; // Extrae _id y deja el resto de propiedades
+                    return rest; // Retorna el objeto aparejo sin su _id
+                }),
+                
+                // Asegúrate de que las referencias sean solo los IDs, usando optional chaining
+                capataz: updateData.capataz?._id,
+                supervisor: updateData.supervisor?._id,
+                jefeArea: updateData.jefeArea?._id,
+                grua: updateData.grua?._id,
+                
+                // Las firmas se asignarán condicionalmente más abajo. Inicialízalas a los valores actuales
+                // para que se incluyan si no son modificadas por el usuario actual.
+                firmaSupervisor: updateData.firmaSupervisor,
+                firmaJefeArea: updateData.firmaJefeArea,
+
+                // La versión DEBE ser incrementada y enviada
+                version: (updateData.version || 0) + 1,
+                // Agrega aquí cualquier otra propiedad de tu modelo que el backend espere
+                // (ej. estado, observaciones, etc.)
+            };
+
+            console.log('ℹ️ Rol del usuario actual:', userRole);
+            console.log('ℹ️ Plan de izaje original (copiado y referencias transformadas) antes de la firma:', JSON.stringify(payload, null, 2));
+
+
+            if (userRole === 'supervisor' && userId === supervisorId) {
+                payload.firmaSupervisor = signatureToUse;
+                console.log('🛠️ Asignando firma a firmaSupervisor en el payload.');
+            } else if ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId) {
+                payload.firmaJefeArea = signatureToUse;
+                console.log('🛠️ Asignando firma a firmaJefeArea en el payload.');
+            } else {
+                console.log('⚠️ Rol o ID no coincide con supervisor/jefe de área asignado al plan.');
+                Alert.alert("Error de Rol", "Tu rol o ID de usuario no coincide con los asignados para firmar este plan.");
+                return;
             }
-        ]
+
+            try {
+                const accessToken = await AsyncStorage.getItem('accessToken');
+                if (!accessToken) {
+                    console.log('🛑 No se encontró accessToken.');
+                    Alert.alert('Error de Autenticación', 'No autorizado. Por favor, inicie sesión nuevamente.');
+                    return;
+                }
+
+                const apiUrl = getApiUrl(`setupIzaje/${setup._id}`);
+                console.log(`🔗 URL de la petición PUT: ${apiUrl}`);
+                console.log(`📦 **Datos COMPLETOS que se están enviando en el body de la petición PUT (payload final):**`);
+                console.log(JSON.stringify(payload, null, 2));
+
+
+                const response = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    body: JSON.stringify(payload), // ¡Ahora enviamos el payload filtrado!
+                });
+
+                // **MANEJO DE ERRORES MEJORADO:**
+                if (!response.ok) {
+                    const errorResponseText = await response.text(); // Obtén el texto completo de la respuesta de error
+                    console.error('🚨 Respuesta de error del servidor (texto crudo):', errorResponseText);
+                    let errorMessage = 'Error desconocido al firmar.';
+                    try {
+                        const errorData = JSON.parse(errorResponseText); // Intenta parsear como JSON
+                        errorMessage = errorData.message || errorMessage;
+                    } catch (e) {
+                        // Si no es JSON, usa el texto crudo o una parte de él
+                        errorMessage = `Error del servidor: ${errorResponseText.substring(0, 100)}...`;
+                    }
+                    Alert.alert('Error al firmar', errorMessage);
+                    return; // Detiene la ejecución si hay un error
+                }
+
+                const data = await response.json(); // Solo se ejecuta si response.ok es true
+                console.log('⬅️ Respuesta recibida del servidor (JSON):', data);
+
+                Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
+                console.log('🎉 Petición PUT exitosa. Actualizando estado local de firmas.');
+                
+                // Actualiza los estados locales para que la UI refleje la firma
+                if (payload.firmaSupervisor) {
+                    setAppliedSupervisorSignature(payload.firmaSupervisor);
+                }
+                if (payload.firmaJefeArea) {
+                    setAppliedJefeAreaSignature(payload.firmaJefeArea);
+                }
+                
+                // Si el backend devuelve el documento actualizado completo, sería ideal actualizar el `setup` aquí
+                // para mantener la UI sincronizada con la última versión, incluyendo la nueva 'version'.
+                // navigation.setParams({ setup: data.updatedSetupDocument }); // Si tu backend devuelve el doc actualizado
+                
+            } catch (error) {
+                console.log('💥 Error en el bloque try-catch de la petición PUT:', error);
+                console.error('Error en la petición PUT para firmar:', error);
+                Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor para firmar el plan.');
+            }
+          }
+        }
+      ]
     );
   };
 
   const handleEnviarPdf = () => {
     Alert.alert("PDF", "Se está enviando el PDF...");
+    console.log('📧 Enviando PDF (funcionalidad no implementada en este ejemplo).');
   };
 
   return (
@@ -224,7 +348,7 @@ const CollabTablas = ({ route }) => {
               alignItems: 'center',
               overflow: 'hidden',
             }}>
-              {appliedSupervisorSignature ? (
+              {appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente' ? (
                 <Image
                   source={{
                     uri: appliedSupervisorSignature.startsWith('data:')
@@ -264,7 +388,7 @@ const CollabTablas = ({ route }) => {
               alignItems: 'center',
               overflow: 'hidden',
             }}>
-              {appliedJefeAreaSignature ? (
+              {appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente' ? (
                 <Image
                   source={{
                     uri: appliedJefeAreaSignature.startsWith('data:')
