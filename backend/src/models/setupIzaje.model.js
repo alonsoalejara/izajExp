@@ -10,7 +10,7 @@ const setupIzajeSchema = new Schema(
             type: String,
             required: [true, 'La firma del supervisor es obligatoria'],
             default: null // Aunque es requerido, un valor por defecto para inicialización.
-                          // Se espera que la aplicación envíe el valor real.
+                         // Se espera que la aplicación envíe el valor real.
         },
         firmaJefeArea: {
             type: String,
@@ -55,6 +55,12 @@ const setupIzajeSchema = new Schema(
             yPR: { type: Number, required: true },
             zPR: { type: Number, required: true }
         },
+        version: {
+            type: Number,
+            required: [true, 'La versión es obligatoria'],
+            enum: [0, 1, 2, 3], // Solo permite estos valores
+            default: 0 // Valor por defecto al crear un nuevo documento
+        }
     },
     {
         timestamps: true,

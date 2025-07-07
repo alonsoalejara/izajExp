@@ -140,16 +140,6 @@ const centroGravedadSchema = Joi.object({
   }),
 });
 
-const revisionHistoryEntrySchema = Joi.object({
-  revisionDate: Joi.date().required().messages({
-    "date.base": "La fecha de revisión debe ser una fecha válida.",
-    "any.required": "La fecha de revisión es obligatoria.",
-  }),
-  modifiedBy: Joi.string().pattern(/^(?:[0-9a-fA-F]{24}|[0-9a-fA-F]{12})$/).optional().messages({
-    "string.pattern.base": "El ID del usuario que modificó debe ser un ObjectId válido.",
-  }),
-});
-
 const setupIzajeBodySchema = Joi.object({
   nombreProyecto: Joi.string().trim().required().messages({
     "string.empty": "El nombre del proyecto no puede estar vacío.",
@@ -188,10 +178,25 @@ const setupIzajeBodySchema = Joi.object({
     "any.required": "El ID del jefe de área es obligatorio.",
     "string.pattern.base": "El ID del jefe de área debe ser un ObjectId válido.",
   }),
+  firmaSupervisor: Joi.string().trim().required().messages({
+    "string.empty": "La firma del supervisor no puede estar vacía.",
+    "any.required": "La firma del supervisor es obligatoria.",
+    "string.base": "La firma del supervisor debe ser de tipo string.",
+  }),
+  firmaJefeArea: Joi.string().trim().required().messages({
+    "string.empty": "La firma del jefe de área no puede estar vacía.",
+    "any.required": "La firma del jefe de área es obligatoria.",
+    "string.base": "La firma del jefe de área debe ser de tipo string.",
+  }),
   grua: Joi.string().required().pattern(/^(?:[0-9a-fA-F]{24}|[0-9a-fA-F]{12})$/).messages({
     "string.empty": "El ID de la grúa no puede estar vacío.",
     "any.required": "El ID de la grúa es obligatorio.",
     "string.pattern.base": "El ID de la grúa debe ser un ObjectId válido.",
+  }),
+  version: Joi.number().valid(0, 1, 2, 3).required().messages({
+    "number.base": "La versión debe ser un número.",
+    "any.required": "La versión es obligatoria.",
+    "number.allowOnly": "La versión solo puede ser 0, 1, 2 o 3.",
   }),
 }).messages({
   "object.unknown": "No se permiten propiedades adicionales.",

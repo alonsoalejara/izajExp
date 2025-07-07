@@ -12,39 +12,6 @@ const CollabTablas = ({ route }) => {
   const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(null);
   const [appliedJefeAreaSignature, setAppliedJefeAreaSignature] = useState(null);
 
-  // --- CONSOLE LOGS DE INICIO (Mantengo tus logs para depuración) ---
-  console.log('--- CollabTablas Component Mount/Re-render ---');
-  console.log('`setup` recibido por ruta:', setup);
-  console.log('`currentUserSignature` recibido por ruta:', currentUserSignature ? 'Firma presente' : 'Firma NO presente');
-  console.log('`currentUser` recibido por ruta:', currentUser ? 'Usuario presente' : 'Usuario NO presente');
-  if (currentUser) {
-    console.log('ID de currentUser:', currentUser._id);
-    console.log('Rol de currentUser:', currentUser.position); // Usamos 'position' o 'roles' según el objeto
-  }
-  console.log('Estado inicial `appliedSupervisorSignature`:', appliedSupervisorSignature ? 'Firma presente' : 'Firma NO presente');
-  console.log('Estado inicial `appliedJefeAreaSignature`:', appliedJefeAreaSignature ? 'Firma presente' : 'Firma NO presente');
-  if (appliedSupervisorSignature) {
-    console.log('Contenido (primeros 50 caracteres) de appliedSupervisorSignature:', appliedSupervisorSignature.substring(0, 50) + '...');
-  }
-  if (appliedJefeAreaSignature) {
-    console.log('Contenido (primeros 50 caracteres) de appliedJefeAreaSignature:', appliedJefeAreaSignature.substring(0, 50) + '...');
-  }
-  // --- FIN CONSOLE LOGS DE INICIO ---
-
-  // Este useEffect es crucial para la re-renderización con la firma
-  useEffect(() => {
-    console.log('--- useEffect activado (Estado de firmas actualizado) ---');
-    console.log('Valor actual de `appliedSupervisorSignature` en useEffect:', appliedSupervisorSignature ? 'Firma presente' : 'Firma NO presente');
-    console.log('Valor actual de `appliedJefeAreaSignature` en useEffect:', appliedJefeAreaSignature ? 'Firma presente' : 'Firma NO presente');
-    if (appliedSupervisorSignature) {
-      console.log('Contenido (primeros 50 caracteres) de appliedSupervisorSignature en useEffect:', appliedSupervisorSignature.substring(0, 50) + '...');
-    }
-    if (appliedJefeAreaSignature) {
-      console.log('Contenido (primeros 50 caracteres) de appliedJefeAreaSignature en useEffect:', appliedJefeAreaSignature.substring(0, 50) + '...');
-    }
-  }, [appliedSupervisorSignature, appliedJefeAreaSignature]);
-  // --- FIN useEffect ---
-
   const getFullName = (person) => {
     if (!person) return 'N/A';
     const tieneNombre = person.nombre && person.nombre.trim() !== '';
@@ -142,10 +109,6 @@ const CollabTablas = ({ route }) => {
     }
 
     if (!signatureToUse) {
-      console.log('🚩 currentUser:', currentUser);
-      console.log('🚩 currentUserSignature:', currentUserSignature);
-      console.log('🚩 userId:', userId, 'supervisorId:', supervisorId, 'jefeAreaId:', jefeAreaId);
-
         Alert.alert("Error de Firma", "No se encontró una firma para el usuario actual.");
         return;
     }

@@ -30,10 +30,12 @@ async function createSetupIzaje(setupIzajeData) {
       capataz,
       supervisor,
       jefeArea,
-      grua
+      firmaSupervisor,
+      firmaJefeArea,
+      grua,
+      version
     } = setupIzajeData;
 
-    // Al crear, revisionCount se establece en 0 por defecto en el modelo
     const newSetupIzaje = new SetupIzaje({
       nombreProyecto,
       aparejos,
@@ -43,7 +45,10 @@ async function createSetupIzaje(setupIzajeData) {
       capataz,
       supervisor,
       jefeArea,
-      grua
+      firmaSupervisor,
+      firmaJefeArea,
+      grua,
+      version
     });
 
     await newSetupIzaje.save();
@@ -59,7 +64,7 @@ async function getSetupIzajeById(id) {
     const setupIzaje = await SetupIzaje.findById(id)
       .populate('capataz', 'username nombre apellido roles')
       .populate('supervisor', 'username nombre apellido roles')
-      .populate('jefeArea', 'username nombre apellido roles ')
+      .populate('jefeArea', 'username nombre apellido roles')
       .populate('grua', 'nombre modelo')
       .exec();
     if (!setupIzaje) return [null, "La configuración de izaje no existe"];
@@ -72,32 +77,13 @@ async function getSetupIzajeById(id) {
 
 async function updateSetupIzaje(id, setupIzajeData, userId) {
   try {
-    const setupIzajeFound = await SetupIzaje.findById(id);
-    if (!setupIzajeFound) return [null, "La configuración de izaje no existe"];
-
-    // Verificar si se ha alcanzado el límite de revisiones
-    if (setupIzajeFound.revisionCount >= 3) {
-      return [null, "Este plan de izaje ya alcanzó el número máximo de revisiones (3)."];
-    }
-
-    // Incrementar el contador de revisiones
-    setupIzajeData.revisionCount = (setupIzajeFound.revisionCount || 0) + 1;
-
-    // Agregar entrada al historial de revisiones
-    const revisionEntry = {
-      revisionDate: new Date(),
-      modifiedBy: userId, // Usamos el userId pasado desde el controlador
-    };
-
-    // Usar $push para añadir al array sin sobrescribir
     const updatedSetupIzaje = await SetupIzaje.findByIdAndUpdate(
       id,
-      {
-        ...setupIzajeData, // Incluye todos los campos de setupIzajeData
-        $push: { revisionHistory: revisionEntry }, // Agrega la nueva entrada al historial
-      },
+      setupIzajeData,
       { new: true, runValidators: true }
     );
+
+    if (!updatedSetupIzaje) return [null, "La configuración de izaje no existe"];
 
     return [updatedSetupIzaje, null];
   } catch (error) {
