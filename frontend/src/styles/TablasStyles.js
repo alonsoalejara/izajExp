@@ -68,10 +68,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    bottom: 40,
+    bottom: 20,
     right: 30,
     marginHorizontal: 30,
-    marginVertical: 20,
+    marginVertical: 10,
     gap: -35,
   },
   button: {
