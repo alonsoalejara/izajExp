@@ -81,7 +81,7 @@ const BSManiobra = ({ isVisible, onClose, onSelect, maxManiobra }) => {
         </ScrollView>
 
         <View style={{ flexGrow: 1 }} />
-        <Components.Button label="Confirmar" onPress={handleConfirmar} style={{ top: -20, left: 10 }} />
+        <Components.Button label="Confirmar" onPress={handleConfirmar} style={{ top: -30, left: 10 }} />
       </Animated.View>
     </Modal>
   );

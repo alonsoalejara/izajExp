@@ -71,7 +71,7 @@ const BSForma = ({ isVisible, onClose, onSelect }) => {
           <Text style={styles.modalTitle}>Seleccionar forma</Text>
         </View>
         <View style={styles.separatorLine}></View>
-        <ScrollView style={[styles.optionsContainer, { paddingHorizontal: 0 }]}>
+        <ScrollView style={[styles.optionsContainer, { paddingHorizontal: 0, left: 10 }]}>
           {formas.length === 0 ? (
             <Text>No se encontraron formas disponibles.</Text>
           ) : (
@@ -90,7 +90,7 @@ const BSForma = ({ isVisible, onClose, onSelect }) => {
                     <View
                       style={[
                         styles.radioButton,
-                        selectedForma === forma && styles.selectedRadioButton,
+                        selectedForma === forma && styles.selectedRadioButton, { left: 30 }
                       ]}
                     >
                       {selectedForma === forma && <View style={styles.selectedCircle} />}

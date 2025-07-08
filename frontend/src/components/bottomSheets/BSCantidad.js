@@ -62,7 +62,7 @@ const BSCantidad = ({ isVisible, onClose, onSelect }) => {
             style={styles.backIcon}
             onPress={closeBottomSheet}
           />
-          <Text style={[styles.modalTitle, { marginLeft: 40 }]}>Seleccionar Cantidad</Text>
+          <Text style={[styles.modalTitle, { marginLeft: -7 }]}>Seleccionar Cantidad</Text>
         </View>
         <View style={styles.separatorLine}></View>
         <ScrollView style={styles.optionsContainer}>

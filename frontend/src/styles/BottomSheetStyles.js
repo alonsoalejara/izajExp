@@ -330,8 +330,7 @@ const BottomSheetStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
+    marginBottom: 20,
     borderBottomColor: '#ddd',
   },
   textoDiametro: {

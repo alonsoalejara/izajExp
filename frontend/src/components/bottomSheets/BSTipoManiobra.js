@@ -9,7 +9,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra, cantidadManiobra }) => {
   const [tipoAparejoSeleccionado, setTipoAparejoSeleccionado] = useState(null);
   const [opcionesTipoAparejo, setOpcionesTipoAparejo] = useState([]);
-  const bottomSheetHeight = SCREEN_HEIGHT * 0.8;
+  const bottomSheetHeight = SCREEN_HEIGHT * 0.5;
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   useEffect(() => {
@@ -89,7 +89,7 @@ const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra, cantidadMa
         <View style={styles.dragLine}></View>
         <View style={styles.modalHeader}>
           <IconFA name="angle-left" size={35} color="#333" style={styles.backIcon} onPress={closeBottomSheet} />
-          <Text style={[styles.modalTitle, { left: 50 }]}>Seleccionar Tipo de Aparejo</Text>
+          <Text style={[styles.modalTitle, { left: 40 }]}>Seleccionar Tipo de Aparejo</Text>
         </View>
         <View style={styles.separatorLine}></View>
         <ScrollView style={styles.optionsContainer}>
@@ -115,7 +115,7 @@ const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra, cantidadMa
         </ScrollView>
 
         <View style={{ flexGrow: 1 }} />
-        <Components.Button label="Confirmar" onPress={handleConfirmar} style={{ top: -20, left: 10 }} />
+        <Components.Button label="Confirmar" onPress={handleConfirmar} style={{ top: -40, left: 10 }} />
       </Animated.View>
     </Modal>
   );

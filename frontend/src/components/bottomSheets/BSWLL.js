@@ -173,7 +173,7 @@ const BSWLL = ({
             style={styles.backIcon}
             onPress={closeBottomSheet}
           />
-          <Text style={[styles.modalTitle, { left: 90 }]}>Seleccione WLL</Text>
+          <Text style={[styles.modalTitle, { left: 87 }]}>Seleccione WLL</Text>
         </View>
         <View style={styles.separatorLine} />
         <ScrollView
@@ -265,7 +265,7 @@ const BSWLL = ({
         <Components.Button
           label="Confirmar"
           onPress={handleConfirm}
-          style={{ top: -20, left: 10 }}
+          style={{ top: -30, left: 10 }}
         />
       </Animated.View>
     </Modal>

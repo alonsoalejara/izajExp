@@ -86,7 +86,7 @@ const BSGrillete = ({ isVisible, onClose, onSelect }) => {
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <Components.Button label="Confirmar" onPress={handleConfirmar} style={{ margin: 20, top: -10, left: 10 }} />
+        <Components.Button label="Confirmar" onPress={handleConfirmar} style={{ margin: 20, top: -30, left: 10 }} />
       </Animated.View>
     </Modal>
   );

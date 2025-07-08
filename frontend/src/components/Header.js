@@ -27,10 +27,10 @@ const Header = () => {
       overflow: 'hidden',
     },
     image: {
-      width: '62%',
+      width: '70%',
       height: '62%',
       top: 310,
-      left: 110,
+      left: 80,
       resizeMode: 'cover',
     },
     gradient: {
