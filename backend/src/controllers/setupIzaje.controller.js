@@ -65,6 +65,7 @@ async function updateSetupIzaje(req, res) {
     const { error: bodyError } = setupIzajeBodySchema.validate(body);
     if (bodyError) return respondError(req, res, 400, bodyError.message);
 
+    console.log("🪪 req.user recibido en updateSetupIzaje:", user);
     const userId = user._id;
 
     const [updatedSetupIzaje, setupIzajeError] = await SetupIzajeService.updateSetupIzaje(

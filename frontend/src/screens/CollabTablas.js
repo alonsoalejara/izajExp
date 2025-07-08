@@ -175,7 +175,7 @@ const CollabTablas = ({ route }) => {
                 firmaJefeArea: updateData.firmaJefeArea,
 
                 // La versión DEBE ser incrementada y enviada
-                version: (updateData.version || 0) + 1,
+                version: updateData.version,
                 // Agrega aquí cualquier otra propiedad de tu modelo que el backend espere
                 // (ej. estado, observaciones, etc.)
             };
@@ -249,10 +249,12 @@ const CollabTablas = ({ route }) => {
                     setAppliedJefeAreaSignature(payload.firmaJefeArea);
                 }
                 
-                // Si el backend devuelve el documento actualizado completo, sería ideal actualizar el `setup` aquí
-                // para mantener la UI sincronizada con la última versión, incluyendo la nueva 'version'.
-                // navigation.setParams({ setup: data.updatedSetupDocument }); // Si tu backend devuelve el doc actualizado
-                
+                if (data && data.updatedSetupIzaje) { // Ajusta al nombre de tu respuesta
+                    navigation.setParams({ setup: data.updatedSetupIzaje });
+                    console.log('✅ route.params.setup actualizado con la respuesta del servidor.');
+                } else {
+                    console.log('⚠️ El servidor no devolvió el documento actualizado. No se actualizó setup en params.');
+                }                
             } catch (error) {
                 console.log('💥 Error en el bloque try-catch de la petición PUT:', error);
                 console.error('Error en la petición PUT para firmar:', error);
