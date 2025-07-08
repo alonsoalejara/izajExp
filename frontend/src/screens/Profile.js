@@ -310,7 +310,7 @@ const Profile = () => {
           <Text style={styles.userEmail}>{user?.email}</Text>
           <Components.UserDataSection user={user} />
           <View style={styles.logoutContainer}>
-            <Components.Button label="Cerrar Sesión" onPress={handleSignOut} style={styles.logoutButton} />
+            <Components.Button label="Cerrar Sesión" onPress={handleSignOut} style={[styles.logoutButton, { top: -3 }]} />
           </View>
         </View>
       )}

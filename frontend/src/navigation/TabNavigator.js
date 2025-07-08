@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AdminPanel from '../screens/AdminPanel';
 import SetupPlan from '../screens/SetupPlan';
@@ -48,37 +48,41 @@ function TabNavigator() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color }) => {
           let iconName;
-          if (route.name === 'User') {
+          if (route.name === 'Perfil') {
             iconName = 'account-circle';
           } else if (route.name === 'Home') {
             iconName = 'list-alt';
-          } else if (route.name === 'Settings') {
+          } else if (route.name === 'Crear plan') {
             iconName = 'content-paste-go';
           }
-          return <Icon name={iconName} size={28} color={color} />;
+          return <MaterialIcons name={iconName} size={28} color={color} />;
         },
         tabBarStyle: {
           backgroundColor: '#fff',
           borderTopWidth: 0,
           height: 80,
           paddingBottom: 15,
-          paddingTop: 12,
+          paddingTop: 7,
           justifyContent: 'center',
         },
         tabBarActiveTintColor: '#ee0000',
         tabBarInactiveTintColor: '#ddd',
-        tabBarShowLabel: false,
+        tabBarShowLabel: true,
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+        },
         headerShown: false,
       })}
     >
-      <Tab.Screen name="User" component={Profile} />
+      <Tab.Screen name="Perfil" component={Profile} />
 
       {isJefe && (
         <Tab.Screen name="Home" component={AdminPanel} />
       )}
 
       {isCapataz && (
-        <Tab.Screen name="Settings" component={SetupPlan} />
+        <Tab.Screen name="Crear plan" component={SetupPlan} />
       )}
     </Tab.Navigator>
   );

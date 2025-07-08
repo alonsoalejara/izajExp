@@ -46,5 +46,8 @@
         "listUnknownPackages": false
       }
     }
+  },
+  "devDependencies": {
+    "@react-native-community/cli": "^18.0.0"
   }
 }
