@@ -33,7 +33,7 @@ export default StyleSheet.create({
     image: {
       width: '80%',
       height: '80%',
-      top: 90,
+      top: 75,
       left: 15,
       resizeMode: 'cover',
     },
@@ -96,4 +96,3 @@ export default StyleSheet.create({
       fontSize: 16,
     },
   });
-  
