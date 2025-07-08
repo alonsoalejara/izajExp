@@ -50,7 +50,7 @@ function TabNavigator() {
           let iconName;
           if (route.name === 'Perfil') {
             iconName = 'account-circle';
-          } else if (route.name === 'Home') {
+          } else if (route.name === 'Panel') {
             iconName = 'list-alt';
           } else if (route.name === 'Crear plan') {
             iconName = 'content-paste-go';
@@ -78,7 +78,7 @@ function TabNavigator() {
       <Tab.Screen name="Perfil" component={Profile} />
 
       {isJefe && (
-        <Tab.Screen name="Home" component={AdminPanel} />
+        <Tab.Screen name="Panel" component={AdminPanel} />
       )}
 
       {isCapataz && (
