@@ -12,14 +12,9 @@ export default function Login({ navigation }) {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    console.log("📌 Iniciando handleLogin...");
-    console.log("📧 Email ingresado:", email);
-    console.log("🔑 Password ingresado:", password);
-
     if (email && password) {
         try {
             const apiUrl = getApiUrl("auth/login");
-            console.log("🌍 Conectando a API en:", apiUrl);
 
             const response = await fetch(apiUrl, {
                 method: "POST",
@@ -27,7 +22,6 @@ export default function Login({ navigation }) {
                 body: JSON.stringify({ email, password }),
             });
 
-            console.log("🔄 Respuesta recibida. Estado HTTP:", response.status);
             const data = await response.json();
 
             if (response.ok) {
@@ -37,64 +31,49 @@ export default function Login({ navigation }) {
                     if (accessToken) {
                         await AsyncStorage.setItem("accessToken", accessToken);
 
-                        // Decodificar el token
                         try {
-                            const decodedToken = jwtDecode(accessToken);                            
+                            const decodedToken = jwtDecode(accessToken);
                             const usuarioId = decodedToken.id;
                             if (usuarioId) {
                                 await AsyncStorage.setItem("usuarioId", usuarioId.toString());
                             } else {
-                                console.warn("⚠️ No se pudo extraer el usuarioId.");
                             }
                         } catch (decodeError) {
-                            console.error("❌ Error al decodificar el token:", decodeError);
                         }
 
                         if (refreshToken) {
-                            console.log("🔄 Guardando refreshToken...");
                             await AsyncStorage.setItem("refreshToken", refreshToken);
                         }
 
                         if (Array.isArray(roles) && roles.length > 0) {
-                            console.log("📌 Roles recibidos:", roles);
                             await AsyncStorage.setItem("roles", JSON.stringify(roles));
                         }
 
-                        // Navegación basada en el rol
                         const role = roles[0];
-                        console.log("🛤️ Role del usuario:", role);
                         if (["jefe", "supervisor", "capataz"].includes(role)) {
-                          console.log("✅ Redirigiendo a Tabs...");
-                          navigation.navigate("Tabs");
+                            navigation.navigate("Tabs");
                         } else {
-                          console.warn("⚠️ Rol de usuario no reconocido");
-                          Alert.alert("Error", "Rol de usuario no reconocido");
+                            Alert.alert("Error", "Rol de usuario no reconocido");
                         }
                     } else {
-                        console.error("❌ Tokens de autenticación no recibidos correctamente");
                         Alert.alert("Error", "Tokens de autenticación no recibidos correctamente");
                     }
                 } else {
-                    console.error("❌ Error en la respuesta: datos no disponibles");
                     Alert.alert("Error", "Error en la respuesta del servidor: datos no disponibles");
                 }
             } else {
-                console.error("❌ Error HTTP:", response.status);
                 Alert.alert("Error", data.message || "Error al iniciar sesión");
             }
         } catch (error) {
-            console.error("❌ Error en la conexión:", error);
             Alert.alert("Error", "Error en la conexión con el servidor");
         }
     } else {
-        console.warn("⚠️ Campos vacíos en login");
         Alert.alert("Error", "Por favor, ingrese ambos campos");
     }
   };
 
   return (
     <View style={LoginStyles.container}>
-      {/* Interfaz de usuario */}
       <View style={LoginStyles.circleContainer}>
         <ImageBackground
           source={require("../../assets/new-grua-home.jpg")}
@@ -129,7 +108,6 @@ export default function Login({ navigation }) {
           onChangeText={setPassword}
         />
 
-        {/* Botón de inicio de sesión */}
         <Components.Button
           label="Iniciar sesión"
           onPress={handleLogin}

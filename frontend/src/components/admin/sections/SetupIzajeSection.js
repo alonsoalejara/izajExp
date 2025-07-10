@@ -17,9 +17,7 @@ const SetupIzajeSection = ({
   const navigation = useNavigation();
   const [selectedSetup, setSelectedSetup] = useState(null);
 
-  const userRole = currentUser?.roles?.[0]; // extrae el primer rol
-  console.log('Rol del usuario:', userRole);
-  console.log('Todos los capataces:', setupIzaje.map(s => s.capataz?._id));
+  const userRole = currentUser?.roles?.[0];
 
   const filteredSetups = currentUser
     ? setupIzaje.filter((setup) => {
@@ -40,7 +38,7 @@ const SetupIzajeSection = ({
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getHours()).padStart(2, '0'); // Aquí tenías un error, era getMinutes()
+    const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${day}-${month}-${year} a las ${hours}:${minutes} hrs`;
   };
 
@@ -75,7 +73,6 @@ const SetupIzajeSection = ({
         alert('Error al eliminar el plan de izaje');
       }
     } catch (error) {
-      console.error('Error:', error);
     }
   };
 
@@ -115,7 +112,6 @@ const SetupIzajeSection = ({
                     style={styles.button}
                   />
 
-                  {/* Mostrar Editar/Eliminar solo si NO es capataz y NO es adminPanel */}
                   {!isAdminPanel && userRole !== 'capataz' && (
                     <View style={styles.multiButtonContainer}>
                       <Components.Button
@@ -133,7 +129,6 @@ const SetupIzajeSection = ({
                     </View>
                   )}
 
-                  {/* Mostrar Eliminar en adminPanel sin restricciones */}
                   {isAdminPanel && (
                     <Components.Button
                       label="Eliminar"

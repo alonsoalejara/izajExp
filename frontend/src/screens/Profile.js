@@ -44,7 +44,6 @@ const Profile = () => {
         const text = await res.text();
 
         if (!text) {
-          console.warn('Respuesta vacía del backend para setups.');
           return;
         }
 
@@ -53,10 +52,8 @@ const Profile = () => {
         if (json?.data) {
           setSetups(json.data);
         } else {
-          console.warn('Respuesta JSON sin propiedad "data" para setups:', json);
         }
       } catch (e) {
-        console.error('Error al obtener los planes de izaje:', e);
       }
     }
     fetchSetups();
@@ -91,20 +88,10 @@ const Profile = () => {
           }
         }
       } catch (e) {
-        console.error('Error al obtener los datos del usuario:', e);
       }
     }
     fetchUser();
   }, [selectedButton]);
-
-  useEffect(() => {
-    if (user) {
-      console.log("🚩 user cargado en Profile:", user);
-      console.log("🚩 Firma del usuario:", user.signature);
-    } else {
-      console.log("🚩 user aún NO cargado en Profile");
-    }
-  }, [user]);
 
   const animations = useRef({
     MisDatos: new Animated.Value(0),
@@ -171,7 +158,6 @@ const Profile = () => {
         if (freshJson?.data) setUser(freshJson.data);
       }
     } catch (e) {
-      console.error('Error al guardar firma:', e);
       Alert.alert('Error', 'Ocurrió un error al guardar la firma.');
     }
   };
@@ -205,7 +191,6 @@ const Profile = () => {
               Alert.alert('Firma eliminada', 'Tu firma ha sido eliminada exitosamente.');
             }
           } catch (e) {
-            console.error(e);
             Alert.alert('Error', 'Ocurrió un error al eliminar la firma.');
           }
         },
