@@ -229,10 +229,6 @@ const Profile = () => {
     });
   };
 
-  const handlePlanesFirmadosPress = () => {
-    navigation.navigate('PlanesFirmados');
-  };
-
   const currentUserRole = user?.roles && user.roles.length > 0 ? user.roles[0] : null;
   const userRoleLowerCase = currentUserRole ? currentUserRole.toLowerCase() : null;
   const rolesConFirmaLowerCase = ROLES_CON_FIRMA.map((role) => role.toLowerCase());
@@ -245,10 +241,6 @@ const Profile = () => {
 
   const ROLES_PARA_VER_PENDIENTES = ['supervisor', 'jefe'];
   const shouldShowPendientes = userRoleLowerCase && ROLES_PARA_VER_PENDIENTES.includes(userRoleLowerCase);
-
-  const ROLES_PARA_VER_BOTON_PLANES_FIRMADOS = ['supervisor', 'jefe'];
-  const shouldShowPlanesFirmadosButton = userRoleLowerCase && ROLES_PARA_VER_BOTON_PLANES_FIRMADOS.includes(userRoleLowerCase);
-
 
   return (
     <View style={styles.container}>
@@ -334,18 +326,6 @@ const Profile = () => {
               currentUser={user}
               onViewPress={user ? handleNavigateToCollabTablas : () => Alert.alert("Cargando", "Espera a que se carguen tus datos antes de continuar.")}
             />
-
-            {shouldShowPlanesFirmadosButton && (
-              <View style={{ marginTop: 20, alignItems: 'center' }}>
-                <Components.Button
-                  label="Planes firmados"
-                  isCancel={true}
-                  onPress={handlePlanesFirmadosPress}
-                  style={{ width: 200, right: 32, backgroundColor: 'transparent' }}
-                />
-              </View>
-            )}
-
           </ScrollView>
         </View>
       )}
