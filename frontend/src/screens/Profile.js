@@ -239,9 +239,6 @@ const Profile = () => {
     visibleButtons.push('MiFirma');
   }
 
-  const ROLES_PARA_VER_PENDIENTES = ['supervisor', 'jefe'];
-  const shouldShowPendientes = userRoleLowerCase && ROLES_PARA_VER_PENDIENTES.includes(userRoleLowerCase);
-
   return (
     <View style={styles.container}>
       <View style={styles.circleContainer}>
@@ -310,16 +307,6 @@ const Profile = () => {
       {selectedButton === 'MisPlanes' && (
         <View style={{ top: 300, flex: 1 }}>
           <ScrollView contentContainerStyle={{ paddingBottom: 310, marginBottom: 20 }}>
-            {shouldShowPendientes && (
-              <Text style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: '#333',
-                marginBottom: 10,
-                marginLeft: 55.5,
-              }}>Pendientes</Text>
-            )}
-
             <Section.SetupIzajeSection
               setupIzaje={setupIzaje}
               setSetups={setSetups}
