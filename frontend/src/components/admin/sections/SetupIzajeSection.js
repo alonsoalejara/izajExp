@@ -40,7 +40,7 @@ const SetupIzajeSection = ({
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const minutes = String(date.getHours()).padStart(2, '0'); // Aquí tenías un error, era getMinutes()
     return `${day}-${month}-${year} a las ${hours}:${minutes} hrs`;
   };
 
@@ -77,6 +77,10 @@ const SetupIzajeSection = ({
     } catch (error) {
       console.error('Error:', error);
     }
+  };
+
+  const handleEdit = (planData) => {
+    navigation.navigate('EditPlan', { planData: planData });
   };
 
   return (
@@ -116,7 +120,7 @@ const SetupIzajeSection = ({
                     <View style={styles.multiButtonContainer}>
                       <Components.Button
                         label="Editar"
-                        onPress={() => console.log('Editar presionado')}
+                        onPress={() => handleEdit(setup)}
                         isCancel={true}
                         style={[styles.button, { right: 60 }]}
                       />

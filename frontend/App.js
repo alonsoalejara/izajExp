@@ -109,6 +109,11 @@ const App = () => {
             component={Screens.EditCollab}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="EditPlan"
+            component={Screens.EditPlan}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
       <Toast config={toastConfig} />

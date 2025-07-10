@@ -11,6 +11,7 @@ import AdminPanel from './AdminPanel';
 import CollabProfile from './CollabProfile';
 import CollabTablas from './CollabTablas';
 import EditCollab from './EditCollab';
+import EditPlan from './EditPlan';
 import Firma from './Firma';
 import PlanesFirmados from './PlanesFirmados';
 
@@ -28,6 +29,7 @@ const Screens = {
   Tablas,
   CollabTablas,
   EditCollab,
+  EditPlan,
   Firma,
   PlanesFirmados,
 };
