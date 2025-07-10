@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Alert, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Components from '../components/Components.index';
@@ -22,13 +22,15 @@ const EditCarga = () => {
   const [isFormaVisible, setIsFormaVisible] = useState(false);
   const [carga, setCarga] = useState({ peso: '', largo: '', ancho: '', alto: '', forma: '' });
   const [errors, setErrors] = useState({});
-
   const [planData, setPlanData] = useState(null);
+
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   useEffect(() => {
     if (route.params) {
       setPlanData(route.params);
       console.log('Datos de SetupPlan recibidos en EditCarga:', route.params);
+      setHasUnsavedChanges(false);
     }
   }, [route.params]);
 
@@ -39,6 +41,8 @@ const EditCarga = () => {
       delete newErrors[field];
       return newErrors;
     });
+    // Marcar que hay cambios sin guardar
+    setHasUnsavedChanges(true);
   };
 
   const validateInputs = () => {
@@ -72,6 +76,7 @@ const EditCarga = () => {
 
         console.log('Datos enviados a SetupGrua.js desde EditCarga.js (incluyendo datos de Plan):', allDataToSend);
 
+        setHasUnsavedChanges(false);
         navigation.navigate('SetupGrua', allDataToSend);
       }
     };
@@ -108,6 +113,29 @@ const EditCarga = () => {
     }
   };
 
+  const handleGoBack = () => {
+    if (hasUnsavedChanges) {
+      Alert.alert(
+        "Descartar cambios",
+        "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir sin guardar?",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+            onPress: () => console.log("Cancelado")
+          },
+          {
+            text: "Descartar",
+            style: "destructive",
+            onPress: () => navigation.goBack()
+          }
+        ]
+      );
+    } else {
+      navigation.goBack();
+    }
+  };
+
   const altoLabel = forma === 'Cilindro' ? 'altura' : forma === 'Cuadrado' ? 'lado' : 'alto';
   const geometry = calculateGeometry(
     forma,
@@ -123,7 +151,7 @@ const EditCarga = () => {
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Components.Header />
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={handleGoBack}
           style={{ position: 'absolute', top: 60, left: 10, zIndex: 10 }}
         >
           <Icon name="keyboard-arrow-left" size={44} color="#fff" />
@@ -287,22 +315,15 @@ const EditCarga = () => {
               />
             </View>
             <RenderCG forma={forma} />
-            <View style={[styles.buttonContainer, { right: 40, marginTop: -20 }]}>
-              <Components.Button
-                label="Volver"
-                onPress={() => navigation.goBack()}
-                isCancel
-                style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
-              />
+
+            <View style={{ marginTop: 20, alignItems: 'center' }}>
               <Components.Button
                 label="Guardar"
                 onPress={handleGuardar}
-                style={[
-                  styles.button,
-                  { width: '50%', right: 45 },
-                ]}
+                style={{ width: '100%', paddingVertical: 15, top: -15, right: 25 }}
               />
             </View>
+
             <BS.BSForma
               isVisible={isFormaVisible}
               onClose={() => setIsFormaVisible(false)}
