@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import Components from '../components/Components.index'; // Asegúrate de que esta ruta sea correcta
+import Components from '../components/Components.index';
 
 const EditPlan = () => {
   const navigation = useNavigation();
@@ -21,13 +21,7 @@ const EditPlan = () => {
   };
 
   const handleSaveChanges = () => {
-    // Lógica para guardar los cambios generales del plan.
-    // Esto podría implicar consolidar datos de las sub-pantallas
-    // o simplemente una confirmación de que se han guardado las secciones.
-    // Por ahora, solo una alerta.
     alert('Guardar cambios generales del plan.');
-    // Podrías navegar de vuelta a la pantalla anterior o a una pantalla de confirmación.
-    // navigation.goBack();
   };
 
   const handleGoBack = () => {
@@ -61,13 +55,12 @@ const EditPlan = () => {
         style={styles.actionButton}
       />
 
-      {/* Nuevo contenedor de botones */}
       <View style={styles.bottomButtonContainer}>
         <Components.Button
           label="Volver"
           onPress={handleGoBack}
           isCancel={true}
-          style={[styles.bottomButton, { backgroundColor: 'transparent'}]} 
+          style={[styles.bottomButton, { backgroundColor: 'transparent'}]}
         />
         <Components.Button
           label="Guardar cambios"
@@ -101,23 +94,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     right: 20,
     width: '90%',
-    backgroundColor: '#990000', // Color de fondo del botón
+    backgroundColor: '#990000',
   },
   bottomButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 290, 
+    marginTop: 290,
     right: 80,
     width: '100%',
   },
   bottomButton: {
     width: '55%',
     marginRight: -70,
-  },
-  cancelButton: {
-    // Si tu Components.Button tiene una prop 'isCancel' o 'type="secondary"', úsala.
-    // Si no, puedes intentar aplicar un estilo de fondo diferente aquí.
-    // backgroundColor: '#ccc', // Ejemplo si quieres un color diferente para "Volver"
   },
 });
 

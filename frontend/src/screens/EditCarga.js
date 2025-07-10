@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Components from '../components/Components.index';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
@@ -9,7 +10,7 @@ import RenderCG from '../utils/render/renderCG';
 import { validateCarga } from '../utils/validation/validateCarga';
 import { calculateGeometry } from '../utils/calculateGeometry';
 
-const SetupCarga = () => {
+const EditCarga = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const [peso, setPeso] = useState('');
@@ -27,7 +28,7 @@ const SetupCarga = () => {
   useEffect(() => {
     if (route.params) {
       setPlanData(route.params);
-      console.log('Datos de SetupPlan recibidos en SetupCarga:', route.params);
+      console.log('Datos de SetupPlan recibidos en EditCarga:', route.params);
     }
   }, [route.params]);
 
@@ -46,7 +47,7 @@ const SetupCarga = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleContinuar = () => {
+  const handleGuardar = () => {
     const pesoNum = parseFloat(peso);
     const alturaNum = parseFloat(altura);
     const largoNum = parseFloat(largo);
@@ -69,7 +70,7 @@ const SetupCarga = () => {
           setupCargaData: cargaData,
         };
 
-        console.log('Datos enviados a SetupGrua.js desde SetupCarga.js (incluyendo datos de Plan):', allDataToSend);
+        console.log('Datos enviados a SetupGrua.js desde EditCarga.js (incluyendo datos de Plan):', allDataToSend);
 
         navigation.navigate('SetupGrua', allDataToSend);
       }
@@ -121,9 +122,15 @@ const SetupCarga = () => {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Components.Header />
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{ position: 'absolute', top: 60, left: 10, zIndex: 10 }}
+        >
+          <Icon name="keyboard-arrow-left" size={44} color="#fff" />
+        </TouchableOpacity>
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}>
           <View style={styles.titleContainer}>
-            <Text style={[styles.sectionTitle, { top: 5 }]}>Carga</Text>
+            <Text style={[styles.sectionTitle, { marginTop: 50 }]}>Editar carga</Text>
           </View>
           <View style={[styles.container, { flexGrow: 1 }]}>
             <View style={styles.inputWrapper}>
@@ -280,7 +287,7 @@ const SetupCarga = () => {
               />
             </View>
             <RenderCG forma={forma} />
-            <View style={[styles.buttonContainer, { right: 40, marginTop: 15 }]}>
+            <View style={[styles.buttonContainer, { right: 40, marginTop: -20 }]}>
               <Components.Button
                 label="Volver"
                 onPress={() => navigation.goBack()}
@@ -288,8 +295,8 @@ const SetupCarga = () => {
                 style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
               />
               <Components.Button
-                label="Continuar"
-                onPress={handleContinuar}
+                label="Guardar"
+                onPress={handleGuardar}
                 style={[
                   styles.button,
                   { width: '50%', right: 45 },
@@ -311,4 +318,4 @@ const SetupCarga = () => {
   );
 };
 
-export default SetupCarga;
+export default EditCarga;
