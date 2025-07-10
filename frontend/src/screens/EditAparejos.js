@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
 import { validateSetupAparejos } from '../utils/validation/validateAparejos';
 
-const SetupAparejos = () => {
+const EditAparejos = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
@@ -43,22 +44,24 @@ const SetupAparejos = () => {
   const [errorAparejoPorWLL, setErrorAparejoPorWLL] = useState('');
   const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
 
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
   useEffect(() => {
     if (route.params?.planData) {
       setPlanData(route.params.planData);
-      console.log('Datos de SetupPlan recibidos en SetupAparejos:', route.params.planData);
+      console.log('Datos de SetupPlan recibidos en EditAparejos:', route.params.planData);
     }
     if (route.params?.setupCargaData) {
       setSetupCargaData(route.params.setupCargaData);
-      console.log('Datos de SetupCarga recibidos en SetupAparejos:', route.params.setupCargaData);
+      console.log('Datos de SetupCarga recibidos en EditAparejos:', route.params.setupCargaData);
     }
     if (route.params?.setupGruaData) {
       setSetupGruaData(route.params.setupGruaData);
-      console.log('Datos de SetupGrua recibidos en SetupAparejos:', route.params.setupGruaData);
+      console.log('Datos de SetupGrua recibidos en EditAparejos:', route.params.setupGruaData);
     }
     if (route.params?.setupRadioData) {
       setSetupRadioData(route.params.setupRadioData);
-      console.log('Datos de SetupRadio recibidos en SetupAparejos:', route.params.setupRadioData);
+      console.log('Datos de SetupRadio recibidos en EditAparejos:', route.params.setupRadioData);
     }
 
     const fetchDataFromAsyncStorage = async () => {
@@ -74,7 +77,7 @@ const SetupAparejos = () => {
       }
     };
     fetchDataFromAsyncStorage();
-
+    setHasUnsavedChanges(false);
   }, [route.params]);
 
   useEffect(() => {
@@ -90,10 +93,12 @@ const SetupAparejos = () => {
     }
     setTipoAparejoSeleccionado('');
     setAparejoPorWLL('');
+    setHasUnsavedChanges(true);
   }, [tipoManiobraSeleccionadoSolo]);
 
   useEffect(() => {
     setAparejoPorWLL('');
+    setHasUnsavedChanges(true);
   }, [tipoAparejoSeleccionado]);
 
   useEffect(() => {
@@ -103,19 +108,22 @@ const SetupAparejos = () => {
     }
     const nuevaTabla = Array.from({ length: maniobraSeleccionada.cantidad }, (_, index) => ({ key: index + 1 }));
     setTableData(nuevaTabla);
+    setHasUnsavedChanges(true);
   }, [maniobraSeleccionada?.cantidad]);
 
   useEffect(() => {
     setCantidadGrilletes(maniobraSeleccionada.cantidad || '');
+    setHasUnsavedChanges(true);
   }, [maniobraSeleccionada.cantidad]);
 
   const handleManiobraSeleccionada = useCallback((maniobra) => {
     setManiobraSeleccionada(prev => ({ cantidad: prev?.cantidad || '', tipo: { type: maniobra.type, cantidades: maniobra.cantidades } }));
     setTipoManiobraSeleccionadoSolo(maniobra.type);
     setErrorTipoManiobra('');
+    setHasUnsavedChanges(true);
   }, []);
 
-  const handleNavigate = () => {
+  const handleGuardar = () => {
     const errors = validateSetupAparejos(
       maniobraSeleccionada,
       cantidadGrilletes,
@@ -151,13 +159,37 @@ const SetupAparejos = () => {
         setupAparejosData
       };
 
-      console.log('Datos enviados a Tablas.js desde SetupAparejos.js:', allDataToSend);
+      console.log('Datos guardados en EditAparejos.js:', allDataToSend);
 
-      navigation.navigate('Tablas', allDataToSend);
+      setHasUnsavedChanges(false);
+      navigation.goBack();
     }
   };
 
-  const isContinuarDisabled =
+  const handleGoBack = () => {
+    if (hasUnsavedChanges) {
+      Alert.alert(
+        "Descartar cambios",
+        "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir sin guardar?",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+            onPress: () => console.log("Cancelado")
+          },
+          {
+            text: "Descartar",
+            style: "destructive",
+            onPress: () => navigation.goBack()
+          }
+        ]
+      );
+    } else {
+      navigation.goBack();
+    }
+  };
+
+  const isGuardarDisabled =
     !maniobraSeleccionada?.cantidad ||
     !maniobraSeleccionada?.tipo?.type ||
     !tipoGrillete ||
@@ -169,6 +201,12 @@ const SetupAparejos = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Components.Header />
+        <TouchableOpacity
+          onPress={handleGoBack}
+          style={{ position: 'absolute', top: 60, left: 10, zIndex: 10 }}
+        >
+          <Icon name="keyboard-arrow-left" size={44} color="#fff" />
+        </TouchableOpacity>
         <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
           <View style={styles.titleContainer}><Text style={[styles.sectionTitle, { top: 5, marginBottom: 20 }]}>Configuración de aparejos</Text></View>
           <View style={styles.container}>
@@ -282,6 +320,7 @@ const SetupAparejos = () => {
                 setManiobraSeleccionada(prev => ({ ...prev, cantidad: cantidad.toString() }));
                 setCantidadGrilletes(cantidad.toString());
                 setErrorCantidadManiobra('');
+                setHasUnsavedChanges(true);
               }}
             />
             <BS.BSManiobra
@@ -296,6 +335,7 @@ const SetupAparejos = () => {
               onSelect={tipo => {
                 setTipoAparejoSeleccionado(tipo);
                 setErrorTipoAparejo('');
+                setHasUnsavedChanges(true);
               }}
               tipoManiobra={tipoManiobraSeleccionadoSolo}
               cantidadManiobra={cantidadNumero}
@@ -306,19 +346,19 @@ const SetupAparejos = () => {
               onSelect={wll => {
                 setAparejoPorWLL(wll);
                 setErrorAparejoPorWLL('');
+                setHasUnsavedChanges(true);
               }}
               tipoAparejo={tipoAparejoSeleccionado}
               anguloSeleccionado={anguloSeleccionado}
               cantidadManiobra={cantidadNumero}
             />
 
-            <View style={[styles.buttonContainer, { marginBottom: -20, right: 40 }]}>
-              <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={styles.volverButton} />
+            <View style={{ marginTop: 20, alignItems: 'center' }}>
               <Components.Button
-                label="Continuar"
-                onPress={handleNavigate}
-                disabled={isContinuarDisabled}
-                style={[styles.continuarButton, { width: '60%', left: -38 }]}
+                label="Guardar"
+                onPress={handleGuardar}
+                disabled={isGuardarDisabled}
+                style={{ width: '88%', paddingVertical: 15, right: 23 }}
               />
             </View>
           </View>
@@ -328,4 +368,4 @@ const SetupAparejos = () => {
   );
 };
 
-export default SetupAparejos;
+export default EditAparejos;

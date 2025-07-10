@@ -14,6 +14,7 @@ import EditCollab from './EditCollab';
 import EditPlan from './EditPlan';
 import EditCarga from './EditCarga';
 import EditGrua from './EditGrua';
+import EditAparejos from './EditAparejos';
 import Firma from './Firma';
 import PlanesFirmados from './PlanesFirmados';
 
@@ -34,6 +35,7 @@ const Screens = {
   EditPlan,
   EditCarga,
   EditGrua,
+  EditAparejos,
   Firma,
   PlanesFirmados,
 };
