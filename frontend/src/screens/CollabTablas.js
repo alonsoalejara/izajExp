@@ -281,7 +281,7 @@ const CollabTablas = ({ route }) => {
       </Pressable>
 
       <View style={[TablasStyles.titleContainer, { top: 50 }]}>
-        <Text style={TablasStyles.title}>Detalles del Plan de Izaje</Text>
+        <Text style={TablasStyles.title}>Detalles del plan de izaje</Text>
       </View>
 
       <ScrollView style={[TablasStyles.tableContainer, { top: -40, paddingHorizontal: 5 }]}>

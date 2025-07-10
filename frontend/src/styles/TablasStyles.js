@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    bottom: 6,
   },
   // Titulo de cada tabla
   sectionTitle: {

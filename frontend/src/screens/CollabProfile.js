@@ -115,7 +115,7 @@ const CollabProfile = () => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon name="keyboard-arrow-left" size={40} color="#fff" style={{ right: 120, bottom: 75 }} />
             </TouchableOpacity>
-            <Text style={[styles.title, { left: 0 }]}>
+            <Text style={[styles.title, { left: 0, bottom: 2 }]}>
               PERFIL
             </Text>
           </View>
