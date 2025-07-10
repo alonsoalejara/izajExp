@@ -387,8 +387,8 @@ const Profile = () => {
                 width: 250,
                 left: -75,
               }}>
-                <Components.Button label="Cambiar Firma" onPress={handleEditSignature} style={{ width: 140 }} />
-                <Components.Button label="Eliminar Firma" onPress={handleDeleteSignature} style={{ width: 140, backgroundColor: '#999', left: -40 }} />
+                <Components.Button label="Cambiar" onPress={handleEditSignature} style={{ width: 140 }} />
+                <Components.Button label="Eliminar" onPress={handleDeleteSignature} style={{ width: 140, backgroundColor: '#990000', left: -40 }} />
               </View>
             </>
           ) : (
