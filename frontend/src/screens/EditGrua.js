@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
@@ -14,7 +15,7 @@ import { validateSetupGrua } from '../utils/validation/validationCrane';
 import { inclinacionMapAlturas } from '../utils/inclinacionMapAlturas';
 import { evaluateMovement, capacityTables } from '../data/loadCapacity';
 
-const SetupGrua = () => {
+const EditGrua = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const initialPlanData = route.params?.planData;
@@ -38,6 +39,8 @@ const SetupGrua = () => {
   const [radioIzajeError, setRadioIzajeError] = useState(false);
   const [radioMontajeError, setRadioMontajeError] = useState(false);
 
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
   useEffect(() => {
     const fetchUserId = async () => {
       try {
@@ -49,8 +52,9 @@ const SetupGrua = () => {
     };
     fetchUserId();
 
-    console.log('Datos de SetupPlan recibidos en SetupGrua:', initialPlanData);
-    console.log('Datos de SetupCarga recibidos en SetupGrua:', initialCargaData);
+    console.log('Datos de SetupPlan recibidos en EditGrua:', initialPlanData);
+    console.log('Datos de SetupCarga recibidos en EditGrua:', initialCargaData);
+    setHasUnsavedChanges(false);
 
   }, [initialPlanData, initialCargaData]);
 
@@ -128,6 +132,10 @@ const SetupGrua = () => {
       setGradoInclinacionVisual(75);
     }
 
+    if (grua || largoPluma || radioIzaje || radioMontaje) {
+      setHasUnsavedChanges(true);
+    }
+
   }, [radioIzaje, radioMontaje, grua, largoPluma, setupCargaData]);
 
   const validateRadioEnRango = (boomLength, radio) => {
@@ -143,7 +151,7 @@ const SetupGrua = () => {
 
   const openModal = setter => setter(true);
 
-  const handleNavigateToSetupAparejos = async () => {
+  const handleGuardar = async () => {
     const errors = validateSetupGrua(grua);
     const errIz = !radioIzaje && !!grua;
     const errMont = !radioMontaje && !!grua;
@@ -175,25 +183,56 @@ const SetupGrua = () => {
       setupGruaData: dataToSend,
     };
 
-    console.log('Datos enviados a SetupAparejos.js desde SetupGrua.js:', allDataToSend);
+    console.log('Datos guardados en EditGrua.js:', allDataToSend);
 
     if (Object.keys(errors).length === 0 && !errIz && !errMont && !radioIzajeError && !radioMontajeError) {
       await AsyncStorage.setItem('setupGruaData', JSON.stringify(dataToSend));
-      navigation.navigate('SetupAparejos', allDataToSend);
+      setHasUnsavedChanges(false);
+      navigation.goBack();
+    }
+  };
+
+  const handleGoBack = () => {
+    if (hasUnsavedChanges) {
+      Alert.alert(
+        "Descartar cambios",
+        "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir sin guardar?",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+            onPress: () => console.log("Cancelado")
+          },
+          {
+            text: "Descartar",
+            style: "destructive",
+            onPress: () => navigation.goBack()
+          }
+        ]
+      );
+    } else {
+      navigation.goBack();
     }
   };
 
   const isInputsDisabled = !grua;
-  const isContinuarDisabled = !grua || !radioIzaje || !radioMontaje || radioIzajeError || radioMontajeError;
+  const isGuardarDisabled = !grua || !radioIzaje || !radioMontaje || radioIzajeError || radioMontajeError;
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Components.Header />
+        <TouchableOpacity
+          onPress={handleGoBack}
+          style={{ position: 'absolute', top: 60, left: 10, zIndex: 10 }}
+        >
+          <Icon name="keyboard-arrow-left" size={44} color="#fff" />
+        </TouchableOpacity>
+
         <View style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View style={styles.titleContainer}>
-              <Text style={[styles.sectionTitle, { top: 5 }]}>Configurar grúa</Text>
+              <Text style={[styles.sectionTitle, { marginTop: 50 }]}>Editar grúa</Text>
             </View>
             <View style={styles.container}>
               <View style={styles.inputWrapper}>
@@ -214,6 +253,7 @@ const SetupGrua = () => {
                   setGrua(selected);
                   setErrorGrua('');
                   setLargoPluma(selected.nombre === 'Terex RT555' ? '10.5 m' : '');
+                  setHasUnsavedChanges(true);
                 }}
               />
 
@@ -232,7 +272,10 @@ const SetupGrua = () => {
                 <BS.BSLargoPluma
                   isVisible={isLargoPlumaModalVisible}
                   onClose={() => setLargoPlumaModalVisible(false)}
-                  onSelect={setLargoPluma}
+                  onSelect={selectedLargoPluma => {
+                    setLargoPluma(selectedLargoPluma);
+                    setHasUnsavedChanges(true);
+                  }}
                 />
               </View>
 
@@ -241,7 +284,10 @@ const SetupGrua = () => {
                   <Text style={styles.labelText}>Radio de izaje (m):</Text>
                   <Components.NumericInput
                     value={radioIzaje}
-                    onChangeText={setRadioIzaje}
+                    onChangeText={value => {
+                      setRadioIzaje(value);
+                      setHasUnsavedChanges(true);
+                    }}
                     placeholder="Radio"
                     editable={!isInputsDisabled}
                     showControls={false}
@@ -253,7 +299,10 @@ const SetupGrua = () => {
                   <Text style={styles.labelText}>Radio de montaje (m):</Text>
                   <Components.NumericInput
                     value={radioMontaje}
-                    onChangeText={setRadioMontaje}
+                    onChangeText={value => {
+                      setRadioMontaje(value);
+                      setHasUnsavedChanges(true);
+                    }}
                     placeholder="Radio"
                     editable={!isInputsDisabled}
                     showControls={false}
@@ -315,22 +364,12 @@ const SetupGrua = () => {
             </View>
           </ScrollView>
 
-          <View style={[styles.buttonContainer, { right: 40, marginTop: 15 }]}>
+          <View style={{ marginTop: 20, alignItems: 'center' }}>
             <Components.Button
-              label="Volver"
-              onPress={() => navigation.goBack()}
-              isCancel
-              style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
-            />
-            <Components.Button
-              label="Continuar"
-              onPress={handleNavigateToSetupAparejos}
-              disabled={isContinuarDisabled}
-              style={[
-                styles.button,
-                { width: '50%', right: 45 },
-                isContinuarDisabled && { backgroundColor: '#cccccc' },
-              ]}
+              label="Guardar"
+              onPress={handleGuardar}
+              disabled={isGuardarDisabled}
+              style={{ width: '88%', paddingVertical: 15, right: 23 }}
             />
           </View>
         </View>
@@ -339,4 +378,4 @@ const SetupGrua = () => {
   );
 };
 
-export default SetupGrua;
+export default EditGrua;
