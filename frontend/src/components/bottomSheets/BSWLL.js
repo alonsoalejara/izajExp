@@ -48,7 +48,8 @@ const BSWLL = ({
   onSelect,
   tipoAparejo,
   anguloSeleccionado,
-  cantidadManiobra
+  cantidadManiobra,
+  pesoCarga
 }) => {
   const [opcionesWLL, setOpcionesWLL] = useState([]);
   const [selectedWLL, setSelectedWLL] = useState(null);
@@ -66,36 +67,64 @@ const BSWLL = ({
     if (tipoAparejo === 'Tubulares de poliester') {
       opciones = tubularPoliesterData.map(item => {
         const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
+        // Calcular la capacidad efectiva según la cantidad de maniobras
+        const capacidadEfectiva = ton * cantidadManiobra;
+        const isDisabled = pesoCarga !== null && capacidadEfectiva < pesoCarga;
         const base = item.nombre.split('(')[0].trim();
-        return `${base} (${ton} ton)`;
+        return {
+          label: `${base} (${ton} ton)`,
+          value: `${base} (${ton} ton)`,
+          isDisabled: isDisabled,
+          capacidad: capacidadEfectiva // Guarda la capacidad para depuración si es necesario
+        };
       });
     } else if (tipoAparejo === 'Tubulares trenzadas de poliester') {
       opciones = tubularTrenzadasPoliesterData.map(item => {
         const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
+        const capacidadEfectiva = ton * cantidadManiobra;
+        const isDisabled = pesoCarga !== null && capacidadEfectiva < pesoCarga;
         const base = item.nombre.split('(')[0].trim();
-        return `${base} (${ang}°: ${ton} ton)`;
+        return {
+          label: `${base} (${ang}°: ${ton} ton)`,
+          value: `${base} (${ang}°: ${ton} ton)`,
+          isDisabled: isDisabled
+        };
       });
     } else if (tipoAparejo === 'Tubulares para carga pesada') {
       opciones = tubularCargaPesadaData.map(item => {
         const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
+        const capacidadEfectiva = ton * cantidadManiobra;
+        const isDisabled = pesoCarga !== null && capacidadEfectiva < pesoCarga;
         const base = item.nombre.split('(')[0].trim();
-        return `${base} (${ang}°: ${ton} ton)`;
+        return {
+          label: `${base} (${ang}°: ${ton} ton)`,
+          value: `${base} (${ang}°: ${ton} ton)`,
+          isDisabled: isDisabled
+        };
       });
     } else if (tipoAparejo === 'Planas ojo-ojo de poliester') {
       if (cantidadManiobra === 1) {
         opciones = Object.keys(ojoPoliesterData).map(pulgada => {
-          return `${pulgada}`;
+          // Para este tipo, la lógica de capacidad por capas se aplica más tarde.
+          // Por ahora, no deshabilitamos aquí a menos que haya una regla general.
+          return { label: `${pulgada}`, value: `${pulgada}`, isDisabled: false };
         });
       } else {
         opciones = [];
         if (selectedWLL && selectedWLL.includes('pulgada')) {
-             setSelectedWLL(null);
+              setSelectedWLL(null);
         }
       }
     } else if (tipoAparejo === 'Cable de Acero Superloop') {
       opciones = cableAceroSuperloopData.map(item => {
         const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
-        return `${item.nombre} (${ton} ton)`;
+        const capacidadEfectiva = ton * cantidadManiobra;
+        const isDisabled = pesoCarga !== null && capacidadEfectiva < pesoCarga;
+        return {
+          label: `${item.nombre} (${ton} ton)`,
+          value: `${item.nombre} (${ton} ton)`,
+          isDisabled: isDisabled
+        };
       });
     }
 
@@ -118,7 +147,7 @@ const BSWLL = ({
         useNativeDriver: false
       }).start(() => onClose());
     }
-  }, [isVisible, tipoAparejo, anguloSeleccionado, cantidadManiobra]);
+  }, [isVisible, tipoAparejo, anguloSeleccionado, cantidadManiobra, pesoCarga]); // Añadimos pesoCarga a las dependencias
 
   const closeBottomSheet = () => {
     Animated.timing(positionY, {
@@ -129,9 +158,13 @@ const BSWLL = ({
   };
 
   const handleSelect = option => {
-    setSelectedWLL(option);
+    if (option.isDisabled) {
+      // Si la opción está deshabilitada, no hacemos nada.
+      return;
+    }
+    setSelectedWLL(option.value); // Ahora 'option' es un objeto, necesitamos su 'value'
     if (tipoAparejo === 'Planas ojo-ojo de poliester') {
-      const pulgadas = option.split('(')[0].trim();
+      const pulgadas = option.value.split('(')[0].trim(); // Usamos option.value aquí también
       setCapasDisponibles(ojoPoliesterData[pulgadas] || []);
       setShowCapas(true);
       setSelectedCapa(null);
@@ -182,12 +215,18 @@ const BSWLL = ({
         >
           {opcionesWLL.map(option => {
             const isOjoOjoPoliester = tipoAparejo === 'Planas ojo-ojo de poliester';
+            const optionColor = option.isDisabled ? '#ccc' : (isOjoOjoPoliester ? colorPorPulgada[option.value] : getColorFromText(option.value));
+            const textColor = option.isDisabled ? '#999' : '#333'; // Color de texto para deshabilitado
             
             return (
-              <View key={option}>
+              <View key={option.value}>
                 <TouchableOpacity
-                  style={styles.optionButton}
+                  style={[
+                    styles.optionButton,
+                    option.isDisabled && { backgroundColor: '#fff' } // Fondo más claro para deshabilitado
+                  ]}
                   onPress={() => handleSelect(option)}
+                  disabled={option.isDisabled}
                 >
                   <View style={styles.optionContent}>
                     <View
@@ -195,26 +234,24 @@ const BSWLL = ({
                         width: 10,
                         height: 20,
                         borderRadius: 10,
-                        backgroundColor:
-                          isOjoOjoPoliester
-                          ? colorPorPulgada[option] || '#ccc'
-                          : getColorFromText(option),
+                        backgroundColor: optionColor,
                         marginRight: 10,
                         borderWidth: 1,
-                        borderColor: '#999'
+                        borderColor: option.isDisabled ? '#ccc' : '#999'
                       }}
                     />
                     <View style={styles.optionTextContainer}>
-                      <Text style={styles.optionText}>{option}</Text>
+                      <Text style={[styles.optionText, { color: textColor }]}>{option.label}</Text>
                     </View>
                     <View style={styles.radioContainer}>
                       <View
                         style={[
                           styles.radioButton,
-                          selectedWLL === option && styles.selectedRadioButton
+                          selectedWLL === option.value && styles.selectedRadioButton,
+                          option.isDisabled && { borderColor: '#fff' }
                         ]}
                       >
-                        {selectedWLL === option && (
+                        {selectedWLL === option.value && (
                           <View style={styles.selectedCircle} />
                         )}
                       </View>
@@ -222,7 +259,7 @@ const BSWLL = ({
                   </View>
                 </TouchableOpacity>
 
-                {showCapas && selectedWLL === option && (
+                {showCapas && selectedWLL === option.value && (
                   <View style={{ paddingLeft: 35, marginBottom: 10 }}>
                     <Text style={{ marginBottom: 5, fontWeight: 'bold' }}>
                       Seleccione cantidad de capas:

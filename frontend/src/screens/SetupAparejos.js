@@ -41,7 +41,7 @@ const SetupAparejos = () => {
   const [errorTipoGrillete, setErrorTipoGrillete] = useState('');
   const [errorTipoAparejo, setErrorTipoAparejo] = useState('');
   const [errorAparejoPorWLL, setErrorAparejoPorWLL] = useState('');
-  const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
+  const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = '';
 
   useEffect(() => {
     if (route.params?.planData) {
@@ -310,6 +310,7 @@ const SetupAparejos = () => {
               tipoAparejo={tipoAparejoSeleccionado}
               anguloSeleccionado={anguloSeleccionado}
               cantidadManiobra={cantidadNumero}
+              pesoCarga={setupCargaData?.peso || null}
             />
 
             <View style={[styles.buttonContainer, { marginBottom: -20, right: 40 }]}>
