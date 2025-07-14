@@ -279,6 +279,11 @@ const SetupCarga = () => {
                 }}
               />
             </View>
+            {forma !== '' && (
+                <Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'left', top: -30 }}>
+                    Visualización de la carga de lado y de frente:
+                </Text>
+            )}
             <RenderCG forma={forma} />
             <View style={[styles.buttonContainer, { right: 40, marginTop: 15 }]}>
               <Components.Button
