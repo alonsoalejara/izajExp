@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Alert, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Components from '../components/Components.index';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
@@ -13,6 +12,7 @@ import { calculateGeometry } from '../utils/calculateGeometry';
 const EditCarga = () => {
   const navigation = useNavigation();
   const route = useRoute();
+
   const [peso, setPeso] = useState('');
   const [ancho, setAncho] = useState('');
   const [largo, setLargo] = useState('');
@@ -24,25 +24,20 @@ const EditCarga = () => {
   const [errors, setErrors] = useState({});
   const [planData, setPlanData] = useState(null);
 
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-
   useEffect(() => {
     if (route.params) {
-      setPlanData(route.params);
-      console.log('Datos de SetupPlan recibidos en EditCarga:', route.params);
-      setHasUnsavedChanges(false);
+      setPlanData(route.params.planData);
+      console.log('Datos recibidos en EditCarga:', route.params.planData);
     }
   }, [route.params]);
 
   const handleInputChange = (field, value) => {
-    setCarga((prev) => ({ ...prev, [field]: value }));
-    setErrors((prevErrors) => {
+    setCarga(prev => ({ ...prev, [field]: value }));
+    setErrors(prevErrors => {
       const newErrors = { ...prevErrors };
       delete newErrors[field];
       return newErrors;
     });
-    // Marcar que hay cambios sin guardar
-    setHasUnsavedChanges(true);
   };
 
   const validateInputs = () => {
@@ -65,19 +60,47 @@ const EditCarga = () => {
       largo: forma === 'Cuadrado' ? alturaNum : (forma === 'Cilindro' ? 0 : largoNum),
       ancho: forma === 'Cuadrado' ? alturaNum : (forma === 'Cilindro' ? 0 : anchoNum),
       diametro: forma === 'Cilindro' ? diametroNum : 0,
+      forma: forma,
     };
 
-    const navigateToNextScreen = () => {
+    const geometry = calculateGeometry(
+      forma,
+      alturaNum,
+      forma === 'Cilindro' ? diametroNum : largoNum,
+      anchoNum
+    );
+
+    const cg = geometry?.cg || { cgX: 0, cgY: 0, cgZ: 0 };
+    const dimensions = geometry?.dimensions || { d1x: 0, d2x: 0, d1y: 0, d2y: 0, d1z: 0, d2z: 0 };
+
+    const navigateToEditPlan = () => {
       if (validateInputs()) {
-        const allDataToSend = {
-          planData: planData,
-          setupCargaData: cargaData,
+        const updatedCargas = {
+          pesoEquipo: cargaData.peso,
+          pesoAparejos: 0,
+          pesoGancho: 0,
+          pesoCable: 0,
+          pesoTotal: cargaData.peso,
+          radioTrabajoMax: 0,
+          anguloTrabajo: '',
+          capacidadLevante: 0,
+          porcentajeUtilizacion: 0
         };
 
-        console.log('Datos enviados a SetupGrua.js desde EditCarga.js (incluyendo datos de Plan):', allDataToSend);
+        const updatedCG = {
+          xAncho: dimensions.d1x,
+          yLargo: dimensions.d1y,
+          zAlto: dimensions.d1z,
+          xCG: cg.cgX,
+          yCG: cg.cgY,
+          zCG: cg.cgZ,
+          xPR: dimensions.d2x,
+          yPR: dimensions.d2y,
+          zPR: dimensions.d2z
+        };
 
-        setHasUnsavedChanges(false);
-        navigation.navigate('SetupGrua', allDataToSend);
+        console.log('Enviando a EditPlan desde EditCarga:', { updatedCargas, updatedCG });
+        navigation.navigate('EditPlan', { updatedCargas, updatedCG });
       }
     };
 
@@ -86,11 +109,7 @@ const EditCarga = () => {
         "Dimensiones de un cubo detectadas",
         "Las dimensiones ingresadas corresponden a un cubo. ¿Desea cambiar la forma a 'Cuadrado'?",
         [
-          {
-            text: "No",
-            onPress: navigateToNextScreen,
-            style: "cancel"
-          },
+          { text: "No", onPress: navigateToEditPlan, style: "cancel" },
           {
             text: "Sí",
             onPress: () => {
@@ -103,36 +122,13 @@ const EditCarga = () => {
                 ancho: alturaNum,
                 diametro: 0,
               };
-              navigateToNextScreen();
+              navigateToEditPlan();
             }
           }
         ]
       );
     } else {
-      navigateToNextScreen();
-    }
-  };
-
-  const handleGoBack = () => {
-    if (hasUnsavedChanges) {
-      Alert.alert(
-        "Descartar cambios",
-        "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir sin guardar?",
-        [
-          {
-            text: "Cancelar",
-            style: "cancel",
-            onPress: () => console.log("Cancelado")
-          },
-          {
-            text: "Descartar",
-            style: "destructive",
-            onPress: () => navigation.goBack()
-          }
-        ]
-      );
-    } else {
-      navigation.goBack();
+      navigateToEditPlan();
     }
   };
 
@@ -150,15 +146,9 @@ const EditCarga = () => {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Components.Header />
-        <TouchableOpacity
-          onPress={handleGoBack}
-          style={{ position: 'absolute', top: 60, left: 10, zIndex: 10 }}
-        >
-          <Icon name="keyboard-arrow-left" size={44} color="#fff" />
-        </TouchableOpacity>
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}>
           <View style={styles.titleContainer}>
-            <Text style={[styles.sectionTitle, { marginTop: 50 }]}>Editar carga</Text>
+            <Text style={[styles.sectionTitle, { top: 5 }]}>Editar carga</Text>
           </View>
           <View style={[styles.container, { flexGrow: 1 }]}>
             <View style={styles.inputWrapper}>
@@ -177,116 +167,54 @@ const EditCarga = () => {
               Ingrese el peso (ton) y el {altoLabel} (m) de la carga:
             </Text>
             <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
-              <View style={styles.inputField}>
-                {errors.peso && <Text style={styles.errorText}>{errors.peso}</Text>}
-                <Components.NumericInput
-                  value={peso}
-                  onChangeText={(value) => {
-                    setPeso(value);
-                    handleInputChange('peso', value);
-                  }}
-                  placeholder="Peso de carga"
-                  onEndEditing={() => {
-                    const cleanedValue = peso.trim();
-                    setPeso(cleanedValue);
-                    handleInputChange('peso', cleanedValue);
-                  }}
-                  editable={!!forma}
-                  style={[{ width: 150 }, errors.peso && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 }]}
-                />
-              </View>
-              <View style={styles.inputField}>
-                {errors.alto && <Text style={styles.errorText}>{errors.alto}</Text>}
-                <Components.NumericInput
-                  value={altura}
-                  onChangeText={(value) => {
-                    setAltura(value);
-                    handleInputChange('alto', value);
-                  }}
-                  placeholder={altoLabel.charAt(0).toUpperCase() + altoLabel.slice(1)}
-                  onEndEditing={() => {
-                    const cleanedValue = altura.trim();
-                    setAltura(cleanedValue);
-                    handleInputChange('alto', cleanedValue);
-                  }}
-                  editable={!!forma}
-                  style={[{ width: 150 }, errors.alto && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 }]}
-                />
-              </View>
+              <Components.NumericInput
+                value={peso}
+                onChangeText={(value) => { setPeso(value); handleInputChange('peso', value); }}
+                placeholder="Peso de carga"
+                editable={!!forma}
+              />
+              <Components.NumericInput
+                value={altura}
+                onChangeText={(value) => { setAltura(value); handleInputChange('alto', value); }}
+                placeholder={altoLabel.charAt(0).toUpperCase() + altoLabel.slice(1)}
+                editable={!!forma}
+              />
             </View>
             {forma !== 'Cilindro' && forma !== 'Cuadrado' && (
               <>
-                <Text style={styles.labelText}>Ingrese el largo y ancho:</Text>
+                <Text style={styles.labelText}>Ingrese el largo y ancho (m):</Text>
                 <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
-                  <View style={styles.inputField}>
-                    {errors.largo && <Text style={styles.errorText}>{errors.largo}</Text>}
-                    <Components.NumericInput
-                      value={largo}
-                      onChangeText={(value) => {
-                        setLargo(value);
-                        handleInputChange('largo', value);
-                      }}
-                      placeholder="Largo"
-                      onEndEditing={() => {
-                        const cleanedValue = largo.trim();
-                        setLargo(cleanedValue);
-                        handleInputChange('largo', cleanedValue);
-                      }}
-                      editable={!!forma}
-                      style={[{ width: 150 }, errors.largo && { borderColor: 'red', top: -10, borderWidth: 3, borderRadius: 13 }]}
-                    />
-                  </View>
-                  <View style={styles.inputField}>
-                    {errors.ancho && <Text style={styles.errorText}>{errors.ancho}</Text>}
-                    <Components.NumericInput
-                      value={ancho}
-                      onChangeText={(value) => {
-                        setAncho(value);
-                        handleInputChange('ancho', value);
-                      }}
-                      placeholder="Ancho"
-                      onEndEditing={() => {
-                        const cleanedValue = ancho.trim();
-                        setAncho(cleanedValue);
-                        handleInputChange('ancho', cleanedValue);
-                      }}
-                      editable={!!forma}
-                      style={[{ width: 150 }, errors.ancho && { borderColor: 'red', top: -10, borderWidth: 3, borderRadius: 13 }]}
-                    />
-                  </View>
+                  <Components.NumericInput
+                    value={largo}
+                    onChangeText={(value) => { setLargo(value); handleInputChange('largo', value); }}
+                    placeholder="Largo"
+                    editable={!!forma}
+                  />
+                  <Components.NumericInput
+                    value={ancho}
+                    onChangeText={(value) => { setAncho(value); handleInputChange('ancho', value); }}
+                    placeholder="Ancho"
+                    editable={!!forma}
+                  />
                 </View>
               </>
             )}
             {forma === 'Cilindro' && (
-              <View style={styles.inputWrapper}>
-                <Text style={[styles.labelText, { top: -8 }]}>Ingrese el diámetro (m):</Text>
-                {errors.diametro && <Text style={styles.errorText}>{errors.diametro}</Text>}
+              <>
+                <Text style={styles.labelText}>Ingrese el diámetro (m):</Text>
                 <Components.NumericInput
                   value={diametro}
-                  onChangeText={(value) => {
-                    setDiametro(value);
-                    handleInputChange('diametro', value);
-                  }}
+                  onChangeText={(value) => { setDiametro(value); handleInputChange('diametro', value); }}
                   placeholder="Diámetro del cilindro"
-                  onEndEditing={() => {
-                    const cleanedValue = diametro.trim();
-                    setDiametro(cleanedValue);
-                    handleInputChange('diametro', cleanedValue);
-                  }}
                   editable={!!forma}
-                  style={[{ width: 320 }, errors.diametro && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 }]}
                 />
-              </View>
+              </>
             )}
             {geometry && (
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5, marginBottom: 10 }}>
                 <View style={{ flex: 1 }}>
-                  <View style={{ alignItems: 'flex-start' }}>
-                    <Text style={{ fontWeight: 'bold' }}>Centro de gravedad:</Text>
-                    <Text>
-                      X: {cg.cgX.toFixed(1)} | Y: {cg.cgY.toFixed(1)} | Z: {cg.cgZ.toFixed(1)}
-                    </Text>
-                  </View>
+                  <Text style={{ fontWeight: 'bold' }}>Centro de gravedad:</Text>
+                  <Text>X: {cg.cgX.toFixed(1)} | Y: {cg.cgY.toFixed(1)} | Z: {cg.cgZ.toFixed(1)}</Text>
                 </View>
                 <View style={{ flex: 1, alignItems: 'flex-end', paddingRight: 20 }}>
                   <Text style={{ fontWeight: 'bold' }}>Dimensiones:</Text>
@@ -306,7 +234,7 @@ const EditCarga = () => {
             )}
             <View style={[styles.visualizationCargaContainer, { marginBottom: 40, marginTop: 20 }]}>
               <RenderForma
-                forma={carga.forma}
+                forma={forma}
                 dimensiones={{
                   largo: carga.largo,
                   ancho: carga.ancho,
@@ -315,15 +243,19 @@ const EditCarga = () => {
               />
             </View>
             <RenderCG forma={forma} />
-
-            <View style={{ marginTop: 20, alignItems: 'center' }}>
+            <View style={[styles.buttonContainer, { right: 40, marginTop: 15 }]}>
+              <Components.Button
+                label="Cancelar"
+                onPress={() => navigation.goBack()}
+                isCancel
+                style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
+              />
               <Components.Button
                 label="Guardar"
                 onPress={handleGuardar}
-                style={{ width: '100%', paddingVertical: 15, top: -15, right: 25 }}
+                style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>
-
             <BS.BSForma
               isVisible={isFormaVisible}
               onClose={() => setIsFormaVisible(false)}

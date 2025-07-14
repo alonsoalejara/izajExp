@@ -6,9 +6,20 @@ import Components from '../components/Components.index';
 
 const EditPlan = () => {
   const navigation = useNavigation();
-  const { planData } = useRoute().params;
+  const route = useRoute();
+  const { planData, updatedCargas, updatedCG } = route.params;
 
   useEffect(() => {
+    // Si vienen datos actualizados desde EditCarga, se actualizan en planData
+    if (updatedCargas) {
+      planData.cargas = updatedCargas;
+      console.log('✅ Cargas actualizadas desde EditCarga:', updatedCargas);
+    }
+    if (updatedCG) {
+      planData.centroGravedad = updatedCG;
+      console.log('✅ Centro de gravedad actualizado desde EditCarga:', updatedCG);
+    }
+
     const payload = {
       nombreProyecto: planData.nombreProyecto || '',
       capataz: planData.capataz?._id || '',
@@ -56,8 +67,9 @@ const EditPlan = () => {
       },
       version: planData.version || 0
     };
-    console.log('Cuerpo de la petición PUT (payload):', JSON.stringify(payload, null, 2));
-  }, [planData]); // Dependencia planData para asegurar que se ejecuta cuando planData está disponible
+
+    console.log('📝 Payload actualizado en EditPlan:', JSON.stringify(payload, null, 2));
+  }, [planData, updatedCargas, updatedCG]);
 
   const goToEditCarga = () => {
     navigation.navigate('EditCarga', { planData: planData });
@@ -72,8 +84,6 @@ const EditPlan = () => {
   };
 
   const handleSaveChanges = () => {
-    // Aquí es donde iría la lógica para enviar la petición PUT real
-    // Por ahora, el console.log ya se muestra al cargar la pantalla.
     alert('Guardar cambios generales del plan.');
   };
 
@@ -84,7 +94,7 @@ const EditPlan = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={handleGoBack}>
           <Icon name="keyboard-arrow-left" size={44} color="#000" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Editar Plan de Izaje</Text>
@@ -113,7 +123,7 @@ const EditPlan = () => {
           label="Volver"
           onPress={handleGoBack}
           isCancel={true}
-          style={[styles.bottomButton, { backgroundColor: 'transparent'}]}
+          style={[styles.bottomButton, { backgroundColor: 'transparent' }]}
         />
         <Components.Button
           label="Guardar cambios"
