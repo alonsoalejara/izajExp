@@ -41,7 +41,8 @@ const SetupAparejos = () => {
   const [errorTipoGrillete, setErrorTipoGrillete] = useState('');
   const [errorTipoAparejo, setErrorTipoAparejo] = useState('');
   const [errorAparejoPorWLL, setErrorAparejoPorWLL] = useState('');
-  const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = '';
+  // CORRECCIÓN: Inicializar setErrorAnguloSeleccionado con useState
+  const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
 
   useEffect(() => {
     if (route.params?.planData) {
@@ -131,7 +132,7 @@ const SetupAparejos = () => {
     setErrorTipoGrillete(errors.tipoGrillete || '');
     setErrorTipoAparejo(errors.tipoAparejo || '');
     setErrorAparejoPorWLL(errors.aparejoPorWLL || '');
-    setErrorAnguloSeleccionado(errors.anguloSeleccionado || '');
+    setErrorAnguloSeleccionado(errors.anguloSeleccionado || ''); // Ahora esto funcionará correctamente
 
     if (Object.keys(errors).length === 0) {
       const setupAparejosData = {
