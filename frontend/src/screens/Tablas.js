@@ -86,6 +86,11 @@ const Tablas = ({ route, navigation }) => {
     capataz: planData?.capataz,
     supervisor: planData?.supervisor,
     jefeArea: planData?.jefeArea,
+    ancho: setupCargaData?.ancho,
+    largo: setupCargaData?.largo,
+    alto: setupCargaData?.alto,
+    diametro: setupCargaData?.diametro,
+    forma: setupCargaData?.forma,
   });
 
   const datosTablaXYZ = [
@@ -162,16 +167,44 @@ const Tablas = ({ route, navigation }) => {
           text: 'Confirmar',
           onPress: async () => {
             try {
-              const aparejos = datosTablaAparejosIndividuales.map(item => ({
-                descripcion: item.descripcionPrincipal.descripcion,
-                cantidad: 1,
-                pesoUnitario: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0),
-                pesoTotal: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) + parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
-                largo: parseFloat(item.detalles.find(d => d.label === 'Largo')?.valor.replace(' m', '') || 0),
-                grillete: item.detalles.find(d => d.label === 'Grillete')?.valor,
-                pesoGrillete: parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
-                tension: item.detalles.find(d => d.label === 'Tensión')?.valor || 'N/A',
-              }));
+              // Obtener la distancia gancho-elemento del datosTablaManiobra
+              const distanciaGanchoElementoItem = datosTablaManiobra.find(
+                item => item.descripcion === 'Distancia gancho-elemento aprox.'
+              );
+              const distanciaGanchoElementoValue = distanciaGanchoElementoItem?.cantidad?.valor;
+
+              // Preparar el valor de altura para el backend
+              let alturaParaBackend = '0'; // Valor por defecto como string numérico
+              if (distanciaGanchoElementoValue !== 'N/A' && distanciaGanchoElementoValue !== undefined && distanciaGanchoElementoValue !== null) {
+                const parsedHeight = parseFloat(distanciaGanchoElementoValue);
+                if (!isNaN(parsedHeight)) {
+                  alturaParaBackend = parsedHeight.toFixed(1); // Formatear a 1 decimal
+                }
+              }
+
+              const aparejos = datosTablaAparejosIndividuales.map(item => {
+                // Preparar el valor de tensión para el backend
+                let tensionParaBackend = '0'; // Valor por defecto como string numérico
+                const tensionValue = item.detalles.find(d => d.label === 'Tensión')?.valor;
+                if (tensionValue !== 'N/A' && tensionValue !== undefined && tensionValue !== null) {
+                  const parsedTension = parseFloat(tensionValue.replace(' ton', ''));
+                  if (!isNaN(parsedTension)) {
+                    tensionParaBackend = parsedTension.toFixed(1); // Formatear a 1 decimal
+                  }
+                }
+
+                return {
+                  descripcion: item.descripcionPrincipal.descripcion,
+                  cantidad: 1,
+                  pesoUnitario: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0),
+                  pesoTotal: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) + parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
+                  largo: parseFloat(item.detalles.find(d => d.label === 'Largo')?.valor.replace(' m', '') || 0),
+                  grillete: item.detalles.find(d => d.label === 'Grillete')?.valor,
+                  pesoGrillete: parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
+                  tension: tensionParaBackend, // Usar el valor preparado
+                  altura: alturaParaBackend, // Usar el valor preparado
+                };
+              });
 
               const datos = {
                 largoPluma:
@@ -259,7 +292,7 @@ const Tablas = ({ route, navigation }) => {
                 if (!planId && data._id) {
                   setPlanId(data._id);
                   if (data.version !== undefined) {
-                      setCurrentVersion(data.version);
+                    setCurrentVersion(data.version);
                   }
                 }
               } else {
