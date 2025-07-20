@@ -12,7 +12,7 @@ const SetupIzajeSection = ({
   currentUser,
   isAdminPanel,
   buttonContainerStyle,
-  onViewPress,
+  onViewPress = () => {},
 }) => {
   const navigation = useNavigation();
   const [selectedSetup, setSelectedSetup] = useState(null);
