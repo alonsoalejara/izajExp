@@ -27,7 +27,7 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
       return (
         <View style={styles.tableHeader}>
           <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Ítem</Text>
-          <Text style={[styles.headerText, { flex: 2, textAlign: 'left' }]}>Descripción</Text>
+          <Text style={[styles.headerText, { flex: 2, textAlign: 'left', left: -30 }]}>Descripción</Text>
           <Text style={[styles.headerText, { flex: 1, right: 10, textAlign: "right" }]}>
             Cantidad
           </Text>
@@ -60,7 +60,7 @@ const Tabla = ({ titulo, data, editable, onChangeMedida }) => {
       return (
         <View key={index} style={styles.row}>
           <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 10 }]}>{index + 1}</Text>
-          <Text style={[styles.cell, { flex: 2, textAlign: 'left' }]}>{item.descripcion}</Text>
+          <Text style={[styles.cell, { flex: 2, textAlign: 'left', left: -30 }]}>{item.descripcion}</Text>
           <Text style={[styles.cell, { flex: 1, right: 10, textAlign: "right" }]}>
             {typeof item.cantidad === 'object' ? `${item.cantidad.valor} ${item.cantidad.unidad}` : item.cantidad}
           </Text>
