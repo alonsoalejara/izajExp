@@ -25,7 +25,8 @@ const setupIzajeSchema = new Schema(
             largo: { type: Number, required: true },
             grillete: { type: String, required: true },
             pesoGrillete: { type: Number, required: true },
-            tension: { type: String, required: true }
+            tension: { type: String, required: true },
+            altura: { type: String, required: true },
         }],
         grua: { type: Schema.Types.ObjectId, ref: 'Grua', required: true },
         datos: {

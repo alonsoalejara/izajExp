@@ -43,6 +43,11 @@ const aparejoSchema = Joi.object({
     "any.required": "La tensión del aparejo es obligatoria.",
     "string.base": "La tensión del aparejo debe ser de tipo string.",
   }),
+  altura: Joi.string().trim().required().messages({
+    "string.empty": "La altura del enganche no puede estar vacía.",
+    "any.required": "La altura del enganche es obligatoria.",
+    "string.base": "La altura del enganche debe ser de tipo string.",
+  }),
 });
 
 const datosSchema = Joi.object({
