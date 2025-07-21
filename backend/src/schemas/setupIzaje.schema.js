@@ -203,7 +203,9 @@ const setupIzajeBodySchema = Joi.object({
     "any.required": "La versión es obligatoria.",
     "number.allowOnly": "La versión solo puede ser 0, 1, 2 o 3.",
   }),
-}).messages({
+})
+.unknown(true)
+.messages({
   "object.unknown": "No se permiten propiedades adicionales.",
 });
 

@@ -8,20 +8,41 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import getApiUrl from '../utils/apiUrl';
 
 const CollabTablas = ({ route }) => {
-  const { setup, currentUser } = route.params;
+  // Asegúrate de que 'setup' siempre esté actualizado. Si el 'setup' se modifica
+  // en otra parte de la app o si esta pantalla se abre con un 'setup' obsoleto,
+  // deberías considerar recargar los datos del setup del backend.
+  // Por ahora, asumimos que 'route.params.setup' es la fuente de verdad inicial.
+  const [currentSetup, setCurrentSetup] = useState(route.params.setup);
   const navigation = useNavigation();
   const [showSmallButtons, setShowSmallButtons] = useState(true);
+
+  // Estas firmas reflejan el estado actual de las firmas en el plan que se muestra
   const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(
-    setup.firmaSupervisor && setup.firmaSupervisor !== 'Firma pendiente' ? setup.firmaSupervisor : null
+    currentSetup.firmaSupervisor && currentSetup.firmaSupervisor !== 'Firma pendiente' ? currentSetup.firmaSupervisor : null
   );
   const [appliedJefeAreaSignature, setAppliedJefeAreaSignature] = useState(
-    setup.firmaJefeArea && setup.firmaJefeArea !== 'Firma pendiente' ? setup.firmaJefeArea : null
+    currentSetup.firmaJefeArea && currentSetup.firmaJefeArea !== 'Firma pendiente' ? currentSetup.firmaJefeArea : null
   );
 
+  // Observa cambios en `route.params.setup` para actualizar el estado local de `currentSetup`
+  // Esto es importante si el `setup` se actualiza a través de `navigation.setParams` en `handleFirmarPlan`
+  useEffect(() => {
+    if (route.params.setup) {
+      setCurrentSetup(route.params.setup);
+      setAppliedSupervisorSignature(route.params.setup.firmaSupervisor && route.params.setup.firmaSupervisor !== 'Firma pendiente' ? route.params.setup.firmaSupervisor : null);
+      setAppliedJefeAreaSignature(route.params.setup.firmaJefeArea && route.params.setup.firmaJefeArea !== 'Firma pendiente' ? route.params.setup.firmaJefeArea : null);
+    }
+  }, [route.params.setup]);
+
+
+  const { currentUser } = route.params; // El usuario que está logueado
   const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
   const userId = currentUser?._id;
-  const supervisorId = setup?.supervisor?._id;
-  const jefeAreaId = setup?.jefeArea?._id;
+
+  // Usa currentSetup para obtener los IDs de los responsables del plan
+  const supervisorId = currentSetup?.supervisor?._id;
+  const jefeAreaId = currentSetup?.jefeArea?._id;
+  const capatazId = currentSetup?.capataz?._id; // Añadido para consistencia si se usa en la interfaz
 
   const getFullName = (person) => {
     if (!person) return 'N/A';
@@ -37,21 +58,22 @@ const CollabTablas = ({ route }) => {
     return 'N/A';
   };
 
+  // Datos para las tablas, ahora usando `currentSetup`
   const datosTablaProyecto = [
-    { item: 1, descripcion: 'Nombre Proyecto', nombre: setup.nombreProyecto || 'N/A' },
-    { item: 2, descripcion: 'Capataz', nombre: getFullName(setup.capataz) },
-    { item: 3, descripcion: 'Supervisor', nombre: getFullName(setup.supervisor) },
-    { item: 4, descripcion: 'Jefe Área', nombre: getFullName(setup.jefeArea) },
+    { item: 1, descripcion: 'Nombre Proyecto', nombre: currentSetup.nombreProyecto || 'N/A' },
+    { item: 2, descripcion: 'Capataz', nombre: getFullName(currentSetup.capataz) },
+    { item: 3, descripcion: 'Supervisor', nombre: getFullName(currentSetup.supervisor) },
+    { item: 4, descripcion: 'Jefe Área', nombre: getFullName(currentSetup.jefeArea) },
   ];
 
   const datosTablaGrua = [
-    { descripcion: 'Grúa', cantidad: setup.grua?.nombre || 'N/A' },
-    { descripcion: 'Largo de pluma', cantidad: setup.datos?.largoPluma || 'N/A' },
-    { descripcion: 'Grado de inclinación', cantidad: setup.datos?.gradoInclinacion || 'N/A' },
-    { descripcion: 'Contrapeso', cantidad: `${setup.datos?.contrapeso || 0} ton` },
+    { descripcion: 'Grúa', cantidad: currentSetup.grua?.nombre || 'N/A' },
+    { descripcion: 'Largo de pluma', cantidad: currentSetup.datos?.largoPluma || 'N/A' },
+    { descripcion: 'Grado de inclinación', cantidad: currentSetup.datos?.gradoInclinacion || 'N/A' },
+    { descripcion: 'Contrapeso', cantidad: `${currentSetup.datos?.contrapeso || 0} ton` },
   ];
 
-  const datosTablaAparejosIndividuales = setup.aparejos?.map((aparejo, index) => ({
+  const datosTablaAparejosIndividuales = currentSetup.aparejos?.map((aparejo, index) => ({
     descripcionPrincipal: {
       item: index + 1,
       descripcion: aparejo.descripcion,
@@ -66,38 +88,38 @@ const CollabTablas = ({ route }) => {
   })) || [];
 
   const datosTablaManiobra = [
-    { descripcion: 'Peso elemento', cantidad: `${setup.cargas?.pesoEquipo || 0} ton` },
-    { descripcion: 'Peso aparejos', cantidad: `${setup.cargas?.pesoAparejos || 0} ton` },
-    { descripcion: 'Peso gancho', cantidad: `${setup.cargas?.pesoGancho || 0} ton` },
-    { descripcion: 'Peso cable', cantidad: `${setup.cargas?.pesoCable || 0} ton` },
-    { descripcion: 'Peso total', cantidad: `${setup.cargas?.pesoTotal || 0} ton` },
-    { descripcion: 'Radio de trabajo máximo', cantidad: `${setup.cargas?.radioTrabajoMax || 0} m` },
-    { descripcion: 'Ángulo de trabajo', cantidad: `${setup.cargas?.anguloTrabajo || 0}` },
-    { descripcion: 'Capacidad de levante', cantidad: `${setup.cargas?.capacidadLevante || 0} ton` },
-    { descripcion: '% Utilización', cantidad: `${setup.cargas?.porcentajeUtilizacion || 0} %` },
+    { descripcion: 'Peso elemento', cantidad: `${currentSetup.cargas?.pesoEquipo || 0} ton` },
+    { descripcion: 'Peso aparejos', cantidad: `${currentSetup.cargas?.pesoAparejos || 0} ton` },
+    { descripcion: 'Peso gancho', cantidad: `${currentSetup.cargas?.pesoGancho || 0} ton` },
+    { descripcion: 'Peso cable', cantidad: `${currentSetup.cargas?.pesoCable || 0} ton` },
+    { descripcion: 'Peso total', cantidad: `${currentSetup.cargas?.pesoTotal || 0} ton` },
+    { descripcion: 'Radio de trabajo máximo', cantidad: `${currentSetup.cargas?.radioTrabajoMax || 0} m` },
+    { descripcion: 'Ángulo de trabajo', cantidad: `${currentSetup.cargas?.anguloTrabajo || 0}` },
+    { descripcion: 'Capacidad de levante', cantidad: `${currentSetup.cargas?.capacidadLevante || 0} ton` },
+    { descripcion: '% Utilización', cantidad: `${currentSetup.cargas?.porcentajeUtilizacion || 0} %` },
   ];
 
   const datosTablaXYZ = [
     {
       item: 1,
       descripcion: 'Medidas',
-      X: `${setup.centroGravedad?.xAncho || 'N/A'} m`,
-      Y: `${setup.centroGravedad?.yLargo || 'N/A'} m`,
-      Z: `${setup.centroGravedad?.zAlto || 'N/A'} m`,
+      X: `${currentSetup.centroGravedad?.xAncho || 'N/A'} m`,
+      Y: `${currentSetup.centroGravedad?.yLargo || 'N/A'} m`,
+      Z: `${currentSetup.centroGravedad?.zAlto || 'N/A'} m`,
     },
     {
       item: 2,
       descripcion: 'CG',
-      X: `${setup.centroGravedad?.xCG || 'N/A'} m`,
-      Y: `${setup.centroGravedad?.yCG || 'N/A'} m`,
-      Z: `${setup.centroGravedad?.zCG || 'N/A'} m`,
+      X: `${currentSetup.centroGravedad?.xCG || 'N/A'} m`,
+      Y: `${currentSetup.centroGravedad?.yCG || 'N/A'} m`,
+      Z: `${currentSetup.centroGravedad?.zCG || 'N/A'} m`,
     },
     {
       item: 3,
       descripcion: 'Posic. Relativa',
-      X: `${setup.centroGravedad?.xPR || 'N/A'} %`,
-      Y: `${setup.centroGravedad?.yPR || 'N/A'} %`,
-      Z: `${setup.centroGravedad?.zPR || 'N/A'} %`,
+      X: `${currentSetup.centroGravedad?.xPR || 'N/A'} %`,
+      Y: `${currentSetup.centroGravedad?.yPR || 'N/A'} %`,
+      Z: `${currentSetup.centroGravedad?.zPR || 'N/A'} %`,
     },
   ];
 
@@ -109,6 +131,7 @@ const CollabTablas = ({ route }) => {
       return;
     }
 
+    // Usar los estados de firma aplicados para verificar si ya se firmó en esta sesión
     const isSupervisorSigned = appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente';
     const isJefeAreaSigned = appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente';
 
@@ -131,20 +154,38 @@ const CollabTablas = ({ route }) => {
           onPress: async () => {
             setShowSmallButtons(false);
 
-            // Crear una copia profunda del setup para evitar mutaciones directas
-            const payload = JSON.parse(JSON.stringify(setup));
+            // Crear una copia **profunda** del objeto setup actual para no mutar el estado directamente
+            // y para asegurar que todos los datos estén presentes.
+            const payload = JSON.parse(JSON.stringify(currentSetup));
 
-            // Asegurarse de que los IDs referenciados sean solo los IDs y no objetos completos
-            payload.capataz = setup.capataz?._id;
-            payload.supervisor = setup.supervisor?._id;
-            payload.jefeArea = setup.jefeArea?._id;
-            payload.grua = setup.grua?._id;
-            payload.aparejos = setup.aparejos?.map(aparejo => {
-                const { _id, ...rest } = aparejo;
+            // Convertir objetos anidados a solo sus _id si tu backend espera solo _id
+            // Esto es crucial para campos `Schema.Types.ObjectId`
+            if (payload.capataz && typeof payload.capataz === 'object') {
+              payload.capataz = payload.capataz._id;
+            }
+            if (payload.supervisor && typeof payload.supervisor === 'object') {
+              payload.supervisor = payload.supervisor._id;
+            }
+            if (payload.jefeArea && typeof payload.jefeArea === 'object') {
+              payload.jefeArea = payload.jefeArea._id;
+            }
+            if (payload.grua && typeof payload.grua === 'object') {
+              payload.grua = payload.grua._id;
+            }
+            
+            // Si tu esquema de `aparejos` no tiene `_id` o espera que se elimine para actualizaciones,
+            // asegúrate de limpiar los `_id` de los objetos `aparejo`.
+            // Revisa si tu backend espera el `_id` para actualizar o simplemente los ignora.
+            // Dada la "propiedades adicionales" de antes, es más seguro limpiar `_id` de subdocumentos si no son requeridos.
+            if (Array.isArray(payload.aparejos)) {
+              payload.aparejos = payload.aparejos.map(aparejo => {
+                const { _id, ...rest } = aparejo; // Extrae _id y deja el resto
                 return rest;
-            }) || [];
+              });
+            }
 
 
+            // **APLICAR LA FIRMA AL PAYLOAD COPIADO**
             if (userRole === 'supervisor' && userId === supervisorId) {
                 payload.firmaSupervisor = signatureToUse;
             } else if ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId) {
@@ -163,14 +204,14 @@ const CollabTablas = ({ route }) => {
                     return;
                 }
 
-                const apiUrl = getApiUrl(`setupIzaje/${setup._id}`);
+                const apiUrl = getApiUrl(`setupIzaje/${currentSetup._id}`); // Usa currentSetup._id
                 const response = await fetch(apiUrl, {
-                    method: 'PUT',
+                    method: 'PUT', // Tu backend espera PUT con el cuerpo completo
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${accessToken}`,
                     },
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify(payload), // <-- Envía el payload COMPLETO con la firma actualizada
                 });
 
                 if (!response.ok) {
@@ -191,10 +232,10 @@ const CollabTablas = ({ route }) => {
 
                 Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
 
+                // Actualizar el estado local y los parámetros de la ruta con el setup completo actualizado
                 if (data && data.updatedSetupIzaje) {
-                    setAppliedSupervisorSignature(data.updatedSetupIzaje.firmaSupervisor);
-                    setAppliedJefeAreaSignature(data.updatedSetupIzaje.firmaJefeArea);
-                    navigation.setParams({ setup: data.updatedSetupIzaje });
+                    setCurrentSetup(data.updatedSetupIzaje); // Actualiza el estado local
+                    navigation.setParams({ setup: data.updatedSetupIzaje }); // Actualiza los params de la ruta
                 }
                 setShowSmallButtons(true);
             } catch (error) {
@@ -214,7 +255,7 @@ const CollabTablas = ({ route }) => {
   const canSign = (userRole === 'supervisor' && userId === supervisorId) ||
                   ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId);
   
-  const isCapataz = userRole === 'capataz' && userId === setup.capataz?._id;
+  const isCapataz = userRole === 'capataz' && userId === capatazId; // Usa capatazId
 
   return (
     <View style={[TablasStyles.container, { backgroundColor: '#fff' }]}>
