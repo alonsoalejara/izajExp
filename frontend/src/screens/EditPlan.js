@@ -9,7 +9,6 @@ import Components from '../components/Components.index';
 const EditPlan = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  // Se inicializa initialPlanData aquí para que sea accesible en todo el componente
   const initialPlanData = route.params?.planData || {};
 
   const [editablePlan, setEditablePlan] = useState(() => {
@@ -18,8 +17,8 @@ const EditPlan = () => {
       capataz: initialPlanData.capataz?._id || '',
       supervisor: initialPlanData.supervisor?._id || '',
       jefeArea: initialPlanData.jefeArea?._id || '',
-      firmaSupervisor: initialPlanData.firmaSupervisor || 'Firma pendiente', // Se mantiene para el payload
-      firmaJefeArea: initialPlanData.firmaJefeArea || 'Firma pendiente',     // Se mantiene para el payload
+      firmaSupervisor: initialPlanData.firmaSupervisor || 'Firma pendiente',
+      firmaJefeArea: initialPlanData.firmaJefeArea || 'Firma pendiente',
       aparejos: initialPlanData.aparejos?.map(ap => ({
         descripcion: ap.descripcion || '',
         cantidad: ap.cantidad || 0,
@@ -64,7 +63,6 @@ const EditPlan = () => {
     };
   });
 
-  // Función auxiliar para obtener el nombre completo de una persona
   const getFullName = (person) => {
     if (!person) return 'No asignado';
     const tieneNombre = person.nombre && person.nombre.trim() !== '';
@@ -159,8 +157,6 @@ const EditPlan = () => {
         const { _id, ...rest } = aparejo;
         return rest;
       }),
-      // Las firmas se envían tal como están en editablePlan,
-      // incluso si no se editan directamente en esta pantalla.
     };
 
     const { _id, ...finalPayload } = payload;
@@ -214,7 +210,7 @@ const EditPlan = () => {
         <Text style={styles.sectionTitle}>Proyecto</Text>
         {/* Nombre del Proyecto ahora no editable */}
         <Text style={styles.labelAdjusted}>
-          Nombre del Proyecto: <Text style={styles.normalFontWeight}>{initialPlanData.nombreProyecto || 'Sin nombre'}</Text>
+          Nombre: <Text style={styles.normalFontWeight}>{initialPlanData.nombreProyecto || 'Sin nombre'}</Text>
         </Text>
 
         <Text style={styles.sectionTitle}>Responsables</Text>
@@ -292,7 +288,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 23,
     fontWeight: 'bold',
-    marginLeft: 32,
+    left: 70,
   },
   formContainer: {
     flex: 1,
@@ -306,7 +302,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: '#333',
   },
-  // Estilo para la etiqueta con tamaño de fuente ajustado (para "Capataz:", "Supervisor:", "Jefe de Área:", "Nombre del Proyecto:", "Versión:")
   labelAdjusted: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -314,7 +309,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: '#333',
   },
-  // Estilo para el nombre con grosor de fuente normal
   normalFontWeight: {
     fontWeight: 'normal',
   },
