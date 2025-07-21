@@ -9,16 +9,18 @@ import Components from '../components/Components.index';
 const EditPlan = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  // Se inicializa initialPlanData aquí para que sea accesible en todo el componente
+  const initialPlanData = route.params?.planData || {};
+
   const [editablePlan, setEditablePlan] = useState(() => {
-    const initialPlan = route.params?.planData || {};
     return {
-      nombreProyecto: initialPlan.nombreProyecto || '',
-      capataz: initialPlan.capataz?._id || '',
-      supervisor: initialPlan.supervisor?._id || '',
-      jefeArea: initialPlan.jefeArea?._id || '',
-      firmaSupervisor: initialPlan.firmaSupervisor || 'Firma pendiente',
-      firmaJefeArea: initialPlan.firmaJefeArea || 'Firma pendiente',
-      aparejos: initialPlan.aparejos?.map(ap => ({
+      nombreProyecto: initialPlanData.nombreProyecto || '',
+      capataz: initialPlanData.capataz?._id || '',
+      supervisor: initialPlanData.supervisor?._id || '',
+      jefeArea: initialPlanData.jefeArea?._id || '',
+      firmaSupervisor: initialPlanData.firmaSupervisor || 'Firma pendiente', // Se mantiene para el payload
+      firmaJefeArea: initialPlanData.firmaJefeArea || 'Firma pendiente',     // Se mantiene para el payload
+      aparejos: initialPlanData.aparejos?.map(ap => ({
         descripcion: ap.descripcion || '',
         cantidad: ap.cantidad || 0,
         pesoUnitario: ap.pesoUnitario || 0,
@@ -29,38 +31,53 @@ const EditPlan = () => {
         tension: ap.tension || '',
         altura: ap.altura || '',
       })) || [],
-      grua: initialPlan.grua?._id || '',
+      grua: initialPlanData.grua?._id || '',
       datos: {
-        largoPluma: initialPlan.datos?.largoPluma || 0,
-        contrapeso: initialPlan.datos?.contrapeso || 0,
-        gradoInclinacion: initialPlan.datos?.gradoInclinacion || ''
+        largoPluma: initialPlanData.datos?.largoPluma || 0,
+        contrapeso: initialPlanData.datos?.contrapeso || 0,
+        gradoInclinacion: initialPlanData.datos?.gradoInclinacion || ''
       },
       cargas: {
-        pesoEquipo: initialPlan.cargas?.pesoEquipo || 0,
-        pesoAparejos: initialPlan.cargas?.pesoAparejos || 0,
-        pesoGancho: initialPlan.cargas?.pesoGancho || 0,
-        pesoCable: initialPlan.cargas?.pesoCable || 0,
-        pesoTotal: initialPlan.cargas?.pesoTotal || 0,
-        radioTrabajoMax: initialPlan.cargas?.radioTrabajoMax || 0,
-        anguloTrabajo: initialPlan.cargas?.anguloTrabajo || '',
-        capacidadLevante: initialPlan.cargas?.capacidadLevante || 0,
-        porcentajeUtilizacion: initialPlan.cargas?.porcentajeUtilizacion || 0
+        pesoEquipo: initialPlanData.cargas?.pesoEquipo || 0,
+        pesoAparejos: initialPlanData.cargas?.pesoAparejos || 0,
+        pesoGancho: initialPlanData.cargas?.pesoGancho || 0,
+        pesoCable: initialPlanData.cargas?.pesoCable || 0,
+        pesoTotal: initialPlanData.cargas?.pesoTotal || 0,
+        radioTrabajoMax: initialPlanData.cargas?.radioTrabajoMax || 0,
+        anguloTrabajo: initialPlanData.cargas?.anguloTrabajo || '',
+        capacidadLevante: initialPlanData.cargas?.capacidadLevante || 0,
+        porcentajeUtilizacion: initialPlanData.cargas?.porcentajeUtilizacion || 0
       },
       centroGravedad: {
-        xAncho: initialPlan.centroGravedad?.xAncho || 0,
-        yLargo: initialPlan.centroGravedad?.yLargo || 0,
-        zAlto: initialPlan.centroGravedad?.zAlto || 0,
-        xCG: initialPlan.centroGravedad?.xCG || 0,
-        yCG: initialPlan.centroGravedad?.yCG || 0,
-        zCG: initialPlan.centroGravedad?.zCG || 0,
-        xPR: initialPlan.centroGravedad?.xPR || 0,
-        yPR: initialPlan.centroGravedad?.yPR || 0,
-        zPR: initialPlan.centroGravedad?.zPR || 0
+        xAncho: initialPlanData.centroGravedad?.xAncho || 0,
+        yLargo: initialPlanData.centroGravedad?.yLargo || 0,
+        zAlto: initialPlanData.centroGravedad?.zAlto || 0,
+        xCG: initialPlanData.centroGravedad?.xCG || 0,
+        yCG: initialPlanData.centroGravedad?.yCG || 0,
+        zCG: initialPlanData.centroGravedad?.zCG || 0,
+        xPR: initialPlanData.centroGravedad?.xPR || 0,
+        yPR: initialPlanData.centroGravedad?.yPR || 0,
+        zPR: initialPlanData.centroGravedad?.zPR || 0
       },
-      version: initialPlan.version || 0,
-      _id: initialPlan._id || null,
+      version: initialPlanData.version || 0,
+      _id: initialPlanData._id || null,
     };
   });
+
+  // Función auxiliar para obtener el nombre completo de una persona
+  const getFullName = (person) => {
+    if (!person) return 'No asignado';
+    const tieneNombre = person.nombre && person.nombre.trim() !== '';
+    const tieneApellido = person.apellido && person.apellido.trim() !== '';
+
+    if (tieneNombre && tieneApellido) {
+      return `${person.nombre} ${person.apellido}`;
+    }
+    if (person.username && person.username.trim() !== '') {
+      return person.username;
+    }
+    return 'No asignado';
+  };
 
   const handleSaveAparejos = (updatedAparejos) => {
     setEditablePlan(prevPlan => ({
@@ -84,11 +101,6 @@ const EditPlan = () => {
       centroGravedad: updatedCG
     }));
   };
-
-  useEffect(() => {
-    // Los listeners de updatedCargas y updatedCG ya no son necesarios aquí
-    // porque ahora se manejan con el callback handleSaveCargasAndCG
-  }, []);
 
   const handleChange = (field, value, subField = null) => {
     setEditablePlan(prevPlan => {
@@ -147,6 +159,8 @@ const EditPlan = () => {
         const { _id, ...rest } = aparejo;
         return rest;
       }),
+      // Las firmas se envían tal como están en editablePlan,
+      // incluso si no se editan directamente en esta pantalla.
     };
 
     const { _id, ...finalPayload } = payload;
@@ -197,54 +211,51 @@ const EditPlan = () => {
       </View>
 
       <ScrollView style={styles.formContainer}>
-        <Text style={styles.label}>Nombre del Proyecto:</Text>
-        <TextInput
-          style={styles.input}
-          value={editablePlan.nombreProyecto}
-          onChangeText={(text) => handleChange('nombreProyecto', text)}
-          placeholder="Nombre del Proyecto"
-        />
+        <Text style={styles.sectionTitle}>Proyecto</Text>
+        {/* Nombre del Proyecto ahora no editable */}
+        <Text style={styles.labelAdjusted}>
+          Nombre del Proyecto: <Text style={styles.normalFontWeight}>{initialPlanData.nombreProyecto || 'Sin nombre'}</Text>
+        </Text>
 
-        <Components.Button
-          label="Editar Grúa"
-          onPress={goToEditGrua}
-          style={styles.actionButton}
-        />
-
-        <Components.Button
-          label="Editar Cargas y CG"
-          onPress={goToEditCarga}
-          style={styles.actionButton}
-        />
-
-        <Components.Button
-          label="Editar Aparejos"
-          onPress={goToEditAparejos}
-          style={styles.actionButton}
-        />
+        <Text style={styles.sectionTitle}>Responsables</Text>
+        {/* Muestra el nombre del Capataz */}
+        <Text style={styles.labelAdjusted}>
+          Capataz: <Text style={styles.normalFontWeight}>{getFullName(initialPlanData.capataz)}</Text>
+        </Text>
+        {/* Muestra el nombre del Supervisor con el estilo ajustado */}
+        <Text style={styles.labelAdjusted}>
+          Supervisor: <Text style={styles.normalFontWeight}>{getFullName(initialPlanData.supervisor)}</Text>
+        </Text>
+        {/* Muestra el nombre del Jefe de Área con el estilo ajustado */}
+        <Text style={styles.labelAdjusted}>
+          Jefe de Área: <Text style={styles.normalFontWeight}>{getFullName(initialPlanData.jefeArea)}</Text>
+        </Text>
 
         <Text style={styles.sectionTitle}>Versión</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.version)}
-          onChangeText={(text) => handleChange('version', parseInt(text) || 0)}
-          keyboardType="numeric"
-          placeholder="Versión (0, 1, 2, 3)"
-        />
+        {/* Versión del Proyecto ahora no editable */}
+        <Text style={styles.labelAdjusted}>
+          Versión: <Text style={styles.normalFontWeight}>{String(editablePlan.version)}</Text>
+        </Text>
 
-        <Text style={styles.sectionTitle}>Firmas</Text>
-        <Text style={styles.label}>Firma Supervisor:</Text>
-        <TextInput
-          style={[styles.input, styles.readOnlyInput]}
-          value={editablePlan.firmaSupervisor || 'No firmada'}
-          editable={false}
-        />
-        <Text style={styles.label}>Firma Jefe de Área:</Text>
-        <TextInput
-          style={[styles.input, styles.readOnlyInput]}
-          value={editablePlan.firmaJefeArea || 'No firmada'}
-          editable={false}
-        />
+        <View style={styles.actionButtonsContainer}>
+          <Components.Button
+            label="Editar Grúa"
+            onPress={goToEditGrua}
+            style={styles.actionButton}
+          />
+
+          <Components.Button
+            label="Editar Cargas y CG"
+            onPress={goToEditCarga}
+            style={styles.actionButton}
+          />
+
+          <Components.Button
+            label="Editar Aparejos"
+            onPress={goToEditAparejos}
+            style={styles.actionButton}
+          />
+        </View>
 
         <View style={{ height: 100 }} />
       </ScrollView>
@@ -254,12 +265,12 @@ const EditPlan = () => {
           label="Volver"
           onPress={handleGoBack}
           isCancel={true}
-          style={[styles.bottomButton, { backgroundColor: 'transparent' }]}
+          style={[styles.bottomButton, { backgroundColor: 'transparent', right: 50 }]}
         />
         <Components.Button
           label="Guardar cambios"
           onPress={handleSaveChanges}
-          style={styles.bottomButton}
+          style={[styles.bottomButton, { right: 120 }]}
         />
       </View>
     </View>
@@ -295,6 +306,18 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: '#333',
   },
+  // Estilo para la etiqueta con tamaño de fuente ajustado (para "Capataz:", "Supervisor:", "Jefe de Área:", "Nombre del Proyecto:", "Versión:")
+  labelAdjusted: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 15,
+    marginBottom: 5,
+    color: '#333',
+  },
+  // Estilo para el nombre con grosor de fuente normal
+  normalFontWeight: {
+    fontWeight: 'normal',
+  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -312,7 +335,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 30,
     marginBottom: 10,
-    color: '#990000',
+    color: '#ee0000',
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
     paddingBottom: 5,
@@ -331,33 +354,24 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#555',
   },
+  actionButtonsContainer: {
+    marginTop: 30,
+    marginBottom: 20,
+    alignItems: 'center',
+    width: '116%',
+    left: -52,
+  },
   actionButton: {
-    marginTop: 20,
     marginBottom: 10,
     alignSelf: 'center',
     width: '90%',
-    backgroundColor: '#990000',
-  },
-  addAparejoButton: {
-    marginTop: 20,
-    marginBottom: 30,
-    backgroundColor: '#007bff',
-    alignSelf: 'center',
-    width: '80%',
-  },
-  removeAparejoButton: {
-    marginTop: 15,
-    backgroundColor: '#dc3545',
-    alignSelf: 'center',
-    width: '80%',
+    backgroundColor: '#ee0000',
   },
   bottomButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingHorizontal: 10,
+    paddingHorizontal: 0,
     paddingVertical: 15,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
     backgroundColor: '#fff',
     position: 'absolute',
     bottom: 0,
