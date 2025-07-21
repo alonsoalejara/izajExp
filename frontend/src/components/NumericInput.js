@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#333',
     flex: 0,
-    paddingHorizontal: 15,
+    paddingRight: 20,
     textAlignVertical: 'center',
   },
 

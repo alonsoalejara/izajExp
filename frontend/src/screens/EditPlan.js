@@ -235,19 +235,19 @@ const EditPlan = () => {
 
         <View style={styles.actionButtonsContainer}>
           <Components.Button
-            label="Editar Grúa"
+            label="Editar desde Carga"
+            onPress={goToEditCarga}
+            style={styles.actionButton}
+          />
+          
+          <Components.Button
+            label="Editar desde Grúa"
             onPress={goToEditGrua}
             style={styles.actionButton}
           />
 
           <Components.Button
-            label="Editar Cargas y CG"
-            onPress={goToEditCarga}
-            style={styles.actionButton}
-          />
-
-          <Components.Button
-            label="Editar Aparejos"
+            label="Editar solo Aparejos"
             onPress={goToEditAparejos}
             style={styles.actionButton}
           />
