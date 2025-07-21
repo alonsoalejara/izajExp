@@ -29,7 +29,7 @@ const EditPlan = () => {
         tension: ap.tension || '',
         altura: ap.altura || '',
       })) || [],
-      grua: initialPlan.grua?._id || '',
+      grua: initialPlan.grua?._id || '', // Solo el ID de la grúa
       datos: {
         largoPluma: initialPlan.datos?.largoPluma || 0,
         contrapeso: initialPlan.datos?.contrapeso || 0,
@@ -62,11 +62,18 @@ const EditPlan = () => {
     };
   });
 
-  // Callback para recibir los aparejos actualizados desde EditAparejos.js
   const handleSaveAparejos = (updatedAparejos) => {
     setEditablePlan(prevPlan => ({
       ...prevPlan,
       aparejos: updatedAparejos
+    }));
+  };
+
+  const handleSaveGruaAndDatos = (updatedGruaId, updatedDatos) => {
+    setEditablePlan(prevPlan => ({
+      ...prevPlan,
+      grua: updatedGruaId,
+      datos: updatedDatos
     }));
   };
 
@@ -85,7 +92,6 @@ const EditPlan = () => {
       }));
       navigation.setParams({ updatedCG: undefined });
     }
-    // Ya no necesitamos el listener para updatedAparejos aquí, lo manejamos con el callback
   }, [route.params?.updatedCargas, route.params?.updatedCG]);
 
   const handleChange = (field, value, subField = null) => {
@@ -109,14 +115,17 @@ const EditPlan = () => {
   };
 
   const goToEditGrua = () => {
-    navigation.navigate('EditGrua', { planData: editablePlan });
+    navigation.navigate('EditGrua', {
+      gruaId: editablePlan.grua, // Pasamos solo el ID de la grúa
+      datos: editablePlan.datos, // Pasamos el objeto de datos de la grúa
+      onSaveGruaAndDatos: handleSaveGruaAndDatos // Pasamos el callback
+    });
   };
 
   const goToEditAparejos = () => {
-    // Pasamos el array de aparejos actual y la función de callback
-    navigation.navigate('EditAparejos', { 
+    navigation.navigate('EditAparejos', {
       aparejos: editablePlan.aparejos,
-      onSaveAparejos: handleSaveAparejos // <-- Pasamos el callback
+      onSaveAparejos: handleSaveAparejos
     });
   };
 
@@ -170,7 +179,7 @@ const EditPlan = () => {
 
       const result = await response.json();
       Alert.alert("Éxito", "Plan de izaje actualizado correctamente.");
-      navigation.goBack(); 
+      navigation.goBack();
 
     } catch (error) {
       console.error("Error al guardar cambios:", error);
@@ -200,31 +209,13 @@ const EditPlan = () => {
           placeholder="Nombre del Proyecto"
         />
 
-        <Text style={styles.sectionTitle}>Datos de la Grúa</Text>
-        <Text style={styles.label}>Largo de Pluma (m):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.datos.largoPluma)}
-          onChangeText={(text) => handleChange('datos', parseFloat(text) || 0, 'largoPluma')}
-          keyboardType="numeric"
-          placeholder="Largo de Pluma"
-        />
-        <Text style={styles.label}>Contrapeso (ton):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.datos.contrapeso)}
-          onChangeText={(text) => handleChange('datos', parseFloat(text) || 0, 'contrapeso')}
-          keyboardType="numeric"
-          placeholder="Contrapeso"
-        />
-        <Text style={styles.label}>Grado de Inclinación:</Text>
-        <TextInput
-          style={styles.input}
-          value={editablePlan.datos.gradoInclinacion}
-          onChangeText={(text) => handleChange('datos', text, 'gradoInclinacion')}
-          placeholder="Grado de Inclinación"
+        <Components.Button
+          label="Editar Grúa"
+          onPress={goToEditGrua}
+          style={styles.actionButton}
         />
 
+        {/* Los datos de la grúa ahora se editan en EditGrua.js */}
         <Text style={styles.sectionTitle}>Cargas</Text>
         <Text style={styles.label}>Peso Equipo (ton):</Text>
         <TextInput
