@@ -29,7 +29,7 @@ const EditPlan = () => {
         tension: ap.tension || '',
         altura: ap.altura || '',
       })) || [],
-      grua: initialPlan.grua?._id || '', // Solo el ID de la grúa
+      grua: initialPlan.grua?._id || '',
       datos: {
         largoPluma: initialPlan.datos?.largoPluma || 0,
         contrapeso: initialPlan.datos?.contrapeso || 0,
@@ -77,22 +77,18 @@ const EditPlan = () => {
     }));
   };
 
+  const handleSaveCargasAndCG = (updatedCargas, updatedCG) => {
+    setEditablePlan(prevPlan => ({
+      ...prevPlan,
+      cargas: updatedCargas,
+      centroGravedad: updatedCG
+    }));
+  };
+
   useEffect(() => {
-    if (route.params?.updatedCargas) {
-      setEditablePlan(prevPlan => ({
-        ...prevPlan,
-        cargas: route.params.updatedCargas
-      }));
-      navigation.setParams({ updatedCargas: undefined });
-    }
-    if (route.params?.updatedCG) {
-      setEditablePlan(prevPlan => ({
-        ...prevPlan,
-        centroGravedad: route.params.updatedCG
-      }));
-      navigation.setParams({ updatedCG: undefined });
-    }
-  }, [route.params?.updatedCargas, route.params?.updatedCG]);
+    // Los listeners de updatedCargas y updatedCG ya no son necesarios aquí
+    // porque ahora se manejan con el callback handleSaveCargasAndCG
+  }, []);
 
   const handleChange = (field, value, subField = null) => {
     setEditablePlan(prevPlan => {
@@ -111,14 +107,18 @@ const EditPlan = () => {
   };
 
   const goToEditCarga = () => {
-    navigation.navigate('EditCarga', { planData: editablePlan });
+    navigation.navigate('EditCarga', {
+      cargas: editablePlan.cargas,
+      centroGravedad: editablePlan.centroGravedad,
+      onSaveCargasAndCG: handleSaveCargasAndCG
+    });
   };
 
   const goToEditGrua = () => {
     navigation.navigate('EditGrua', {
-      gruaId: editablePlan.grua, // Pasamos solo el ID de la grúa
-      datos: editablePlan.datos, // Pasamos el objeto de datos de la grúa
-      onSaveGruaAndDatos: handleSaveGruaAndDatos // Pasamos el callback
+      gruaId: editablePlan.grua,
+      datos: editablePlan.datos,
+      onSaveGruaAndDatos: handleSaveGruaAndDatos
     });
   };
 
@@ -143,10 +143,6 @@ const EditPlan = () => {
 
     const payload = {
       ...editablePlan,
-      capataz: editablePlan.capataz,
-      supervisor: editablePlan.supervisor,
-      jefeArea: editablePlan.jefeArea,
-      grua: editablePlan.grua,
       aparejos: editablePlan.aparejos.map(aparejo => {
         const { _id, ...rest } = aparejo;
         return rest;
@@ -215,152 +211,10 @@ const EditPlan = () => {
           style={styles.actionButton}
         />
 
-        {/* Los datos de la grúa ahora se editan en EditGrua.js */}
-        <Text style={styles.sectionTitle}>Cargas</Text>
-        <Text style={styles.label}>Peso Equipo (ton):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.cargas.pesoEquipo)}
-          onChangeText={(text) => handleChange('cargas', parseFloat(text) || 0, 'pesoEquipo')}
-          keyboardType="numeric"
-          placeholder="Peso del Equipo"
-        />
-        <Text style={styles.label}>Peso Aparejos (ton):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.cargas.pesoAparejos)}
-          onChangeText={(text) => handleChange('cargas', parseFloat(text) || 0, 'pesoAparejos')}
-          keyboardType="numeric"
-          placeholder="Peso de Aparejos"
-        />
-        <Text style={styles.label}>Peso Gancho (ton):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.cargas.pesoGancho)}
-          onChangeText={(text) => handleChange('cargas', parseFloat(text) || 0, 'pesoGancho')}
-          keyboardType="numeric"
-          placeholder="Peso del Gancho"
-        />
-        <Text style={styles.label}>Peso Cable (ton):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.cargas.pesoCable)}
-          onChangeText={(text) => handleChange('cargas', parseFloat(text) || 0, 'pesoCable')}
-          keyboardType="numeric"
-          placeholder="Peso del Cable"
-        />
-        <Text style={styles.label}>Peso Total (ton):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.cargas.pesoTotal)}
-          onChangeText={(text) => handleChange('cargas', parseFloat(text) || 0, 'pesoTotal')}
-          keyboardType="numeric"
-          placeholder="Peso Total"
-        />
-        <Text style={styles.label}>Radio de Trabajo Máximo (m):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.cargas.radioTrabajoMax)}
-          onChangeText={(text) => handleChange('cargas', parseFloat(text) || 0, 'radioTrabajoMax')}
-          keyboardType="numeric"
-          placeholder="Radio de Trabajo Máximo"
-        />
-        <Text style={styles.label}>Ángulo de Trabajo:</Text>
-        <TextInput
-          style={styles.input}
-          value={editablePlan.cargas.anguloTrabajo}
-          onChangeText={(text) => handleChange('cargas', text, 'anguloTrabajo')}
-          placeholder="Ángulo de Trabajo"
-        />
-        <Text style={styles.label}>Capacidad de Levante (ton):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.cargas.capacidadLevante)}
-          onChangeText={(text) => handleChange('cargas', parseFloat(text) || 0, 'capacidadLevante')}
-          keyboardType="numeric"
-          placeholder="Capacidad de Levante"
-        />
-        <Text style={styles.label}>% Utilización:</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.cargas.porcentajeUtilizacion)}
-          onChangeText={(text) => handleChange('cargas', parseFloat(text) || 0, 'porcentajeUtilizacion')}
-          keyboardType="numeric"
-          placeholder="% Utilización"
-        />
-
-        <Text style={styles.sectionTitle}>Centro de Gravedad</Text>
-        <Text style={styles.label}>X Ancho (m):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.centroGravedad.xAncho)}
-          onChangeText={(text) => handleChange('centroGravedad', parseFloat(text) || 0, 'xAncho')}
-          keyboardType="numeric"
-          placeholder="X Ancho"
-        />
-        <Text style={styles.label}>Y Largo (m):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.centroGravedad.yLargo)}
-          onChangeText={(text) => handleChange('centroGravedad', parseFloat(text) || 0, 'yLargo')}
-          keyboardType="numeric"
-          placeholder="Y Largo"
-        />
-        <Text style={styles.label}>Z Alto (m):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.centroGravedad.zAlto)}
-          onChangeText={(text) => handleChange('centroGravedad', parseFloat(text) || 0, 'zAlto')}
-          keyboardType="numeric"
-          placeholder="Z Alto"
-        />
-        <Text style={styles.label}>X CG (m):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.centroGravedad.xCG)}
-          onChangeText={(text) => handleChange('centroGravedad', parseFloat(text) || 0, 'xCG')}
-          keyboardType="numeric"
-          placeholder="X CG"
-        />
-        <Text style={styles.label}>Y CG (m):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.centroGravedad.yCG)}
-          onChangeText={(text) => handleChange('centroGravedad', parseFloat(text) || 0, 'yCG')}
-          keyboardType="numeric"
-          placeholder="Y CG"
-        />
-        <Text style={styles.label}>Z CG (m):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.centroGravedad.zCG)}
-          onChangeText={(text) => handleChange('centroGravedad', parseFloat(text) || 0, 'zCG')}
-          keyboardType="numeric"
-          placeholder="Z CG"
-        />
-        <Text style={styles.label}>X PR (%):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.centroGravedad.xPR)}
-          onChangeText={(text) => handleChange('centroGravedad', parseFloat(text) || 0, 'xPR')}
-          keyboardType="numeric"
-          placeholder="X PR"
-        />
-        <Text style={styles.label}>Y PR (%):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.centroGravedad.yPR)}
-          onChangeText={(text) => handleChange('centroGravedad', parseFloat(text) || 0, 'yPR')}
-          keyboardType="numeric"
-          placeholder="Y PR"
-        />
-        <Text style={styles.label}>Z PR (%):</Text>
-        <TextInput
-          style={styles.input}
-          value={String(editablePlan.centroGravedad.zPR)}
-          onChangeText={(text) => handleChange('centroGravedad', parseFloat(text) || 0, 'zPR')}
-          keyboardType="numeric"
-          placeholder="Z PR"
+        <Components.Button
+          label="Editar Cargas y CG"
+          onPress={goToEditCarga}
+          style={styles.actionButton}
         />
 
         <Components.Button
