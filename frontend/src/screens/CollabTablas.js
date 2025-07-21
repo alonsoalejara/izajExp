@@ -8,17 +8,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import getApiUrl from '../utils/apiUrl';
 
 const CollabTablas = ({ route }) => {
-  const { setup, currentUserSignature, currentUser } = route.params;
+  const { setup, currentUser } = route.params;
   const navigation = useNavigation();
   const [showSmallButtons, setShowSmallButtons] = useState(true);
-  const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(null);
-  const [appliedJefeAreaSignature, setAppliedJefeAreaSignature] = useState(null);
+  const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(
+    setup.firmaSupervisor && setup.firmaSupervisor !== 'Firma pendiente' ? setup.firmaSupervisor : null
+  );
+  const [appliedJefeAreaSignature, setAppliedJefeAreaSignature] = useState(
+    setup.firmaJefeArea && setup.firmaJefeArea !== 'Firma pendiente' ? setup.firmaJefeArea : null
+  );
 
-  useEffect(() => {
-    setAppliedSupervisorSignature(setup.firmaSupervisor && setup.firmaSupervisor !== 'Firma pendiente' ? setup.firmaSupervisor : null);
-    setAppliedJefeAreaSignature(setup.firmaJefeArea && setup.firmaJefeArea !== 'Firma pendiente' ? setup.firmaJefeArea : null);
-  }, [setup.firmaSupervisor, setup.firmaJefeArea]);
-
+  const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
+  const userId = currentUser?._id;
+  const supervisorId = setup?.supervisor?._id;
+  const jefeAreaId = setup?.jefeArea?._id;
 
   const getFullName = (person) => {
     if (!person) return 'N/A';
@@ -99,21 +102,23 @@ const CollabTablas = ({ route }) => {
   ];
 
   const handleFirmarPlan = () => {
-    let signatureToUse = currentUserSignature || currentUser?.signature;
-
-    const userId = currentUser?._id;
-    const supervisorId = setup?.supervisor?._id;
-    const jefeAreaId = setup?.jefeArea?._id;
-
-    if ((userId === supervisorId && appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente') ||
-        (userId === jefeAreaId && appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente')) {
-        Alert.alert("Ya Firmado", "Este rol ya ha aplicado una firma a este plan.");
-        return;
-    }
+    let signatureToUse = currentUser?.signature;
 
     if (!signatureToUse) {
-        Alert.alert("Error de Firma", "No se encontró una firma para el usuario actual. Asegúrate de tener una firma registrada en tu perfil.");
-        return;
+      Alert.alert("Error de Firma", "No se encontró una firma para el usuario actual. Asegúrate de tener una firma registrada en tu perfil.");
+      return;
+    }
+
+    const isSupervisorSigned = appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente';
+    const isJefeAreaSigned = appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente';
+
+    if (userRole === 'supervisor' && userId === supervisorId && isSupervisorSigned) {
+      Alert.alert("Ya Firmado", "El supervisor ya ha aplicado una firma a este plan.");
+      return;
+    }
+    if ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId && isJefeAreaSigned) {
+      Alert.alert("Ya Firmado", "El jefe de área ya ha aplicado una firma a este plan.");
+      return;
     }
 
     Alert.alert(
@@ -126,31 +131,19 @@ const CollabTablas = ({ route }) => {
           onPress: async () => {
             setShowSmallButtons(false);
 
-            const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
-            
-            let updateData = JSON.parse(JSON.stringify(setup)); 
+            // Crear una copia profunda del setup para evitar mutaciones directas
+            const payload = JSON.parse(JSON.stringify(setup));
 
-            const payload = {
-                nombreProyecto: updateData.nombreProyecto,
-                datos: updateData.datos,
-                cargas: updateData.cargas,
-                centroGravedad: updateData.centroGravedad,
-                
-                aparejos: updateData.aparejos.map(aparejo => {
-                    const { _id, ...rest } = aparejo;
-                    return rest;
-                }),
-                
-                capataz: updateData.capataz?._id,
-                supervisor: updateData.supervisor?._id,
-                jefeArea: updateData.jefeArea?._id,
-                grua: updateData.grua?._id,
-                
-                firmaSupervisor: updateData.firmaSupervisor,
-                firmaJefeArea: updateData.firmaJefeArea,
+            // Asegurarse de que los IDs referenciados sean solo los IDs y no objetos completos
+            payload.capataz = setup.capataz?._id;
+            payload.supervisor = setup.supervisor?._id;
+            payload.jefeArea = setup.jefeArea?._id;
+            payload.grua = setup.grua?._id;
+            payload.aparejos = setup.aparejos?.map(aparejo => {
+                const { _id, ...rest } = aparejo;
+                return rest;
+            }) || [];
 
-                version: updateData.version,
-            };
 
             if (userRole === 'supervisor' && userId === supervisorId) {
                 payload.firmaSupervisor = signatureToUse;
@@ -158,6 +151,7 @@ const CollabTablas = ({ route }) => {
                 payload.firmaJefeArea = signatureToUse;
             } else {
                 Alert.alert("Error de Rol", "Tu rol o ID de usuario no coincide con los asignados para firmar este plan.");
+                setShowSmallButtons(true);
                 return;
             }
 
@@ -165,6 +159,7 @@ const CollabTablas = ({ route }) => {
                 const accessToken = await AsyncStorage.getItem('accessToken');
                 if (!accessToken) {
                     Alert.alert('Error de Autenticación', 'No autorizado. Por favor, inicie sesión nuevamente.');
+                    setShowSmallButtons(true);
                     return;
                 }
 
@@ -188,25 +183,23 @@ const CollabTablas = ({ route }) => {
                         errorMessage = `Error del servidor: ${errorResponseText.substring(0, 100)}...`;
                     }
                     Alert.alert('Error al firmar', errorMessage);
+                    setShowSmallButtons(true);
                     return;
                 }
 
                 const data = await response.json();
 
                 Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
-                
-                if (payload.firmaSupervisor) {
-                    setAppliedSupervisorSignature(payload.firmaSupervisor);
-                }
-                if (payload.firmaJefeArea) {
-                    setAppliedJefeAreaSignature(payload.firmaJefeArea);
-                }
-                
+
                 if (data && data.updatedSetupIzaje) {
+                    setAppliedSupervisorSignature(data.updatedSetupIzaje.firmaSupervisor);
+                    setAppliedJefeAreaSignature(data.updatedSetupIzaje.firmaJefeArea);
                     navigation.setParams({ setup: data.updatedSetupIzaje });
                 }
+                setShowSmallButtons(true);
             } catch (error) {
                 Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor para firmar el plan.');
+                setShowSmallButtons(true);
             }
           }
         }
@@ -217,6 +210,11 @@ const CollabTablas = ({ route }) => {
   const handleEnviarPdf = () => {
     Alert.alert("PDF", "Se está enviando el PDF...");
   };
+
+  const canSign = (userRole === 'supervisor' && userId === supervisorId) ||
+                  ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId);
+  
+  const isCapataz = userRole === 'capataz' && userId === setup.capataz?._id;
 
   return (
     <View style={[TablasStyles.container, { backgroundColor: '#fff' }]}>
@@ -355,20 +353,21 @@ const CollabTablas = ({ route }) => {
             </View>
           </View>
         </View>
-
       </ScrollView>
 
-      {showSmallButtons ? (
+      {showSmallButtons && !isCapataz ? (
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '75%', position: 'absolute', bottom: 60, left: '-26' }}>
-          <Components.Button
-            label="Firmar Plan"
-            onPress={handleFirmarPlan}
-            style={{ width: '48%' }}
-          />
+          {canSign && (
+            <Components.Button
+              label="Firmar Plan"
+              onPress={handleFirmarPlan}
+              style={{ width: '48%' }}
+            />
+          )}
           <Components.Button
             label="Enviar PDF"
             onPress={handleEnviarPdf}
-            style={{ width: '48%' }}
+            style={{ width: canSign ? '48%' : '90%' }}
           />
         </View>
       ) : (

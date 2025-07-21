@@ -17,7 +17,6 @@ const Profile = () => {
   const [hasSignature, setHasSignature] = useState(false);
 
   const ROLES_CON_FIRMA = ['supervisor', 'jefe'];
-  const ROLES_BOTON_HOLA_MUNDO = ['supervisor', 'jefe'];
   const CAPATAZ_ROLE = 'capataz';
 
   const extractUserId = (token) => {
@@ -52,8 +51,10 @@ const Profile = () => {
         if (json?.data) {
           setSetups(json.data);
         } else {
+          // Manejo si json.data no está presente o está vacío
         }
       } catch (e) {
+        // Manejo de errores de fetch
       }
     }
     fetchSetups();
@@ -88,6 +89,7 @@ const Profile = () => {
           }
         }
       } catch (e) {
+        // Manejo de errores de fetch
       }
     }
     fetchUser();
@@ -203,13 +205,17 @@ const Profile = () => {
       Alert.alert("Espere", "Los datos del usuario aún se están cargando.");
       return;
     }
-    if (!user.signature) {
-      Alert.alert("Sin firma", "No se encontró una firma para el usuario actual.");
+
+    const currentUserRole = user?.roles && user.roles.length > 0 ? user.roles[0].toLowerCase() : '';
+    const rolesNecesitanFirma = ROLES_CON_FIRMA.map(role => role.toLowerCase());
+
+    if (rolesNecesitanFirma.includes(currentUserRole) && !user.signature) {
+      Alert.alert("Sin firma", "No se encontró una firma para el usuario actual. Por favor, registre su firma para ver los planes.");
       return;
     }
+
     navigation.navigate('CollabTablas', {
       setup,
-      currentUserSignature: user.signature,
       currentUser: user,
     });
   };
@@ -217,7 +223,6 @@ const Profile = () => {
   const currentUserRole = user?.roles && user.roles.length > 0 ? user.roles[0] : null;
   const userRoleLowerCase = currentUserRole ? currentUserRole.toLowerCase() : null;
   const rolesConFirmaLowerCase = ROLES_CON_FIRMA.map((role) => role.toLowerCase());
-  const rolesBotonHolaMundoLowerCase = ROLES_BOTON_HOLA_MUNDO.map((role) => role.toLowerCase());
 
   const visibleButtons = ['MisDatos', 'MisPlanes'];
   if (userRoleLowerCase && rolesConFirmaLowerCase.includes(userRoleLowerCase)) {
