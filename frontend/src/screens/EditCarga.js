@@ -14,7 +14,7 @@ import { calculateGeometry } from '../utils/calculateGeometry';
 const EditCarga = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { cargas: initialCargas, centroGravedad: initialCG, onSaveCargasAndCG, planData } = route.params;
+    const { cargas: initialCargas, centroGravedad: initialCG, onSaveCargasAndCG, planData, gruaId, datos } = route.params;
 
     const [peso, setPeso] = useState('');
     const [ancho, setAncho] = useState('');
@@ -149,7 +149,14 @@ const EditCarga = () => {
                     onSaveCargasAndCG(updatedCargas, updatedCG);
                 }
 
-                navigation.navigate('EditGrua', { planData: planData, cargas: updatedCargas, centroGravedad: updatedCG });
+                // Se pasan gruaId y datos a EditGrua
+                navigation.navigate('EditGrua', {
+                    planData: planData,
+                    cargas: updatedCargas,
+                    centroGravedad: updatedCG,
+                    gruaId: gruaId, // Se pasa el gruaId recibido
+                    datos: datos,   // Se pasan los datos de la grúa recibidos
+                });
             }
         };
 
