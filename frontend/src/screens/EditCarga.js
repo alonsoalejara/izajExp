@@ -14,10 +14,8 @@ import { calculateGeometry } from '../utils/calculateGeometry';
 const EditCarga = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    // Recibe los objetos de cargas y centro de gravedad, y el callback
     const { cargas: initialCargas, centroGravedad: initialCG, onSaveCargasAndCG, planData } = route.params;
 
-    // Estados para los campos de entrada individuales, replicando SetupCarga.js
     const [peso, setPeso] = useState('');
     const [ancho, setAncho] = useState('');
     const [largo, setLargo] = useState('');
@@ -27,7 +25,6 @@ const EditCarga = () => {
     const [isFormaVisible, setIsFormaVisible] = useState(false);
     const [errors, setErrors] = useState({});
 
-    // Mantener editableCargas y editableCG para otros campos y para el guardado final
     const [editableCargas, setEditableCargas] = useState(initialCargas || {
         pesoEquipo: 0,
         pesoAparejos: 0,
@@ -52,24 +49,21 @@ const EditCarga = () => {
         zPR: 0
     });
 
-    // Rellenar estados con los datos iniciales al montar el componente
     useEffect(() => {
         if (initialCargas) {
             setPeso(String(initialCargas.pesoTotal));
             setEditableCargas(initialCargas);
         }
         if (initialCG) {
-            // Establecer las dimensiones iniciales para los campos de entrada
             setAncho(String(initialCG.xAncho));
             setLargo(String(initialCG.yLargo));
             setAltura(String(initialCG.zAlto));
 
-            // Intentar determinar la forma basada en las dimensiones iniciales
             if (initialCG.xAncho !== 0 && initialCG.xAncho === initialCG.yLargo && initialCG.yLargo === initialCG.zAlto) {
                 setForma('Cuadrado');
             } else if (initialCG.xAncho !== 0 && initialCG.xAncho === initialCG.yLargo && initialCG.zAlto !== 0) {
                 setForma('Cilindro');
-                setDiametro(String(initialCG.xAncho)); // El diámetro es xAncho/yLargo para un cilindro
+                setDiametro(String(initialCG.xAncho));
             } else if (initialCG.xAncho !== 0 || initialCG.yLargo !== 0 || initialCG.zAlto !== 0) {
                 setForma('Rectangular');
             }
@@ -77,9 +71,7 @@ const EditCarga = () => {
         }
     }, [initialCargas, initialCG]);
 
-    // Maneja los cambios para los campos de entrada específicos y actualiza los objetos editables
     const handleInputChange = (field, value) => {
-        // Actualizar el estado del campo de entrada específico
         if (field === 'peso') setPeso(value);
         if (field === 'ancho') setAncho(value);
         if (field === 'largo') setLargo(value);
@@ -87,7 +79,6 @@ const EditCarga = () => {
         if (field === 'diametro') setDiametro(value);
         if (field === 'forma') {
             setForma(value);
-            // Restablecer dimensiones si la forma cambia
             if (value === 'Cuadrado') {
                 setAncho('');
                 setLargo('');
@@ -95,12 +86,11 @@ const EditCarga = () => {
             } else if (value === 'Cilindro') {
                 setAncho('');
                 setLargo('');
-            } else { // Rectangular
+            } else {
                 setDiametro('');
             }
         }
 
-        // Limpiar el error para el campo cambiado
         setErrors((prevErrors) => {
             const newErrors = { ...prevErrors };
             delete newErrors[field];
@@ -121,7 +111,7 @@ const EditCarga = () => {
         const anchoNum = parseFloat(ancho);
         const diametroNum = parseFloat(diametro);
 
-        let cargaDataForGeometry = { // Este objeto contiene los valores de entrada actuales para el cálculo de la geometría
+        let cargaDataForGeometry = {
             peso: pesoNum,
             alto: alturaNum,
             largo: forma === 'Cuadrado' ? alturaNum : (forma === 'Cilindro' ? 0 : largoNum),
@@ -140,14 +130,13 @@ const EditCarga = () => {
                 );
                 const calculatedCG = calculatedGeometry?.cg;
 
-                // Preparar updatedCargas y updatedCG para el callback y la navegación
                 const updatedCargas = {
-                    ...editableCargas, // Mantener campos existentes no editados en esta UI
-                    pesoTotal: finalCargaData.peso, // Actualizar pesoTotal desde la entrada
+                    ...editableCargas,
+                    pesoTotal: finalCargaData.peso,
                 };
 
                 const updatedCG = {
-                    ...editableCG, // Mantener campos existentes como xPR, yPR, zPR
+                    ...editableCG,
                     xAncho: finalCargaData.forma === 'Cilindro' ? finalCargaData.diametro : finalCargaData.ancho,
                     yLargo: finalCargaData.forma === 'Cilindro' ? finalCargaData.diametro : finalCargaData.largo,
                     zAlto: finalCargaData.alto,
@@ -156,14 +145,10 @@ const EditCarga = () => {
                     zCG: calculatedCG.cgZ,
                 };
 
-                // Llamar al callback pasado desde EditPlan.js con los datos actualizados
                 if (onSaveCargasAndCG) {
                     onSaveCargasAndCG(updatedCargas, updatedCG);
                 }
 
-                // Navegar a EditGrua, pasando los datos actualizados
-                // Se asume que EditGrua espera 'cargas' y 'centroGravedad' directamente,
-                // y también se pasa 'planData' si existe, para mantener la coherencia con SetupCarga.js
                 navigation.navigate('EditGrua', { planData: planData, cargas: updatedCargas, centroGravedad: updatedCG });
             }
         };
@@ -175,7 +160,7 @@ const EditCarga = () => {
                 [
                     {
                         text: "No",
-                        onPress: () => navigateAndSave(cargaDataForGeometry), // Usar datos actuales
+                        onPress: () => navigateAndSave(cargaDataForGeometry),
                         style: "cancel"
                     },
                     {
@@ -184,14 +169,14 @@ const EditCarga = () => {
                             const updatedCargaDataForGeometry = {
                                 ...cargaDataForGeometry,
                                 forma: "Cuadrado",
-                                largo: alturaNum, // Lado del cubo
-                                ancho: alturaNum, // Lado del cubo
+                                largo: alturaNum,
+                                ancho: alturaNum,
                                 diametro: 0,
                             };
                             setForma("Cuadrado");
                             setLargo(String(alturaNum));
                             setAncho(String(alturaNum));
-                            setDiametro('0'); // Asegurarse de que el diámetro se reinicie
+                            setDiametro('0');
                             navigateAndSave(updatedCargaDataForGeometry);
                         }
                     }
@@ -219,7 +204,6 @@ const EditCarga = () => {
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <View style={{ flex: 1, backgroundColor: '#fff' }}>
-                {/* Encabezado replicado de SetupCarga.js */}
                 <Components.Header />
 
                 <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
@@ -363,7 +347,6 @@ const EditCarga = () => {
                     </View>
                 </ScrollView>
 
-                {/* Contenedor de botones inferior replicado de SetupCarga.js */}
                 <View style={[styles.buttonContainer, { right: 40, marginTop: 15 }]}>
                     <Components.Button
                         label="Volver"
