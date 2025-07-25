@@ -12,6 +12,28 @@ const EditPlan = () => {
     const initialPlanData = route.params?.planData || {};
 
     const [editablePlan, setEditablePlan] = useState(() => {
+        // Helper para inicializar aparejos con pesoTotal
+        const initializeAparejos = (aparejos) => {
+            return aparejos?.map(ap => {
+                const cantidad = parseFloat(ap.cantidad) || 0;
+                const pesoUnitario = parseFloat(ap.pesoUnitario) || 0;
+                const pesoGrillete = parseFloat(ap.pesoGrillete) || 0;
+                const pesoTotalCalculado = cantidad * (pesoUnitario + pesoGrillete);
+
+                return {
+                    descripcion: ap.descripcion || '',
+                    cantidad: cantidad,
+                    pesoUnitario: pesoUnitario,
+                    largo: ap.largo || 0,
+                    grillete: ap.grillete || '',
+                    pesoGrillete: pesoGrillete,
+                    tension: ap.tension || '',
+                    altura: ap.altura || '',
+                    pesoTotal: pesoTotalCalculado, // Añadido pesoTotal aquí
+                };
+            }) || [];
+        };
+
         return {
             nombreProyecto: initialPlanData.nombreProyecto || '',
             capataz: initialPlanData.capataz?._id || '',
@@ -19,16 +41,7 @@ const EditPlan = () => {
             jefeArea: initialPlanData.jefeArea?._id || '',
             firmaSupervisor: initialPlanData.firmaSupervisor || 'Firma pendiente',
             firmaJefeArea: initialPlanData.firmaJefeArea || 'Firma pendiente',
-            aparejos: initialPlanData.aparejos?.map(ap => ({
-                descripcion: ap.descripcion || '',
-                cantidad: ap.cantidad || 0,
-                pesoUnitario: ap.pesoUnitario || 0,
-                largo: ap.largo || 0,
-                grillete: ap.grillete || '',
-                pesoGrillete: ap.pesoGrillete || 0,
-                tension: ap.tension || '',
-                altura: ap.altura || '',
-            })) || [],
+            aparejos: initializeAparejos(initialPlanData.aparejos), // Usamos la función de inicialización
             grua: initialPlanData.grua?._id || '',
             datos: {
                 largoPluma: initialPlanData.datos?.largoPluma || '',
@@ -37,7 +50,7 @@ const EditPlan = () => {
             },
             cargas: {
                 pesoEquipo: initialPlanData.cargas?.pesoEquipo || 0,
-                pesoAparejos: initialPlanData.cargas?.pesoAparejos || 0,
+                pesoAparejos: initialPlanData.cargas?.pesoAparejos || 0, // Este valor se recalculará
                 pesoGancho: initialPlanData.cargas?.pesoGancho || 0,
                 pesoCable: initialPlanData.cargas?.pesoCable || 0,
                 pesoTotal: initialPlanData.cargas?.pesoTotal || 0,
@@ -76,11 +89,71 @@ const EditPlan = () => {
         return 'No asignado';
     };
 
+    // Función para calcular el peso total de los aparejos (suma de todos los aparejos individuales)
+    const calculateTotalAparejosWeight = (aparejos) => {
+        return aparejos.reduce((total, aparejo) => {
+            return total + (parseFloat(aparejo.pesoTotal) || 0);
+        }, 0);
+    };
+
+    // Este useEffect se encargará de actualizar los datos del plan cuando se reciban cambios
+    useEffect(() => {
+        if (route.params?.planData) {
+            setEditablePlan(prevPlan => {
+                const updatedAparejos = route.params.planData.aparejos?.map(ap => {
+                    // Asegurar que pesoTotal se recalcule al recibir nuevos aparejos
+                    const cantidad = parseFloat(ap.cantidad) || 0;
+                    const pesoUnitario = parseFloat(ap.pesoUnitario) || 0;
+                    const pesoGrillete = parseFloat(ap.pesoGrillete) || 0;
+                    return {
+                        ...ap,
+                        cantidad: cantidad,
+                        pesoUnitario: pesoUnitario,
+                        pesoGrillete: pesoGrillete,
+                        pesoTotal: cantidad * (pesoUnitario + pesoGrillete) // Recalcular pesoTotal
+                    };
+                }) || prevPlan.aparejos;
+
+                const newPesoAparejosCargas = calculateTotalAparejosWeight(updatedAparejos);
+                
+                return {
+                    ...route.params.planData,
+                    aparejos: updatedAparejos,
+                    cargas: {
+                        ...route.params.planData.cargas,
+                        pesoAparejos: newPesoAparejosCargas, // Actualizar pesoAparejos en cargas
+                    }
+                };
+            });
+        }
+    }, [route.params?.planData]);
+
+
     const handleSaveAparejos = (updatedAparejos) => {
-        setEditablePlan(prevPlan => ({
-            ...prevPlan,
-            aparejos: updatedAparejos
-        }));
+        setEditablePlan(prevPlan => {
+            // Asegúrate de que cada aparejo en updatedAparejos tenga pesoTotal
+            const aparejosWithTotalWeight = updatedAparejos.map(ap => {
+                const cantidad = parseFloat(ap.cantidad) || 0;
+                const pesoUnitario = parseFloat(ap.pesoUnitario) || 0;
+                const pesoGrillete = parseFloat(ap.pesoGrillete) || 0;
+                return {
+                    ...ap,
+                    cantidad: cantidad,
+                    pesoUnitario: pesoUnitario,
+                    pesoGrillete: pesoGrillete,
+                    pesoTotal: cantidad * (pesoUnitario + pesoGrillete)
+                };
+            });
+            const newPesoAparejosCargas = calculateTotalAparejosWeight(aparejosWithTotalWeight);
+            return {
+                ...prevPlan,
+                aparejos: aparejosWithTotalWeight,
+                cargas: {
+                    ...prevPlan.cargas,
+                    pesoAparejos: newPesoAparejosCargas,
+                }
+            };
+        });
     };
 
     const handleSaveGruaAndDatos = (updatedGruaId, updatedDatos) => {
@@ -140,7 +213,6 @@ const EditPlan = () => {
             planData: editablePlan,
             setupCargaData: editablePlan.cargas, 
             setupGruaData: editablePlan.datos,
-            onSaveAparejos: handleSaveAparejos,
         });
     };
 
@@ -156,15 +228,43 @@ const EditPlan = () => {
             return;
         }
 
+        // Crear una copia de los aparejos y asegurar que cada uno tenga su pesoTotal
+        const aparejosToSend = editablePlan.aparejos.map(aparejo => {
+            const { _id, ...rest } = aparejo; // Eliminar _id si existe
+            const cantidad = parseFloat(rest.cantidad) || 0;
+            const pesoUnitario = parseFloat(rest.pesoUnitario) || 0;
+            const pesoGrillete = parseFloat(rest.pesoGrillete) || 0;
+            const pesoTotalCalculado = cantidad * (pesoUnitario + pesoGrillete);
+            return {
+                ...rest,
+                pesoTotal: pesoTotalCalculado // Añadir el pesoTotal a cada aparejo
+            };
+        });
+
+        // Recalcular pesoAparejos (la suma de todos los pesoTotal de los aparejos)
+        const updatedPesoAparejosCargas = calculateTotalAparejosWeight(aparejosToSend);
+
         const payload = {
             ...editablePlan,
-            aparejos: editablePlan.aparejos.map(aparejo => {
-                const { _id, ...rest } = aparejo;
-                return rest;
-            }),
+            aparejos: aparejosToSend, // Usar los aparejos con pesoTotal
+            cargas: {
+                ...editablePlan.cargas,
+                pesoAparejos: updatedPesoAparejosCargas, // Actualizar pesoAparejos en cargas
+            }
         };
 
         const { _id, ...finalPayload } = payload;
+
+        // Crear una copia del payload para el console.log sin las firmas
+        const payloadForLog = { ...finalPayload };
+        if (payloadForLog.firmaSupervisor) {
+            payloadForLog.firmaSupervisor = 'Firma omitida para el log';
+        }
+        if (payloadForLog.firmaJefeArea) {
+            payloadForLog.firmaJefeArea = 'Firma omitida para el log';
+        }
+
+        console.log("Enviando el siguiente cuerpo JSON (firmas omitidas):", JSON.stringify(payloadForLog, null, 2));
 
         try {
             const response = await fetch(getApiUrl(`setupIzaje/${editablePlan._id}`), {
@@ -356,6 +456,12 @@ const styles = StyleSheet.create({
         left: -52,
     },
     actionButton: {
+        marginBottom: 10,
+        alignSelf: 'center',
+        width: '90%',
+        backgroundColor: '#ee0000',
+    },
+    bottomButton: {
         marginBottom: 10,
         alignSelf: 'center',
         width: '90%',
