@@ -13,7 +13,7 @@ import { calculateGeometry } from '../utils/calculateGeometry';
 const EditCarga = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { cargas: initialCargas, centroGravedad: initialCG, onSaveCargasAndCG, planData, gruaId, datos } = route.params;
+    const { cargas: initialCargas, centroGravedad: initialCG, planData, gruaId, datos } = route.params;
 
     const [peso, setPeso] = useState('');
     const [ancho, setAncho] = useState('');
@@ -103,6 +103,10 @@ const EditCarga = () => {
             }
         }
     }, [initialCargas, initialCG]);
+
+    useEffect(() => {
+    }, [navigation]);
+
 
     useEffect(() => {
         const currentAltura = parseFloat(altura) || 0;
@@ -200,16 +204,17 @@ const EditCarga = () => {
                     zCG: finalCalculatedCG.cgZ,
                 };
 
-                if (onSaveCargasAndCG) {
-                    onSaveCargasAndCG(updatedCargas, updatedCG);
-                }
-
+                // ¡AQUÍ ESTÁ LA CORRECCIÓN! Cambiado 'EditPlan' a 'EditGrua'
                 navigation.navigate('EditGrua', {
-                    planData: planData,
-                    cargas: updatedCargas,
-                    centroGravedad: updatedCG,
-                    gruaId: gruaId,
-                    datos: datos,
+                    planData: {
+                        ...planData,
+                        cargas: updatedCargas,
+                        centroGravedad: updatedCG,
+                        forma: finalCargaData.forma,
+                        diametro: finalCargaData.diametro,
+                    },
+                    gruaId: gruaId, // Asegúrate de pasar gruaId si es necesario en EditGrua
+                    datos: datos, // Pasa otros datos necesarios si es necesario en EditGrua
                 });
             }
         };

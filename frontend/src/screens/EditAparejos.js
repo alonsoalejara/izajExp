@@ -153,7 +153,7 @@ const EditAparejos = () => {
             };
 
             // Navegamos directamente a EditPlan con los datos actualizados
-            Alert.alert("Éxito", "Aparejos actualizados correctamente.");
+            Alert.alert("Éxito", "Datos actualizados correctamente.");
             navigation.navigate('EditPlan', { planData: updatedPlanData });
         } else {
             Alert.alert("Error de validación", "Por favor, complete todos los campos requeridos.");
