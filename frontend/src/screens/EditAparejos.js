@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
@@ -47,11 +47,11 @@ const EditAparejos = () => {
 
     useEffect(() => {
         if (initialPlanData?.aparejos && initialPlanData.aparejos.length > 0) {
-            const firstAparejo = initialPlanData.aparejos[0]; // Asumimos que editamos el primer aparejo
+            const firstAparejo = initialPlanData.aparejos[0]; 
             setManiobraSeleccionada(prev => ({
                 ...prev,
                 cantidad: String(firstAparejo.cantidad || ''),
-                tipo: { type: firstAparejo.descripcion || '', cantidades: {} } // Mapeo de descripción a tipo
+                tipo: { type: firstAparejo.descripcion || '', cantidades: {} }
             }));
             setCantidadGrilletes(String(firstAparejo.cantidad || ''));
             setTipoGrillete(firstAparejo.grillete || '');
@@ -73,7 +73,6 @@ const EditAparejos = () => {
                     }
                 }
             } catch (e) {
-                // console.error('Error fetching setupGruaData from AsyncStorage:', e);
             }
         };
         fetchDataFromAsyncStorage();
@@ -117,7 +116,7 @@ const EditAparejos = () => {
         setErrorTipoManiobra('');
     }, []);
 
-    const handleNavigate = () => {
+    const handleSaveAndGoBack = () => {
         const errors = validateSetupAparejos(
             maniobraSeleccionada,
             cantidadGrilletes,
@@ -136,30 +135,32 @@ const EditAparejos = () => {
         setErrorAnguloSeleccionado(errors.anguloSeleccionado || '');
 
         if (Object.keys(errors).length === 0) {
-            const setupAparejosData = {
-                cantidadManiobra: maniobraSeleccionada.cantidad,
-                eslingaOEstrobo: maniobraSeleccionada.tipo?.type || '',
-                cantidadGrilletes,
-                tipoGrillete: tipoGrillete || '',
-                anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
-                tipoAparejo: tipoAparejoSeleccionado,
-                aparejoPorWLL: aparejoPorWLL,
+            const newAparejo = {
+                descripcion: tipoAparejoSeleccionado,
+                cantidad: parseInt(maniobraSeleccionada.cantidad, 10) || 0,
+                pesoUnitario: parseFloat(aparejoPorWLL) || 0,
+                largo: 0,
+                grillete: tipoGrillete,
+                pesoGrillete: 0,
+                tension: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
+                altura: '',
             };
 
-            const allDataToSend = {
-                planData,
-                setupCargaData,
-                setupGruaData,
-                setupAparejosData
+            // Creamos un nuevo objeto planData con los aparejos actualizados
+            const updatedPlanData = {
+                ...planData,
+                aparejos: [newAparejo] // Asignamos el nuevo aparejo (o si quieres, puedes fusionarlo con los existentes)
             };
 
-            console.log('Datos enviados a Tablas.js desde EditAparejos.js:', allDataToSend);
-
-            navigation.navigate('Tablas', allDataToSend);
+            // Navegamos directamente a EditPlan con los datos actualizados
+            Alert.alert("Éxito", "Aparejos actualizados correctamente.");
+            navigation.navigate('EditPlan', { planData: updatedPlanData });
+        } else {
+            Alert.alert("Error de validación", "Por favor, complete todos los campos requeridos.");
         }
     };
 
-    const isContinuarDisabled =
+    const isSaveDisabled =
         !maniobraSeleccionada?.cantidad ||
         !maniobraSeleccionada?.tipo?.type ||
         !tipoGrillete ||
@@ -194,8 +195,8 @@ const EditAparejos = () => {
                                 style={errorTipoManiobra ? { borderColor: 'red', borderWidth: 1 } : {}}
                             />
                         </View>
-                        {errorCantidadManiobra && <Text style={[styles.errorText, { top: 5 }]}>{errorCantidadManiobra}</Text>}
-                        {errorTipoManiobra && <Text style={[styles.errorText, { top: 5 }]}>{errorTipoManiobra}</Text>}
+                        {errorCantidadManiobra ? <Text style={[styles.errorText, { top: 5 }]}>{errorCantidadManiobra}</Text> : null}
+                        {errorTipoManiobra ? <Text style={[styles.errorText, { top: 5 }]}>{errorTipoManiobra}</Text> : null}
 
                         {maniobraSeleccionada.tipo?.type && ['2', '4'].includes(maniobraSeleccionada.cantidad) && (
                             <View>
@@ -203,7 +204,7 @@ const EditAparejos = () => {
                                     <Text style={styles.labelText}>Ángulos de trabajo (°):</Text>
                                 </View>
                                 <Components.RenderAngulos anguloSeleccionado={anguloSeleccionado} setAnguloSeleccionado={setAnguloSeleccionado} />
-                                {errorAnguloSeleccionado && <Text style={[styles.errorText, { top: 3 }]}>{errorAnguloSeleccionado}</Text>}
+                                {errorAnguloSeleccionado ? <Text style={[styles.errorText, { top: 3 }]}>{errorAnguloSeleccionado}</Text> : null}
                                 <Image
                                     source={require('../../assets/esl-est-grade.png')}
                                     style={styles.eslingaImage}
@@ -224,7 +225,7 @@ const EditAparejos = () => {
                             style={[styles.configButton, errorTipoAparejo ? { borderColor: 'red', borderWidth: 1 } : {}]}
                             disabled={!tipoManiobraSeleccionadoSolo}
                         />
-                        {errorTipoAparejo && <Text style={[styles.errorText, { top: 3 }]}>{errorTipoAparejo}</Text>}
+                        {errorTipoAparejo ? <Text style={[styles.errorText, { top: 3 }]}>{errorTipoAparejo}</Text> : null}
 
                         <View style={styles.inputWrapper}>
                             <Text style={styles.labelText}>{tipoWllLabel}</Text>
@@ -239,7 +240,7 @@ const EditAparejos = () => {
                             style={[styles.configButton, errorAparejoPorWLL ? { borderColor: 'red', borderWidth: 1 } : {}]}
                             disabled={!tipoAparejoSeleccionado}
                         />
-                        {errorAparejoPorWLL && <Text style={[styles.errorText, { top: 3 }]}>{errorAparejoPorWLL}</Text>}
+                        {errorAparejoPorWLL ? <Text style={[styles.errorText, { top: 3 }]}>{errorAparejoPorWLL}</Text> : null}
 
                         <View style={[styles.inputWrapper, { top: 25 }]}>
                             <Text style={styles.labelText}>Grillete: (cantidad y tipo)</Text>
@@ -263,8 +264,8 @@ const EditAparejos = () => {
                                 disabled={!cantidadGrilletes}
                             />
                         </View>
-                        {errorCantidadGrilletes && <Text style={[styles.errorText, { top: 3 }]}>{errorCantidadGrilletes}</Text>}
-                        {errorTipoGrillete && <Text style={[styles.errorText, { top: 3 }]}>{errorTipoGrillete}</Text>}
+                        {errorCantidadGrilletes ? <Text style={[styles.errorText, { top: 3 }]}>{errorCantidadGrilletes}</Text> : null}
+                        {errorTipoGrillete ? <Text style={[styles.errorText, { top: 3 }]}>{errorTipoGrillete}</Text> : null}
 
                         {tipoGrillete && (
                             <View style={styles.selectedManiobraContainer}>
@@ -318,9 +319,9 @@ const EditAparejos = () => {
                         <View style={[styles.buttonContainer, { marginBottom: -20, right: 40 }]}>
                             <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={styles.volverButton} />
                             <Components.Button
-                                label="Continuar"
-                                onPress={handleNavigate}
-                                disabled={isContinuarDisabled}
+                                label="Guardar"
+                                onPress={handleSaveAndGoBack}
+                                disabled={isSaveDisabled}
                                 style={[styles.continuarButton, { width: '60%', left: -38 }]}
                             />
                         </View>

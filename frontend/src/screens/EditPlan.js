@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -139,6 +140,7 @@ const EditPlan = () => {
             planData: editablePlan,
             setupCargaData: editablePlan.cargas, 
             setupGruaData: editablePlan.datos,
+            onSaveAparejos: handleSaveAparejos,
         });
     };
 
