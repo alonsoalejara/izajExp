@@ -175,8 +175,6 @@ const SetupGrua = () => {
       setupGruaData: dataToSend,
     };
 
-    console.log('Datos enviados a SetupAparejos.js desde SetupGrua.js:', allDataToSend);
-
     if (Object.keys(errors).length === 0 && !errIz && !errMont && !radioIzajeError && !radioMontajeError) {
       await AsyncStorage.setItem('setupGruaData', JSON.stringify(dataToSend));
       navigation.navigate('SetupAparejos', allDataToSend);

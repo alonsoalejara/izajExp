@@ -69,8 +69,6 @@ const SetupCarga = () => {
           setupCargaData: cargaData,
         };
 
-        console.log('Datos enviados a SetupGrua.js desde SetupCarga.js (incluyendo datos de Plan):', allDataToSend);
-
         navigation.navigate('SetupGrua', allDataToSend);
       }
     };

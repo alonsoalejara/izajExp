@@ -256,8 +256,6 @@ const Tablas = ({ route, navigation }) => {
                 version: planId ? currentVersion : 0,
               };
 
-              console.log('Datos enviados a la petición:', JSON.stringify(finalData, null, 2));
-
               const accessToken = await AsyncStorage.getItem('accessToken');
               if (!accessToken) {
                 alert('No autorizado. Por favor, inicie sesión nuevamente.');

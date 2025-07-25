@@ -200,8 +200,6 @@ const EditGrua = () => {
             gruaData: dataToSend,
         };
 
-        console.log('Datos enviados a EditAparejos.js desde EditGrua.js:', allDataToSend);
-
         if (Object.keys(errors).length === 0 && !errIz && !errMont && !radioIzajeError && !radioMontajeError) {
             navigation.navigate('EditAparejos', allDataToSend);
         }

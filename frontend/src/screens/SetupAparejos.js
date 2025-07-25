@@ -152,8 +152,6 @@ const SetupAparejos = () => {
         setupAparejosData
       };
 
-      console.log('Datos enviados a Tablas.js desde SetupAparejos.js:', allDataToSend);
-
       navigation.navigate('Tablas', allDataToSend);
     }
   };

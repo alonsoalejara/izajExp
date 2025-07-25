@@ -108,8 +108,6 @@ const SetupPlan = () => {
         capataz: capatazObjeto,
       };
 
-      console.log('Datos enviados a SetupCarga.js desde SetupPlan.js:', dataToSend);
-
       navigation.navigate('SetupCarga', dataToSend);
     } else {
       setErrors(currentErrors);
