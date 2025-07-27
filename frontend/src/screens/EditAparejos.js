@@ -11,12 +11,12 @@ const EditAparejos = () => {
     const navigation = useNavigation();
     const route = useRoute();
 
-    const { planData: initialPlanData, setupCargaData: initialSetupCargaData, setupGruaData: initialSetupGruaData, setupRadioData: initialSetupRadioData } = route.params;
+    const { planData: initialPlanData, cargas: initialCargaData, gruaData: initialGruaData } = route.params;
 
     const [planData, setPlanData] = useState(initialPlanData || {});
-    const [setupGruaData, setSetupGruaData] = useState(initialSetupGruaData || {});
-    const [setupCargaData, setSetupCargaData] = useState(initialSetupCargaData || {});
-    const [setupRadioData, setSetupRadioData] = useState(initialSetupRadioData || {});
+    const [setupGruaData, setSetupGruaData] = useState(initialGruaData || {}); // Renombrado a initialGruaData
+    const [setupCargaData, setSetupCargaData] = useState(initialCargaData || {}); // Renombrado a initialCargaData
+    const [setupRadioData, setSetupRadioData] = useState({}); // Este parece no venir de EditGrua directamente
 
     const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null, cantidades: {} });
     const [cantidadGrilletes, setCantidadGrilletes] = useState('');
@@ -45,9 +45,18 @@ const EditAparejos = () => {
     const [errorAparejoPorWLL, setErrorAparejoPorWLL] = useState('');
     const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
 
+    // --- Inicia el bloque de console.log ---
     useEffect(() => {
+        console.log('--- Datos recibidos en EditAparejos ---');
+        console.log('planData (desde EditGrua):', initialPlanData);
+        console.log('cargas (desde EditGrua):', initialCargaData); // Cambiado de setupCargaData a cargas para coincidir con la prop enviada
+        console.log('gruaData (desde EditGrua):', initialGruaData); // Cambiado de setupGruaData a gruaData para coincidir con la prop enviada
+        // setupRadioData no se envía directamente desde EditGrua en el código que mostraste,
+        // por lo que si necesitas inicializarlo desde EditGrua, debes agregarlo a los params.
+        console.log('-------------------------------------');
+
         if (initialPlanData?.aparejos && initialPlanData.aparejos.length > 0) {
-            const firstAparejo = initialPlanData.aparejos[0]; 
+            const firstAparejo = initialPlanData.aparejos[0];
             setManiobraSeleccionada(prev => ({
                 ...prev,
                 cantidad: String(firstAparejo.cantidad || ''),
@@ -61,22 +70,30 @@ const EditAparejos = () => {
 
             setTipoManiobraSeleccionadoSolo(firstAparejo.descripcion || '');
         }
-    }, [initialPlanData]);
+    }, [initialPlanData, initialCargaData, initialGruaData]); // Asegúrate de que las dependencias estén correctas
+
+    // --- Fin del bloque de console.log ---
+
 
     useEffect(() => {
         const fetchDataFromAsyncStorage = async () => {
             try {
+                // Aquí, si necesitas que setupGruaData se inicialice solo del AsyncStorage
+                // si no vino por route.params, esta lógica es correcta.
+                // Sin embargo, si siempre debe venir de route.params (EditGrua),
+                // esta parte podría ser redundante o indicar una lógica de fallback.
                 const data = await AsyncStorage.getItem('setupGruaData');
                 if (data) {
-                    if (!route.params?.setupGruaData) {
+                    if (!route.params?.gruaData) { // Cambiado a gruaData
                         setSetupGruaData(JSON.parse(data));
                     }
                 }
             } catch (e) {
+                console.error("Error al cargar setupGruaData de AsyncStorage:", e);
             }
         };
         fetchDataFromAsyncStorage();
-    }, [route.params?.setupGruaData]);
+    }, [route.params?.gruaData]); // Cambiado a gruaData para la dependencia
 
     useEffect(() => {
         if (tipoManiobraSeleccionadoSolo === 'Eslinga') {

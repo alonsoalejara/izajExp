@@ -16,7 +16,6 @@ import { inclinacionMapAlturas } from '../utils/inclinacionMapAlturas';
 import { evaluateMovement, capacityTables } from '../data/loadCapacity';
 import getApiUrl from '../utils/apiUrl';
 
-
 const EditGrua = () => {
     const navigation = useNavigation();
     const route = useRoute();
@@ -56,24 +55,21 @@ const EditGrua = () => {
                     const json = await response.json();
                     if (json?.data) {
                         setGrua(json.data);
-
                         setLargoPluma(String(initialDatosGrua?.largoPluma || json.data.largoPluma || ''));
-                        setRadioIzaje(String(initialDatosGrua?.radioIzaje || json.data.radioIzaje || ''));
-                        setRadioMontaje(String(initialDatosGrua?.radioMontaje || json.data.radioMontaje || ''));
+                        setRadioIzaje(String(initialDatosGrua?.radioIzaje || ''));
+                        setRadioMontaje(String(initialDatosGrua?.radioMontaje || ''));
                     }
                 } catch (error) {
-                    console.error("Error fetching grua details:", error);
                     Alert.alert("Error", "No se pudo cargar los detalles de la grúa.");
                 }
             } else if (initialDatosGrua?.grua) {
-                 setGrua(initialDatosGrua.grua);
-                 setLargoPluma(String(initialDatosGrua.largoPluma || ''));
-                 setRadioIzaje(String(initialDatosGrua.radioIzaje || ''));
-                 setRadioMontaje(String(initialDatosGrua.radioMontaje || ''));
+                setGrua(initialDatosGrua.grua);
+                setLargoPluma(String(initialDatosGrua.largoPluma || ''));
+                setRadioIzaje(String(initialDatosGrua.radioIzaje || ''));
+                setRadioMontaje(String(initialDatosGrua.radioMontaje || ''));
             }
         };
         fetchAndSetInitialData();
-
     }, [gruaId, initialDatosGrua]);
 
     useEffect(() => {
@@ -94,7 +90,6 @@ const EditGrua = () => {
         setErrorRadioMontaje(!esRadioMontajeEnRango && hasRadioMontaje ? 'Radio fuera de rango' : '');
         setRadioIzajeError(!esRadioIzajeEnRango && hasRadioIzaje);
         setRadioMontajeError(!esRadioMontajeEnRango && hasRadioMontaje);
-
 
         let movimientoOptimo = false;
         let mensajeMovimiento = '';
@@ -152,7 +147,6 @@ const EditGrua = () => {
         } else {
             setGradoInclinacionVisual(75);
         }
-
     }, [radioIzaje, radioMontaje, grua, largoPluma, currentCargaData]);
 
     const validateRadioEnRango = (boomLength, radio) => {
@@ -176,6 +170,8 @@ const EditGrua = () => {
         setErrorRadioIzaje(errIz ? 'Este campo es requerido' : '');
         setErrorRadioMontaje(errMont ? 'Este campo es requerido' : '');
 
+        const pesoTotalCarga = parseFloat(currentCargaData?.pesoTotal) || 0;
+
         const dataToSend = {
             grua: grua,
             nombreGrua: grua?.nombre || '',
@@ -186,9 +182,9 @@ const EditGrua = () => {
             radioTrabajoMaximo: parseFloat(radioTrabajoMaximo) || 0,
             usuarioId,
             contrapeso: grua?.contrapeso || 0,
-            pesoEquipo: grua?.pesoEquipo || 0,
-            pesoGancho: grua?.pesoGancho || 0,
-            pesoCable: grua?.pesoCable || 0,
+            pesoEquipo: pesoTotalCarga,
+            pesoGancho: 0.5,
+            pesoCable: 0.3,
             capacidadLevante: capacidadLevanteCalc != null
                 ? capacidadLevanteCalc.toFixed(1)
                 : grua?.capacidadLevante || 0,
@@ -239,6 +235,7 @@ const EditGrua = () => {
                                 onSelect={selected => {
                                     setGrua(selected);
                                     setErrorGrua('');
+                                    // Siempre establecer largoPluma si es Terex RT555, o vacío
                                     setLargoPluma(selected.nombre === 'Terex RT555' ? '10.5 m' : '');
                                     setRadioIzaje('');
                                     setRadioMontaje('');
