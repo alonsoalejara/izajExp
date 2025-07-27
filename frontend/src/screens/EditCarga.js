@@ -15,7 +15,7 @@ const EditCarga = () => {
     const route = useRoute();
     const { cargas: initialCargas, centroGravedad: initialCG, planData, gruaId, datos } = route.params;
 
-    const [peso, setPeso] = useState('');
+    const [pesoEquipoInput, setPesoEquipoInput] = useState('');
     const [ancho, setAncho] = useState('');
     const [largo, setLargo] = useState('');
     const [altura, setAltura] = useState('');
@@ -53,7 +53,7 @@ const EditCarga = () => {
 
     useEffect(() => {
         if (initialCargas) {
-            setPeso(String(initialCargas.pesoTotal));
+            setPesoEquipoInput(String(initialCargas.pesoEquipo));
             setEditableCargas(initialCargas);
         }
 
@@ -131,7 +131,7 @@ const EditCarga = () => {
 
 
     const handleInputChange = (field, value) => {
-        if (field === 'peso') setPeso(value);
+        if (field === 'pesoEquipoInput') setPesoEquipoInput(value);
         if (field === 'ancho') setAncho(value);
         if (field === 'largo') setLargo(value);
         if (field === 'alto') setAltura(value);
@@ -158,20 +158,20 @@ const EditCarga = () => {
     };
 
     const validateInputs = () => {
-        const newErrors = validateCarga(peso, largo, ancho, altura, forma, diametro);
+        const newErrors = validateCarga(pesoEquipoInput, largo, ancho, altura, forma, diametro);
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSaveChanges = () => {
-        const pesoNum = parseFloat(peso) || 0;
+        const pesoEquipoNum = parseFloat(pesoEquipoInput) || 0;
         const alturaNum = parseFloat(altura) || 0;
         const largoNum = parseFloat(largo) || 0;
         const anchoNum = parseFloat(ancho) || 0;
         const diametroNum = parseFloat(diametro) || 0;
 
         let cargaDataForGeometry = {
-            peso: pesoNum,
+            peso: pesoEquipoNum,
             alto: alturaNum,
             largo: forma === 'Cuadrado' ? alturaNum : (forma === 'Cilindro' ? 0 : largoNum),
             ancho: forma === 'Cuadrado' ? alturaNum : (forma === 'Cilindro' ? 0 : anchoNum),
@@ -180,7 +180,7 @@ const EditCarga = () => {
         };
 
         const navigateAndSave = (finalCargaData) => {
-            if (validateInputs()) {
+            if (validateCarga(pesoEquipoInput, largo, ancho, altura, forma, diametro)) {
                 const finalCalculatedCG = calculatedCG;
                 const finalCalculatedGeometry = calculatedGeometry;
 
@@ -191,7 +191,8 @@ const EditCarga = () => {
 
                 const updatedCargas = {
                     ...editableCargas,
-                    pesoTotal: finalCargaData.peso,
+                    pesoEquipo: pesoEquipoNum,
+                    pesoTotal: pesoEquipoNum + editableCargas.pesoAparejos + editableCargas.pesoGancho + editableCargas.pesoCable,
                 };
 
                 const updatedCG = {
@@ -204,8 +205,7 @@ const EditCarga = () => {
                     zCG: finalCalculatedCG.cgZ,
                 };
 
-                // ¡AQUÍ ESTÁ LA CORRECCIÓN! Cambiado 'EditPlan' a 'EditGrua'
-                navigation.navigate('EditGrua', {
+                const dataToSendToEditGrua = {
                     planData: {
                         ...planData,
                         cargas: updatedCargas,
@@ -213,9 +213,11 @@ const EditCarga = () => {
                         forma: finalCargaData.forma,
                         diametro: finalCargaData.diametro,
                     },
-                    gruaId: gruaId, // Asegúrate de pasar gruaId si es necesario en EditGrua
-                    datos: datos, // Pasa otros datos necesarios si es necesario en EditGrua
-                });
+                    gruaId: gruaId,
+                    datos: datos,
+                };
+
+                navigation.navigate('EditGrua', dataToSendToEditGrua);
             }
         };
 
@@ -288,14 +290,14 @@ const EditCarga = () => {
                         </Text>
                         <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
                             <View style={styles.inputField}>
-                                {errors.peso && <Text style={styles.errorText}>{errors.peso}</Text>}
+                                {errors.pesoEquipoInput && <Text style={styles.errorText}>{errors.pesoEquipoInput}</Text>}
                                 <Components.NumericInput
-                                    value={peso}
-                                    onChangeText={(value) => handleInputChange('peso', value)}
+                                    value={pesoEquipoInput}
+                                    onChangeText={(value) => handleInputChange('pesoEquipoInput', value)}
                                     placeholder="Peso de carga"
-                                    onEndEditing={() => handleInputChange('peso', peso.trim())}
+                                    onEndEditing={() => handleInputChange('pesoEquipoInput', pesoEquipoInput.trim())}
                                     editable={!!forma}
-                                    style={[{ width: 150 }, errors.peso && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 }]}
+                                    style={[{ width: 150 }, errors.pesoEquipoInput && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 }]}
                                 />
                             </View>
                             <View style={styles.inputField}>
