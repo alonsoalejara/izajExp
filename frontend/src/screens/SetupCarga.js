@@ -27,7 +27,6 @@ const SetupCarga = () => {
   useEffect(() => {
     if (route.params) {
       setPlanData(route.params);
-      console.log('Datos de SetupPlan recibidos en SetupCarga:', route.params);
     }
   }, [route.params]);
 

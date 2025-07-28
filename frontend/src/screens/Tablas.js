@@ -20,14 +20,6 @@ const Tablas = ({ route, navigation }) => {
 
   const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData, existingPlanId } = route.params || {};
 
-  console.log('Datos recibidos desde las pantallas de configuración:');
-  console.log('planData:', planData);
-  console.log('setupCargaData:', setupCargaData);
-  console.log('setupGruaData:', setupGruaData);
-  console.log('setupAparejosData:', setupAparejosData);
-  console.log('setupRadioData:', setupRadioData);
-  console.log('existingPlanId:', existingPlanId);
-
   useEffect(() => {
     const fetchUserData = async () => {
       if (planData) {
@@ -268,9 +260,6 @@ const Tablas = ({ route, navigation }) => {
               if (planId) {
                 apiUrl = `${apiUrl}${planId}`;
                 httpMethod = 'PUT';
-                console.log(`Realizando petición PUT a: ${apiUrl}`);
-              } else {
-                console.log(`Realizando petición POST a: ${apiUrl}`);
               }
 
               const response = await fetch(apiUrl, {
@@ -297,7 +286,7 @@ const Tablas = ({ route, navigation }) => {
                 alert(`Error al ${planId ? 'actualizar' : 'guardar'}: ${data.message || 'Error desconocido'}`);
               }
             } catch (error) {
-              console.error('Error al manejar el plan de izaje:', error);
+              // console.error('Error al manejar el plan de izaje:', error); // Removed console.error
               alert('Hubo un error al guardar/actualizar el plan de izaje.');
             }
           },

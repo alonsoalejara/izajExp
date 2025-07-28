@@ -7,10 +7,6 @@ import { convertirImagenABase64 } from './pdfUtils';
 import { generarHTML } from './pdfTemplate';
 
 export const generarPDF = async (selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows) => {
-  console.log('PDFGenerator.js: Recibidos en PDFGenerator:');
-  console.log('PDFGenerator.js: selectedGrua:', selectedGrua);
-  console.log('PDFGenerator.js: rows:', rows);
-
   const base64Imagen = await convertirImagenABase64(require('../../../assets/EI-Montajes.png'));
   const imagenBase64 = `data:image/png;base64,${base64Imagen}`;
 

@@ -49,9 +49,6 @@ const SetupGrua = () => {
     };
     fetchUserId();
 
-    console.log('Datos de SetupPlan recibidos en SetupGrua:', initialPlanData);
-    console.log('Datos de SetupCarga recibidos en SetupGrua:', initialCargaData);
-
   }, [initialPlanData, initialCargaData]);
 
   useEffect(() => {

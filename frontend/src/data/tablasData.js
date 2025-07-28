@@ -2,18 +2,6 @@ import { grilleteOptions } from '../data/grilleteData';
 import { maniobraOptions } from '../data/maniobraData';
 
 export const obtenerDatosTablas = (datosRecibidos = {}) => {
-  // Depuración de datos recibidos
-  console.log("Datos recibidos en obtenerDatosTablas:");
-  for (const key in datosRecibidos) {
-    if (Object.hasOwnProperty.call(datosRecibidos, key)) {
-      if (typeof datosRecibidos[key] === 'object' && datosRecibidos[key] !== null) {
-        console.log(`  ${key}: ${JSON.stringify(datosRecibidos[key])}`);
-      } else {
-        console.log(`  ${key}: ${datosRecibidos[key]}`);
-      }
-    }
-  }
-
   // Radios de trabajo
   const radioIzaje = parseFloat(datosRecibidos.radioIzaje) || 0;
   const radioMontaje = parseFloat(datosRecibidos.radioMontaje) || 0;

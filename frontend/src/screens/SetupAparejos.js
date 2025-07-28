@@ -41,25 +41,20 @@ const SetupAparejos = () => {
   const [errorTipoGrillete, setErrorTipoGrillete] = useState('');
   const [errorTipoAparejo, setErrorTipoAparejo] = useState('');
   const [errorAparejoPorWLL, setErrorAparejoPorWLL] = useState('');
-  // CORRECCIÓN: Inicializar setErrorAnguloSeleccionado con useState
   const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
 
   useEffect(() => {
     if (route.params?.planData) {
       setPlanData(route.params.planData);
-      console.log('Datos de SetupPlan recibidos en SetupAparejos:', route.params.planData);
     }
     if (route.params?.setupCargaData) {
       setSetupCargaData(route.params.setupCargaData);
-      console.log('Datos de SetupCarga recibidos en SetupAparejos:', route.params.setupCargaData);
     }
     if (route.params?.setupGruaData) {
       setSetupGruaData(route.params.setupGruaData);
-      console.log('Datos de SetupGrua recibidos en SetupAparejos:', route.params.setupGruaData);
     }
     if (route.params?.setupRadioData) {
       setSetupRadioData(route.params.setupRadioData);
-      console.log('Datos de SetupRadio recibidos en SetupAparejos:', route.params.setupRadioData);
     }
 
     const fetchDataFromAsyncStorage = async () => {
@@ -71,7 +66,7 @@ const SetupAparejos = () => {
           }
         }
       } catch (e) {
-        // console.error('Error fetching setupGruaData from AsyncStorage:', e);
+        // Error fetching setupGruaData from AsyncStorage
       }
     };
     fetchDataFromAsyncStorage();
@@ -132,7 +127,7 @@ const SetupAparejos = () => {
     setErrorTipoGrillete(errors.tipoGrillete || '');
     setErrorTipoAparejo(errors.tipoAparejo || '');
     setErrorAparejoPorWLL(errors.aparejoPorWLL || '');
-    setErrorAnguloSeleccionado(errors.anguloSeleccionado || ''); // Ahora esto funcionará correctamente
+    setErrorAnguloSeleccionado(errors.anguloSeleccionado || '');
 
     if (Object.keys(errors).length === 0) {
       const setupAparejosData = {
