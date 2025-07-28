@@ -7,16 +7,22 @@ import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
 import { validateSetupAparejos } from '../utils/validation/validateAparejos';
 
+// Importa los datos de los grilletes y maniobras
+import { grilleteOptions } from '../data/grilleteData';
+import { maniobraOptions } from '../data/maniobraData';
+
 const EditAparejos = () => {
     const navigation = useNavigation();
     const route = useRoute();
 
-    const { planData: initialPlanData, cargas: initialCargaData, gruaData: initialGruaData } = route.params;
+    // Capturamos todos los datos iniciales que vienen por la ruta
+    const { planData: initialPlanData, cargas: initialCargaData, gruaData: initialGruaData, radioData: initialRadioData } = route.params;
 
+    // Inicializamos los estados con los datos iniciales para asegurar su persistencia
     const [planData, setPlanData] = useState(initialPlanData || {});
-    const [setupGruaData, setSetupGruaData] = useState(initialGruaData || {}); // Renombrado a initialGruaData
-    const [setupCargaData, setSetupCargaData] = useState(initialCargaData || {}); // Renombrado a initialCargaData
-    const [setupRadioData, setSetupRadioData] = useState({}); // Este parece no venir de EditGrua directamente
+    const [setupGruaData, setSetupGruaData] = useState(initialGruaData || {});
+    const [setupCargaData, setSetupCargaData] = useState(initialCargaData || {});
+    const [setupRadioData, setSetupRadioData] = useState(initialRadioData || {}); // Asegurar que setupRadioData también se inicialice
 
     const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null, cantidades: {} });
     const [cantidadGrilletes, setCantidadGrilletes] = useState('');
@@ -45,16 +51,14 @@ const EditAparejos = () => {
     const [errorAparejoPorWLL, setErrorAparejoPorWLL] = useState('');
     const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
 
-    // --- Inicia el bloque de console.log ---
     useEffect(() => {
-        console.log('--- Datos recibidos en EditAparejos ---');
-        console.log('planData (desde EditGrua):', initialPlanData);
-        console.log('cargas (desde EditGrua):', initialCargaData); // Cambiado de setupCargaData a cargas para coincidir con la prop enviada
-        console.log('gruaData (desde EditGrua):', initialGruaData); // Cambiado de setupGruaData a gruaData para coincidir con la prop enviada
-        // setupRadioData no se envía directamente desde EditGrua en el código que mostraste,
-        // por lo que si necesitas inicializarlo desde EditGrua, debes agregarlo a los params.
-        console.log('-------------------------------------');
+        // console.log para depuración
+        console.log('initialCargaData:', initialCargaData);
+        console.log('initialGruaData:', initialGruaData);
+        console.log('initialRadioData:', initialRadioData);
+        console.log('-------------------------------------------');
 
+        // Poblar los estados con los datos existentes de planData.aparejos si los hay
         if (initialPlanData?.aparejos && initialPlanData.aparejos.length > 0) {
             const firstAparejo = initialPlanData.aparejos[0];
             setManiobraSeleccionada(prev => ({
@@ -64,27 +68,26 @@ const EditAparejos = () => {
             }));
             setCantidadGrilletes(String(firstAparejo.cantidad || ''));
             setTipoGrillete(firstAparejo.grillete || '');
-            setAnguloSeleccionado(firstAparejo.tension ? String(parseFloat(firstAparejo.tension.replace('°', '')) || 0) : '0');
             setTipoAparejoSeleccionado(firstAparejo.descripcion || '');
-            setAparejoPorWLL(firstAparejo.pesoUnitario ? String(firstAparejo.pesoUnitario) : '');
-
+            setAparejoPorWLL(''); 
             setTipoManiobraSeleccionadoSolo(firstAparejo.descripcion || '');
         }
-    }, [initialPlanData, initialCargaData, initialGruaData]); // Asegúrate de que las dependencias estén correctas
 
-    // --- Fin del bloque de console.log ---
+        // Setear anguloSeleccionado desde initialCargaData
+        if (initialCargaData?.anguloTrabajo) {
+            setAnguloSeleccionado(String(parseFloat(initialCargaData.anguloTrabajo.replace('°', '')) || 0));
+        } else {
+            setAnguloSeleccionado('0');
+        }
 
+    }, [initialPlanData, initialCargaData, initialGruaData, initialRadioData]); // Asegurar que todos los datos iniciales sean dependencias
 
     useEffect(() => {
         const fetchDataFromAsyncStorage = async () => {
             try {
-                // Aquí, si necesitas que setupGruaData se inicialice solo del AsyncStorage
-                // si no vino por route.params, esta lógica es correcta.
-                // Sin embargo, si siempre debe venir de route.params (EditGrua),
-                // esta parte podría ser redundante o indicar una lógica de fallback.
                 const data = await AsyncStorage.getItem('setupGruaData');
                 if (data) {
-                    if (!route.params?.gruaData) { // Cambiado a gruaData
+                    if (!route.params?.gruaData) {
                         setSetupGruaData(JSON.parse(data));
                     }
                 }
@@ -93,7 +96,22 @@ const EditAparejos = () => {
             }
         };
         fetchDataFromAsyncStorage();
-    }, [route.params?.gruaData]); // Cambiado a gruaData para la dependencia
+    }, [route.params?.gruaData]);
+
+    // Asegurarse de que setupCargaData se actualice si cambia initialCargaData
+    useEffect(() => {
+        if (initialCargaData) {
+            setSetupCargaData(initialCargaData);
+        }
+    }, [initialCargaData]);
+    
+    // Asegurarse de que setupRadioData se actualice si cambia initialRadioData
+    useEffect(() => {
+        if (initialRadioData) {
+            setSetupRadioData(initialRadioData);
+        }
+    }, [initialRadioData]);
+
 
     useEffect(() => {
         if (tipoManiobraSeleccionadoSolo === 'Eslinga') {
@@ -152,26 +170,45 @@ const EditAparejos = () => {
         setErrorAnguloSeleccionado(errors.anguloSeleccionado || '');
 
         if (Object.keys(errors).length === 0) {
+            // Buscar el peso del grillete seleccionado en grilleteOptions
+            const selectedGrillete = grilleteOptions.find(opt => opt.pulgada === tipoGrillete);
+            const pesoGrilleteCalculado = selectedGrillete ? selectedGrillete.peso : 0;
+
+            // Buscar el peso unitario del aparejo principal (Eslinga o Estrobo)
+            const selectedManiobraType = maniobraOptions.find(opt => opt.label === tipoManiobraSeleccionadoSolo);
+            const pesoUnitarioAparejo = selectedManiobraType ? selectedManiobraType.peso : 0;
+
             const newAparejo = {
                 descripcion: tipoAparejoSeleccionado,
                 cantidad: parseInt(maniobraSeleccionada.cantidad, 10) || 0,
-                pesoUnitario: parseFloat(aparejoPorWLL) || 0,
+                pesoUnitario: pesoUnitarioAparejo,
                 largo: 0,
                 grillete: tipoGrillete,
-                pesoGrillete: 0,
-                tension: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
+                pesoGrillete: pesoGrilleteCalculado,
+                tension: '0', // Se mantiene en '0' según lo solicitado para evitar validaciones vacías
                 altura: '',
             };
 
-            // Creamos un nuevo objeto planData con los aparejos actualizados
-            const updatedPlanData = {
+            // Crear una copia de setupCargaData para modificar anguloTrabajo
+            const updatedSetupCargaData = { ...setupCargaData };
+            // Asignar el anguloSeleccionado a cargas.anguloTrabajo
+            updatedSetupCargaData.anguloTrabajo = anguloSeleccionado ? `${anguloSeleccionado}°` : '';
+
+            // Construir el objeto planData actualizado
+            const finalUpdatedPlanData = {
+                // Mantenemos todos los datos existentes de planData
                 ...planData,
-                aparejos: [newAparejo] // Asignamos el nuevo aparejo (o si quieres, puedes fusionarlo con los existentes)
+                // Pero actualizamos solo los aparejos con el nuevo aparejo
+                aparejos: [newAparejo],
+                // Y actualizamos los datos de la carga con el ángulo de trabajo modificado
+                cargas: updatedSetupCargaData,
+                // Crucial: Asegurarnos de que gruaData y radioData persistan si no fueron modificados aquí
+                gruaData: setupGruaData, // Usa el estado actual de setupGruaData (que viene de initialGruaData o AsyncStorage)
+                radioData: setupRadioData, // Usa el estado actual de setupRadioData (que viene de initialRadioData)
             };
 
-            // Navegamos directamente a EditPlan con los datos actualizados
             Alert.alert("Éxito", "Datos actualizados correctamente.");
-            navigation.navigate('EditPlan', { planData: updatedPlanData });
+            navigation.navigate('EditPlan', { planData: finalUpdatedPlanData });
         } else {
             Alert.alert("Error de validación", "Por favor, complete todos los campos requeridos.");
         }
@@ -329,7 +366,6 @@ const EditAparejos = () => {
                             }}
                             tipoAparejo={tipoAparejoSeleccionado}
                             anguloSeleccionado={anguloSeleccionado}
-                            cantidadManiobra={cantidadNumero}
                             pesoCarga={setupCargaData?.peso || null}
                         />
 
