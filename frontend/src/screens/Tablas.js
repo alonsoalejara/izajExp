@@ -49,26 +49,47 @@ const Tablas = ({ route, navigation }) => {
     ...planData,
     pesoEquipo: setupGruaData?.pesoEquipo,
     pesoGancho: setupGruaData?.pesoGancho,
+    diametro: setupCargaData?.diametro,
   };
 
   const geometry = calculateGeometry(
     combinedData.forma,
     combinedData.alto,
-    combinedData.forma === 'Cilindro'
-      ? combinedData.diametro
-      : combinedData.largo,
-    combinedData.ancho
+    combinedData.largo,
+    combinedData.ancho,
+    combinedData.diametro
   );
 
-  const relX = geometry && combinedData.ancho
-    ? ((geometry.cg.cgX / combinedData.ancho) * 100).toFixed(0)
-    : null;
-  const relY = geometry && combinedData.largo
-    ? ((geometry.cg.cgY / combinedData.largo) * 100).toFixed(0)
-    : null;
-  const relZ = geometry && combinedData.alto
-    ? ((geometry.cg.cgZ / combinedData.alto) * 100).toFixed(0)
-    : null;
+  const altNum = parseFloat(combinedData.alto);
+  const diamNum = parseFloat(combinedData.diametro);
+  let isCylinderVertical = false;
+  if (combinedData.forma === 'Cilindro' && altNum > diamNum) {
+    isCylinderVertical = true;
+  }
+
+  const relX = geometry
+    ? (combinedData.forma === 'Cilindro'
+      ? (isCylinderVertical
+        ? ((geometry.cg.cgX / altNum) * 100).toFixed(0)
+        : ((geometry.cg.cgX / diamNum) * 100).toFixed(0))
+      : ((geometry.cg.cgX / parseFloat(combinedData.largo)) * 100).toFixed(0))
+    : 'N/A';
+
+  const relY = geometry
+    ? (combinedData.forma === 'Cilindro'
+      ? (isCylinderVertical
+        ? ((geometry.cg.cgY / diamNum) * 100).toFixed(0)
+        : ((geometry.cg.cgY / diamNum) * 100).toFixed(0))
+      : ((geometry.cg.cgY / parseFloat(combinedData.ancho)) * 100).toFixed(0))
+    : 'N/A';
+
+  const relZ = geometry
+    ? (combinedData.forma === 'Cilindro'
+      ? (isCylinderVertical
+        ? ((geometry.cg.cgZ / diamNum) * 100).toFixed(0)
+        : ((geometry.cg.cgZ / altNum) * 100).toFixed(0))
+      : ((geometry.cg.cgZ / altNum) * 100).toFixed(0))
+    : 'N/A';
 
   const { datosTablaManiobra, datosTablaGrua, datosTablaAparejosIndividuales, datosTablaProyecto } = obtenerDatosTablas({
     ...combinedData,
@@ -89,9 +110,15 @@ const Tablas = ({ route, navigation }) => {
     {
       item: 1,
       descripcion: 'Medidas',
-      X: `${combinedData.ancho} m`,
-      Y: `${combinedData.largo} m`,
-      Z: `${combinedData.alto} m`,
+      X: combinedData.forma === 'Cilindro'
+        ? (isCylinderVertical ? `${parseFloat(combinedData.diametro).toFixed(1)} m (Diámetro)` : `${parseFloat(combinedData.alto).toFixed(1)} m (Largo)`)
+        : (parseFloat(combinedData.largo).toFixed(1) === 'NaN' ? 'N/A' : `${parseFloat(combinedData.largo).toFixed(1)} m`),
+      Y: combinedData.forma === 'Cilindro'
+        ? (isCylinderVertical ? `${parseFloat(combinedData.diametro).toFixed(1)} m (Diámetro)` : `${parseFloat(combinedData.diametro).toFixed(1)} m (Diámetro)`)
+        : (parseFloat(combinedData.ancho).toFixed(1) === 'NaN' ? 'N/A' : `${parseFloat(combinedData.ancho).toFixed(1)} m`),
+      Z: combinedData.forma === 'Cilindro'
+        ? (isCylinderVertical ? `${parseFloat(combinedData.alto).toFixed(1)} m` : `${parseFloat(combinedData.diametro).toFixed(1)} m (Diámetro)`)
+        : (parseFloat(combinedData.alto).toFixed(1) === 'NaN' ? 'N/A' : `${parseFloat(combinedData.alto).toFixed(1)} m`),
     },
     {
       item: 2,
@@ -103,9 +130,9 @@ const Tablas = ({ route, navigation }) => {
     {
       item: 3,
       descripcion: 'Posic. Relativa',
-      X: relX !== null ? `${relX} %` : 'N/A',
-      Y: relY !== null ? `${relY} %` : 'N/A',
-      Z: relZ !== null ? `${relZ} %` : 'N/A',
+      X: relX !== 'N/A' ? `${relX} %` : 'N/A',
+      Y: relY !== 'N/A' ? `${relY} %` : 'N/A',
+      Z: relZ !== 'N/A' ? `${relZ} %` : 'N/A',
     },
   ];
 
@@ -159,29 +186,26 @@ const Tablas = ({ route, navigation }) => {
           text: 'Confirmar',
           onPress: async () => {
             try {
-              // Obtener la distancia gancho-elemento del datosTablaManiobra
               const distanciaGanchoElementoItem = datosTablaManiobra.find(
                 item => item.descripcion === 'Distancia gancho-elemento aprox.'
               );
               const distanciaGanchoElementoValue = distanciaGanchoElementoItem?.cantidad?.valor;
 
-              // Preparar el valor de altura para el backend
-              let alturaParaBackend = '0'; // Valor por defecto como string numérico
+              let alturaParaBackend = '0';
               if (distanciaGanchoElementoValue !== 'N/A' && distanciaGanchoElementoValue !== undefined && distanciaGanchoElementoValue !== null) {
                 const parsedHeight = parseFloat(distanciaGanchoElementoValue);
                 if (!isNaN(parsedHeight)) {
-                  alturaParaBackend = parsedHeight.toFixed(1); // Formatear a 1 decimal
+                  alturaParaBackend = parsedHeight.toFixed(1);
                 }
               }
 
               const aparejos = datosTablaAparejosIndividuales.map(item => {
-                // Preparar el valor de tensión para el backend
-                let tensionParaBackend = '0'; // Valor por defecto como string numérico
+                let tensionParaBackend = '0';
                 const tensionValue = item.detalles.find(d => d.label === 'Tensión')?.valor;
                 if (tensionValue !== 'N/A' && tensionValue !== undefined && tensionValue !== null) {
                   const parsedTension = parseFloat(tensionValue.replace(' ton', ''));
                   if (!isNaN(parsedTension)) {
-                    tensionParaBackend = parsedTension.toFixed(1); // Formatear a 1 decimal
+                    tensionParaBackend = parsedTension.toFixed(1);
                   }
                 }
 
@@ -193,8 +217,8 @@ const Tablas = ({ route, navigation }) => {
                   largo: parseFloat(item.detalles.find(d => d.label === 'Largo')?.valor.replace(' m', '') || 0),
                   grillete: item.detalles.find(d => d.label === 'Grillete')?.valor,
                   pesoGrillete: parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
-                  tension: tensionParaBackend, // Usar el valor preparado
-                  altura: alturaParaBackend, // Usar el valor preparado
+                  tension: tensionParaBackend,
+                  altura: alturaParaBackend,
                 };
               });
 
@@ -226,9 +250,9 @@ const Tablas = ({ route, navigation }) => {
                 xCG: geometry ? parseFloat(geometry.cg.cgX.toFixed(1)) : 0,
                 yCG: geometry ? parseFloat(geometry.cg.cgY.toFixed(1)) : 0,
                 zCG: geometry ? parseFloat(geometry.cg.cgZ.toFixed(1)) : 0,
-                xPR: relX !== null ? parseFloat(relX) : 0,
-                yPR: relY !== null ? parseFloat(relY) : 0,
-                zPR: relZ !== null ? parseFloat(relZ) : 0,
+                xPR: relX !== null && relX !== 'N/A' ? parseFloat(relX) : 0,
+                yPR: relY !== null && relY !== 'N/A' ? parseFloat(relY) : 0,
+                zPR: relZ !== null && relZ !== 'N/A' ? parseFloat(relZ) : 0,
               };
 
               const gruaId = setupGruaData?.grua?._id;
@@ -286,7 +310,6 @@ const Tablas = ({ route, navigation }) => {
                 alert(`Error al ${planId ? 'actualizar' : 'guardar'}: ${data.message || 'Error desconocido'}`);
               }
             } catch (error) {
-              // console.error('Error al manejar el plan de izaje:', error); // Removed console.error
               alert('Hubo un error al guardar/actualizar el plan de izaje.');
             }
           },
@@ -294,6 +317,15 @@ const Tablas = ({ route, navigation }) => {
       ],
       { cancelable: false }
     );
+  };
+
+  const handleGoBack = () => {
+    if (isSaved) {
+      // Navegar a la pestaña 'Perfil' dentro del TabNavigator
+      navigation.navigate('Tabs', { screen: 'Perfil' });
+    } else {
+      navigation.goBack();
+    }
   };
 
   return (
@@ -347,7 +379,7 @@ const Tablas = ({ route, navigation }) => {
       <View style={styles.buttonContainer}>
         <Components.Button
           label="Volver"
-          onPress={() => navigation.goBack()}
+          onPress={handleGoBack}
           isCancel={true}
           style={[styles.button, { backgroundColor: 'transparent' }]}
         />
