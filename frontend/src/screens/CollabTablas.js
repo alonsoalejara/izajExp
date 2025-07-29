@@ -78,6 +78,42 @@ const CollabTablas = ({ route }) => {
     ],
   })) || [];
 
+  const alturaDespeje = 1; // metros (H_despeje)
+  const alturaGanchoBloque = 1.6; // metros (H_gancho, para Terex RT555)
+
+  const altoCarga = parseFloat(currentSetup.centroGravedad?.zAlto) || 0;
+  const anchoCarga = parseFloat(currentSetup.centroGravedad?.xAncho) || 0;
+  const largoCarga = parseFloat(currentSetup.centroGravedad?.yLargo) || 0;
+  const formaCarga = currentSetup.centroGravedad?.forma || '';
+  const diametroCarga = parseFloat(currentSetup.centroGravedad?.diametro) || 0;
+
+  const cantidadManiobra = currentSetup.aparejos?.length || 0;
+  const anguloEslingaStr = currentSetup.cargas?.anguloTrabajo || '0°';
+  const anguloEnGrados = parseFloat(anguloEslingaStr.replace('°', '')) || 0;
+  const anguloEnRadianes = (anguloEnGrados * Math.PI) / 180;
+
+  let distanciaGanchoElementoCalculated = 'N/A';
+
+  if (cantidadManiobra === 1) {
+    const hCargaValida = altoCarga > 0 ? altoCarga : 0;
+    const calculatedLength = (hCargaValida + alturaDespeje) - alturaGanchoBloque;
+    distanciaGanchoElementoCalculated = calculatedLength > 0 ? calculatedLength.toFixed(1) : 'N/A';
+  } else if (cantidadManiobra > 1 && anguloEnGrados > 0 && anguloEnGrados < 90) {
+    let dimensionMayorCarga = 0;
+    if (formaCarga === 'Cuadrado' || formaCarga === 'Rectangulo') {
+      dimensionMayorCarga = Math.max(anchoCarga, largoCarga);
+    } else if (formaCarga === 'Cilindro') {
+      dimensionMayorCarga = diametroCarga;
+    } else {
+      dimensionMayorCarga = Math.max(anchoCarga, largoCarga);
+    }
+
+    if (dimensionMayorCarga > 0) {
+      const ladoAdyacenteParaAltura = dimensionMayorCarga / 2;
+      distanciaGanchoElementoCalculated = (Math.tan(anguloEnRadianes) * ladoAdyacenteParaAltura).toFixed(1);
+    }
+  }
+
   const datosTablaManiobra = [
     { descripcion: 'Peso elemento', cantidad: `${currentSetup.cargas?.pesoEquipo || 0} ton` },
     { descripcion: 'Peso aparejos', cantidad: `${currentSetup.cargas?.pesoAparejos || 0} ton` },
@@ -85,7 +121,7 @@ const CollabTablas = ({ route }) => {
     { descripcion: 'Peso cable', cantidad: `${currentSetup.cargas?.pesoCable || 0} ton` },
     { descripcion: 'Peso total', cantidad: `${currentSetup.cargas?.pesoTotal || 0} ton` },
     { descripcion: 'Radio de trabajo máximo', cantidad: `${currentSetup.cargas?.radioTrabajoMax || 0} m` },
-    { descripcion: 'Distancia gancho-elemento aprox.', cantidad: `${currentSetup.cargas?.distanciaGanchoElemento || 'N/A'} m` },
+    { descripcion: 'Distancia gancho-elemento aprox.', cantidad: `${distanciaGanchoElementoCalculated} m` },
     { descripcion: 'Ángulo de trabajo', cantidad: `${currentSetup.cargas?.anguloTrabajo || 0}` },
     { descripcion: 'Capacidad de levante', cantidad: `${currentSetup.cargas?.capacidadLevante || 0} ton` },
     { descripcion: '% Utilización', cantidad: `${currentSetup.cargas?.porcentajeUtilizacion || 0} %` },
