@@ -8,15 +8,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import getApiUrl from '../utils/apiUrl';
 
 const CollabTablas = ({ route }) => {
-  // Asegúrate de que 'setup' siempre esté actualizado. Si el 'setup' se modifica
-  // en otra parte de la app o si esta pantalla se abre con un 'setup' obsoleto,
-  // deberías considerar recargar los datos del setup del backend.
-  // Por ahora, asumimos que 'route.params.setup' es la fuente de verdad inicial.
   const [currentSetup, setCurrentSetup] = useState(route.params.setup);
   const navigation = useNavigation();
   const [showSmallButtons, setShowSmallButtons] = useState(true);
 
-  // Estas firmas reflejan el estado actual de las firmas en el plan que se muestra
   const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(
     currentSetup.firmaSupervisor && currentSetup.firmaSupervisor !== 'Firma pendiente' ? currentSetup.firmaSupervisor : null
   );
@@ -24,8 +19,6 @@ const CollabTablas = ({ route }) => {
     currentSetup.firmaJefeArea && currentSetup.firmaJefeArea !== 'Firma pendiente' ? currentSetup.firmaJefeArea : null
   );
 
-  // Observa cambios en `route.params.setup` para actualizar el estado local de `currentSetup`
-  // Esto es importante si el `setup` se actualiza a través de `navigation.setParams` en `handleFirmarPlan`
   useEffect(() => {
     if (route.params.setup) {
       setCurrentSetup(route.params.setup);
@@ -35,14 +28,13 @@ const CollabTablas = ({ route }) => {
   }, [route.params.setup]);
 
 
-  const { currentUser } = route.params; // El usuario que está logueado
+  const { currentUser } = route.params;
   const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
   const userId = currentUser?._id;
 
-  // Usa currentSetup para obtener los IDs de los responsables del plan
   const supervisorId = currentSetup?.supervisor?._id;
   const jefeAreaId = currentSetup?.jefeArea?._id;
-  const capatazId = currentSetup?.capataz?._id; // Añadido para consistencia si se usa en la interfaz
+  const capatazId = currentSetup?.capataz?._id;
 
   const getFullName = (person) => {
     if (!person) return 'N/A';
@@ -58,7 +50,6 @@ const CollabTablas = ({ route }) => {
     return 'N/A';
   };
 
-  // Datos para las tablas, ahora usando `currentSetup`
   const datosTablaProyecto = [
     { item: 1, descripcion: 'Nombre Proyecto', nombre: currentSetup.nombreProyecto || 'N/A' },
     { item: 2, descripcion: 'Capataz', nombre: getFullName(currentSetup.capataz) },
@@ -94,6 +85,7 @@ const CollabTablas = ({ route }) => {
     { descripcion: 'Peso cable', cantidad: `${currentSetup.cargas?.pesoCable || 0} ton` },
     { descripcion: 'Peso total', cantidad: `${currentSetup.cargas?.pesoTotal || 0} ton` },
     { descripcion: 'Radio de trabajo máximo', cantidad: `${currentSetup.cargas?.radioTrabajoMax || 0} m` },
+    { descripcion: 'Distancia gancho-elemento aprox.', cantidad: `${currentSetup.cargas?.distanciaGanchoElemento || 'N/A'} m` },
     { descripcion: 'Ángulo de trabajo', cantidad: `${currentSetup.cargas?.anguloTrabajo || 0}` },
     { descripcion: 'Capacidad de levante', cantidad: `${currentSetup.cargas?.capacidadLevante || 0} ton` },
     { descripcion: '% Utilización', cantidad: `${currentSetup.cargas?.porcentajeUtilizacion || 0} %` },
@@ -131,7 +123,6 @@ const CollabTablas = ({ route }) => {
       return;
     }
 
-    // Usar los estados de firma aplicados para verificar si ya se firmó en esta sesión
     const isSupervisorSigned = appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente';
     const isJefeAreaSigned = appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente';
 
@@ -154,12 +145,8 @@ const CollabTablas = ({ route }) => {
           onPress: async () => {
             setShowSmallButtons(false);
 
-            // Crear una copia **profunda** del objeto setup actual para no mutar el estado directamente
-            // y para asegurar que todos los datos estén presentes.
             const payload = JSON.parse(JSON.stringify(currentSetup));
 
-            // Convertir objetos anidados a solo sus _id si tu backend espera solo _id
-            // Esto es crucial para campos `Schema.Types.ObjectId`
             if (payload.capataz && typeof payload.capataz === 'object') {
               payload.capataz = payload.capataz._id;
             }
@@ -172,20 +159,14 @@ const CollabTablas = ({ route }) => {
             if (payload.grua && typeof payload.grua === 'object') {
               payload.grua = payload.grua._id;
             }
-            
-            // Si tu esquema de `aparejos` no tiene `_id` o espera que se elimine para actualizaciones,
-            // asegúrate de limpiar los `_id` de los objetos `aparejo`.
-            // Revisa si tu backend espera el `_id` para actualizar o simplemente los ignora.
-            // Dada la "propiedades adicionales" de antes, es más seguro limpiar `_id` de subdocumentos si no son requeridos.
+
             if (Array.isArray(payload.aparejos)) {
               payload.aparejos = payload.aparejos.map(aparejo => {
-                const { _id, ...rest } = aparejo; // Extrae _id y deja el resto
+                const { _id, ...rest } = aparejo;
                 return rest;
               });
             }
 
-
-            // **APLICAR LA FIRMA AL PAYLOAD COPIADO**
             if (userRole === 'supervisor' && userId === supervisorId) {
                 payload.firmaSupervisor = signatureToUse;
             } else if ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId) {
@@ -204,14 +185,14 @@ const CollabTablas = ({ route }) => {
                     return;
                 }
 
-                const apiUrl = getApiUrl(`setupIzaje/${currentSetup._id}`); // Usa currentSetup._id
+                const apiUrl = getApiUrl(`setupIzaje/${currentSetup._id}`);
                 const response = await fetch(apiUrl, {
-                    method: 'PUT', // Tu backend espera PUT con el cuerpo completo
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${accessToken}`,
                     },
-                    body: JSON.stringify(payload), // <-- Envía el payload COMPLETO con la firma actualizada
+                    body: JSON.stringify(payload),
                 });
 
                 if (!response.ok) {
@@ -232,10 +213,9 @@ const CollabTablas = ({ route }) => {
 
                 Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
 
-                // Actualizar el estado local y los parámetros de la ruta con el setup completo actualizado
                 if (data && data.updatedSetupIzaje) {
-                    setCurrentSetup(data.updatedSetupIzaje); // Actualiza el estado local
-                    navigation.setParams({ setup: data.updatedSetupIzaje }); // Actualiza los params de la ruta
+                    setCurrentSetup(data.updatedSetupIzaje);
+                    navigation.setParams({ setup: data.updatedSetupIzaje });
                 }
                 setShowSmallButtons(true);
             } catch (error) {
@@ -254,8 +234,8 @@ const CollabTablas = ({ route }) => {
 
   const canSign = (userRole === 'supervisor' && userId === supervisorId) ||
                   ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId);
-  
-  const isCapataz = userRole === 'capataz' && userId === capatazId; // Usa capatazId
+
+  const isCapataz = userRole === 'capataz' && userId === capatazId;
 
   return (
     <View style={[TablasStyles.container, { backgroundColor: '#fff' }]}>

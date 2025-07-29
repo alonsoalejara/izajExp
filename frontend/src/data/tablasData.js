@@ -2,39 +2,30 @@ import { grilleteOptions } from '../data/grilleteData';
 import { maniobraOptions } from '../data/maniobraData';
 
 export const obtenerDatosTablas = (datosRecibidos = {}) => {
-  // Radios de trabajo
   const radioIzaje = parseFloat(datosRecibidos.radioIzaje) || 0;
   const radioMontaje = parseFloat(datosRecibidos.radioMontaje) || 0;
   const radioMaximo = Math.max(radioIzaje, radioMontaje);
 
-  // Medidas de maniobra y cantidad
   const medidaS1Maniobra = parseFloat(datosRecibidos.medidaS1Maniobra) || 0;
   const medidaS2Maniobra = parseFloat(datosRecibidos.medidaS2Maniobra) || 0;
   const cantidadManiobra = parseInt(datosRecibidos.cantidadManiobra, 10) || 0;
 
-  // Tipo de aparejo
   const tipoAparejoDescripcion = datosRecibidos.tipoAparejo || 'N/A';
   const aparejoWLL = datosRecibidos.aparejoPorWLL || 'N/A';
   const tipoEslingaOEstrobo = datosRecibidos.eslingaOEstrobo || 'N/A';
 
-  // Peso unitario de la maniobra
   const pesoManiobraUnitario = maniobraOptions.find(m => m.label === tipoEslingaOEstrobo)?.peso || 0;
 
-  // Datos de grilletes
   const tipoGrillete = datosRecibidos.tipoGrillete || 'N/A';
   const pesoGrilleteUnitario = grilleteOptions.find(g => g.pulgada === tipoGrillete)?.peso || 0;
   const cantidadGrilletes = parseFloat(datosRecibidos.cantidadGrilletes) || 0;
 
-  // Inicialización
   const datosTablaAparejosIndividuales = [];
   let totalPesoAparejos = 0;
 
-  // Peso de la carga
   const pesoCarga = parseFloat(datosRecibidos.peso) || 0;
-  // Altura de referencia
-  const alturaCargaGanchoPorDefecto = 1;
+  const alturaCargaGanchoPorDefecto = 1; // Este valor no afecta el cálculo de tension, solo es un factor en la formula
 
-  // Cálculo de tensión
   let tensionCalculada = 0;
   if (cantidadManiobra === 1) {
     tensionCalculada = pesoCarga;
@@ -44,19 +35,16 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
     tensionCalculada = (pesoCarga / 3) * (1 / alturaCargaGanchoPorDefecto);
   }
 
-  // Dimensiones de la carga
   const anchoCarga = parseFloat(datosRecibidos.ancho) || 0;
   const largoCarga = parseFloat(datosRecibidos.largo) || 0;
-  const altoCarga = parseFloat(datosRecibidos.alto) || 0;
+  const altoCarga = parseFloat(datosRecibidos.alto) || 0; // H_carga
   const diametroCarga = parseFloat(datosRecibidos.diametro) || 0;
   const formaCarga = datosRecibidos.forma || '';
 
-  // Ángulo de eslinga
   const anguloEslingaStr = datosRecibidos.anguloEslinga || '0°';
   const anguloEnGrados = parseFloat(anguloEslingaStr.replace('°', '')) || 0;
   const anguloEnRadianes = (anguloEnGrados * Math.PI) / 180;
 
-  // Dimensión mayor de la carga
   let dimensionMayorCarga = 0;
   if (formaCarga === 'Cuadrado' || formaCarga === 'Rectangulo') {
     dimensionMayorCarga = Math.max(anchoCarga, largoCarga);
@@ -64,38 +52,45 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
     dimensionMayorCarga = diametroCarga;
   }
 
-  // Cálculo del largo del aparejo
-  let largoAparejoCalculado = 'N/A';
+  let largoAparejoCalculado = 'N/A'; // Para múltiples eslingas o eslinga simple con ángulo > 0
   if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
     const ladoAdyacenteParaLargo = dimensionMayorCarga / 2;
     largoAparejoCalculado = (ladoAdyacenteParaLargo / Math.cos(anguloEnRadianes)).toFixed(1);
   }
 
-  // Cálculo de distancia gancho-elemento
+  const alturaDespeje = 1; // metros (H_despeje)
+  const alturaGanchoBloque = 1.6; // metros (H_gancho, para Terex RT555)
+
+  let largoEslingaCalculadoParaUnaSola = 'N/A';
+  if (cantidadManiobra === 1) {
+    const hCargaValida = altoCarga > 0 ? altoCarga : 0; // Asegura que altoCarga sea un número válido y positivo para el cálculo
+    const calculatedLength = (hCargaValida + alturaDespeje) - alturaGanchoBloque;
+
+    largoEslingaCalculadoParaUnaSola = calculatedLength > 0 ? calculatedLength.toFixed(1) : 'N/A'; // Solo setea el largo calculado si es un valor positivo, de lo contrario N/A
+  }
+
   let distanciaGanchoElemento = 'N/A';
-  if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
+  if (cantidadManiobra === 1) { // Si la cantidad de maniobras es 1, usa el largo calculado para una sola eslinga.
+    distanciaGanchoElemento = largoEslingaCalculadoParaUnaSola;
+  } else if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
     const ladoAdyacenteParaAltura = dimensionMayorCarga / 2;
     distanciaGanchoElemento = (Math.tan(anguloEnRadianes) * ladoAdyacenteParaAltura).toFixed(1);
   }
 
-  // Procesamiento de aparejos de maniobra
   for (let i = 0; i < cantidadManiobra; i++) {
     const itemLabel = `${tipoEslingaOEstrobo} ${i + 1}`;
 
-    // Asignación del largo actual del aparejo
     let largoAparejoActual = 'N/A';
     if (cantidadManiobra === 1) {
-      largoAparejoActual = medidaS1Maniobra.toFixed(1);
+      largoAparejoActual = largoEslingaCalculadoParaUnaSola; // Usa el largo calculado por la fórmula para una sola eslinga
     } else if (cantidadManiobra === 2 || cantidadManiobra === 4) {
       largoAparejoActual = largoAparejoCalculado;
     }
 
-    // Cálculo de pesos individuales
     const pesoGrilleteFila = (tipoGrillete !== 'N/A' && i < cantidadGrilletes) ? pesoGrilleteUnitario : 0;
     const pesoTotalAparejoIndividual = pesoManiobraUnitario + pesoGrilleteFila;
     totalPesoAparejos += pesoTotalAparejoIndividual;
 
-    // Agregando detalles del aparejo
     datosTablaAparejosIndividuales.push({
       descripcionPrincipal: {
         item: i + 1,
@@ -111,7 +106,6 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
     });
   }
 
-  // Manejo de grilletes sin aparejos
   if (cantidadManiobra === 0 && datosRecibidos.tipoGrillete) {
     totalPesoAparejos += (pesoGrilleteUnitario * cantidadGrilletes);
     datosTablaAparejosIndividuales.push({
@@ -129,22 +123,18 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
     });
   }
 
-  // Cálculos de pesos totales
   const pesoEquipo = parseFloat(datosRecibidos.peso) || 0;
   const pesoGancho = parseFloat(datosRecibidos.pesoGancho) || 0;
   const pesoCable = parseFloat(datosRecibidos.pesoCable) || 0;
   const pesoTotal = totalPesoAparejos + pesoEquipo + pesoGancho + pesoCable;
 
-  // Capacidad y utilización
   const capacidadLevante = parseFloat(datosRecibidos.capacidadLevante) || 0;
   const porcentajeUtilizacion = capacidadLevante > 0
     ? Number(((pesoTotal / capacidadLevante) * 100).toFixed(1))
     : 0;
 
-  // Ángulo de trabajo
   const anguloTrabajo = cantidadManiobra > 1 && datosRecibidos.anguloEslinga ? datosRecibidos.anguloEslinga : '0°';
 
-  // Datos para tabla de maniobra
   const datosTablaManiobra = [
     { descripcion: 'Peso elemento', cantidad: { valor: pesoEquipo, unidad: 'ton' } },
     { descripcion: 'Peso aparejos', cantidad: { valor: totalPesoAparejos.toFixed(2), unidad: 'ton' } },
@@ -158,7 +148,6 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
     { descripcion: '% Utilización', cantidad: { valor: porcentajeUtilizacion, unidad: '%' } },
   ];
 
-  // Datos para tabla de grúa
   const datosTablaGrua = [
     { descripcion: 'Grúa', cantidad: datosRecibidos.nombreGrua || 'N/A' },
     { descripcion: 'Largo de pluma', cantidad: datosRecibidos.largoPluma || 'N/A' },
@@ -166,7 +155,6 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
     { descripcion: 'Contrapeso', cantidad: `${datosRecibidos.contrapeso || 0} ton` },
   ];
 
-  // Función para obtener nombre completo
   const getFullName = (person) => {
     if (!person) return 'N/A';
     const tieneNombre = person.nombre && person.nombre.trim() !== '';
@@ -180,7 +168,6 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
     return 'N/A';
   };
 
-  // Datos para tabla de proyecto
   const datosTablaProyecto = [
     { item: 1, descripcion: 'Nombre Proyecto', nombre: datosRecibidos.nombreProyecto || 'N/A' },
     { item: 2, descripcion: 'Capataz', nombre: getFullName(datosRecibidos.capataz) },
@@ -188,7 +175,6 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
     { item: 4, descripcion: 'Jefe Área', nombre: getFullName(datosRecibidos.jefeArea) },
   ];
 
-  // Retorno de tablas
   return {
     datosTablaManiobra,
     datosTablaGrua,
