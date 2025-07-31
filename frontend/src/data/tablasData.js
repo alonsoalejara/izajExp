@@ -46,7 +46,7 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
   const anguloEnRadianes = (anguloEnGrados * Math.PI) / 180;
 
   let dimensionMayorCarga = 0;
-  if (formaCarga === 'Cuadrado' || formaCarga === 'Rectangulo') {
+  if (formaCarga === 'Cuadrado' || formaCarga === 'Rectángulo') {
     dimensionMayorCarga = Math.max(anchoCarga, largoCarga);
   } else if (formaCarga === 'Cilindro') {
     dimensionMayorCarga = diametroCarga;
