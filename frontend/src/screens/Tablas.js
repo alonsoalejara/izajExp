@@ -244,6 +244,7 @@ const Tablas = ({ route, navigation }) => {
               };
 
               const centroGravedad = {
+                diametro: parseFloat(combinedData.diametro) || 0,
                 xAncho: parseFloat(combinedData.ancho) || 0,
                 yLargo: parseFloat(combinedData.largo) || 0,
                 zAlto: parseFloat(combinedData.alto) || 0,
@@ -271,6 +272,11 @@ const Tablas = ({ route, navigation }) => {
                 grua: gruaId,
                 version: planId ? currentVersion : 0,
               };
+
+              // Mostrar en consola sin las firmas
+              const { firmaSupervisor, firmaJefeArea, ...dataToLog } = finalData;
+              console.log('Datos para guardar plan de izaje:', JSON.stringify(dataToLog, null, 2));
+
 
               const accessToken = await AsyncStorage.getItem('accessToken');
               if (!accessToken) {
