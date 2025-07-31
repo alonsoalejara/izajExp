@@ -78,49 +78,16 @@ const CollabTablas = ({ route }) => {
     ],
   })) || [];
 
-  const alturaDespeje = 1; // metros (H_despeje)
-  const alturaGanchoBloque = 1.6; // metros (H_gancho, para Terex RT555)
-
-  const formaCarga = currentSetup.centroGravedad?.forma?.toLowerCase() || '';
-  const diametroCarga = parseFloat(currentSetup.centroGravedad?.diametro) || 0;
-  const altoCarga = parseFloat(currentSetup.centroGravedad?.zAlto) || 0;
-
-  let anchoCarga = parseFloat(currentSetup.centroGravedad?.xAncho);
-  let largoCarga = parseFloat(currentSetup.centroGravedad?.yLargo);
-  let yCG = parseFloat(currentSetup.centroGravedad?.yCG);
-  let yPR = parseFloat(currentSetup.centroGravedad?.yPR);
-
-  if (formaCarga === 'cilindro') {
-    if (!anchoCarga || anchoCarga === 0) anchoCarga = diametroCarga;
-    if (!largoCarga || largoCarga === 0) largoCarga = diametroCarga;
-    if (!yCG || yCG === 0) yCG = diametroCarga / 2;
-    if (!yPR || yPR === 0) yPR = diametroCarga / 2;
-  }
-
-  const cantidadManiobra = currentSetup.aparejos?.length || 0;
-  const anguloEslingaStr = currentSetup.cargas?.anguloTrabajo || '0°';
-  const anguloEnGrados = parseFloat(anguloEslingaStr.replace('°', '')) || 0;
-  const anguloEnRadianes = (anguloEnGrados * Math.PI) / 180;
-
   let distanciaGanchoElementoCalculated = 'N/A';
 
-  if (cantidadManiobra === 1) {
-    const hCargaValida = altoCarga > 0 ? altoCarga : 0;
-    const calculatedLength = (hCargaValida + alturaDespeje) - alturaGanchoBloque;
-    distanciaGanchoElementoCalculated = calculatedLength > 0 ? calculatedLength.toFixed(1) : 'N/A';
-  } else if (cantidadManiobra > 1 && anguloEnGrados > 0 && anguloEnGrados < 90) {
-    let dimensionMayorCarga = 0;
-    if (formaCarga === 'Cuadrado' || formaCarga === 'Rectangulo') {
-      dimensionMayorCarga = Math.max(anchoCarga, largoCarga);
-    } else if (formaCarga === 'Cilindro') {
-      dimensionMayorCarga = diametroCarga;
-    } else {
-      dimensionMayorCarga = Math.max(anchoCarga, largoCarga);
-    }
-
-    if (dimensionMayorCarga > 0) {
-      const ladoAdyacenteParaAltura = dimensionMayorCarga / 2;
-      distanciaGanchoElementoCalculated = (Math.tan(anguloEnRadianes) * ladoAdyacenteParaAltura).toFixed(1);
+  // MODIFICACIÓN: Tomar el valor de 'altura' del primer aparejo
+  if (currentSetup.aparejos && currentSetup.aparejos.length > 0) {
+    const primerAparejo = currentSetup.aparejos[0];
+    if (primerAparejo.altura !== undefined && primerAparejo.altura !== null) {
+      const alturaNumerica = parseFloat(primerAparejo.altura);
+      if (!isNaN(alturaNumerica)) {
+        distanciaGanchoElementoCalculated = alturaNumerica.toFixed(1);
+      }
     }
   }
 
@@ -138,7 +105,29 @@ const CollabTablas = ({ route }) => {
   ];
 
   const formatNumber = (num, unit = '') =>
-    (num !== undefined && num !== null) ? `${num} ${unit}` : `N/A${unit ? ' ' + unit : ''}`;
+    (num !== undefined && num !== null && !isNaN(num)) ? `${parseFloat(num).toFixed(1)} ${unit}` : `N/A${unit ? ' ' + unit : ''}`;
+
+  const anchoCarga = parseFloat(currentSetup.centroGravedad?.xAncho || currentSetup.cargas?.ancho) || 0;
+  const largoCarga = parseFloat(currentSetup.centroGravedad?.yLargo || currentSetup.cargas?.largo) || 0;
+  const altoCarga = parseFloat(currentSetup.centroGravedad?.zAlto || currentSetup.cargas?.alto) || 0;
+  const diametroCarga = parseFloat(currentSetup.centroGravedad?.diametro || currentSetup.cargas?.diametro) || 0;
+  const formaCarga = currentSetup.centroGravedad?.forma?.toLowerCase() || currentSetup.cargas?.forma?.toLowerCase() || '';
+
+  let xCG = parseFloat(currentSetup.centroGravedad?.xCG);
+  let yCG = parseFloat(currentSetup.centroGravedad?.yCG);
+  let zCG = parseFloat(currentSetup.centroGravedad?.zCG);
+  let xPR = parseFloat(currentSetup.centroGravedad?.xPR);
+  let yPR = parseFloat(currentSetup.centroGravedad?.yPR);
+  let zPR = parseFloat(currentSetup.centroGravedad?.zPR);
+
+  if (formaCarga === 'cilindro') {
+    if (isNaN(xCG)) xCG = diametroCarga / 2;
+    if (isNaN(yCG)) yCG = diametroCarga / 2;
+    if (isNaN(zCG)) zCG = altoCarga / 2;
+    if (isNaN(xPR)) xPR = (xCG / (anchoCarga || diametroCarga)) * 100;
+    if (isNaN(yPR)) yPR = (yCG / (largoCarga || diametroCarga)) * 100;
+    if (isNaN(zPR)) zPR = (zCG / (altoCarga || diametroCarga)) * 100;
+  }
 
   const datosTablaXYZ = [
     {
@@ -151,16 +140,16 @@ const CollabTablas = ({ route }) => {
     {
       item: 2,
       descripcion: 'CG',
-      X: formatNumber(currentSetup.centroGravedad?.xCG ?? yCG, 'm'),
+      X: formatNumber(xCG, 'm'),
       Y: formatNumber(yCG, 'm'),
-      Z: formatNumber(currentSetup.centroGravedad?.zCG, 'm'),
+      Z: formatNumber(zCG, 'm'),
     },
     {
       item: 3,
       descripcion: 'Posic. Relativa',
-      X: formatNumber(currentSetup.centroGravedad?.xPR ?? yPR, '%'),
+      X: formatNumber(xPR, '%'),
       Y: formatNumber(yPR, '%'),
-      Z: formatNumber(currentSetup.centroGravedad?.zPR, '%'),
+      Z: formatNumber(zPR, '%'),
     },
   ];
 
@@ -188,7 +177,7 @@ const CollabTablas = ({ route }) => {
       "Confirmar Firma",
       "¿Deseas aplicar tu firma a este plan de izaje?",
       [
-        { text: "Cancelar", style: "cancel", onPress: () => {} },
+        { text: "Cancelar", style: "cancel", onPress: () => { } },
         {
           text: "Firmar",
           onPress: async () => {
@@ -217,59 +206,59 @@ const CollabTablas = ({ route }) => {
             }
 
             if (userRole === 'supervisor' && userId === supervisorId) {
-                payload.firmaSupervisor = signatureToUse;
+              payload.firmaSupervisor = signatureToUse;
             } else if ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId) {
-                payload.firmaJefeArea = signatureToUse;
+              payload.firmaJefeArea = signatureToUse;
             } else {
-                Alert.alert("Error de Rol", "Tu rol o ID de usuario no coincide con los asignados para firmar este plan.");
-                setShowSmallButtons(true);
-                return;
+              Alert.alert("Error de Rol", "Tu rol o ID de usuario no coincide con los asignados para firmar este plan.");
+              setShowSmallButtons(true);
+              return;
             }
 
             try {
-                const accessToken = await AsyncStorage.getItem('accessToken');
-                if (!accessToken) {
-                    Alert.alert('Error de Autenticación', 'No autorizado. Por favor, inicie sesión nuevamente.');
-                    setShowSmallButtons(true);
-                    return;
-                }
-
-                const apiUrl = getApiUrl(`setupIzaje/${currentSetup._id}`);
-                const response = await fetch(apiUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                    body: JSON.stringify(payload),
-                });
-
-                if (!response.ok) {
-                    const errorResponseText = await response.text();
-                    let errorMessage = 'Error desconocido al firmar.';
-                    try {
-                        const errorData = JSON.parse(errorResponseText);
-                        errorMessage = errorData.message || errorMessage;
-                    } catch (e) {
-                        errorMessage = `Error del servidor: ${errorResponseText.substring(0, 100)}...`;
-                    }
-                    Alert.alert('Error al firmar', errorMessage);
-                    setShowSmallButtons(true);
-                    return;
-                }
-
-                const data = await response.json();
-
-                Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
-
-                if (data && data.updatedSetupIzaje) {
-                    setCurrentSetup(data.updatedSetupIzaje);
-                    navigation.setParams({ setup: data.updatedSetupIzaje });
-                }
+              const accessToken = await AsyncStorage.getItem('accessToken');
+              if (!accessToken) {
+                Alert.alert('Error de Autenticación', 'No autorizado. Por favor, inicie sesión nuevamente.');
                 setShowSmallButtons(true);
+                return;
+              }
+
+              const apiUrl = getApiUrl(`setupIzaje/${currentSetup._id}`);
+              const response = await fetch(apiUrl, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify(payload),
+              });
+
+              if (!response.ok) {
+                const errorResponseText = await response.text();
+                let errorMessage = 'Error desconocido al firmar.';
+                try {
+                  const errorData = JSON.parse(errorResponseText);
+                  errorMessage = errorData.message || errorMessage;
+                } catch (e) {
+                  errorMessage = `Error del servidor: ${errorResponseText.substring(0, 100)}...`;
+                }
+                Alert.alert('Error al firmar', errorMessage);
+                setShowSmallButtons(true);
+                return;
+              }
+
+              const data = await response.json();
+
+              Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
+
+              if (data && data.updatedSetupIzaje) {
+                setCurrentSetup(data.updatedSetupIzaje);
+                navigation.setParams({ setup: data.updatedSetupIzaje });
+              }
+              setShowSmallButtons(true);
             } catch (error) {
-                Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor para firmar el plan.');
-                setShowSmallButtons(true);
+              Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor para firmar el plan.');
+              setShowSmallButtons(true);
             }
           }
         }
@@ -282,7 +271,7 @@ const CollabTablas = ({ route }) => {
   };
 
   const canSign = (userRole === 'supervisor' && userId === supervisorId) ||
-                  ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId);
+    ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId);
 
   const isCapataz = userRole === 'capataz' && userId === capatazId;
 
