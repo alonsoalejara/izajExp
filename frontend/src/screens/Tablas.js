@@ -273,10 +273,7 @@ const Tablas = ({ route, navigation }) => {
                 version: planId ? currentVersion : 0,
               };
 
-              // Mostrar en consola sin las firmas
               const { firmaSupervisor, firmaJefeArea, ...dataToLog } = finalData;
-              console.log('Datos para guardar plan de izaje:', JSON.stringify(dataToLog, null, 2));
-
 
               const accessToken = await AsyncStorage.getItem('accessToken');
               if (!accessToken) {
