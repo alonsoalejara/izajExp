@@ -81,11 +81,21 @@ const CollabTablas = ({ route }) => {
   const alturaDespeje = 1; // metros (H_despeje)
   const alturaGanchoBloque = 1.6; // metros (H_gancho, para Terex RT555)
 
-  const altoCarga = parseFloat(currentSetup.centroGravedad?.zAlto) || 0;
-  const anchoCarga = parseFloat(currentSetup.centroGravedad?.xAncho) || 0;
-  const largoCarga = parseFloat(currentSetup.centroGravedad?.yLargo) || 0;
-  const formaCarga = currentSetup.centroGravedad?.forma || '';
+  const formaCarga = currentSetup.centroGravedad?.forma?.toLowerCase() || '';
   const diametroCarga = parseFloat(currentSetup.centroGravedad?.diametro) || 0;
+  const altoCarga = parseFloat(currentSetup.centroGravedad?.zAlto) || 0;
+
+  let anchoCarga = parseFloat(currentSetup.centroGravedad?.xAncho);
+  let largoCarga = parseFloat(currentSetup.centroGravedad?.yLargo);
+  let yCG = parseFloat(currentSetup.centroGravedad?.yCG);
+  let yPR = parseFloat(currentSetup.centroGravedad?.yPR);
+
+  if (formaCarga === 'cilindro') {
+    if (!anchoCarga || anchoCarga === 0) anchoCarga = diametroCarga;
+    if (!largoCarga || largoCarga === 0) largoCarga = diametroCarga;
+    if (!yCG || yCG === 0) yCG = diametroCarga / 2;
+    if (!yPR || yPR === 0) yPR = diametroCarga / 2;
+  }
 
   const cantidadManiobra = currentSetup.aparejos?.length || 0;
   const anguloEslingaStr = currentSetup.cargas?.anguloTrabajo || '0°';
@@ -127,27 +137,30 @@ const CollabTablas = ({ route }) => {
     { descripcion: '% Utilización', cantidad: `${currentSetup.cargas?.porcentajeUtilizacion || 0} %` },
   ];
 
+  const formatNumber = (num, unit = '') =>
+    (num !== undefined && num !== null) ? `${num} ${unit}` : `N/A${unit ? ' ' + unit : ''}`;
+
   const datosTablaXYZ = [
     {
       item: 1,
       descripcion: 'Medidas',
-      X: `${currentSetup.centroGravedad?.xAncho || 'N/A'} m`,
-      Y: `${currentSetup.centroGravedad?.yLargo || 'N/A'} m`,
-      Z: `${currentSetup.centroGravedad?.zAlto || 'N/A'} m`,
+      X: formatNumber(anchoCarga, 'm'),
+      Y: formatNumber(largoCarga, 'm'),
+      Z: formatNumber(altoCarga, 'm'),
     },
     {
       item: 2,
       descripcion: 'CG',
-      X: `${currentSetup.centroGravedad?.xCG || 'N/A'} m`,
-      Y: `${currentSetup.centroGravedad?.yCG || 'N/A'} m`,
-      Z: `${currentSetup.centroGravedad?.zCG || 'N/A'} m`,
+      X: formatNumber(currentSetup.centroGravedad?.xCG ?? yCG, 'm'),
+      Y: formatNumber(yCG, 'm'),
+      Z: formatNumber(currentSetup.centroGravedad?.zCG, 'm'),
     },
     {
       item: 3,
       descripcion: 'Posic. Relativa',
-      X: `${currentSetup.centroGravedad?.xPR || 'N/A'} %`,
-      Y: `${currentSetup.centroGravedad?.yPR || 'N/A'} %`,
-      Z: `${currentSetup.centroGravedad?.zPR || 'N/A'} %`,
+      X: formatNumber(currentSetup.centroGravedad?.xPR ?? yPR, '%'),
+      Y: formatNumber(yPR, '%'),
+      Z: formatNumber(currentSetup.centroGravedad?.zPR, '%'),
     },
   ];
 
