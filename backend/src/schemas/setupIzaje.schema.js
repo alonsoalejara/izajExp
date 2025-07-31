@@ -107,6 +107,10 @@ const cargaSchema = Joi.object({
 });
 
 const centroGravedadSchema = Joi.object({
+  diametro: Joi.number().required().messages({
+    "number.base": "El diámetro debe ser un número.",
+    "any.required": "El diámetro es obligatorio.",
+  }),
   xAncho: Joi.number().required().messages({
     "number.base": "La coordenada X (ancho) debe ser un número.",
     "any.required": "La coordenada X (ancho) es obligatoria.",

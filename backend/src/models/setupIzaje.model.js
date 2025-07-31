@@ -46,6 +46,7 @@ const setupIzajeSchema = new Schema(
             porcentajeUtilizacion: { type: Number, required: true }
         },
         centroGravedad: {
+            diametro: { type: Number, required: true },
             xAncho: { type: Number, required: true },
             yLargo: { type: Number, required: true },
             zAlto: { type: Number, required: true },
