@@ -55,8 +55,8 @@ const SetupCarga = () => {
     let cargaData = {
       peso: pesoNum,
       alto: alturaNum,
-      largo: largoNum,
-      ancho: anchoNum,
+      largo: forma === 'Cuadrado' ? alturaNum : largoNum,
+      ancho: forma === 'Cuadrado' ? alturaNum : anchoNum,
       diametro: diametroNum,
       forma: forma,
     };
@@ -105,12 +105,21 @@ const SetupCarga = () => {
 
   const altoLabel = forma === 'Cilindro' ? 'altura' : forma === 'Cuadrado' ? 'lado' : 'alto';
 
+  const alturaNum = parseFloat(altura) || 0;
+  const largoNum = parseFloat(largo) || 0;
+  const anchoNum = parseFloat(ancho) || 0;
+  const diametroNum = parseFloat(diametro) || 0;
+
+  // Para cuadrado, las dimensiones largo y ancho deben ser iguales a altura
+  const largoParaCalculo = forma === 'Cuadrado' ? alturaNum : largoNum;
+  const anchoParaCalculo = forma === 'Cuadrado' ? alturaNum : anchoNum;
+
   const geometry = calculateGeometry(
     forma,
-    altura,
-    largo,
-    ancho,
-    diametro
+    alturaNum,
+    largoParaCalculo,
+    anchoParaCalculo,
+    diametroNum
   );
 
   const cg = geometry?.cg;
@@ -275,9 +284,9 @@ const SetupCarga = () => {
                     </>
                   ) : (
                     <>
-                      <Text>Largo: {parseFloat(largo).toFixed(1)} m</Text>
-                      <Text>Ancho: {parseFloat(ancho).toFixed(1)} m</Text>
-                      <Text>Altura: {parseFloat(altura).toFixed(1)} m</Text>
+                      <Text>Largo: {forma === 'Cuadrado' ? Number(altura).toFixed(1) : Number(largo).toFixed(1)} m</Text>
+                      <Text>Ancho: {forma === 'Cuadrado' ? Number(altura).toFixed(1) : Number(ancho).toFixed(1)} m</Text>
+                      <Text>Altura: {Number(altura).toFixed(1)} m</Text>
                     </>
                   )}
                 </View>
