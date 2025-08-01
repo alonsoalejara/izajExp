@@ -20,9 +20,8 @@ const EditGrua = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { gruaId, datos: initialDatosGrua, planData, cargas } = route.params;
-
     const [currentPlanData, setCurrentPlanData] = useState(planData || {});
-    const [currentCargaData, setCurrentCargaData] = useState(cargas || {});
+    const [currentCargaData, setCurrentCargaData] = useState(planData?.cargas || {});
 
     const [isGruaModalVisible, setGruaModalVisible] = useState(false);
     const [isLargoPlumaModalVisible, setLargoPlumaModalVisible] = useState(false);
