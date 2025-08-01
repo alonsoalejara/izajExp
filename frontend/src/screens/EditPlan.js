@@ -62,7 +62,7 @@ const EditPlan = () => {
         let largoAparejoCalculado = 'N/A';
         if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
             const ladoAdyacenteParaLargo = dimensionMayorCarga / 2;
-            largoAparejoCalculado = (ladoAdyacenteParaLargo / Math.cos(anguloEnRadianes)).toFixed(1);
+            largoAparejoCalculado = (ladoAdyacenteParaLado / Math.cos(anguloEnRadianes)).toFixed(1);
         }
 
         return { distanciaGanchoElemento, largoAparejoCalculado };
@@ -104,6 +104,7 @@ const EditPlan = () => {
                 porcentajeUtilizacion: initialPlanData.cargas?.porcentajeUtilizacion || 0,
             },
             centroGravedad: {
+                diametro: initialPlanData.centroGravedad?.diametro || 0,
                 xAncho: initialPlanData.centroGravedad?.xAncho || 0,
                 yLargo: initialPlanData.centroGravedad?.yLargo || 0,
                 zAlto: initialPlanData.centroGravedad?.zAlto || 0,
@@ -116,8 +117,6 @@ const EditPlan = () => {
             },
             version: initialPlanData.version || 0,
             _id: initialPlanData._id || null,
-            forma: initialPlanData.forma || '',
-            diametro: initialPlanData.diametro || 0,
         };
         return initialState;
     });
@@ -180,12 +179,18 @@ const EditPlan = () => {
                 
                 const newPesoAparejos = calculateTotalAparejosWeight(updatedAparejos);
                 
+                const newPesoTotal = (parseFloat(updatedPlanData.cargas.pesoEquipo) || 0) + 
+                                            newPesoAparejos + 
+                                            (parseFloat(updatedPlanData.cargas.pesoGancho) || 0) + 
+                                            (parseFloat(updatedPlanData.cargas.pesoCable) || 0);
+
                 return {
                     ...updatedPlanData,
                     aparejos: updatedAparejos,
                     cargas: {
                         ...updatedPlanData.cargas,
                         pesoAparejos: newPesoAparejos,
+                        pesoTotal: newPesoTotal,
                     }
                 };
             });
@@ -203,6 +208,12 @@ const EditPlan = () => {
             Alert.alert("Error de autenticación", "No autorizado. Por favor, inicie sesión nuevamente.");
             return;
         }
+
+        const pesoTotal = parseFloat(editablePlan.cargas.pesoTotal) || 0;
+        const capacidadLevante = parseFloat(editablePlan.cargas.capacidadLevante) || 0;
+        const porcentajeUtilizacion = capacidadLevante > 0
+            ? Number(((pesoTotal / capacidadLevante) * 100).toFixed(1))
+            : 0;
 
         const finalPayload = {
             nombreProyecto: editablePlan.nombreProyecto,
@@ -224,11 +235,14 @@ const EditPlan = () => {
                 pesoTotal: ap.pesoTotal,
             })),
             datos: editablePlan.datos,
-            cargas: editablePlan.cargas,
+            cargas: {
+                ...editablePlan.cargas,
+                porcentajeUtilizacion: porcentajeUtilizacion,
+            },
             centroGravedad: editablePlan.centroGravedad,
             version: editablePlan.version,
             forma: editablePlan.forma,
-            diametro: editablePlan.diametro,
+            diametro: editablePlan.diametro !== null && !isNaN(parseFloat(editablePlan.diametro)) ? parseFloat(editablePlan.diametro) : 0,
         };
 
         const payloadForLog = { ...finalPayload };
@@ -320,7 +334,6 @@ const EditPlan = () => {
                 <Text style={styles.labelAdjusted}>
                     Jefe de Área: <Text style={styles.normalFontWeight}>{getFullName(initialPlanData.jefeArea)}</Text>
                 </Text>
-
 
                 <Text style={styles.sectionTitle}>Versión</Text>
                 <Text style={styles.labelAdjusted}>

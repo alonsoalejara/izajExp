@@ -52,12 +52,6 @@ const EditAparejos = () => {
     const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
 
     useEffect(() => {
-        // console.log para depuración
-        console.log('initialCargaData:', initialCargaData);
-        console.log('initialGruaData:', initialGruaData);
-        console.log('initialRadioData:', initialRadioData);
-        console.log('-------------------------------------------');
-
         // Poblar los estados con los datos existentes de planData.aparejos si los hay
         if (initialPlanData?.aparejos && initialPlanData.aparejos.length > 0) {
             const firstAparejo = initialPlanData.aparejos[0];
