@@ -7,7 +7,6 @@ import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
 import { validateSetupAparejos } from '../utils/validation/validateAparejos';
 
-// Importa los datos de los grilletes y maniobras
 import { grilleteOptions } from '../data/grilleteData';
 import { maniobraOptions } from '../data/maniobraData';
 
@@ -15,14 +14,12 @@ const EditAparejos = () => {
     const navigation = useNavigation();
     const route = useRoute();
 
-    // Capturamos todos los datos iniciales que vienen por la ruta
     const { planData: initialPlanData, cargas: initialCargaData, gruaData: initialGruaData, radioData: initialRadioData } = route.params;
 
-    // Inicializamos los estados con los datos iniciales para asegurar su persistencia
     const [planData, setPlanData] = useState(initialPlanData || {});
     const [setupGruaData, setSetupGruaData] = useState(initialGruaData || {});
     const [setupCargaData, setSetupCargaData] = useState(initialCargaData || {});
-    const [setupRadioData, setSetupRadioData] = useState(initialRadioData || {}); // Asegurar que setupRadioData también se inicialice
+    const [setupRadioData, setSetupRadioData] = useState(initialRadioData || {});
 
     const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null, cantidades: {} });
     const [cantidadGrilletes, setCantidadGrilletes] = useState('');
@@ -52,31 +49,6 @@ const EditAparejos = () => {
     const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
 
     useEffect(() => {
-        // Poblar los estados con los datos existentes de planData.aparejos si los hay
-        if (initialPlanData?.aparejos && initialPlanData.aparejos.length > 0) {
-            const firstAparejo = initialPlanData.aparejos[0];
-            setManiobraSeleccionada(prev => ({
-                ...prev,
-                cantidad: String(firstAparejo.cantidad || ''),
-                tipo: { type: firstAparejo.descripcion || '', cantidades: {} }
-            }));
-            setCantidadGrilletes(String(firstAparejo.cantidad || ''));
-            setTipoGrillete(firstAparejo.grillete || '');
-            setTipoAparejoSeleccionado(firstAparejo.descripcion || '');
-            setAparejoPorWLL(''); 
-            setTipoManiobraSeleccionadoSolo(firstAparejo.descripcion || '');
-        }
-
-        // Setear anguloSeleccionado desde initialCargaData
-        if (initialCargaData?.anguloTrabajo) {
-            setAnguloSeleccionado(String(parseFloat(initialCargaData.anguloTrabajo.replace('°', '')) || 0));
-        } else {
-            setAnguloSeleccionado('0');
-        }
-
-    }, [initialPlanData, initialCargaData, initialGruaData, initialRadioData]); // Asegurar que todos los datos iniciales sean dependencias
-
-    useEffect(() => {
         const fetchDataFromAsyncStorage = async () => {
             try {
                 const data = await AsyncStorage.getItem('setupGruaData');
@@ -92,14 +64,12 @@ const EditAparejos = () => {
         fetchDataFromAsyncStorage();
     }, [route.params?.gruaData]);
 
-    // Asegurarse de que setupCargaData se actualice si cambia initialCargaData
     useEffect(() => {
         if (initialCargaData) {
             setSetupCargaData(initialCargaData);
         }
     }, [initialCargaData]);
     
-    // Asegurarse de que setupRadioData se actualice si cambia initialRadioData
     useEffect(() => {
         if (initialRadioData) {
             setSetupRadioData(initialRadioData);
@@ -174,7 +144,6 @@ const EditAparejos = () => {
 
             for (let i = 0; i < cantidad; i++) {
                 const newAparejo = {
-                    // --- CORRECCIÓN: Se combina el tipo de maniobra, el tipo de aparejo y el WLL ---
                     descripcion: `${tipoManiobraSeleccionadoSolo} ${tipoAparejoSeleccionado} ${aparejoPorWLL}`,
                     cantidad: 1, 
                     pesoUnitario: pesoUnitarioAparejo,

@@ -179,10 +179,12 @@ const EditPlan = () => {
                 
                 const newPesoAparejos = calculateTotalAparejosWeight(updatedAparejos);
                 
-                const newPesoTotal = (parseFloat(updatedPlanData.cargas.pesoEquipo) || 0) + 
-                                                newPesoAparejos + 
-                                                (parseFloat(updatedPlanData.cargas.pesoGancho) || 0) + 
-                                                (parseFloat(updatedPlanData.cargas.pesoCable) || 0);
+                const newPesoTotal = parseFloat((
+                    (parseFloat(updatedPlanData.cargas.pesoEquipo) || 0) + 
+                    newPesoAparejos + 
+                    (parseFloat(updatedPlanData.cargas.pesoGancho) || 0) + 
+                    (parseFloat(updatedPlanData.cargas.pesoCable) || 0)
+                ).toFixed(2));
 
                 return {
                     ...updatedPlanData,
@@ -237,6 +239,9 @@ const EditPlan = () => {
             dimensionMayorCarga = diametroCarga;
         }
 
+        const { distanciaGanchoElemento, largoAparejoCalculado } = calculateAparejoDimensions(editablePlan);
+        const parsedDistanciaGanchoElemento = parseFloat(distanciaGanchoElemento);
+
 
         const finalPayload = {
             nombreProyecto: editablePlan.nombreProyecto,
@@ -252,17 +257,17 @@ const EditPlan = () => {
                 const anguloEslingaStr = ap.tension || '0°';
                 const anguloEnGrados = parseFloat(anguloEslingaStr.replace('°', '')) || 0;
                 const anguloEnRadianes = (anguloEnGrados * Math.PI) / 180;
-
-                let largoAparejoCalculado = 'N/A';
+                
+                let largoAparejoFinal;
                 if (cantidadManiobra === 1) {
-                    const hCargaValida = altoCarga > 0 ? altoCarga : 0;
-                    const calculatedLength = (hCargaValida + alturaDespeje) - alturaGanchoBloque;
-                    largoAparejoCalculado = calculatedLength > 0 ? calculatedLength.toFixed(1) : 'N/A';
+                    largoAparejoFinal = !isNaN(parsedDistanciaGanchoElemento) ? parsedDistanciaGanchoElemento : 0;
                 } else if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
                     const ladoAdyacenteParaLargo = dimensionMayorCarga / 2;
-                    largoAparejoCalculado = (ladoAdyacenteParaLargo / Math.cos(anguloEnRadianes)).toFixed(1);
+                    largoAparejoFinal = parseFloat((ladoAdyacenteParaLargo / Math.cos(anguloEnRadianes)).toFixed(1)) || 0;
+                } else {
+                    largoAparejoFinal = parseFloat(largoAparejoCalculado) || 0;
                 }
-
+                
                 let calculatedTension = 0;
                 if (cantidadManiobra === 1) {
                     calculatedTension = pesoCarga;
@@ -277,7 +282,7 @@ const EditPlan = () => {
                     descripcion: ap.descripcion,
                     cantidad: ap.cantidad,
                     pesoUnitario: ap.pesoUnitario,
-                    largo: parseFloat(largoAparejoCalculado) || 0,
+                    largo: largoAparejoFinal,
                     grillete: ap.grillete,
                     pesoGrillete: ap.pesoGrillete,
                     tension: String(calculatedTension),
