@@ -38,7 +38,7 @@ const EditPlan = () => {
         } else if (dimensionMayorCarga > 0 && anguloEnGrados === 0) {
             distanciaGanchoElemento = altoCarga.toFixed(1);
         } else {
-             distanciaGanchoElemento = initialPlanData.cargas?.distanciaGanchoElemento || 'N/A';
+            distanciaGanchoElemento = initialPlanData.cargas?.distanciaGanchoElemento || 'N/A';
         }
 
         let largoAparejoCalculado = 'N/A';
@@ -94,8 +94,8 @@ const EditPlan = () => {
             cargas: {
                 pesoEquipo: initialPlanData.cargas?.pesoEquipo || 0,
                 pesoAparejos: initialPlanData.cargas?.pesoAparejos || 0,
-                pesoGancho: initialPlanData.cargas?.pesoGancho || 0,
-                pesoCable: initialPlanData.cargas?.pesoCable || 0,
+                pesoGancho: initialPlanData.cargas?.pesoGancho || 0.5,
+                pesoCable: initialPlanData.cargas?.pesoCable || 0.3,
                 pesoTotal: initialPlanData.cargas?.pesoTotal || 0,
                 radioTrabajoMax: initialPlanData.cargas?.radioTrabajoMax || 0,
                 anguloTrabajo: initialPlanData.cargas?.anguloTrabajo || '',
@@ -208,8 +208,8 @@ const EditPlan = () => {
         setEditablePlan(prevPlan => {
             const { distanciaGanchoElemento } = calculateAparejoDimensions(prevPlan);
             const alturaParaAparejos = (distanciaGanchoElemento !== 'N/A' && distanciaGanchoElemento !== 0 && !isNaN(parseFloat(distanciaGanchoElemento)))
-                                      ? String(parseFloat(distanciaGanchoElemento))
-                                      : "1";
+                                        ? String(parseFloat(distanciaGanchoElemento))
+                                        : "1";
 
             const aparejosWithTotalWeightAndHeight = updatedAparejos.map(ap => {
                 const cantidad = parseFloat(ap.cantidad) || 0;
@@ -254,8 +254,8 @@ const EditPlan = () => {
 
             const { distanciaGanchoElemento } = calculateAparejoDimensions(updatedPlan);
             const alturaParaAparejos = (distanciaGanchoElemento !== 'N/A' && distanciaGanchoElemento !== 0 && !isNaN(parseFloat(distanciaGanchoElemento)))
-                                      ? String(parseFloat(distanciaGanchoElemento))
-                                      : "1";
+                                        ? String(parseFloat(distanciaGanchoElemento))
+                                        : "1";
 
             const updatedAparejosWithHeight = prevPlan.aparejos.map(ap => ({
                 ...ap,
@@ -290,17 +290,17 @@ const EditPlan = () => {
             if (['cargas', 'aparejos', 'centroGravedad', 'forma', 'diametro'].includes(field)) {
                 const { distanciaGanchoElemento } = calculateAparejoDimensions(updatedPlan);
                 const alturaParaAparejos = (distanciaGanchoElemento !== 'N/A' && distanciaGanchoElemento !== 0 && !isNaN(parseFloat(distanciaGanchoElemento)))
-                                          ? String(parseFloat(distanciaGanchoElemento))
-                                          : "1";
+                                            ? String(parseFloat(distanciaGanchoElemento))
+                                            : "1";
                 updatedPlan.aparejos = updatedPlan.aparejos.map(ap => ({
                     ...ap,
                     altura: alturaParaAparejos,
                 }));
-                 const newPesoAparejosCargas = calculateTotalAparejosWeight(updatedPlan.aparejos);
-                 updatedPlan.cargas = {
-                     ...updatedPlan.cargas,
-                     pesoAparejos: newPesoAparejosCargas,
-                 };
+                const newPesoAparejosCargas = calculateTotalAparejosWeight(updatedPlan.aparejos);
+                updatedPlan.cargas = {
+                    ...updatedPlan.cargas,
+                    pesoAparejos: newPesoAparejosCargas,
+                };
             }
             return updatedPlan;
         });
@@ -347,8 +347,8 @@ const EditPlan = () => {
 
         const { distanciaGanchoElemento } = calculateAparejoDimensions(editablePlan);
         const alturaParaAparejos = (distanciaGanchoElemento !== 'N/A' && distanciaGanchoElemento !== 0 && !isNaN(parseFloat(distanciaGanchoElemento)))
-                                  ? String(parseFloat(distanciaGanchoElemento))
-                                  : "1";
+                                    ? String(parseFloat(distanciaGanchoElemento))
+                                    : "1";
 
         const aparejosToSend = editablePlan.aparejos.map(aparejo => {
             const { _id, ...rest } = aparejo;
@@ -378,8 +378,8 @@ const EditPlan = () => {
             cargas: {
                 pesoEquipo: editablePlan.cargas.pesoEquipo,
                 pesoAparejos: updatedPesoAparejosCargas,
-                pesoGancho: editablePlan.cargas.pesoGancho,
-                pesoCable: editablePlan.cargas.pesoCable,
+                pesoGancho: 0.5,
+                pesoCable: 0.3,
                 pesoTotal: editablePlan.cargas.pesoTotal,
                 radioTrabajoMax: editablePlan.cargas.radioTrabajoMax,
                 anguloTrabajo: editablePlan.cargas.anguloTrabajo,
@@ -424,7 +424,6 @@ const EditPlan = () => {
 
             const result = await response.json();
             Alert.alert("Éxito", "Plan de izaje actualizado correctamente.");
-            // CAMBIO CLAVE AQUÍ: Navegar al TabNavigator y luego a la pantalla 'Perfil'
             navigation.navigate('Tabs', { screen: 'Perfil' }); 
 
         } catch (error) {
