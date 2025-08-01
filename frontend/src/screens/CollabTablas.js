@@ -27,7 +27,6 @@ const CollabTablas = ({ route }) => {
     }
   }, [route.params.setup]);
 
-
   const { currentUser } = route.params;
   const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
   const userId = currentUser?._id;
@@ -55,6 +54,7 @@ const CollabTablas = ({ route }) => {
     { item: 2, descripcion: 'Capataz', nombre: getFullName(currentSetup.capataz) },
     { item: 3, descripcion: 'Supervisor', nombre: getFullName(currentSetup.supervisor) },
     { item: 4, descripcion: 'Jefe Área', nombre: getFullName(currentSetup.jefeArea) },
+    { item: 5, descripcion: 'Versión', nombre: String(currentSetup.version) || 'N/A' },
   ];
 
   const datosTablaGrua = [
@@ -431,7 +431,7 @@ const CollabTablas = ({ route }) => {
       </ScrollView>
 
       {showSmallButtons && !isCapataz ? (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '75%', position: 'absolute', bottom: 60, left: '-26' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '75%', position: 'absolute', bottom: 60, left: -26 }}>
           {canSign && (
             <Components.Button
               label="Firmar Plan"

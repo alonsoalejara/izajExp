@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../../styles/AdminSectionStyles';
 import getApiUrl from '../../../utils/apiUrl';
 import Components from '../../../components/Components.index';
+
+const localStyles = StyleSheet.create({
+  buttonSpacing: {
+    marginRight: 5,
+  },
+});
 
 const SetupIzajeSection = ({
   setupIzaje = [],
@@ -100,44 +106,40 @@ const SetupIzajeSection = ({
                   {setup.createdAt ? formatDate(setup.createdAt) : 'No disponible'}
                 </Text>
               </Text>
+              <Text style={[styles.cardDetail, { fontWeight: '700', color: '#777' }]}>
+                Versión:{' '}
+                <Text style={{ fontWeight: '400' }}>
+                  {setup.version ?? 'No disponible'}
+                </Text>
+              </Text>
             </TouchableOpacity>
 
             {selectedSetup === setup._id && (
-              <View style={styles.cardExpandedDetails}>
-                <View style={styles.buttonContainerCard}>
+              <View style={[styles.cardExpandedDetails, { flexDirection: 'row', marginTop: 10, flexWrap: 'wrap', justifyContent: 'flex-start' }]}>
+                <Components.Button
+                  label="Ver"
+                  onPress={() => onViewPress(setup)}
+                  isCancel={true}
+                  style={[styles.button, localStyles.buttonSpacing]}
+                />
+
+                {!isAdminPanel && userRole !== 'capataz' && setup.version !== 3 && (
                   <Components.Button
-                    label="Ver"
-                    onPress={() => onViewPress(setup)}
+                    label="Editar"
+                    onPress={() => handleEdit(setup)}
+                    isCancel={true}
+                    style={[styles.button, localStyles.buttonSpacing]}
+                  />
+                )}
+
+                {(!isAdminPanel && userRole !== 'capataz') || isAdminPanel ? (
+                  <Components.Button
+                    label="Eliminar"
+                    onPress={() => confirmDelete(setup._id)}
                     isCancel={true}
                     style={styles.button}
                   />
-
-                  {!isAdminPanel && userRole !== 'capataz' && (
-                    <View style={styles.multiButtonContainer}>
-                      <Components.Button
-                        label="Editar"
-                        onPress={() => handleEdit(setup)}
-                        isCancel={true}
-                        style={[styles.button, { right: 60 }]}
-                      />
-                      <Components.Button
-                        label="Eliminar"
-                        onPress={() => confirmDelete(setup._id)}
-                        isCancel={true}
-                        style={[styles.button, { right: 120 }]}
-                      />
-                    </View>
-                  )}
-
-                  {isAdminPanel && (
-                    <Components.Button
-                      label="Eliminar"
-                      onPress={() => confirmDelete(setup._id)}
-                      isCancel={true}
-                      style={styles.button}
-                    />
-                  )}
-                </View>
+                ) : null}
               </View>
             )}
           </View>
