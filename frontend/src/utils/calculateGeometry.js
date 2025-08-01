@@ -49,7 +49,7 @@ export const calculateGeometry = (forma, altura, largo, ancho, diametro) => {
             d1z = altNum / 2;
             d2z = altNum / 2;
         }
-    } else if (forma === 'Rectangular' || forma === 'Paralelepípedo') {
+    } else if (forma === 'Rectángulo' || forma === 'Paralelepípedo') {
         if (isNaN(altNum) || isNaN(largoNum) || isNaN(anchoNum)) return null;
         cgX = largoNum / 2;
         cgY = anchoNum / 2;
