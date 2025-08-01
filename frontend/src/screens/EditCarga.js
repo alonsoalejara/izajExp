@@ -57,78 +57,41 @@ const EditCarga = () => {
             setEditableCargas(initialCargas);
         }
 
-        let currentForma = '';
-        let currentAncho = String(initialCG?.xAncho || '');
-        let currentLargo = String(initialCG?.yLargo || '');
-        let currentAltura = String(initialCG?.zAlto || '');
-        let currentDiametro = '';
-
         if (initialCG) {
-            if (initialCG.xAncho !== 0 || initialCG.yLargo !== 0 || initialCG.zAlto !== 0) {
-                if (initialCG.xAncho === initialCG.yLargo && initialCG.yLargo === initialCG.zAlto && initialCG.xAncho !== 0) {
-                    currentForma = 'Cuadrado';
-                    currentDiametro = '0';
-                } else if (initialCG.xAncho === initialCG.yLargo && initialCG.zAlto !== 0 && initialCG.xAncho !== 0) {
-                    currentForma = 'Cilindro';
-                    currentDiametro = String(initialCG.xAncho);
-                } else {
-                    currentForma = 'Rectangular';
-                    currentDiametro = '0';
-                }
-            } else if (initialCG.xAncho === 0 && initialCG.yLargo === 0 && initialCG.zAlto === 0) {
-                currentForma = 'Rectangular';
-            }
-
-            setAncho(currentAncho);
-            setLargo(currentLargo);
-            setAltura(currentAltura);
-            setDiametro(currentDiametro);
-            setForma(currentForma);
+            setAltura(String(initialCG.zAlto));
             setEditableCG(initialCG);
 
-            const parsedAltura = parseFloat(currentAltura) || 0;
-            const parsedLargo = parseFloat(currentLargo) || 0;
-            const parsedAncho = parseFloat(currentAncho) || 0;
-            const parsedDiametro = parseFloat(currentDiametro) || 0;
-
-            if (currentForma) {
-                const tempGeometry = calculateGeometry(
-                    currentForma,
-                    parsedAltura,
-                    currentForma === 'Cilindro' ? parsedDiametro : parsedLargo,
-                    currentForma === 'Cilindro' ? parsedDiametro : parsedAncho
-                );
-                setCalculatedGeometry(tempGeometry);
-                setCalculatedCG(tempGeometry?.cg);
+            if (initialCG.xAncho === initialCG.yLargo && initialCG.yLargo === initialCG.zAlto && initialCG.xAncho !== 0) {
+                setForma('Cuadrado');
+                setLargo(String(initialCG.yLargo));
+                setAncho(String(initialCG.xAncho));
+                setDiametro('');
+            } else if (initialCG.xAncho !== initialCG.yLargo && initialCG.zAlto !== 0 && initialCG.xAncho !== 0 && initialCG.yLargo !==0) {
+                setForma('Rectangular');
+                setLargo(String(initialCG.yLargo));
+                setAncho(String(initialCG.xAncho));
+                setDiametro('');
+            } else if (initialCG.xAncho === initialCG.yLargo && initialCG.zAlto !== 0 && initialCG.xAncho !== 0) {
+                setForma('Cilindro');
+                setDiametro(String(initialCG.xAncho));
+                setLargo('');
+                setAncho('');
+            } else {
+                setForma('');
             }
         }
     }, [initialCargas, initialCG]);
 
     useEffect(() => {
-    }, [navigation]);
-
-
-    useEffect(() => {
-        const currentAltura = parseFloat(altura) || 0;
-        const currentLargo = parseFloat(largo) || 0;
-        const currentAncho = parseFloat(ancho) || 0;
-        const currentDiametro = parseFloat(diametro) || 0;
-
-        if (forma) {
-            const geometry = calculateGeometry(
-                forma,
-                currentAltura,
-                forma === 'Cilindro' ? currentDiametro : currentLargo,
-                forma === 'Cilindro' ? currentDiametro : currentAncho
-            );
+        const geometry = calculateGeometry(forma, altura, largo, ancho, diametro);
+        if (geometry) {
             setCalculatedGeometry(geometry);
-            setCalculatedCG(geometry?.cg);
+            setCalculatedCG(geometry.cg);
         } else {
             setCalculatedGeometry(null);
             setCalculatedCG(null);
         }
     }, [forma, altura, largo, ancho, diametro]);
-
 
     const handleInputChange = (field, value) => {
         if (field === 'pesoEquipoInput') setPesoEquipoInput(value);
@@ -157,13 +120,20 @@ const EditCarga = () => {
         });
     };
 
-    const validateInputs = () => {
+    const handleSaveChanges = () => {
         const newErrors = validateCarga(pesoEquipoInput, largo, ancho, altura, forma, diametro);
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
 
-    const handleSaveChanges = () => {
+        if (Object.keys(newErrors).length > 0) {
+             Alert.alert("Error de validación", "Por favor, complete todos los campos de forma correcta.");
+             return;
+        }
+
+        if (!calculatedGeometry || !calculatedCG) {
+            Alert.alert("Error", "Los datos de geometría y centro de gravedad no están definidos. Por favor, revise las dimensiones.");
+            return;
+        }
+        
         const pesoEquipoNum = parseFloat(pesoEquipoInput) || 0;
         const alturaNum = parseFloat(altura) || 0;
         const largoNum = parseFloat(largo) || 0;
@@ -173,52 +143,45 @@ const EditCarga = () => {
         let cargaDataForGeometry = {
             peso: pesoEquipoNum,
             alto: alturaNum,
-            largo: forma === 'Cuadrado' ? alturaNum : (forma === 'Cilindro' ? 0 : largoNum),
-            ancho: forma === 'Cuadrado' ? alturaNum : (forma === 'Cilindro' ? 0 : anchoNum),
+            largo: forma === 'Cuadrado' ? alturaNum : (forma === 'Cilindro' ? diametroNum : largoNum),
+            ancho: forma === 'Cuadrado' ? alturaNum : (forma === 'Cilindro' ? diametroNum : anchoNum),
             diametro: forma === 'Cilindro' ? diametroNum : 0,
             forma: forma,
         };
 
         const navigateAndSave = (finalCargaData) => {
-            if (validateCarga(pesoEquipoInput, largo, ancho, altura, forma, diametro)) {
-                const finalCalculatedCG = calculatedCG;
-                const finalCalculatedGeometry = calculatedGeometry;
+            const finalCalculatedCG = calculatedCG;
+            const finalCalculatedGeometry = calculatedGeometry;
 
-                if (!finalCalculatedCG || !finalCalculatedGeometry) {
-                    Alert.alert("Error", "Los datos de geometría y centro de gravedad no están definidos. Por favor, revise las dimensiones.");
-                    return;
-                }
+            const updatedCargas = {
+                ...editableCargas,
+                pesoEquipo: pesoEquipoNum,
+                pesoTotal: pesoEquipoNum + editableCargas.pesoAparejos + editableCargas.pesoGancho + editableCargas.pesoCable,
+            };
 
-                const updatedCargas = {
-                    ...editableCargas,
-                    pesoEquipo: pesoEquipoNum,
-                    pesoTotal: pesoEquipoNum + editableCargas.pesoAparejos + editableCargas.pesoGancho + editableCargas.pesoCable,
-                };
+            const updatedCG = {
+                ...editableCG,
+                xAncho: finalCargaData.forma === 'Cilindro' ? finalCargaData.diametro : finalCargaData.ancho,
+                yLargo: finalCargaData.forma === 'Cilindro' ? finalCargaData.diametro : finalCargaData.largo,
+                zAlto: finalCargaData.alto,
+                xCG: finalCalculatedCG.cgX,
+                yCG: finalCalculatedCG.cgY,
+                zCG: finalCalculatedCG.cgZ,
+            };
 
-                const updatedCG = {
-                    ...editableCG,
-                    xAncho: finalCargaData.forma === 'Cilindro' ? finalCargaData.diametro : finalCargaData.ancho,
-                    yLargo: finalCargaData.forma === 'Cilindro' ? finalCargaData.diametro : finalCargaData.largo,
-                    zAlto: finalCargaData.alto,
-                    xCG: finalCalculatedCG.cgX,
-                    yCG: finalCalculatedCG.cgY,
-                    zCG: finalCalculatedCG.cgZ,
-                };
+            const dataToSendToEditGrua = {
+                planData: {
+                    ...planData,
+                    cargas: updatedCargas,
+                    centroGravedad: updatedCG,
+                    forma: finalCargaData.forma,
+                    diametro: finalCargaData.diametro,
+                },
+                gruaId: gruaId,
+                datos: datos,
+            };
 
-                const dataToSendToEditGrua = {
-                    planData: {
-                        ...planData,
-                        cargas: updatedCargas,
-                        centroGravedad: updatedCG,
-                        forma: finalCargaData.forma,
-                        diametro: finalCargaData.diametro,
-                    },
-                    gruaId: gruaId,
-                    datos: datos,
-                };
-
-                navigation.navigate('EditGrua', dataToSendToEditGrua);
-            }
+            navigation.navigate('EditGrua', dataToSendToEditGrua);
         };
 
         if (forma !== 'Cilindro' && largo === ancho && ancho === altura && largo !== '') {
@@ -244,7 +207,7 @@ const EditCarga = () => {
                             setForma("Cuadrado");
                             setLargo(String(alturaNum));
                             setAncho(String(alturaNum));
-                            setDiametro('0');
+                            setDiametro('');
                             navigateAndSave(updatedCargaDataForGeometry);
                         }
                     }
@@ -261,7 +224,7 @@ const EditCarga = () => {
 
     const altoLabel = forma === 'Cilindro' ? 'altura' : forma === 'Cuadrado' ? 'lado' : 'alto';
     const cg = calculatedCG;
-    const { d1x, d2x, d1y, d2y, d1z, d2z } = calculatedGeometry?.dimensions || { d1x: 0, d2x: 0, d1y: 0, d2y: 0, d1z: 0, d2z: 0 };
+    const isCylinderVertical = forma === 'Cilindro' && (parseFloat(altura) || 0) > (parseFloat(diametro) || 0);
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -369,14 +332,14 @@ const EditCarga = () => {
                                     <Text style={{ fontWeight: 'bold' }}>Dimensiones:</Text>
                                     {forma === 'Cilindro' ? (
                                         <>
-                                            <Text>Eje X/Y: D1: {calculatedGeometry.dimensions.d1x.toFixed(1)} | D2: {calculatedGeometry.dimensions.d2x.toFixed(1)}</Text>
-                                            <Text>Eje Z: D1: {calculatedGeometry.dimensions.d1z.toFixed(1)} | D2: {calculatedGeometry.dimensions.d2z.toFixed(1)}</Text>
+                                            <Text>{isCylinderVertical ? `Altura: ${Number(altura).toFixed(1)} m` : `Largo: ${Number(altura).toFixed(1)} m`}</Text>
+                                            <Text>Diámetro: {Number(diametro).toFixed(1)} m</Text>
                                         </>
                                     ) : (
                                         <>
-                                            <Text>Eje X: D1: {calculatedGeometry.dimensions.d1x.toFixed(1)} | D2: {calculatedGeometry.dimensions.d2x.toFixed(1)}</Text>
-                                            <Text>Eje Y: D1: {calculatedGeometry.dimensions.d1y.toFixed(1)} | D2: {calculatedGeometry.dimensions.d2y.toFixed(1)}</Text>
-                                            <Text>Eje Z: D1: {calculatedGeometry.dimensions.d1z.toFixed(1)} | D2: {calculatedGeometry.dimensions.d2z.toFixed(1)}</Text>
+                                            <Text>Largo: {forma === 'Cuadrado' ? Number(altura).toFixed(1) : Number(largo).toFixed(1)} m</Text>
+                                            <Text>Ancho: {forma === 'Cuadrado' ? Number(altura).toFixed(1) : Number(ancho).toFixed(1)} m</Text>
+                                            <Text>Altura: {Number(altura).toFixed(1)} m</Text>
                                         </>
                                     )}
                                 </View>
@@ -386,9 +349,9 @@ const EditCarga = () => {
                             <RenderForma
                                 forma={forma}
                                 dimensiones={{
-                                    largo: parseFloat(forma === 'Cilindro' ? diametro : largo) || 0,
-                                    ancho: parseFloat(forma === 'Cilindro' ? diametro : ancho) || 0,
-                                    profundidad: parseFloat(altura) || 0,
+                                    largo: isCylinderVertical ? parseFloat(diametro) : parseFloat(altura),
+                                    ancho: isCylinderVertical ? parseFloat(diametro) : parseFloat(diametro),
+                                    profundidad: isCylinderVertical ? parseFloat(altura) : parseFloat(diametro),
                                 }}
                             />
                         </View>
@@ -397,7 +360,7 @@ const EditCarga = () => {
                                 Visualización de la carga de lado y de frente:
                             </Text>
                         )}
-                        <RenderCG forma={forma} />
+                        <RenderCG forma={forma} isCylinderVertical={isCylinderVertical} />
                         <BS.BSForma
                             isVisible={isFormaVisible}
                             onClose={() => setIsFormaVisible(false)}

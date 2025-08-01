@@ -80,7 +80,6 @@ const CollabTablas = ({ route }) => {
 
   let distanciaGanchoElementoCalculated = 'N/A';
 
-  // MODIFICACIÓN: Tomar el valor de 'altura' del primer aparejo
   if (currentSetup.aparejos && currentSetup.aparejos.length > 0) {
     const primerAparejo = currentSetup.aparejos[0];
     if (primerAparejo.altura !== undefined && primerAparejo.altura !== null) {
@@ -111,7 +110,7 @@ const CollabTablas = ({ route }) => {
   const largoCarga = parseFloat(currentSetup.centroGravedad?.yLargo || currentSetup.cargas?.largo) || 0;
   const altoCarga = parseFloat(currentSetup.centroGravedad?.zAlto || currentSetup.cargas?.alto) || 0;
   const diametroCarga = parseFloat(currentSetup.centroGravedad?.diametro || currentSetup.cargas?.diametro) || 0;
-  const formaCarga = currentSetup.centroGravedad?.forma?.toLowerCase() || currentSetup.cargas?.forma?.toLowerCase() || '';
+  const formaCarga = (currentSetup.centroGravedad?.forma || currentSetup.cargas?.forma || '').toLowerCase();
 
   let xCG = parseFloat(currentSetup.centroGravedad?.xCG);
   let yCG = parseFloat(currentSetup.centroGravedad?.yCG);
@@ -129,13 +128,30 @@ const CollabTablas = ({ route }) => {
     if (isNaN(zPR)) zPR = (zCG / (altoCarga || diametroCarga)) * 100;
   }
 
+  let isCylinderVertical = false;
+  if (formaCarga === 'cilindro' && altoCarga > diametroCarga) {
+    isCylinderVertical = true;
+  }
+
   const datosTablaXYZ = [
     {
       item: 1,
       descripcion: 'Medidas',
-      X: formatNumber(anchoCarga, 'm'),
-      Y: formatNumber(largoCarga, 'm'),
-      Z: formatNumber(altoCarga, 'm'),
+      X: formaCarga === 'cilindro' && diametroCarga > 0
+        ? (isCylinderVertical
+          ? `${formatNumber(diametroCarga, 'm')} (Diámetro)`
+          : `${formatNumber(altoCarga, 'm')} (Largo)`)
+        : formatNumber(largoCarga, 'm'),
+      Y: formaCarga === 'cilindro' && diametroCarga > 0
+        ? (isCylinderVertical
+          ? `${formatNumber(diametroCarga, 'm')} (Diámetro)`
+          : `${formatNumber(diametroCarga, 'm')} (Diámetro)`)
+        : formatNumber(anchoCarga, 'm'),
+      Z: formaCarga === 'cilindro' && diametroCarga > 0
+        ? (isCylinderVertical
+          ? `${formatNumber(altoCarga, 'm')}`
+          : `${formatNumber(diametroCarga, 'm')} (Diámetro)`)
+        : formatNumber(altoCarga, 'm'),
     },
     {
       item: 2,

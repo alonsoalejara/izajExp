@@ -22,7 +22,7 @@ export const calculateGeometry = (forma, altura, largo, ancho, diametro) => {
         d2z = altNum / 2;
     } else if (forma === 'Cilindro') {
         if (isNaN(altNum) || isNaN(diamNum)) return null;
-        // Cilindro acostado
+        // Cilindro acostado (más largo que alto)
         if (altNum > diamNum) {
             cgX = altNum / 2;
             cgY = 0;
@@ -35,7 +35,7 @@ export const calculateGeometry = (forma, altura, largo, ancho, diametro) => {
             d2y = radio;
             d1z = radio;
             d2z = radio;
-        // Cilindro de pie
+        // Cilindro de pie (más alto que largo/ancho)
         } else {
             cgX = 0;
             cgY = 0;
@@ -49,7 +49,7 @@ export const calculateGeometry = (forma, altura, largo, ancho, diametro) => {
             d1z = altNum / 2;
             d2z = altNum / 2;
         }
-    } else if (forma === 'Rectángulo' || forma === 'Paralelepípedo') {
+    } else if (forma === 'Rectangular' || forma === 'Paralelepípedo') {
         if (isNaN(altNum) || isNaN(largoNum) || isNaN(anchoNum)) return null;
         cgX = largoNum / 2;
         cgY = anchoNum / 2;
