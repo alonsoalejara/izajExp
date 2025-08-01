@@ -164,41 +164,42 @@ const EditAparejos = () => {
         setErrorAnguloSeleccionado(errors.anguloSeleccionado || '');
 
         if (Object.keys(errors).length === 0) {
-            // Buscar el peso del grillete seleccionado en grilleteOptions
             const selectedGrillete = grilleteOptions.find(opt => opt.pulgada === tipoGrillete);
             const pesoGrilleteCalculado = selectedGrillete ? selectedGrillete.peso : 0;
-
-            // Buscar el peso unitario del aparejo principal (Eslinga o Estrobo)
             const selectedManiobraType = maniobraOptions.find(opt => opt.label === tipoManiobraSeleccionadoSolo);
             const pesoUnitarioAparejo = selectedManiobraType ? selectedManiobraType.peso : 0;
+            const cantidad = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
 
-            const newAparejo = {
-                descripcion: tipoAparejoSeleccionado,
-                cantidad: parseInt(maniobraSeleccionada.cantidad, 10) || 0,
-                pesoUnitario: pesoUnitarioAparejo,
-                largo: 0,
-                grillete: tipoGrillete,
-                pesoGrillete: pesoGrilleteCalculado,
-                tension: '0', // Se mantiene en '0' según lo solicitado para evitar validaciones vacías
-                altura: '',
-            };
+            // --- INICIO DE LA CORRECCIÓN ---
+            // Creamos un array vacío para guardar todos los aparejos.
+            const aparejosList = [];
 
-            // Crear una copia de setupCargaData para modificar anguloTrabajo
+            // Iteramos tantas veces como la cantidad de maniobras seleccionada.
+            for (let i = 0; i < cantidad; i++) {
+                // Dentro del bucle, creamos un objeto aparejo para cada iteración.
+                const newAparejo = {
+                    descripcion: tipoAparejoSeleccionado,
+                    cantidad: 1, // La cantidad de cada item individual es 1.
+                    pesoUnitario: pesoUnitarioAparejo,
+                    largo: 0,
+                    grillete: tipoGrillete,
+                    pesoGrillete: pesoGrilleteCalculado,
+                    tension: '0', 
+                    altura: '',
+                };
+                aparejosList.push(newAparejo);
+            }
+            // --- FIN DE LA CORRECCIÓN ---
+
             const updatedSetupCargaData = { ...setupCargaData };
-            // Asignar el anguloSeleccionado a cargas.anguloTrabajo
             updatedSetupCargaData.anguloTrabajo = anguloSeleccionado ? `${anguloSeleccionado}°` : '';
 
-            // Construir el objeto planData actualizado
             const finalUpdatedPlanData = {
-                // Mantenemos todos los datos existentes de planData
                 ...planData,
-                // Pero actualizamos solo los aparejos con el nuevo aparejo
-                aparejos: [newAparejo],
-                // Y actualizamos los datos de la carga con el ángulo de trabajo modificado
+                aparejos: aparejosList, // Ahora usamos la lista de aparejos creada en el bucle.
                 cargas: updatedSetupCargaData,
-                // Crucial: Asegurarnos de que gruaData y radioData persistan si no fueron modificados aquí
-                gruaData: setupGruaData, // Usa el estado actual de setupGruaData (que viene de initialGruaData o AsyncStorage)
-                radioData: setupRadioData, // Usa el estado actual de setupRadioData (que viene de initialRadioData)
+                gruaData: setupGruaData,
+                radioData: setupRadioData,
             };
 
             Alert.alert("Éxito", "Datos actualizados correctamente.");
