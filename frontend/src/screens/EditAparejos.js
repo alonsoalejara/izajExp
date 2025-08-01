@@ -170,16 +170,13 @@ const EditAparejos = () => {
             const pesoUnitarioAparejo = selectedManiobraType ? selectedManiobraType.peso : 0;
             const cantidad = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
 
-            // --- INICIO DE LA CORRECCIÓN ---
-            // Creamos un array vacío para guardar todos los aparejos.
             const aparejosList = [];
 
-            // Iteramos tantas veces como la cantidad de maniobras seleccionada.
             for (let i = 0; i < cantidad; i++) {
-                // Dentro del bucle, creamos un objeto aparejo para cada iteración.
                 const newAparejo = {
-                    descripcion: tipoAparejoSeleccionado,
-                    cantidad: 1, // La cantidad de cada item individual es 1.
+                    // --- CORRECCIÓN: Se combina el tipo de maniobra, el tipo de aparejo y el WLL ---
+                    descripcion: `${tipoManiobraSeleccionadoSolo} ${tipoAparejoSeleccionado} ${aparejoPorWLL}`,
+                    cantidad: 1, 
                     pesoUnitario: pesoUnitarioAparejo,
                     largo: 0,
                     grillete: tipoGrillete,
@@ -189,14 +186,13 @@ const EditAparejos = () => {
                 };
                 aparejosList.push(newAparejo);
             }
-            // --- FIN DE LA CORRECCIÓN ---
 
             const updatedSetupCargaData = { ...setupCargaData };
             updatedSetupCargaData.anguloTrabajo = anguloSeleccionado ? `${anguloSeleccionado}°` : '';
 
             const finalUpdatedPlanData = {
                 ...planData,
-                aparejos: aparejosList, // Ahora usamos la lista de aparejos creada en el bucle.
+                aparejos: aparejosList,
                 cargas: updatedSetupCargaData,
                 gruaData: setupGruaData,
                 radioData: setupRadioData,
