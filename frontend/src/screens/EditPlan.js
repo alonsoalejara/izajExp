@@ -180,9 +180,9 @@ const EditPlan = () => {
                 const newPesoAparejos = calculateTotalAparejosWeight(updatedAparejos);
                 
                 const newPesoTotal = (parseFloat(updatedPlanData.cargas.pesoEquipo) || 0) + 
-                                            newPesoAparejos + 
-                                            (parseFloat(updatedPlanData.cargas.pesoGancho) || 0) + 
-                                            (parseFloat(updatedPlanData.cargas.pesoCable) || 0);
+                                                newPesoAparejos + 
+                                                (parseFloat(updatedPlanData.cargas.pesoGancho) || 0) + 
+                                                (parseFloat(updatedPlanData.cargas.pesoCable) || 0);
 
                 return {
                     ...updatedPlanData,
@@ -222,6 +222,22 @@ const EditPlan = () => {
             zPR: (editablePlan.centroGravedad.zCG / editablePlan.centroGravedad.zAlto) * 100 || 0,
         };
 
+        const alturaDespeje = 1; // metros
+        const alturaGanchoBloque = 1.6; // metros
+        const anchoCarga = parseFloat(editablePlan.centroGravedad.xAncho) || 0;
+        const largoCarga = parseFloat(editablePlan.centroGravedad.yLargo) || 0;
+        const altoCarga = parseFloat(editablePlan.centroGravedad.zAlto) || 0;
+        const diametroCarga = parseFloat(editablePlan.centroGravedad.diametro) || 0;
+        const formaCarga = editablePlan.forma || '';
+        
+        let dimensionMayorCarga = 0;
+        if (formaCarga === 'Cuadrado' || formaCarga === 'Rectangulo') {
+            dimensionMayorCarga = Math.max(anchoCarga, largoCarga);
+        } else if (formaCarga === 'Cilindro') {
+            dimensionMayorCarga = diametroCarga;
+        }
+
+
         const finalPayload = {
             nombreProyecto: editablePlan.nombreProyecto,
             capataz: typeof editablePlan.capataz === 'object' && editablePlan.capataz._id ? editablePlan.capataz._id : editablePlan.capataz,
@@ -230,17 +246,45 @@ const EditPlan = () => {
             grua: typeof editablePlan.grua === 'object' && editablePlan.grua._id ? editablePlan.grua._id : editablePlan.grua,
             firmaSupervisor: editablePlan.firmaSupervisor,
             firmaJefeArea: editablePlan.firmaJefeArea,
-            aparejos: editablePlan.aparejos.map(ap => ({
-                descripcion: ap.descripcion,
-                cantidad: ap.cantidad,
-                pesoUnitario: ap.pesoUnitario,
-                largo: ap.largo,
-                grillete: ap.grillete,
-                pesoGrillete: ap.pesoGrillete,
-                tension: ap.tension,
-                altura: ap.altura,
-                pesoTotal: ap.pesoTotal,
-            })),
+            aparejos: editablePlan.aparejos.map(ap => {
+                const pesoCarga = parseFloat(editablePlan.cargas.pesoEquipo) || 0;
+                const cantidadManiobra = parseInt(ap.cantidad, 10) || 0;
+                const anguloEslingaStr = ap.tension || '0°';
+                const anguloEnGrados = parseFloat(anguloEslingaStr.replace('°', '')) || 0;
+                const anguloEnRadianes = (anguloEnGrados * Math.PI) / 180;
+
+                let largoAparejoCalculado = 'N/A';
+                if (cantidadManiobra === 1) {
+                    const hCargaValida = altoCarga > 0 ? altoCarga : 0;
+                    const calculatedLength = (hCargaValida + alturaDespeje) - alturaGanchoBloque;
+                    largoAparejoCalculado = calculatedLength > 0 ? calculatedLength.toFixed(1) : 'N/A';
+                } else if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
+                    const ladoAdyacenteParaLargo = dimensionMayorCarga / 2;
+                    largoAparejoCalculado = (ladoAdyacenteParaLargo / Math.cos(anguloEnRadianes)).toFixed(1);
+                }
+
+                let calculatedTension = 0;
+                if (cantidadManiobra === 1) {
+                    calculatedTension = pesoCarga;
+                } else if (cantidadManiobra === 2) {
+                    calculatedTension = pesoCarga / 2;
+                } else if (cantidadManiobra === 4) {
+                    calculatedTension = pesoCarga / 3;
+                }
+                calculatedTension = Number.isFinite(calculatedTension) ? parseFloat(calculatedTension.toFixed(1)) : 0;
+
+                return {
+                    descripcion: ap.descripcion,
+                    cantidad: ap.cantidad,
+                    pesoUnitario: ap.pesoUnitario,
+                    largo: parseFloat(largoAparejoCalculado) || 0,
+                    grillete: ap.grillete,
+                    pesoGrillete: ap.pesoGrillete,
+                    tension: String(calculatedTension),
+                    altura: ap.altura,
+                    pesoTotal: ap.pesoTotal,
+                };
+            }),
             datos: editablePlan.datos,
             cargas: {
                 ...editablePlan.cargas,
