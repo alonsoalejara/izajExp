@@ -180,9 +180,9 @@ const EditPlan = () => {
                 const newPesoAparejos = calculateTotalAparejosWeight(updatedAparejos);
                 
                 const newPesoTotal = (parseFloat(updatedPlanData.cargas.pesoEquipo) || 0) + 
-                                            newPesoAparejos + 
-                                            (parseFloat(updatedPlanData.cargas.pesoGancho) || 0) + 
-                                            (parseFloat(updatedPlanData.cargas.pesoCable) || 0);
+                                     newPesoAparejos + 
+                                     (parseFloat(updatedPlanData.cargas.pesoGancho) || 0) + 
+                                     (parseFloat(updatedPlanData.cargas.pesoCable) || 0);
 
                 return {
                     ...updatedPlanData,
@@ -215,6 +215,16 @@ const EditPlan = () => {
             ? Number(((pesoTotal / capacidadLevante) * 100).toFixed(1))
             : 0;
 
+        // --- INICIO DE LA CORRECCIÓN ---
+        // Se calculan las posiciones relativas xPR, yPR y zPR justo antes de enviar la petición.
+        const centroGravedadConPR = {
+            ...editablePlan.centroGravedad,
+            xPR: (editablePlan.centroGravedad.xCG / editablePlan.centroGravedad.xAncho) * 100 || 0,
+            yPR: (editablePlan.centroGravedad.yCG / editablePlan.centroGravedad.yLargo) * 100 || 0,
+            zPR: (editablePlan.centroGravedad.zCG / editablePlan.centroGravedad.zAlto) * 100 || 0,
+        };
+        // --- FIN DE LA CORRECCIÓN ---
+
         const finalPayload = {
             nombreProyecto: editablePlan.nombreProyecto,
             capataz: typeof editablePlan.capataz === 'object' && editablePlan.capataz._id ? editablePlan.capataz._id : editablePlan.capataz,
@@ -239,10 +249,8 @@ const EditPlan = () => {
                 ...editablePlan.cargas,
                 porcentajeUtilizacion: porcentajeUtilizacion,
             },
-            centroGravedad: editablePlan.centroGravedad,
+            centroGravedad: centroGravedadConPR,
             version: editablePlan.version,
-            forma: editablePlan.forma,
-            diametro: editablePlan.diametro !== null && !isNaN(parseFloat(editablePlan.diametro)) ? parseFloat(editablePlan.diametro) : 0,
         };
 
         const payloadForLog = { ...finalPayload };
