@@ -189,12 +189,10 @@ const setupIzajeBodySchema = Joi.object({
   }),
   firmaSupervisor: Joi.string().trim().required().messages({
     "string.empty": "La firma del supervisor no puede estar vacía.",
-    "any.required": "La firma del supervisor es obligatoria.",
     "string.base": "La firma del supervisor debe ser de tipo string.",
   }),
   firmaJefeArea: Joi.string().trim().required().messages({
     "string.empty": "La firma del jefe de área no puede estar vacía.",
-    "any.required": "La firma del jefe de área es obligatoria.",
     "string.base": "La firma del jefe de área debe ser de tipo string.",
   }),
   grua: Joi.string().required().pattern(/^(?:[0-9a-fA-F]{24}|[0-9a-fA-F]{12})$/).messages({

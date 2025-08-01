@@ -83,8 +83,8 @@ const EditPlan = () => {
             capataz: initialPlanData.capataz?._id || '',
             supervisor: initialPlanData.supervisor?._id || '',
             jefeArea: initialPlanData.jefeArea?._id || '',
-            firmaSupervisor: initialPlanData.firmaSupervisor || 'Firma pendiente',
-            firmaJefeArea: initialPlanData.firmaJefeArea || 'Firma pendiente',
+            firmaSupervisor: initialPlanData.firmaSupervisor || null,
+            firmaJefeArea: initialPlanData.firmaJefeArea || null,
             aparejos: initialPlanData.aparejos || [],
             grua: initialPlanData.grua?._id || '',
             datos: {
@@ -224,8 +224,8 @@ const EditPlan = () => {
             zPR: (editablePlan.centroGravedad.zCG / editablePlan.centroGravedad.zAlto) * 100 || 0,
         };
 
-        const alturaDespeje = 1; // metros
-        const alturaGanchoBloque = 1.6; // metros
+        const alturaDespeje = 1; 
+        const alturaGanchoBloque = 1.6; 
         const anchoCarga = parseFloat(editablePlan.centroGravedad.xAncho) || 0;
         const largoCarga = parseFloat(editablePlan.centroGravedad.yLargo) || 0;
         const altoCarga = parseFloat(editablePlan.centroGravedad.zAlto) || 0;
@@ -248,9 +248,9 @@ const EditPlan = () => {
             capataz: typeof editablePlan.capataz === 'object' && editablePlan.capataz._id ? editablePlan.capataz._id : editablePlan.capataz,
             supervisor: typeof editablePlan.supervisor === 'object' && editablePlan.supervisor._id ? editablePlan.supervisor._id : editablePlan.supervisor,
             jefeArea: typeof editablePlan.jefeArea === 'object' && editablePlan.jefeArea._id ? editablePlan.jefeArea._id : editablePlan.jefeArea,
+            firmaSupervisor: "Firma pendiente",
+            firmaJefeArea: "Firma pendiente",
             grua: typeof editablePlan.grua === 'object' && editablePlan.grua._id ? editablePlan.grua._id : editablePlan.grua,
-            firmaSupervisor: editablePlan.firmaSupervisor,
-            firmaJefeArea: editablePlan.firmaJefeArea,
             aparejos: editablePlan.aparejos.map(ap => {
                 const pesoCarga = parseFloat(editablePlan.cargas.pesoEquipo) || 0;
                 const cantidadManiobra = parseInt(ap.cantidad, 10) || 0;
@@ -296,18 +296,8 @@ const EditPlan = () => {
                 porcentajeUtilizacion: porcentajeUtilizacion,
             },
             centroGravedad: centroGravedadConPR,
-            version: editablePlan.version,
+            version: (editablePlan.version || 0) + 1,
         };
-
-        const payloadForLog = { ...finalPayload };
-        if (payloadForLog.firmaSupervisor) {
-            payloadForLog.firmaSupervisor = 'Firma omitida para el log';
-        }
-        if (payloadForLog.firmaJefeArea) {
-            payloadForLog.firmaJefeArea = 'Firma omitida para el log';
-        }
-
-        console.log("Enviando el siguiente cuerpo JSON (firmas omitidas):", JSON.stringify(payloadForLog, null, 2));
 
         try {
             const response = await fetch(getApiUrl(`setupIzaje/${editablePlan._id}`), {
