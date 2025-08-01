@@ -62,7 +62,7 @@ const EditPlan = () => {
         let largoAparejoCalculado = 'N/A';
         if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
             const ladoAdyacenteParaLargo = dimensionMayorCarga / 2;
-            largoAparejoCalculado = (ladoAdyacenteParaLado / Math.cos(anguloEnRadianes)).toFixed(1);
+            largoAparejoCalculado = (ladoAdyacenteParaLargo / Math.cos(anguloEnRadianes)).toFixed(1);
         }
 
         return { distanciaGanchoElemento, largoAparejoCalculado };
@@ -180,9 +180,9 @@ const EditPlan = () => {
                 const newPesoAparejos = calculateTotalAparejosWeight(updatedAparejos);
                 
                 const newPesoTotal = (parseFloat(updatedPlanData.cargas.pesoEquipo) || 0) + 
-                                     newPesoAparejos + 
-                                     (parseFloat(updatedPlanData.cargas.pesoGancho) || 0) + 
-                                     (parseFloat(updatedPlanData.cargas.pesoCable) || 0);
+                                            newPesoAparejos + 
+                                            (parseFloat(updatedPlanData.cargas.pesoGancho) || 0) + 
+                                            (parseFloat(updatedPlanData.cargas.pesoCable) || 0);
 
                 return {
                     ...updatedPlanData,
@@ -215,15 +215,12 @@ const EditPlan = () => {
             ? Number(((pesoTotal / capacidadLevante) * 100).toFixed(1))
             : 0;
 
-        // --- INICIO DE LA CORRECCIÓN ---
-        // Se calculan las posiciones relativas xPR, yPR y zPR justo antes de enviar la petición.
         const centroGravedadConPR = {
             ...editablePlan.centroGravedad,
             xPR: (editablePlan.centroGravedad.xCG / editablePlan.centroGravedad.xAncho) * 100 || 0,
             yPR: (editablePlan.centroGravedad.yCG / editablePlan.centroGravedad.yLargo) * 100 || 0,
             zPR: (editablePlan.centroGravedad.zCG / editablePlan.centroGravedad.zAlto) * 100 || 0,
         };
-        // --- FIN DE LA CORRECCIÓN ---
 
         const finalPayload = {
             nombreProyecto: editablePlan.nombreProyecto,
