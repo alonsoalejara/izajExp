@@ -14,14 +14,20 @@ const EditAparejos = () => {
     const navigation = useNavigation();
     const route = useRoute();
 
-    const { planData: initialPlanData, cargas: initialCargaData, gruaData: initialGruaData, radioData: initialRadioData } = route.params;
+    const { 
+        planData: initialPlanData, 
+        cargas: initialCargaData, 
+        gruaData: initialGruaData, 
+        radioData: initialRadioData,
+        isEditing = false
+    } = route.params;
 
     const [planData, setPlanData] = useState(initialPlanData || {});
     const [setupGruaData, setSetupGruaData] = useState(initialGruaData || {});
     const [setupCargaData, setSetupCargaData] = useState(initialCargaData || {});
     const [setupRadioData, setSetupRadioData] = useState(initialRadioData || {});
 
-    const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null, cantidades: {} });
+    const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null });
     const [cantidadGrilletes, setCantidadGrilletes] = useState('');
     const [tipoGrillete, setTipoGrillete] = useState('');
     const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
@@ -35,7 +41,8 @@ const EditAparejos = () => {
     const [tipoWllLabel, setTipoWllLabel] = useState('Selección del aparejo según WLL:');
     const [aparejoPorWLL, setAparejoPorWLL] = useState('');
     const [isAparejoWLLModalVisible, setAparejoWLLModalVisible] = useState(false);
-    const cantidadNumero = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
+
+    const cantidadNumero = parseInt(maniobraSeleccionada.cantidad, 10) || 0; 
     const [tableData, setTableData] = useState([]);
     const grilleteSummary = tipoGrillete ? `${tipoGrillete}"` : '';
     const openModal = setter => setter(true);
@@ -47,6 +54,37 @@ const EditAparejos = () => {
     const [errorTipoAparejo, setErrorTipoAparejo] = useState('');
     const [errorAparejoPorWLL, setErrorAparejoPorWLL] = useState('');
     const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
+
+    useEffect(() => {
+        if (isEditing && initialPlanData && initialPlanData.aparejos && initialPlanData.aparejos.length > 0) {
+            const primerAparejo = initialPlanData.aparejos[0];
+            const [maniobraType, aparejoType, ...wllParts] = primerAparejo.descripcion.split(' ').filter(Boolean);
+            const wll = wllParts.join(' '); 
+
+            setManiobraSeleccionada({ cantidad: String(initialPlanData.aparejos.length), tipo: { type: maniobraType, cantidades: {} } });
+            setCantidadGrilletes(String(primerAparejo.cantidad));
+            setTipoGrillete(primerAparejo.grillete || '');
+            setTipoManiobraSeleccionadoSolo(maniobraType || '');
+            setTipoAparejoSeleccionado(aparejoType || '');
+            setAparejoPorWLL(wll || '');
+            setAnguloSeleccionado(initialPlanData.cargas?.anguloTrabajo?.replace('°', '') || '0');
+        } else if (!isEditing) {
+            setManiobraSeleccionada({ cantidad: '', tipo: null });
+            setCantidadGrilletes('');
+            setTipoGrillete('');
+            setTipoManiobraSeleccionadoSolo('');
+            setTipoAparejoSeleccionado('');
+            setAparejoPorWLL('');
+            setAnguloSeleccionado('0');
+            setErrorCantidadManiobra('');
+            setErrorTipoManiobra('');
+            setErrorCantidadGrilletes('');
+            setErrorTipoGrillete('');
+            setErrorTipoAparejo('');
+            setErrorAparejoPorWLL('');
+            setErrorAnguloSeleccionado('');
+        }
+    }, [initialPlanData, isEditing]);
 
     useEffect(() => {
         const fetchDataFromAsyncStorage = async () => {
@@ -76,7 +114,6 @@ const EditAparejos = () => {
         }
     }, [initialRadioData]);
 
-
     useEffect(() => {
         if (tipoManiobraSeleccionadoSolo === 'Eslinga') {
             setTipoAparejoLabel('Selección del tipo de eslinga:');
@@ -101,16 +138,16 @@ const EditAparejos = () => {
             setTableData([]);
             return;
         }
-        const nuevaTabla = Array.from({ length: maniobraSeleccionada.cantidad }, (_, index) => ({ key: index + 1 }));
+        const nuevaTabla = Array.from({ length: cantidadNumero }, (_, index) => ({ key: index + 1 }));
         setTableData(nuevaTabla);
-    }, [maniobraSeleccionada?.cantidad]);
+    }, [maniobraSeleccionada?.cantidad, cantidadNumero]);
 
     useEffect(() => {
         setCantidadGrilletes(maniobraSeleccionada.cantidad || '');
     }, [maniobraSeleccionada.cantidad]);
 
     const handleManiobraSeleccionada = useCallback((maniobra) => {
-        setManiobraSeleccionada(prev => ({ cantidad: prev?.cantidad || '', tipo: { type: maniobra.type, cantidades: maniobra.cantidades } }));
+        setManiobraSeleccionada(prev => ({ ...prev, tipo: { type: maniobra.type, cantidades: maniobra.cantidades } }));
         setTipoManiobraSeleccionadoSolo(maniobra.type);
         setErrorTipoManiobra('');
     }, []);
@@ -327,6 +364,11 @@ const EditAparejos = () => {
                             tipoAparejo={tipoAparejoSeleccionado}
                             anguloSeleccionado={anguloSeleccionado}
                             pesoCarga={setupCargaData?.peso || null}
+                            cantidadManiobra={
+                                tipoAparejoSeleccionado === 'Planas ojo-ojo de poliester'
+                                    ? 1
+                                    : cantidadNumero
+                            }
                         />
 
                         <View style={[styles.buttonContainer, { marginBottom: -20, right: 40 }]}>

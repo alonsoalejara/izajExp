@@ -49,7 +49,8 @@ const BSWLL = ({
   tipoAparejo,
   anguloSeleccionado,
   cantidadManiobra,
-  pesoCarga
+  pesoCarga,
+  pesoEquipo
 }) => {
   const [opcionesWLL, setOpcionesWLL] = useState([]);
   const [selectedWLL, setSelectedWLL] = useState(null);
@@ -61,28 +62,38 @@ const BSWLL = ({
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   useEffect(() => {
+    console.log('BSWLL Props:');
+    console.log('tipoAparejo:', tipoAparejo);
+    console.log('anguloSeleccionado:', anguloSeleccionado);
+    console.log('cantidadManiobra:', cantidadManiobra);
+    console.log('pesoCarga (desde prop):', pesoCarga);
+    console.log('pesoEquipo (desde prop):', pesoEquipo);
+
+    // FIX: Se asegura de que el peso total sea 0 si no se proporciona pesoCarga ni pesoEquipo
+    const pesoTotalParaWLL = (pesoEquipo !== undefined && pesoEquipo !== null) ? pesoEquipo : (pesoCarga !== undefined && pesoCarga !== null ? pesoCarga : 0);
+    console.log('Peso TOTAL para cálculo WLL (corregido):', pesoTotalParaWLL);
+
     const ang = anguloSeleccionado ? parseInt(anguloSeleccionado, 10) : 0;
     let opciones = [];
 
     if (tipoAparejo === 'Tubulares de poliester') {
       opciones = tubularPoliesterData.map(item => {
         const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
-        // Calcular la capacidad efectiva según la cantidad de maniobras
         const capacidadEfectiva = ton * cantidadManiobra;
-        const isDisabled = pesoCarga !== null && capacidadEfectiva < pesoCarga;
+        const isDisabled = pesoTotalParaWLL !== null && capacidadEfectiva < pesoTotalParaWLL;
         const base = item.nombre.split('(')[0].trim();
         return {
           label: `${base} (${ton} ton)`,
           value: `${base} (${ton} ton)`,
           isDisabled: isDisabled,
-          capacidad: capacidadEfectiva // Guarda la capacidad para depuración si es necesario
+          capacidad: capacidadEfectiva
         };
       });
     } else if (tipoAparejo === 'Tubulares trenzadas de poliester') {
       opciones = tubularTrenzadasPoliesterData.map(item => {
         const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
         const capacidadEfectiva = ton * cantidadManiobra;
-        const isDisabled = pesoCarga !== null && capacidadEfectiva < pesoCarga;
+        const isDisabled = pesoTotalParaWLL !== null && capacidadEfectiva < pesoTotalParaWLL;
         const base = item.nombre.split('(')[0].trim();
         return {
           label: `${base} (${ang}°: ${ton} ton)`,
@@ -94,7 +105,7 @@ const BSWLL = ({
       opciones = tubularCargaPesadaData.map(item => {
         const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
         const capacidadEfectiva = ton * cantidadManiobra;
-        const isDisabled = pesoCarga !== null && capacidadEfectiva < pesoCarga;
+        const isDisabled = pesoTotalParaWLL !== null && capacidadEfectiva < pesoTotalParaWLL;
         const base = item.nombre.split('(')[0].trim();
         return {
           label: `${base} (${ang}°: ${ton} ton)`,
@@ -105,8 +116,6 @@ const BSWLL = ({
     } else if (tipoAparejo === 'Planas ojo-ojo de poliester') {
       if (cantidadManiobra === 1) {
         opciones = Object.keys(ojoPoliesterData).map(pulgada => {
-          // Para este tipo, la lógica de capacidad por capas se aplica más tarde.
-          // Por ahora, no deshabilitamos aquí a menos que haya una regla general.
           return { label: `${pulgada}`, value: `${pulgada}`, isDisabled: false };
         });
       } else {
@@ -119,7 +128,7 @@ const BSWLL = ({
       opciones = cableAceroSuperloopData.map(item => {
         const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
         const capacidadEfectiva = ton * cantidadManiobra;
-        const isDisabled = pesoCarga !== null && capacidadEfectiva < pesoCarga;
+        const isDisabled = pesoTotalParaWLL !== null && capacidadEfectiva < pesoTotalParaWLL;
         return {
           label: `${item.nombre} (${ton} ton)`,
           value: `${item.nombre} (${ton} ton)`,
@@ -147,7 +156,14 @@ const BSWLL = ({
         useNativeDriver: false
       }).start(() => onClose());
     }
-  }, [isVisible, tipoAparejo, anguloSeleccionado, cantidadManiobra, pesoCarga]); // Añadimos pesoCarga a las dependencias
+  }, [
+    isVisible, 
+    tipoAparejo, 
+    anguloSeleccionado, 
+    cantidadManiobra, 
+    pesoCarga, 
+    pesoEquipo
+  ]);
 
   const closeBottomSheet = () => {
     Animated.timing(positionY, {
@@ -159,12 +175,11 @@ const BSWLL = ({
 
   const handleSelect = option => {
     if (option.isDisabled) {
-      // Si la opción está deshabilitada, no hacemos nada.
       return;
     }
-    setSelectedWLL(option.value); // Ahora 'option' es un objeto, necesitamos su 'value'
+    setSelectedWLL(option.value);
     if (tipoAparejo === 'Planas ojo-ojo de poliester') {
-      const pulgadas = option.value.split('(')[0].trim(); // Usamos option.value aquí también
+      const pulgadas = option.value.split('(')[0].trim();
       setCapasDisponibles(ojoPoliesterData[pulgadas] || []);
       setShowCapas(true);
       setSelectedCapa(null);
@@ -216,14 +231,14 @@ const BSWLL = ({
           {opcionesWLL.map(option => {
             const isOjoOjoPoliester = tipoAparejo === 'Planas ojo-ojo de poliester';
             const optionColor = option.isDisabled ? '#ccc' : (isOjoOjoPoliester ? colorPorPulgada[option.value] : getColorFromText(option.value));
-            const textColor = option.isDisabled ? '#999' : '#333'; // Color de texto para deshabilitado
+            const textColor = option.isDisabled ? '#999' : '#333';
             
             return (
               <View key={option.value}>
                 <TouchableOpacity
                   style={[
                     styles.optionButton,
-                    option.isDisabled && { backgroundColor: '#fff' } // Fondo más claro para deshabilitado
+                    option.isDisabled && { backgroundColor: '#fff' }
                   ]}
                   onPress={() => handleSelect(option)}
                   disabled={option.isDisabled}
