@@ -45,7 +45,7 @@ const EditPlan = () => {
         const anguloEnRadianes = (anguloEnGrados * Math.PI) / 180;
 
         let dimensionMayorCarga = 0;
-        if (formaCarga === 'Cuadrado' || formaCarga === 'Rectangulo') {
+        if (formaCarga === 'Cuadrado' || formaCarga === 'Rectángulo') {
             dimensionMayorCarga = Math.max(anchoCarga, largoCarga);
         } else if (formaCarga === 'Cilindro') {
             dimensionMayorCarga = diametroCarga;
@@ -199,6 +199,28 @@ const EditPlan = () => {
         }
     }, [route.params?.planData]);
 
+    useEffect(() => {
+        setEditablePlan(prevPlan => {
+            const xAncho = Number(prevPlan.centroGravedad.xAncho) || 0;
+            const yLargo = Number(prevPlan.centroGravedad.yLargo) || 0;
+            const zAlto = Number(prevPlan.centroGravedad.zAlto) || 0;
+            
+            const newXCG = xAncho / 2;
+            const newYCG = yLargo / 2;
+            const newZCG = zAlto / 2;
+
+            return {
+                ...prevPlan,
+                centroGravedad: {
+                    ...prevPlan.centroGravedad,
+                    xCG: newXCG,
+                    yCG: newYCG,
+                    zCG: newZCG,
+                },
+            };
+        });
+    }, [editablePlan.centroGravedad.xAncho, editablePlan.centroGravedad.yLargo, editablePlan.centroGravedad.zAlto]);
+
     const handleSaveChanges = async () => {
         if (!editablePlan._id) {
             Alert.alert("Error", "No se puede guardar un plan sin ID.");
@@ -219,9 +241,9 @@ const EditPlan = () => {
 
         const centroGravedadConPR = {
             ...editablePlan.centroGravedad,
-            xPR: (editablePlan.centroGravedad.xCG / editablePlan.centroGravedad.xAncho) * 100 || 0,
-            yPR: (editablePlan.centroGravedad.yCG / editablePlan.centroGravedad.yLargo) * 100 || 0,
-            zPR: (editablePlan.centroGravedad.zCG / editablePlan.centroGravedad.zAlto) * 100 || 0,
+            xPR: (Number(editablePlan.centroGravedad.xCG) / Number(editablePlan.centroGravedad.xAncho)) * 100 || 0,
+            yPR: (Number(editablePlan.centroGravedad.yCG) / Number(editablePlan.centroGravedad.yLargo)) * 100 || 0,
+            zPR: (Number(editablePlan.centroGravedad.zCG) / Number(editablePlan.centroGravedad.zAlto)) * 100 || 0,
         };
 
         const alturaDespeje = 1; 
@@ -233,7 +255,7 @@ const EditPlan = () => {
         const formaCarga = editablePlan.forma || '';
         
         let dimensionMayorCarga = 0;
-        if (formaCarga === 'Cuadrado' || formaCarga === 'Rectangulo') {
+        if (formaCarga === 'Cuadrado' || formaCarga === 'Rectángulo') {
             dimensionMayorCarga = Math.max(anchoCarga, largoCarga);
         } else if (formaCarga === 'Cilindro') {
             dimensionMayorCarga = diametroCarga;
