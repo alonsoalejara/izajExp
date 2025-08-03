@@ -357,6 +357,10 @@ const EditPlan = () => {
         navigation.goBack();
     };
 
+    const handleGoToProfile = () => {
+        navigation.navigate('Tabs', { screen: 'Perfil' });
+    };
+
     const goToEditCarga = () => {
         navigation.navigate('EditCarga', {
             planData: editablePlan
@@ -378,6 +382,7 @@ const EditPlan = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
+                {/* Este botón de la flecha usa la navegación estándar "volver" */}
                 <TouchableOpacity onPress={handleGoBack}>
                     <Icon name="keyboard-arrow-left" size={44} color="#000" />
                 </TouchableOpacity>
@@ -420,7 +425,7 @@ const EditPlan = () => {
             <View style={styles.bottomButtonContainer}>
                 <Components.Button
                     label="Volver"
-                    onPress={handleGoBack}
+                    onPress={handleGoToProfile} 
                     isCancel={true}
                     style={[styles.bottomButton, { backgroundColor: 'transparent', right: 50 }]}
                 />
