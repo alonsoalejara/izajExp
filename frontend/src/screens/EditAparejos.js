@@ -363,7 +363,7 @@ const EditAparejos = () => {
                             }}
                             tipoAparejo={tipoAparejoSeleccionado}
                             anguloSeleccionado={anguloSeleccionado}
-                            pesoCarga={setupCargaData?.peso || null}
+                            pesoCarga={setupCargaData?.pesoEquipo || null}
                             cantidadManiobra={
                                 tipoAparejoSeleccionado === 'Planas ojo-ojo de poliester'
                                     ? 1

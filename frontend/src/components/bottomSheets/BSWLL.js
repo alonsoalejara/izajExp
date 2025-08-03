@@ -62,17 +62,6 @@ const BSWLL = ({
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   useEffect(() => {
-    console.log('BSWLL Props:');
-    console.log('tipoAparejo:', tipoAparejo);
-    console.log('anguloSeleccionado:', anguloSeleccionado);
-    console.log('cantidadManiobra:', cantidadManiobra);
-    console.log('pesoCarga (desde prop):', pesoCarga);
-    console.log('pesoEquipo (desde prop):', pesoEquipo);
-
-    // FIX: Se asegura de que el peso total sea 0 si no se proporciona pesoCarga ni pesoEquipo
-    const pesoTotalParaWLL = (pesoEquipo !== undefined && pesoEquipo !== null) ? pesoEquipo : (pesoCarga !== undefined && pesoCarga !== null ? pesoCarga : 0);
-    console.log('Peso TOTAL para cálculo WLL (corregido):', pesoTotalParaWLL);
-
     const ang = anguloSeleccionado ? parseInt(anguloSeleccionado, 10) : 0;
     let opciones = [];
 
