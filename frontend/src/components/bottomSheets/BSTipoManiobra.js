@@ -28,7 +28,7 @@ const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra, cantidadMa
         'Tubulares trenzadas de poliester',
         'Tubulares para carga pesada',
       ];
-      if (cantidadManiobra !== 1) {
+      if (cantidadManiobra !== 1000) { // Suspendido
         opciones = opciones.filter(opcion => opcion !== 'Planas ojo-ojo de poliester');
       }
       setOpcionesTipoAparejo(opciones);

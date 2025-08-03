@@ -62,6 +62,8 @@ const BSWLL = ({
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   useEffect(() => {
+    const pesoTotalParaWLL = (pesoEquipo !== undefined && pesoEquipo !== null) ? pesoEquipo : (pesoCarga !== undefined && pesoCarga !== null ? pesoCarga : 0);
+
     const ang = anguloSeleccionado ? parseInt(anguloSeleccionado, 10) : 0;
     let opciones = [];
 
@@ -103,7 +105,7 @@ const BSWLL = ({
         };
       });
     } else if (tipoAparejo === 'Planas ojo-ojo de poliester') {
-      if (cantidadManiobra === 1) {
+      if (cantidadManiobra === 1000) { // Suspendido
         opciones = Object.keys(ojoPoliesterData).map(pulgada => {
           return { label: `${pulgada}`, value: `${pulgada}`, isDisabled: false };
         });
