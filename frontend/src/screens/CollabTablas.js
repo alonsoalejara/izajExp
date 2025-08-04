@@ -6,12 +6,13 @@ import Components from '../components/Components.index';
 import TablasStyles from '../styles/TablasStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getApiUrl from '../utils/apiUrl';
+import BS from '../components/bottomSheets/BS.index';
 
 const CollabTablas = ({ route }) => {
+    const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
     const [currentSetup, setCurrentSetup] = useState(route.params.setup);
     const navigation = useNavigation();
     const [showSmallButtons, setShowSmallButtons] = useState(true);
-
     const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(
         currentSetup.firmaSupervisor && currentSetup.firmaSupervisor !== 'Firma pendiente' ? currentSetup.firmaSupervisor : null
     );
@@ -165,7 +166,6 @@ const CollabTablas = ({ route }) => {
 
     const handleFirmarPlan = () => {
         let signatureToUse = currentUser?.signature;
-
         if (!signatureToUse) {
             Alert.alert("Error de Firma", "No se encontró una firma para el usuario actual. Asegúrate de tener una firma registrada en tu perfil.");
             return;
@@ -192,9 +192,7 @@ const CollabTablas = ({ route }) => {
                     text: "Firmar",
                     onPress: async () => {
                         setShowSmallButtons(false);
-
                         const payload = JSON.parse(JSON.stringify(currentSetup));
-
                         if (payload.capataz && typeof payload.capataz === 'object') {
                             payload.capataz = payload.capataz._id;
                         }
@@ -229,7 +227,6 @@ const CollabTablas = ({ route }) => {
                             const accessToken = await AsyncStorage.getItem('accessToken');
                             if (!accessToken) {
                                 Alert.alert('Error de Autenticación', 'No autorizado. Por favor, inicie sesión nuevamente.');
-                                setShowSmallButtons(true);
                                 return;
                             }
 
@@ -260,7 +257,6 @@ const CollabTablas = ({ route }) => {
                             const data = await response.json();
 
                             Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
-
                             if (data && data.updatedSetupIzaje) {
                                 setCurrentSetup(data.updatedSetupIzaje);
                                 navigation.setParams({ setup: data.updatedSetupIzaje });
@@ -270,14 +266,22 @@ const CollabTablas = ({ route }) => {
                             Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor para firmar el plan.');
                             setShowSmallButtons(true);
                         }
-                    }
-                }
+                    },
+                },
             ]
         );
     };
 
     const handleEnviarPdf = () => {
         Alert.alert("PDF", "Se está enviando el PDF...");
+    };
+
+    const handleOpenBottomSheet = () => {
+        setIsBottomSheetVisible(true);
+    };
+
+    const handleCloseBottomSheet = () => {
+        setIsBottomSheetVisible(false);
     };
 
     const canSign = (userRole === 'supervisor' && userId === supervisorId) ||
@@ -293,14 +297,22 @@ const CollabTablas = ({ route }) => {
             >
                 <Icon name="keyboard-arrow-left" size={40} color="#000" />
             </Pressable>
-
             <View style={[TablasStyles.titleContainer, { top: 50 }]}>
                 <Text style={TablasStyles.title}>Detalles del plan de izaje</Text>
             </View>
 
             <ScrollView style={[TablasStyles.tableContainer, { top: -40, paddingHorizontal: 5 }]}>
                 <Components.Tabla titulo="Información del proyecto" data={datosTablaProyecto} />
-                <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
+                <View style={{ marginBottom: 10 }}>
+                    <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
+                    <View style={{ alignItems: 'left', right: 35 }}>
+                        <Components.Button
+                            label="Ver grúa"
+                            onPress={handleOpenBottomSheet}
+                            style={{ width: 150, height: 47 }}
+                        />
+                    </View>
+                </View>
 
                 <Text style={[TablasStyles.sectionTitle, { left: 20 }]}>Aparejos</Text>
                 {datosTablaAparejosIndividuales.map((aparejo, index) => (
@@ -446,6 +458,14 @@ const CollabTablas = ({ route }) => {
                     style={[TablasStyles.button, { width: '90%', position: 'absolute', bottom: 60, left: -33 }]}
                 />
             )}
+            <BS.BSIlustracionGrua
+                isVisible={isBottomSheetVisible}
+                onClose={handleCloseBottomSheet}
+                craneName={currentSetup.grua?.nombre || 'N/A'}
+                alturaType={currentSetup.datos?.largoPluma}
+                inclinacion={currentSetup.datos?.gradoInclinacion}
+                radioTrabajoMaximo={currentSetup.cargas?.radioTrabajoMax}
+            />
         </View>
     );
 };
