@@ -159,7 +159,7 @@ const Tablas = ({ route, navigation }) => {
     const cargaRows = datosTablaManiobra.map((row, index) => ({
       item: index + 1,
       descripcion: row.descripcion,
-      valor:
+      cantidad:
         typeof row.cantidad === 'object'
           ? `${row.cantidad.valor} ${row.cantidad.unidad}`
           : row.cantidad,
@@ -168,12 +168,24 @@ const Tablas = ({ route, navigation }) => {
     const datosGruaRows = datosTablaGrua.map((row, index) => ({
       item: index + 1,
       descripcion: row.descripcion,
-      valor: row.cantidad,
+      cantidad: row.cantidad,
     }));
 
     const selectedGrua = combinedData.grua;
+    
+    const pdfData = {
+      selectedGrua,
+      aparejosRows: rows,
+      totalPesoAparejos,
+      maniobraRows: cargaRows,
+      gruaRows: datosGruaRows,
+      nombreProyecto,
+      datosTablaProyecto,
+      datosTablaXYZ,
+      aparejosDetailed: datosTablaAparejosIndividuales,
+    };
 
-    await generarPDF(selectedGrua, rows, totalPesoAparejos, cargaRows, datosGruaRows, nombreProyecto);
+    await generarPDF(pdfData);
   };
 
   const handleGuardar = async () => {
@@ -324,7 +336,6 @@ const Tablas = ({ route, navigation }) => {
 
   const handleGoBack = () => {
     if (isSaved) {
-      // Navegar a la pestaña 'Perfil' dentro del TabNavigator
       navigation.navigate('Tabs', { screen: 'Perfil' });
     } else {
       navigation.goBack();

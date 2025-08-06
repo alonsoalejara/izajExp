@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, Alert, Image } from 'react-native';
+import {
+    View,
+    Text,
+    ScrollView,
+    Pressable,
+    Alert,
+    Image,
+    ActivityIndicator
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import Components from '../components/Components.index';
@@ -7,12 +15,14 @@ import TablasStyles from '../styles/TablasStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getApiUrl from '../utils/apiUrl';
 import BS from '../components/bottomSheets/BS.index';
+import { generarPDF } from '../utils/PDF/PDFGenerator';
 
 const CollabTablas = ({ route }) => {
     const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
     const [currentSetup, setCurrentSetup] = useState(route.params.setup);
     const navigation = useNavigation();
     const [showSmallButtons, setShowSmallButtons] = useState(true);
+    const [isLoadingPdf, setIsLoadingPdf] = useState(false);
     const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(
         currentSetup.firmaSupervisor && currentSetup.firmaSupervisor !== 'Firma pendiente' ? currentSetup.firmaSupervisor : null
     );
@@ -51,21 +61,21 @@ const CollabTablas = ({ route }) => {
     };
 
     const datosTablaProyecto = [
-        { item: 1, descripcion: 'Nombre Proyecto', nombre: currentSetup.nombreProyecto || 'N/A' },
-        { item: 2, descripcion: 'Capataz', nombre: getFullName(currentSetup.capataz) },
-        { item: 3, descripcion: 'Supervisor', nombre: getFullName(currentSetup.supervisor) },
-        { item: 4, descripcion: 'Jefe Área', nombre: getFullName(currentSetup.jefeArea) },
-        { item: 5, descripcion: 'Versión', nombre: String(currentSetup.version) || 'N/A' },
+        { item: 1, descripcion: 'Nombre Proyecto', nombre: currentSetup?.nombreProyecto || 'N/A' },
+        { item: 2, descripcion: 'Capataz', nombre: getFullName(currentSetup?.capataz) },
+        { item: 3, descripcion: 'Supervisor', nombre: getFullName(currentSetup?.supervisor) },
+        { item: 4, descripcion: 'Jefe Área', nombre: getFullName(currentSetup?.jefeArea) },
+        { item: 5, descripcion: 'Versión', nombre: String(currentSetup?.version) || 'N/A' },
     ];
 
     const datosTablaGrua = [
-        { descripcion: 'Grúa', cantidad: currentSetup.grua?.nombre || 'N/A' },
-        { descripcion: 'Largo de pluma', cantidad: currentSetup.datos?.largoPluma || 'N/A' },
-        { descripcion: 'Grado de inclinación', cantidad: currentSetup.datos?.gradoInclinacion || 'N/A' },
-        { descripcion: 'Contrapeso', cantidad: `${currentSetup.datos?.contrapeso || 0} ton` },
+        { descripcion: 'Grúa', cantidad: currentSetup?.grua?.nombre || 'N/A' },
+        { descripcion: 'Largo de pluma', cantidad: currentSetup?.datos?.largoPluma || 'N/A' },
+        { descripcion: 'Grado de inclinación', cantidad: currentSetup?.datos?.gradoInclinacion || 'N/A' },
+        { descripcion: 'Contrapeso', cantidad: `${currentSetup?.datos?.contrapeso || 0} ton` },
     ];
 
-    const datosTablaAparejosIndividuales = currentSetup.aparejos?.map((aparejo, index) => ({
+    const datosTablaAparejosIndividuales = currentSetup?.aparejos?.map((aparejo, index) => ({
         descripcionPrincipal: {
             item: index + 1,
             descripcion: aparejo.descripcion,
@@ -81,7 +91,7 @@ const CollabTablas = ({ route }) => {
 
     let distanciaGanchoElementoCalculated = 'N/A';
 
-    if (currentSetup.aparejos && currentSetup.aparejos.length > 0) {
+    if (currentSetup?.aparejos && currentSetup.aparejos.length > 0) {
         const primerAparejo = currentSetup.aparejos[0];
         if (primerAparejo.altura !== undefined && primerAparejo.altura !== null) {
             const alturaNumerica = parseFloat(primerAparejo.altura);
@@ -92,33 +102,33 @@ const CollabTablas = ({ route }) => {
     }
 
     const datosTablaManiobra = [
-        { descripcion: 'Peso elemento', cantidad: `${currentSetup.cargas?.pesoEquipo || 0} ton` },
-        { descripcion: 'Peso aparejos', cantidad: `${currentSetup.cargas?.pesoAparejos || 0} ton` },
-        { descripcion: 'Peso gancho', cantidad: `${currentSetup.cargas?.pesoGancho || 0} ton` },
-        { descripcion: 'Peso cable', cantidad: `${currentSetup.cargas?.pesoCable || 0} ton` },
-        { descripcion: 'Peso total', cantidad: `${currentSetup.cargas?.pesoTotal || 0} ton` },
-        { descripcion: 'Radio de trabajo máximo', cantidad: `${currentSetup.cargas?.radioTrabajoMax || 0} m` },
+        { descripcion: 'Peso elemento', cantidad: `${currentSetup?.cargas?.pesoEquipo || 0} ton` },
+        { descripcion: 'Peso aparejos', cantidad: `${currentSetup?.cargas?.pesoAparejos || 0} ton` },
+        { descripcion: 'Peso gancho', cantidad: `${currentSetup?.cargas?.pesoGancho || 0} ton` },
+        { descripcion: 'Peso cable', cantidad: `${currentSetup?.cargas?.pesoCable || 0} ton` },
+        { descripcion: 'Peso total', cantidad: `${currentSetup?.cargas?.pesoTotal || 0} ton` },
+        { descripcion: 'Radio de trabajo máximo', cantidad: `${currentSetup?.cargas?.radioTrabajoMax || 0} m` },
         { descripcion: 'Distancia gancho-elemento aprox.', cantidad: `${distanciaGanchoElementoCalculated} m` },
-        { descripcion: 'Ángulo de trabajo', cantidad: `${currentSetup.cargas?.anguloTrabajo || 0}` },
-        { descripcion: 'Capacidad de levante', cantidad: `${currentSetup.cargas?.capacidadLevante || 0} ton` },
-        { descripcion: '% Utilización', cantidad: `${currentSetup.cargas?.porcentajeUtilizacion || 0} %` },
+        { descripcion: 'Ángulo de trabajo', cantidad: `${currentSetup?.cargas?.anguloTrabajo || 0}` },
+        { descripcion: 'Capacidad de levante', cantidad: `${currentSetup?.cargas?.capacidadLevante || 0} ton` },
+        { descripcion: '% Utilización', cantidad: `${currentSetup?.cargas?.porcentajeUtilizacion || 0} %` },
     ];
 
     const formatNumber = (num, unit = '') =>
         (num !== undefined && num !== null && !isNaN(num)) ? `${parseFloat(num).toFixed(1)} ${unit}` : `N/A${unit ? ' ' + unit : ''}`;
 
-    const anchoCarga = parseFloat(currentSetup.centroGravedad?.xAncho || currentSetup.cargas?.ancho) || 0;
-    const largoCarga = parseFloat(currentSetup.centroGravedad?.yLargo || currentSetup.cargas?.largo) || 0;
-    const altoCarga = parseFloat(currentSetup.centroGravedad?.zAlto || currentSetup.cargas?.alto) || 0;
-    const diametroCarga = parseFloat(currentSetup.centroGravedad?.diametro || currentSetup.cargas?.diametro) || 0;
-    const formaCarga = (currentSetup.centroGravedad?.forma || currentSetup.cargas?.forma || '').toLowerCase();
+    const anchoCarga = parseFloat(currentSetup?.centroGravedad?.xAncho || currentSetup?.cargas?.ancho) || 0;
+    const largoCarga = parseFloat(currentSetup?.centroGravedad?.yLargo || currentSetup?.cargas?.largo) || 0;
+    const altoCarga = parseFloat(currentSetup?.centroGravedad?.zAlto || currentSetup?.cargas?.alto) || 0;
+    const diametroCarga = parseFloat(currentSetup?.centroGravedad?.diametro || currentSetup?.cargas?.diametro) || 0;
+    const formaCarga = (currentSetup?.centroGravedad?.forma || currentSetup?.cargas?.forma || '').toLowerCase();
 
-    let xCG = parseFloat(currentSetup.centroGravedad?.xCG);
-    let yCG = parseFloat(currentSetup.centroGravedad?.yCG);
-    let zCG = parseFloat(currentSetup.centroGravedad?.zCG);
-    let xPR = parseFloat(currentSetup.centroGravedad?.xPR);
-    let yPR = parseFloat(currentSetup.centroGravedad?.yPR);
-    let zPR = parseFloat(currentSetup.centroGravedad?.zPR);
+    let xCG = parseFloat(currentSetup?.centroGravedad?.xCG);
+    let yCG = parseFloat(currentSetup?.centroGravedad?.yCG);
+    let zCG = parseFloat(currentSetup?.centroGravedad?.zCG);
+    let xPR = parseFloat(currentSetup?.centroGravedad?.xPR);
+    let yPR = parseFloat(currentSetup?.centroGravedad?.yPR);
+    let zPR = parseFloat(currentSetup?.centroGravedad?.zPR);
 
     if (formaCarga === 'cilindro') {
         if (isNaN(xCG)) xCG = diametroCarga / 2;
@@ -164,7 +174,7 @@ const CollabTablas = ({ route }) => {
         },
     ];
 
-    const handleFirmarPlan = () => {
+    const handleFirmarPlan = async () => {
         let signatureToUse = currentUser?.signature;
         if (!signatureToUse) {
             Alert.alert("Error de Firma", "No se encontró una firma para el usuario actual. Asegúrate de tener una firma registrada en tu perfil.");
@@ -272,8 +282,52 @@ const CollabTablas = ({ route }) => {
         );
     };
 
-    const handleEnviarPdf = () => {
-        Alert.alert("PDF", "Se está enviando el PDF...");
+    const handleEnviarPdf = async () => {
+        if (isLoadingPdf) return;
+
+        setIsLoadingPdf(true);
+        try {
+            // Construye el objeto 'rows' para aparejos de forma similar a Tablas.js
+            const aparejosRows = datosTablaAparejosIndividuales.flatMap((aparejo, index) => {
+                const pesoUnitario = parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0);
+                const pesoGrillete = parseFloat(aparejo.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0);
+                return {
+                    item: index + 1,
+                    descripcion: aparejo.descripcionPrincipal.descripcion,
+                    cantidad: 1,
+                    pesoUnitario: pesoUnitario,
+                    pesoTotal: pesoUnitario + pesoGrillete,
+                };
+            });
+
+            // Calcula el totalPesoAparejos
+            const totalPesoAparejos = aparejosRows.reduce(
+                (total, aparejo) => total + aparejo.pesoTotal,
+                0
+            );
+
+            // Construye el objeto pdfData completo
+            const pdfData = {
+                selectedGrua: currentSetup?.grua,
+                aparejosRows: aparejosRows,
+                totalPesoAparejos: totalPesoAparejos,
+                maniobraRows: datosTablaManiobra,
+                gruaRows: datosTablaGrua,
+                nombreProyecto: currentSetup?.nombreProyecto,
+                datosTablaProyecto: datosTablaProyecto,
+                datosTablaXYZ: datosTablaXYZ,
+                aparejosDetailed: datosTablaAparejosIndividuales,
+            };
+
+            console.log('CollabTablas - pdfData antes de llamar a generarPDF:', pdfData);
+
+            await generarPDF(pdfData);
+        } catch (error) {
+            console.error('Error al generar el PDF:', error);
+            Alert.alert("Error", "Ocurrió un error al intentar generar el PDF. Por favor, inténtalo de nuevo.");
+        } finally {
+            setIsLoadingPdf(false);
+        }
     };
 
     const handleOpenBottomSheet = () => {
@@ -446,26 +500,43 @@ const CollabTablas = ({ route }) => {
                         />
                     )}
                     <Components.Button
-                        label="Enviar PDF"
+                        label={isLoadingPdf ? 'Generando...' : 'Enviar PDF'}
                         onPress={handleEnviarPdf}
                         style={{ width: canSign ? '48%' : '90%' }}
+                        disabled={isLoadingPdf}
                     />
                 </View>
             ) : (
                 <Components.Button
-                    label="Enviar PDF"
+                    label={isLoadingPdf ? 'Generando...' : 'Enviar PDF'}
                     onPress={handleEnviarPdf}
                     style={[TablasStyles.button, { width: '90%', position: 'absolute', bottom: 60, left: -33 }]}
+                    disabled={isLoadingPdf}
                 />
             )}
             <BS.BSIlustracionGrua
                 isVisible={isBottomSheetVisible}
                 onClose={handleCloseBottomSheet}
-                craneName={currentSetup.grua?.nombre || 'N/A'}
-                alturaType={currentSetup.datos?.largoPluma}
-                inclinacion={currentSetup.datos?.gradoInclinacion}
-                radioTrabajoMaximo={currentSetup.cargas?.radioTrabajoMax}
+                craneName={currentSetup?.grua?.nombre || 'N/A'}
+                alturaType={currentSetup?.datos?.largoPluma}
+                inclinacion={currentSetup?.datos?.gradoInclinacion}
+                radioTrabajoMaximo={currentSetup?.cargas?.radioTrabajoMax}
             />
+            {isLoadingPdf && (
+                <View style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                    zIndex: 20
+                }}>
+                    <ActivityIndicator size="large" color="#ee0000" />
+                </View>
+            )}
         </View>
     );
 };

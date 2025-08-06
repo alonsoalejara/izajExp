@@ -1,180 +1,275 @@
 import { estilosPDF } from '../../styles/PDFStyles';
 
-export const generarHTML = (rows, totalPesoAparejos, cargaRows, datosGrúaRows, base64Imagen) => {
+/**
+ * Genera el contenido HTML para el informe de izaje, tomando los datos de forma dinámica.
+ * @param {object} planData - Objeto con datos generales del plan (proyecto, responsables).
+ * @param {Array} cargaRows - Array de objetos con los datos para la tabla de carga.
+ * @param {Array} datosGruaRows - Array de objetos con los datos para la tabla de grúa.
+ * @param {Array} aparejosDetailed - Array de objetos con los datos detallados de los aparejos.
+ * @param {number} totalPesoAparejos - Peso total de los aparejos.
+ * @param {Array} datosTablaXYZ - Array de objetos con los datos para la tabla de dimensiones.
+ * @param {string} imagenBase64 - Imagen del logo en formato Base64.
+ * @returns {string} El contenido HTML completo del informe.
+ */
+export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed, totalPesoAparejos, datosTablaXYZ, imagenBase64) => {
+    // Busca el valor de la altura en la tabla de carga
+    // Se usa 'cantidad' si existe, de lo contrario 'valor' (para compatibilidad)
+    const distanciaGanchoElementoItem = cargaRows.find(
+        item => item.descripcion === 'Distancia gancho-elemento aprox.'
+    );
+    const altura = distanciaGanchoElementoItem?.cantidad || distanciaGanchoElementoItem?.valor || 'N/A';
+
     return `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Informe de Izaje</title>
-          <style>${estilosPDF}</style>
-      </head>
-      <body>
-        <div class="inner-box">
-            <h2>CUADRO APAREJOS</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ITEM</th>
-                        <th>DESCRIPCIÓN</th>
-                        <th>CANT.</th>
-                        <th>PESO UNIT (Kg.)</th>
-                        <th>PESO TOTAL (Kg.)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${rows.map(row => ` 
-                      <tr> 
-                        <td>${row.item}</td> 
-                        <td>${row.descripcion}</td> 
-                        <td>${row.cantidad}</td> 
-                        <td>${row.pesoUnitario} kg</td> 
-                        <td>${row.pesoTotal} kg</td> 
-                      </tr> 
-                    `).join('')}
-                    <tr>
-                        <td colspan="4" style="font-weight: bold;">Total Peso Aparejos</td>
-                        <td style="font-weight: bold;">${totalPesoAparejos} kg</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h2>CUADRO CARGA</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ITEM</th>
-                        <th>DESCRIPCIÓN</th>
-                        <th>VALOR</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${cargaRows.map(row => ` 
-                      <tr> 
-                        <td>${row.item}</td> 
-                        <td>${row.descripcion}</td> 
-                        <td>${row.valor}</td> 
-                      </tr> 
-                    `).join('')}
-                </tbody>
-            </table>
-
-            <h2>CUADRO DATOS GRÚA</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ITEM</th>
-                        <th>DESCRIPCIÓN</th>
-                        <th>VALOR</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${datosGrúaRows.map(row => ` 
-                      <tr> 
-                        <td>${row.item}</td> 
-                        <td>${row.descripcion}</td> 
-                        <td>${row.valor}</td> 
-                      </tr> 
-                    `).join('')}
-                </tbody>
-            </table>
-
-            <div class="view-box-container">
-                <div class="view-box">
-                    <h3>VISTA PLANTA</h3>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Informe de Izaje</title>
+            <style>${estilosPDF}</style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <div class="logo-container">
+                        <img src="${imagenBase64}" alt="Logo de la empresa" style="max-width: 100px; height: auto;">
+                    </div>
+                    <h1>Montajes Industriales</h1>
+                    <h2>${planData.nombreProyecto || 'Proyecto Ejemplo'}</h2>
+                    <p>Fecha de Emisión: <span id="currentDate"></span></p>
                 </div>
-                <div class="view-box">
-                    <h3>VISTA ISOMETRICA</h3>
-                </div>
-                <div class="view-box">
-                    <h3>VISTA ELEVACIÓN 1</h3>
-                </div>
-                <div class="view-box elevation-2">
-                    <h3>VISTA ELEVACIÓN 2</h3>
-                </div>
-            </div>
 
-            <div class="additional-tables-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>PROYECTO EJEMPLO</th>
-                            <th> 
-                                <img src="${base64Imagen}" width="100" height="50" />
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>ITEM</td>
-                            <td>
-                                
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="new-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>NOMBRE</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>PROYECTO:</td>
-                        </tr>
-                        <tr>
-                            <td>PROYECTO:</td>
-                        </tr>
-                        <tr>
-                            <td>REVISO:</td>
-                        </tr>
-                        <tr>
-                            <td>APROBO:</td>
-                        </tr>
-                        <tr>
-                            <td><br></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="eimisa-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>NUMERO DE PLANO</th>
-                            <th>REV.</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>N°EIMISA</td>
-                            <td> - </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Fila girada 90° -->
-            <div class="rotated-row-container">
-                <div class="rotated-row">
+                <div class="section">
+                    <h3>Cuadro de información general</h3>
                     <table>
-                        <thead>
-                            <tr>
-                                <th class="rotated-header">EIMISA</th>
-                                <th class="rotated-header-second"></th>
-                            </tr>
-                        </thead>
+                        <tr>
+                            <th>Nombre del Proyecto</th>
+                            <td id="projectName">${planData.nombreProyecto || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Capataz</th>
+                            <td id="capatazName">${planData.capataz?.nombreCompleto || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Supervisor</th>
+                            <td id="supervisorName">${planData.supervisor?.nombreCompleto || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Jefe de Área</th>
+                            <td id="jefeAreaName">${planData.jefeArea?.nombreCompleto || 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Versión del Informe</th>
+                            <td id="reportVersion">${planData.version !== undefined ? planData.version : 'N/A'}</td>
+                        </tr>
                     </table>
                 </div>
+
+                <div class="section">
+                    <h3>Cuadro de aparejos</h3>
+                    <table id="riggingTable">
+                        <thead>
+                            <tr>
+                                <th>Descripción</th>
+                                <th>Cantidad</th>
+                                <th>Peso Unit. (ton)</th>
+                                <th>Peso Total (ton)</th>
+                                <th>Largo (m)</th>
+                                <th>Grillete</th>
+                                <th>Peso Grillete (ton)</th>
+                                <th>Altura (m)</th>
+                                <th>Tensión</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${aparejosDetailed.map(aparejo => {
+                                const pesoUnitario = aparejo.detalles.find(d => d.label === 'Peso')?.valor || 'N/A';
+                                const pesoGrillete = aparejo.detalles.find(d => d.label === 'Peso Grillete')?.valor || 'N/A';
+                                const largo = aparejo.detalles.find(d => d.label === 'Largo')?.valor || 'N/A';
+                                const grillete = aparejo.detalles.find(d => d.label === 'Grillete')?.valor || 'N/A';
+                                const tension = aparejo.detalles.find(d => d.label === 'Tensión')?.valor || 'N/A';
+                                
+                                const pesoUnitarioNum = parseFloat(pesoUnitario.replace(' ton', ''));
+                                const pesoGrilleteNum = parseFloat(pesoGrillete.replace(' ton', ''));
+                                const pesoTotal = (pesoUnitarioNum + pesoGrilleteNum).toFixed(1);
+
+                                return `
+                                    <tr>
+                                        <td>${aparejo.descripcionPrincipal.descripcion}</td>
+                                        <td>1</td>
+                                        <td>${pesoUnitario}</td>
+                                        <td>${pesoTotal} ton</td>
+                                        <td>${largo}</td>
+                                        <td>${grillete}</td>
+                                        <td>${pesoGrillete}</td>
+                                        <td>${altura}</td>
+                                        <td>${tension}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                            <tr>
+                                <td colspan="3" style="font-weight: bold; text-align: right;">Total Peso Aparejos</td>
+                                <td style="font-weight: bold;">${totalPesoAparejos.toFixed(1)} kg</td>
+                                <td colspan="5"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Nuevo contenedor para agrupar las tres tablas de datos -->
+                <div class="data-tables-layout">
+                    <!-- Cuadro de carga -->
+                    <div class="section">
+                        <h3>Cuadro de carga</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Concepto</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${cargaRows.map(row => `
+                                    <tr>
+                                        <td>${row.descripcion}</td>
+                                        <td>${row.cantidad !== undefined ? row.cantidad : row.valor}</td> <!-- Flexibilidad: usar 'cantidad' o 'valor' -->
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Cuadro de grúa -->
+                    <div class="section">
+                        <h3>Cuadro de grúa</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Concepto</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${datosGruaRows.map(row => `
+                                    <tr>
+                                        <td>${row.descripcion}</td>
+                                        <td>${row.cantidad !== undefined ? row.cantidad : row.valor}</td> <!-- Flexibilidad: usar 'cantidad' o 'valor' -->
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Cuadro de dimensiones -->
+                    <div class="section">
+                        <h3>Cuadro de dimensiones</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parámetro</th>
+                                    <th>Valor (metros / %)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th colspan="2" style="text-align: center; background-color: #f0f0f0;">Medidas (Dimensiones)</th>
+                                </tr>
+                                <tr>
+                                    <td>(X) Ancho</td>
+                                    <td id="cgXWidth">${datosTablaXYZ.find(d => d.descripcion === 'Medidas')?.Y}</td>
+                                </tr>
+                                <tr>
+                                    <td>(Y) Largo</td>
+                                    <td id="cgYLenght">${datosTablaXYZ.find(d => d.descripcion === 'Medidas')?.X}</td>
+                                </tr>
+                                <tr>
+                                    <td>(Z) Alto</td>
+                                    <td id="cgZHeight">${datosTablaXYZ.find(d => d.descripcion === 'Medidas')?.Z}</td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2" style="text-align: center; background-color: #f0f0f0;">Centro de Gravedad (CG)</th>
+                                </tr>
+                                <tr>
+                                    <td>(X) CG</td>
+                                    <td id="cgX">${datosTablaXYZ.find(d => d.descripcion === 'CG')?.X}</td>
+                                </tr>
+                                <tr>
+                                    <td>(Y) CG</td>
+                                    <td id="cgY">${datosTablaXYZ.find(d => d.descripcion === 'CG')?.Y}</td>
+                                </tr>
+                                <tr>
+                                    <td>(Z) CG</td>
+                                    <td id="cgZ">${datosTablaXYZ.find(d => d.descripcion === 'CG')?.Z}</td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2" style="text-align: center; background-color: #f0f0f0;">Posición Relativa (PR)</th>
+                                </tr>
+                                <tr>
+                                    <td>(X) PR</td>
+                                    <td id="cgXPR">${datosTablaXYZ.find(d => d.descripcion === 'Posic. Relativa')?.X}</td>
+                                </tr>
+                                <tr>
+                                    <td>(Y) PR</td>
+                                    <td id="cgYPR">${datosTablaXYZ.find(d => d.descripcion === 'Posic. Relativa')?.Y}</td>
+                                </tr>
+                                <tr>
+                                    <td>(Z) PR</td>
+                                    <td id="cgZPR">${datosTablaXYZ.find(d => d.descripcion === 'Posic. Relativa')?.Z}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Nuevo contenedor para las ilustraciones en la parte inferior, lado a lado -->
+                <div class="illustrations-layout">
+                    <div class="illustration-section">
+                        <h3>Ilustración de grúa</h3>
+                        <div class="illustration-container">
+                            <!-- La ilustración de la grúa irá aquí -->
+                            <span>[Ilustración de grúa]</span>
+                        </div>
+                    </div>
+                    <div class="illustration-section">
+                        <h3>Ilustración de carga</h3>
+                        <div class="illustration-container">
+                            <!-- La ilustración de la carga irá aquí -->
+                            <span>[Ilustración de carga]</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="person-info">
+                    <div class="person-block">
+                        <span class="signature-status" id="supervisorSignature"></span>
+                        <div class="signature-line">
+                            <span id="supervisorFullName">${planData.supervisor?.nombreCompleto || 'Firma del Supervisor'}</span>
+                        </div>
+                        <p class="person-role">Supervisor</p>
+                    </div>
+                    <div class="person-block">
+                        <span class="signature-status" id="jefeAreaSignature"></span>
+                        <div class="signature-line">
+                            <span id="jefeAreaFullName">${planData.jefeArea?.nombreCompleto || 'Firma del Jefe de Área'}</span>
+                        </div>
+                        <p class="person-role">Jefe de Área</p>
+                    </div>
+                </div>
+
+                <div class="date-info">
+                    <p>Documento generado el: <span id="createdAtDate">04/08/2025</span></p>
+                    <p>Última actualización: <span id="updatedAtDate">04/08/2025</span></p>
+                </div>
             </div>
-        </div>
-    </body>
-      </html>
+
+            <script>
+                function formatDate(dateString) {
+                    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                    return new Date(dateString).toLocaleDateString('es-ES', options);
+                }
+                document.getElementById('currentDate').textContent = formatDate(new Date());
+            </script>
+        </body>
+        </html>
     `;
-  };
+};

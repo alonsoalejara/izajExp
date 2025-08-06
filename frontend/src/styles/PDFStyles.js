@@ -1,161 +1,203 @@
 export const estilosPDF = `
-
     body {
-        font-family: Arial, sans-serif;
-        font-size: 5px;
-        margin: 10px;
+        font-family: 'Arial', sans-serif;
+        margin: 0;
         padding: 20px;
-        border: 1px solid black;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .container {
+        width: 21cm;
+        min-height: 29.7cm;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 30px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         box-sizing: border-box;
-        height: 122vh;
-        width: 122vw;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #d9d9d9;
+        padding-bottom: 20px;
+    }
+
+    .logo-container {
+        margin: 0 auto 10px auto;
+        width: 160px;
+        height: 80px;
+        border: 1px solid #ccc;
         display: flex;
-        justify-content: flex-end;
-        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8em;
+        color: #777;
+        text-align: center;
     }
-    .inner-box {
-        border: 1px solid black;
-        margin: 25px;
-        padding: 20px;
-        box-sizing: border-box;
-        height: 110vh;
-        width: 110vw;
-        position: relative;
-        text-align: right;
-    }
-    h2 {
+
+    .header h1 {
+        color: #ee0000;
         margin-top: 0;
-        text-align: right;
-        margin-bottom: 10px;
+        font-size: 1.0em;
+        margin-bottom: 0px;
     }
-    table {
-        width: 200px;
-        font-size: 5px;
+
+    .header h2 {
+        color: #000;
+        margin-top: 0px;
+        margin-bottom: 0px;
+        font-size: 0.8em;
+    }
+
+    .header p {
+        font-size: 0.5em;
+        color: #555;
+        margin-top: 0px;
+        margin-bottom: 0;
+    }
+    
+    .section, .illustration-section {
+        margin-bottom: 30px;
+    }
+    
+    /* Regla actualizada para aplicar el estilo a h3 en .section y .illustration-section */
+    .section h3, .illustration-section h3 {
+        color: #ee0000;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
         margin-bottom: 15px;
-        border-collapse: collapse;
-        margin-left: auto;
-        margin-right: 0;
-    }
-    th, td {
-        border: 1px solid black;
-        padding: 8px;
-        text-align: left;
-    }
-    th {
-        background-color: white;
-    }
-    .view-box-container {
-        display: grid;
-        grid-template-columns: 30% 30%;
-        grid-template-rows: 40vh 40vh;
-        grid-gap: 15px 20px;
-        margin-top: -494px;
-        justify-items: start;
-        align-items: start;
-        width: 100%;
-    }
-    .view-box {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid black;
-        box-sizing: border-box;
-        height: 100%;
-    }
-    .view-box h3 {
-        font-size: 10px;
-        color: red;
-        margin-top: 0;
-        text-align: right;
-    }
-    .new-table {
-    width: 15%;
-    height: auto;
-    margin-top: -190px;
-    margin-left: 0;
-    border-collapse: collapse;
+        font-size: 0.8em;
     }
 
-    .new-table table {
-        width: 130%;
-        border-collapse: collapse;
-        margin-top: 123.2px;
-        margin-left: 215px;
-    }
-
-    .new-table th, 
-    .new-table td {
-        padding: 1.2px;
-        text-align: left; 
-    }
-
-    .eimisa-table table {
-    height: 66px;
-    width: 30%;
-    border-collapse: collapse;
-    margin-top: -81px;
-    margin-left: 450px;
-    }
-
-    .eimisa-table th {
-        padding: 5px;
-        text-align: left; 
-    } 
-    .eimisa-table td {
-        padding: -2px;
-        text-align: left;
-    }
-
-    .additional-tables-container {
-        margin-top: 59px;
-        text-align: right;
-        width: 100%;
-    }
-
-    .additional-tables-container table {
-        margin: 28px -21px 10px auto;
-        width: 300px;
-        font-size: 10px;
-    }
-
-    .additional-tables-container table th, 
-    .additional-tables-container table td {
-        height: 45px;
-        width: 40px;
-        vertical-align: middle;
-        padding: 10px;
-    }
-
-    .rotated-row-container {
+    /* Nuevo contenedor para agrupar todas las tablas de datos en la parte superior */
+    .data-tables-layout {
         display: flex;
         justify-content: space-between;
-        margin-top: -96.8px;
-        margin-left: 190.5px;
+        gap: 20px;
+        margin-bottom: 30px;
+        align-items: flex-start;
     }
 
-    .rotated-row {
-        writing-mode: vertical-rl;
-        transform: rotate(180deg);
-        font-size: 6px;
-        padding: 0px;
-        width: 5px;
+    /* Estilo para que las tablas dentro del nuevo contenedor tengan el mismo ancho */
+    .data-tables-layout .section {
+        flex: 1;
+        margin-bottom: 0; /* Eliminamos el margen inferior para que estén más pegadas */
+    }
+
+    /* Nuevo contenedor para las ilustraciones en la parte inferior */
+    .illustrations-layout {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        margin-top: 30px; /* Separación con los elementos de arriba */
+        margin-bottom: 30px;
+    }
+
+    /* Estilo para el contenedor de cada ilustración */
+    .illustration-section {
+        flex: 1; /* Para que ocupen el mismo espacio */
+    }
+
+    /* Estilos para el espacio de la ilustración, ahora con la altura ajustada y un borde más suave */
+    .illustration-container {
+        width: 100%;
+        height: 350px; /* Altura ajustada para el nuevo layout */
+        border: 1px solid #ccc; /* Borde para visualizar el espacio */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #888;
+        font-style: italic;
         text-align: center;
+        background-color: #f9f9f9;
+        border-radius: 8px;
     }
 
-    .rotated-row table {
+    table {
         width: 100%;
         border-collapse: collapse;
+        font-size: 0.6em;
     }
 
-    .rotated-header {
-        height: 1px;
-        width: 60%;
-        padding-top: 23.5px;
+    th, td {
+        border: 1px solid #ddd;
+        padding: 4px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2e3e3;
+        color: #333;
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #ff3f3f1d;
+    }
+
+    .person-info {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 30px;
         text-align: center;
-        max-width: 60px;
+        flex-wrap: wrap;
     }
 
-    .rotated-header-second {
-        width: 20%;
-        max-width: 30px;
+    .person-block {
+        flex: 1;
+        min-width: 200px;
+        margin: 10px;
+    }
+
+    .signature-status {
+        display: block;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        font-size: 0.9em;
+        color: #555;
+        font-weight: bold;
+    }
+
+    .person-role {
+        font-size: 0.9em;
+        color: #777;
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+
+    .signature-line {
+        border-top: 1px solid #000;
+        margin-top: 15px;
+        padding-top: 5px;
+        font-size: 0.9em;
+    }
+
+    .date-info {
+        text-align: right;
+        font-size: 0.9em;
+        color: #777;
+        margin-top: 20px;
+    }
+
+    @media print {
+        body {
+            background-color: #fff;
+            padding: 0;
+        }
+        .container {
+            box-shadow: none;
+            margin: 0;
+            width: 100%;
+            min-height: auto;
+        }
+        .no-print {
+            display: none;
+        }
+        .logo-container, .illustration-container {
+            border: none;
+        }
     }
 `;
