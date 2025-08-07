@@ -16,43 +16,51 @@ function AdminPanel() {
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
+  // Definimos estados para los modales de edición de Grúas y Planes
+  const [isModalEditarGruaVisible, setIsModalEditarGruaVisible] = useState(false);
+  const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
+  const [isModalEditarSetupIzajeVisible, setIsModalEditarSetupIzajeVisible] = useState(false);
+  const [setupIzajeSeleccionado, setSetupIzajeSeleccionado] = useState(null);
 
-  const [colaboradoresState, setColaboradoresState] = useState(colaboradores || []);
-  const [gruasState, setGruasState] = useState(gruas || []);
-  const [setupsState, setSetupsState] = useState(setupIzajes || []);
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [originalColaboradoresState, setOriginalColaboradoresState] = useState(colaboradores || []);
-  const [originalGruasState, setOriginalGruasState] = useState(gruas || []);
-  const [originalSetupsState, setOriginalSetupsState] = useState(setupIzajes || []);
-
+  // Declaración de estado para el modal de edición de colaborador (¡está aquí!)
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
+
 
   const { data: colaboradores = [], refetch: refetchColaboradores } = useFetchData('user');
   const { data: gruas = [], refetch: refetchGruas } = useFetchData('grua');
   const { data: setupIzajes = [], refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
 
-useEffect(() => {
-  const checkUserRole = async () => {
-    try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
-      const rolesString = await AsyncStorage.getItem('roles');
+  // Inicializa los estados con los datos de los hooks
+  const [colaboradoresState, setColaboradoresState] = useState(colaboradores);
+  const [gruasState, setGruasState] = useState(gruas);
+  const [setupsState, setSetupsState] = useState(setupIzajes);
 
-      const roles = JSON.parse(rolesString);
-      const isAdminUser = roles && Array.isArray(roles) && roles.includes('jefe');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [originalColaboradoresState, setOriginalColaboradoresState] = useState(colaboradores);
+  const [originalGruasState, setOriginalGruasState] = useState(gruas);
+  const [originalSetupsState, setOriginalSetupsState] = useState(setupIzajes);
 
-      setIsAdmin(accessToken && isAdminUser);
+  useEffect(() => {
+    const checkUserRole = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        const rolesString = await AsyncStorage.getItem('roles');
 
-      if (!accessToken || !isAdminUser) {
+        const roles = JSON.parse(rolesString);
+        const isAdminUser = roles && Array.isArray(roles) && roles.includes('jefe');
+
+        setIsAdmin(accessToken && isAdminUser);
+
+        if (!accessToken || !isAdminUser) {
+          navigation.navigate('Login');
+        }
+      } catch (error) {
+        console.error('Error al verificar el rol del usuario:', error);
         navigation.navigate('Login');
       }
-    } catch (error) {
-      console.error('Error al verificar el rol del usuario:', error);
-      navigation.navigate('Login');
-    }
-  };
-  checkUserRole();
-}, [navigation]);
+    };
+    checkUserRole();
+  }, [navigation]);
 
   useEffect(() => {
     setGruasState(gruas || []);
@@ -61,18 +69,18 @@ useEffect(() => {
   }, [gruas, colaboradores, setupIzajes]);
 
   useEffect(() => {
-      setColaboradoresState(colaboradores);
-      setOriginalColaboradoresState(colaboradores);
+    setColaboradoresState(colaboradores);
+    setOriginalColaboradoresState(colaboradores);
   }, [colaboradores]);
 
   useEffect(() => {
-      setGruasState(gruas);
-      setOriginalGruasState(gruas);
+    setGruasState(gruas);
+    setOriginalGruasState(gruas);
   }, [gruas]);
 
   useEffect(() => {
-      setSetupsState(setupIzajes);
-      setOriginalSetupsState(setupIzajes);
+    setSetupsState(setupIzajes);
+    setOriginalSetupsState(setupIzajes);
   }, [setupIzajes]);
 
   if (!isAdmin) {
@@ -82,7 +90,7 @@ useEffect(() => {
       </View>
     );
   }
-  
+
   const handlePressButton = (section) => {
     setActiveSection(section);
     if (!animations.current[section]) {
@@ -109,32 +117,38 @@ useEffect(() => {
         return 'Crear';
     }
   };
-  
+
   const handleSearch = (text) => {
     setSearchQuery(text);
     if (!text) {
-        setColaboradoresState(originalColaboradoresState);
-        setGruasState(originalGruasState);
-        setSetupsState(originalSetupsState);
-        return;
+      setColaboradoresState(originalColaboradoresState);
+      setGruasState(originalGruasState);
+      setSetupsState(originalSetupsState);
+      return;
     }
 
     const lowerText = text.toLowerCase();
     setColaboradoresState(originalColaboradoresState.filter(colaborador =>
-        colaborador?.nombre?.toLowerCase().includes(lowerText) ||
-        colaborador?.apellido?.toLowerCase().includes(lowerText)
+      colaborador?.nombre?.toLowerCase().includes(lowerText) ||
+      colaborador?.apellido?.toLowerCase().includes(lowerText)
     ));
     setGruasState(originalGruasState.filter(grua =>
-        grua?.nombre?.toLowerCase().includes(lowerText)
+      grua?.nombre?.toLowerCase().includes(lowerText)
     ));
+    // Asegúrate de que plan.usuario exista antes de intentar acceder a sus propiedades
     setSetupsState(originalSetupsState.filter(setup =>
-      setup?.usuario?.nombre?.toLowerCase().includes(lowerText) ||
-      setup?.usuario?.apellido?.toLowerCase().includes(lowerText)
+      setup?.nombreProyecto?.toLowerCase().includes(lowerText) ||
+      setup?.capataz?.nombre?.toLowerCase().includes(lowerText) ||
+      setup?.capataz?.apellido?.toLowerCase().includes(lowerText) ||
+      setup?.supervisor?.nombre?.toLowerCase().includes(lowerText) ||
+      setup?.supervisor?.apellido?.toLowerCase().includes(lowerText) ||
+      setup?.jefeArea?.nombre?.toLowerCase().includes(lowerText) ||
+      setup?.jefeArea?.apellido?.toLowerCase().includes(lowerText)
     ));
   };
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
+  const handleViewPlan = (planData) => {
+    navigation.navigate('CollabTablas', { planData: planData });
   };
 
   const handleEditColaborador = async (colaborador) => {
@@ -142,7 +156,7 @@ useEffect(() => {
       const updatedColaboradores = Logic.colaboradorLogic.editColaborador(colaboradoresState, colaborador);
       setColaboradoresState(updatedColaboradores);
       refetchColaboradores();
-      setIsModalEditarColaboradorVisible(false);
+      setIsModalEditarColaboradorVisible(false); // <-- Aquí se usa
     } catch (error) {
       console.error('Error al editar colaborador:', error);
     }
@@ -185,28 +199,28 @@ useEffect(() => {
     <View style={styles.container}>
       {/* Sección superior fija con la imagen, logo y gradiente */}
       <Components.Header />
-  
+
       {/* Sección fija con título, buscador y botones */}
       <View style={styles.fixedHeader}>
         <Text style={styles.sectionTitle}>Panel de Administrador</Text>
         {/* Input de búsqueda con icono */}
-        <Components.SearchInput 
-          value={searchQuery} 
-          onChangeText={handleSearch} 
+        <Components.SearchInput
+          value={searchQuery}
+          onChangeText={handleSearch}
         />
-  
+
         {/* Botones fijos con animación */}
         <View style={styles.buttonContainer}>
           {['Personal', 'Gruas', 'Planes', 'Datos'].map((section) => {
             if (!animations.current[section]) {
               animations.current[section] = new Animated.Value(0);
             }
-  
+
             const animatedWidth = animations.current[section].interpolate({
               inputRange: [0, 1],
               outputRange: ['0%', '100%'],
             });
-  
+
             return (
               <TouchableOpacity
                 key={section}
@@ -255,7 +269,7 @@ useEffect(() => {
         colaborador={colaboradorSeleccionado}
         onUpdate={handleEditColaborador}
       />
-      
+
       {/* Contenido desplazable */}
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer}>
         {activeSection === 'Personal' && (
@@ -269,7 +283,7 @@ useEffect(() => {
             setColaboradores={setColaboradoresState}
           />
         )}
-  
+
         {activeSection === 'Gruas' && (
           <Section.CraneSection
             gruas={gruasState}
@@ -281,10 +295,11 @@ useEffect(() => {
             setGruas={setGruasState}
           />
         )}
-  
+
         {activeSection === 'Planes' && (
           <Section.SetupIzajeSection
             setupIzaje={setupsState}
+            onViewPress={handleViewPlan}
             handleEdit={(setup) => {
               setSetupIzajeSeleccionado(setup);
               setIsModalEditarSetupIzajeVisible(true);
