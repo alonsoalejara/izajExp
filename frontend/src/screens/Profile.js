@@ -200,7 +200,7 @@ const Profile = () => {
     ]);
   };
 
-  const handleNavigateToCollabTablas = (setup) => {
+  const handleNavigateToCollabTablas = (planData) => {
     if (!user) {
       Alert.alert("Espere", "Los datos del usuario aún se están cargando.");
       return;
@@ -215,7 +215,7 @@ const Profile = () => {
     }
 
     navigation.navigate('CollabTablas', {
-      setup,
+      planData: planData,
       currentUser: user,
     });
   };

@@ -12,13 +12,10 @@ const CollabProfile = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { userData } = route.params || {};
-
-  // Estado para los planes de izaje
   const [setupIzaje, setSetups] = useState([]);
-  // Estado para la pestaña seleccionada: 'Datos' o 'Planes'
   const [selectedButton, setSelectedButton] = useState('Datos');
   const animations = useRef({
-    Datos: new Animated.Value(1), // por defecto se muestra esta pestaña
+    Datos: new Animated.Value(1), 
     Planes: new Animated.Value(0),
   });
 
@@ -45,7 +42,20 @@ const CollabProfile = () => {
 
         if (data) {
           if (Array.isArray(data.data)) {
-            setSetups(data.data);
+            const userRole = userData?.roles?.[0];
+            const filteredData = data.data.filter((setup) => {
+              if (!userData || !userRole) return false; // Si no hay userData o rol, no mostrar nada
+
+              if (userRole === 'capataz') {
+                return setup.capataz && setup.capataz._id === userData._id;
+              } else if (userRole === 'supervisor') {
+                return setup.supervisor && setup.supervisor._id === userData._id;
+              } else if (userRole === 'jefe') {
+                return setup.jefeArea && setup.jefeArea._id === userData._id;
+              }
+              return false;
+            });
+            setSetups(filteredData); // Establecer los planes filtrados
           } else if (
             data.data === null ||
             data.data === undefined ||
@@ -68,7 +78,7 @@ const CollabProfile = () => {
     };
 
     fetchSetups();
-  }, []);
+  }, [userData]);
 
   // Función para cambiar de pestaña con animación
   const handlePressButton = (button) => {
@@ -84,6 +94,10 @@ const CollabProfile = () => {
       duration: 300,
       useNativeDriver: false,
     }).start();
+  };
+
+  const handleViewPlan = (planData) => {
+    navigation.navigate('CollabTablas', { planData: planData });
   };
 
   return (
@@ -190,10 +204,6 @@ const CollabProfile = () => {
       {selectedButton === 'Planes' && (
         <View style={{ top: 320, flex: 1 }}>
           <ScrollView contentContainerStyle={{ paddingBottom: 450, marginBottom: 20 }}>
-            {/* Aquí se pasan:
-                - setupIzaje y setSetups (planes de izaje)
-                - currentUser con el usuario del perfil para filtrar los setups
-                - Un estilo personalizado para el contenedor de botones */}
             <Section.SetupIzajeSection
               setupIzaje={setupIzaje}
               setSetups={setSetups}
@@ -206,6 +216,7 @@ const CollabProfile = () => {
                 top: 15,
                 left: -5,
               }}
+              onViewPress={handleViewPlan}
             />
           </ScrollView>
         </View>

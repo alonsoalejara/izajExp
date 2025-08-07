@@ -18,31 +18,50 @@ import BS from '../components/bottomSheets/BS.index';
 import { generarPDF } from '../utils/PDF/PDFGenerator';
 
 const CollabTablas = ({ route }) => {
+    // Extrae planData de route.params de forma segura
+    const { planData } = route.params || {};
+
     const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
     const [isElementoBottomSheetVisible, setIsElementoBottomSheetVisible] = useState(false);
-    const [currentSetup, setCurrentSetup] = useState(route.params.setup);
+
+    // Inicializa currentSetup con planData de forma segura
+    const [currentSetup, setCurrentSetup] = useState(planData);
+
     const navigation = useNavigation();
     const [showSmallButtons, setShowSmallButtons] = useState(true);
     const [isLoadingPdf, setIsLoadingPdf] = useState(false);
+
+    // Inicializa las firmas de forma segura, usando planData o currentSetup
     const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(
-        currentSetup.firmaSupervisor && currentSetup.firmaSupervisor !== 'Firma pendiente' ? currentSetup.firmaSupervisor : null
+        planData?.firmaSupervisor && planData.firmaSupervisor !== 'Firma pendiente' ? planData.firmaSupervisor : null
     );
     const [appliedJefeAreaSignature, setAppliedJefeAreaSignature] = useState(
-        currentSetup.firmaJefeArea && currentSetup.firmaJefeArea !== 'Firma pendiente' ? currentSetup.firmaJefeArea : null
+        planData?.firmaJefeArea && planData.firmaJefeArea !== 'Firma pendiente' ? planData.firmaJefeArea : null
     );
 
     useEffect(() => {
-        if (route.params.setup) {
-            setCurrentSetup(route.params.setup);
-            setAppliedSupervisorSignature(route.params.setup.firmaSupervisor && route.params.setup.firmaSupervisor !== 'Firma pendiente' ? route.params.setup.firmaSupervisor : null);
-            setAppliedJefeAreaSignature(route.params.setup.firmaJefeArea && route.params.setup.firmaJefeArea !== 'Firma pendiente' ? route.params.setup.firmaJefeArea : null);
+        // Actualiza currentSetup y las firmas si planData cambia en los parámetros de la ruta
+        if (route.params.planData) {
+            setCurrentSetup(route.params.planData);
+            setAppliedSupervisorSignature(
+                route.params.planData.firmaSupervisor && route.params.planData.firmaSupervisor !== 'Firma pendiente'
+                    ? route.params.planData.firmaSupervisor
+                    : null
+            );
+            setAppliedJefeAreaSignature(
+                route.params.planData.firmaJefeArea && route.params.planData.firmaJefeArea !== 'Firma pendiente'
+                    ? route.params.planData.firmaJefeArea
+                    : null
+            );
         }
-    }, [route.params.setup]);
+    }, [route.params.planData]);
 
-    const { currentUser } = route.params;
+    // Accede a currentUser de forma segura
+    const { currentUser } = route.params || {};
     const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
     const userId = currentUser?._id;
 
+    // Accede a las IDs de los roles de forma segura usando optional chaining
     const supervisorId = currentSetup?.supervisor?._id;
     const jefeAreaId = currentSetup?.jefeArea?._id;
     const capatazId = currentSetup?.capataz?._id;
@@ -60,6 +79,17 @@ const CollabTablas = ({ route }) => {
         }
         return 'N/A';
     };
+
+    // Si currentSetup es nulo o indefinido, no hay datos para mostrar.
+    // Esto previene errores al intentar acceder a propiedades de un objeto indefinido.
+    if (!currentSetup) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#ee0000" />
+                <Text style={{ marginTop: 10 }}>Cargando datos del plan...</Text>
+            </View>
+        );
+    }
 
     const datosTablaProyecto = [
         { item: 1, descripcion: 'Nombre Proyecto', nombre: currentSetup?.nombreProyecto || 'N/A' },
@@ -122,8 +152,7 @@ const CollabTablas = ({ route }) => {
     const largoCarga = parseFloat(currentSetup?.centroGravedad?.yLargo || currentSetup?.cargas?.largo) || 0;
     const altoCarga = parseFloat(currentSetup?.centroGravedad?.zAlto || currentSetup?.cargas?.alto) || 0;
     const diametroCarga = parseFloat(currentSetup?.centroGravedad?.diametro || currentSetup?.cargas?.diametro) || 0;
-    
-    // CORRECCIÓN: Lógica para determinar la forma basada en las dimensiones
+
     let formaCarga;
     if (diametroCarga > 0) {
         formaCarga = 'Cilindro';
@@ -192,6 +221,7 @@ const CollabTablas = ({ route }) => {
             return;
         }
 
+        // Accede a las firmas de forma segura desde currentSetup
         const isSupervisorSigned = appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente';
         const isJefeAreaSigned = appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente';
 
@@ -280,7 +310,7 @@ const CollabTablas = ({ route }) => {
                             Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
                             if (data && data.updatedSetupIzaje) {
                                 setCurrentSetup(data.updatedSetupIzaje);
-                                navigation.setParams({ setup: data.updatedSetupIzaje });
+                                navigation.setParams({ planData: data.updatedSetupIzaje }); // Actualiza el parámetro con el nombre correcto
                             }
                             setShowSmallButtons(true);
                         } catch (error) {
