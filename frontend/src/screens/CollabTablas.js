@@ -19,6 +19,7 @@ import { generarPDF } from '../utils/PDF/PDFGenerator';
 
 const CollabTablas = ({ route }) => {
     const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
+    const [isElementoBottomSheetVisible, setIsElementoBottomSheetVisible] = useState(false);
     const [currentSetup, setCurrentSetup] = useState(route.params.setup);
     const navigation = useNavigation();
     const [showSmallButtons, setShowSmallButtons] = useState(true);
@@ -287,7 +288,6 @@ const CollabTablas = ({ route }) => {
 
         setIsLoadingPdf(true);
         try {
-            // Construye el objeto 'rows' para aparejos de forma similar a Tablas.js
             const aparejosRows = datosTablaAparejosIndividuales.flatMap((aparejo, index) => {
                 const pesoUnitario = parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0);
                 const pesoGrillete = parseFloat(aparejo.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0);
@@ -300,13 +300,11 @@ const CollabTablas = ({ route }) => {
                 };
             });
 
-            // Calcula el totalPesoAparejos
             const totalPesoAparejos = aparejosRows.reduce(
                 (total, aparejo) => total + aparejo.pesoTotal,
                 0
             );
 
-            // Construye el objeto pdfData completo
             const pdfData = {
                 selectedGrua: currentSetup?.grua,
                 aparejosRows: aparejosRows,
@@ -319,11 +317,8 @@ const CollabTablas = ({ route }) => {
                 aparejosDetailed: datosTablaAparejosIndividuales,
             };
 
-            console.log('CollabTablas - pdfData antes de llamar a generarPDF:', pdfData);
-
             await generarPDF(pdfData);
         } catch (error) {
-            console.error('Error al generar el PDF:', error);
             Alert.alert("Error", "Ocurrió un error al intentar generar el PDF. Por favor, inténtalo de nuevo.");
         } finally {
             setIsLoadingPdf(false);
@@ -336,6 +331,14 @@ const CollabTablas = ({ route }) => {
 
     const handleCloseBottomSheet = () => {
         setIsBottomSheetVisible(false);
+    };
+
+    const handleVerElemento = () => {
+        setIsElementoBottomSheetVisible(true);
+    };
+
+    const handleCloseElementoBottomSheet = () => {
+        setIsElementoBottomSheetVisible(false);
     };
 
     const canSign = (userRole === 'supervisor' && userId === supervisorId) ||
@@ -400,6 +403,13 @@ const CollabTablas = ({ route }) => {
                 ))}
 
                 <Components.Tabla titulo="Datos de la maniobra" data={datosTablaManiobra} />
+                <View style={{ marginBottom: 10, alignItems: 'left', right: 35 }}>
+                    <Components.Button
+                        label="Ver Elemento"
+                        onPress={handleVerElemento}
+                        style={{ width: 150, height: 47 }}
+                    />
+                </View>
                 <Components.Tabla titulo="Cálculo de centro de gravedad:" data={datosTablaXYZ} />
 
                 <View style={{
@@ -521,6 +531,10 @@ const CollabTablas = ({ route }) => {
                 alturaType={currentSetup?.datos?.largoPluma}
                 inclinacion={currentSetup?.datos?.gradoInclinacion}
                 radioTrabajoMaximo={currentSetup?.cargas?.radioTrabajoMax}
+            />
+            <BS.BSFormaElemento
+                isVisible={isElementoBottomSheetVisible}
+                onClose={handleCloseElementoBottomSheet}
             />
             {isLoadingPdf && (
                 <View style={{
