@@ -18,7 +18,6 @@ async function isAdmin(req, res, next) {
       return respondError(req, res, 404, "Usuario no encontrado");
     }
 
-    console.log("Roles del usuario:", user.roles);
 
     // ✅ Cambiar validación para que 'jefe' sea el único rol con privilegios de admin
     if (user.roles.includes(ROLES.JEFE)) {

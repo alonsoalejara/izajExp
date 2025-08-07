@@ -31,7 +31,6 @@ const verifyJWT = (req, res, next) => {
       if (err) return respondError(req, res, 403, "No autorizado", err.message);
 
       req.user = { _id: decoded.id, email: decoded.email, roles: decoded.roles || [] };
-      console.log("✅ req.user cargado desde token:", req.user);
 
       next();
     });
