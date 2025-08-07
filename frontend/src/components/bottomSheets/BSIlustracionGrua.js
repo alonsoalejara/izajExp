@@ -4,6 +4,7 @@ import Components from '../Components.index';
 import styles from '../../styles/BottomSheetStyles';
 import GruaIllustration from '../../components/cranes/UI/GruaIllustration';
 import { getGruaIllustrationStyle } from '../../utils/gruaStyles';
+import { getAlturaType } from '../../logic/alturaLogic';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -12,25 +13,14 @@ const BSIlustracionGrua = ({
   onClose,
   craneName,
   alturaType,
-  inclinacion = 75,
+  inclinacion: propInclinacion = '75°',
   radioTrabajoMaximo,
 }) => {
-  // Crea la variable largoPluma, asegurando que tenga el formato 'X.X m'
-  // Esto es necesario para que el switch en getGruaIllustrationStyle funcione.
-  const largoPluma = alturaType ? `${alturaType} m` : 'N/A';
+  const largoPluma = alturaType ? `${alturaType} m` : '';
 
-  // useEffect para registrar los valores de las props cuando cambian
-  useEffect(() => {
-    if (isVisible) {
-      console.log("Valores recibidos en BSIlustracionGrua:");
-      console.log("largoPluma (obtenido de alturaType y formateado):", largoPluma);
-      console.log("alturaType (sin formato):", alturaType);
-      console.log("inclinacion:", inclinacion);
-      console.log("radioTrabajoMaximo:", radioTrabajoMaximo);
-    }
-  }, [isVisible, largoPluma, alturaType, inclinacion, radioTrabajoMaximo]);
+  const numericInclinacion = parseFloat(String(propInclinacion).replace('°', '')) || 75;
 
-  const bottomSheetHeight = SCREEN_HEIGHT * 0.9;
+  const bottomSheetHeight = SCREEN_HEIGHT * 0.82;
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   const openBottomSheet = () => {
@@ -72,13 +62,26 @@ const BSIlustracionGrua = ({
         <View style={{ alignItems: 'center', marginTop: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{craneName}</Text>
         </View>
-        <GruaIllustration
-          // Ahora pasamos la variable formateada a GruaIllustration
-          alturaType={largoPluma} 
-          inclinacion={inclinacion}
-          radioTrabajoMaximo={radioTrabajoMaximo}
-          style={getGruaIllustrationStyle(largoPluma)}
-        />
+
+        <View style={localStyles.visualizationGruaContainer}>
+          {!craneName ? (
+            <Text style={[styles.labelText, { color: '#ccc' }]}>
+              Debe seleccionar una grúa para visualizar.
+            </Text>
+          ) : craneName === 'Terex RT555' ? (
+            <View style={{ flex: 1, position: 'relative' }}>
+              <GruaIllustration
+                alturaType={getAlturaType(largoPluma)} 
+                inclinacion={numericInclinacion}
+                radioTrabajoMaximo={radioTrabajoMaximo}
+                style={getGruaIllustrationStyle(largoPluma)}
+              />
+            </View>
+          ) : (
+            <Text style={styles.labelText}>No disponible</Text>
+          )}
+        </View>
+        
         <Components.Button
           label="Cerrar"
           onPress={closeBottomSheet}
@@ -88,5 +91,20 @@ const BSIlustracionGrua = ({
     </Modal>
   );
 };
+
+const localStyles = StyleSheet.create({
+  visualizationGruaContainer: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
+    minHeight: 250,
+    borderWidth: 2,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginVertical: 70,
+  },
+});
 
 export default BSIlustracionGrua;
