@@ -122,7 +122,16 @@ const CollabTablas = ({ route }) => {
     const largoCarga = parseFloat(currentSetup?.centroGravedad?.yLargo || currentSetup?.cargas?.largo) || 0;
     const altoCarga = parseFloat(currentSetup?.centroGravedad?.zAlto || currentSetup?.cargas?.alto) || 0;
     const diametroCarga = parseFloat(currentSetup?.centroGravedad?.diametro || currentSetup?.cargas?.diametro) || 0;
-    const formaCarga = (currentSetup?.centroGravedad?.forma || currentSetup?.cargas?.forma || '').toLowerCase();
+    
+    // CORRECCIÓN: Lógica para determinar la forma basada en las dimensiones
+    let formaCarga;
+    if (diametroCarga > 0) {
+        formaCarga = 'Cilindro';
+    } else if (anchoCarga === largoCarga && largoCarga === altoCarga) {
+        formaCarga = 'Cuadrado';
+    } else {
+        formaCarga = 'Rectángulo';
+    }
 
     let xCG = parseFloat(currentSetup?.centroGravedad?.xCG);
     let yCG = parseFloat(currentSetup?.centroGravedad?.yCG);
@@ -131,7 +140,8 @@ const CollabTablas = ({ route }) => {
     let yPR = parseFloat(currentSetup?.centroGravedad?.yPR);
     let zPR = parseFloat(currentSetup?.centroGravedad?.zPR);
 
-    if (formaCarga === 'cilindro') {
+    const formaLower = formaCarga.toLowerCase();
+    if (formaLower === 'cilindro') {
         if (isNaN(xCG)) xCG = diametroCarga / 2;
         if (isNaN(yCG)) yCG = diametroCarga / 2;
         if (isNaN(zCG)) zCG = altoCarga / 2;
@@ -141,7 +151,7 @@ const CollabTablas = ({ route }) => {
     }
 
     let isCylinderVertical = false;
-    if (formaCarga === 'cilindro' && altoCarga > diametroCarga) {
+    if (formaLower === 'cilindro' && altoCarga > diametroCarga) {
         isCylinderVertical = true;
     }
 
@@ -149,13 +159,13 @@ const CollabTablas = ({ route }) => {
         {
             item: 1,
             descripcion: 'Medidas',
-            X: formaCarga === 'cilindro' && diametroCarga > 0
+            X: formaLower === 'cilindro' && diametroCarga > 0
                 ? (isCylinderVertical ? `${formatNumber(diametroCarga, 'm')} (Diámetro)` : `${formatNumber(altoCarga, 'm')} (Largo)`)
                 : formatNumber(anchoCarga, 'm'),
-            Y: formaCarga === 'cilindro' && diametroCarga > 0
+            Y: formaLower === 'cilindro' && diametroCarga > 0
                 ? (isCylinderVertical ? `${formatNumber(diametroCarga, 'm')} (Diámetro)` : `${formatNumber(diametroCarga, 'm')} (Diámetro)`)
                 : formatNumber(largoCarga, 'm'),
-            Z: formaCarga === 'cilindro' && diametroCarga > 0
+            Z: formaLower === 'cilindro' && diametroCarga > 0
                 ? (isCylinderVertical ? `${formatNumber(altoCarga, 'm')}` : `${formatNumber(diametroCarga, 'm')} (Diámetro)`)
                 : formatNumber(altoCarga, 'm'),
         },
@@ -535,6 +545,11 @@ const CollabTablas = ({ route }) => {
             <BS.BSFormaElemento
                 isVisible={isElementoBottomSheetVisible}
                 onClose={handleCloseElementoBottomSheet}
+                ancho={anchoCarga}
+                largo={largoCarga}
+                alto={altoCarga}
+                diametro={diametroCarga}
+                forma={formaCarga}
             />
             {isLoadingPdf && (
                 <View style={{

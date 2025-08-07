@@ -2,14 +2,21 @@ import React, { useEffect, useRef } from 'react';
 import { Modal, View, Text, Animated, Dimensions, TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import Components from '../Components.index';
 import styles from '../../styles/BottomSheetStyles';
+import RenderForma from '../../utils/render/renderForma';
+import RenderCG from '../../utils/render/renderCG';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const BSFormaElemento = ({
     isVisible,
     onClose,
+    ancho,
+    largo,
+    alto,
+    diametro,
+    forma
 }) => {
-    const bottomSheetHeight = SCREEN_HEIGHT * 0.5;
+    const bottomSheetHeight = SCREEN_HEIGHT * 0.6;
     const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
     const openBottomSheet = () => {
@@ -36,6 +43,47 @@ const BSFormaElemento = ({
         }
     }, [isVisible]);
 
+    const parsedAncho = parseFloat(ancho) || 0;
+    const parsedLargo = parseFloat(largo) || 0;
+    const parsedAlto = parseFloat(alto) || 0;
+    const parsedDiametro = parseFloat(diametro) || 0;
+    const parsedForma = forma ? forma.toLowerCase() : '';
+
+    let isCylinderVertical = false;
+    if (parsedForma === 'cilindro' && parsedAlto > parsedDiametro) {
+        isCylinderVertical = true;
+    }
+
+    let dimensionesRender = {};
+    let formaParaRender = '';
+
+    if (parsedForma === 'cuadrado') {
+        formaParaRender = 'Cuadrado';
+        dimensionesRender = {
+            largo: parsedLargo,
+            ancho: parsedAncho,
+            profundidad: parsedAlto,
+        };
+    } else if (parsedForma === 'rectángulo') {
+        formaParaRender = 'Rectángulo';
+        dimensionesRender = {
+            largo: parsedLargo,
+            ancho: parsedAncho,
+            profundidad: parsedAlto,
+        };
+    } else if (parsedForma === 'cilindro') {
+        formaParaRender = 'Cilindro';
+        dimensionesRender = {
+            largo: isCylinderVertical ? parsedDiametro : parsedAlto,
+            ancho: isCylinderVertical ? parsedDiametro : parsedDiametro,
+            profundidad: isCylinderVertical ? parsedAlto : parsedDiametro,
+            isCylinderVertical: isCylinderVertical
+        };
+    }
+
+    const shouldShowShape = (parsedForma === 'cuadrado' || parsedForma === 'rectángulo' || parsedForma === 'cilindro') &&
+                            (parsedAncho > 0 || parsedLargo > 0 || parsedAlto > 0 || parsedDiametro > 0);
+
     return (
         <Modal transparent={true} visible={isVisible} animationType="none">
             <TouchableWithoutFeedback onPress={closeBottomSheet}>
@@ -53,9 +101,24 @@ const BSFormaElemento = ({
                 </View>
 
                 <View style={localStyles.contentContainer}>
-                    <Text style={localStyles.helloWorldText}>Hola Mundo</Text>
+                    {shouldShowShape ? (
+                        <>
+                            <View style={localStyles.visualizationCargaContainer}>
+                                <RenderForma
+                                    forma={formaParaRender} // Usamos la variable corregida
+                                    dimensiones={dimensionesRender}
+                                />
+                            </View>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'left', marginTop: 20 }}>
+                                Visualización de la carga de lado y de frente:
+                            </Text>
+                            <RenderCG forma={formaParaRender} isCylinderVertical={isCylinderVertical} />
+                        </>
+                    ) : (
+                        <Text style={localStyles.helloWorldText}>Hola Mundo</Text>
+                    )}
                 </View>
-                
+
                 <Components.Button
                     label="Cerrar"
                     onPress={closeBottomSheet}
@@ -77,6 +140,12 @@ const localStyles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         color: '#333',
+    },
+    visualizationCargaContainer: {
+        width: '100%',
+        height: 200,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 
