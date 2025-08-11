@@ -12,8 +12,6 @@ import { estilosPDF } from '../../styles/PDFStyles';
  * @returns {string} El contenido HTML completo del informe.
  */
 export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed, totalPesoAparejos, datosTablaXYZ, imagenBase64) => {
-    // Busca el valor de la altura en la tabla de carga
-    // Se usa 'cantidad' si existe, de lo contrario 'valor' (para compatibilidad)
     const distanciaGanchoElementoItem = cargaRows.find(
         item => item.descripcion === 'Distancia gancho-elemento aprox.'
     );
@@ -73,7 +71,6 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
                                 <th>Descripción</th>
                                 <th>Cantidad</th>
                                 <th>Peso Unit. (ton)</th>
-                                <th>Peso Total (ton)</th>
                                 <th>Largo (m)</th>
                                 <th>Grillete</th>
                                 <th>Peso Grillete (ton)</th>
@@ -88,17 +85,12 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
                                 const largo = aparejo.detalles.find(d => d.label === 'Largo')?.valor || 'N/A';
                                 const grillete = aparejo.detalles.find(d => d.label === 'Grillete')?.valor || 'N/A';
                                 const tension = aparejo.detalles.find(d => d.label === 'Tensión')?.valor || 'N/A';
-                                
-                                const pesoUnitarioNum = parseFloat(pesoUnitario.replace(' ton', ''));
-                                const pesoGrilleteNum = parseFloat(pesoGrillete.replace(' ton', ''));
-                                const pesoTotal = (pesoUnitarioNum + pesoGrilleteNum).toFixed(1);
 
                                 return `
                                     <tr>
                                         <td>${aparejo.descripcionPrincipal.descripcion}</td>
                                         <td>1</td>
                                         <td>${pesoUnitario}</td>
-                                        <td>${pesoTotal} ton</td>
                                         <td>${largo}</td>
                                         <td>${grillete}</td>
                                         <td>${pesoGrillete}</td>
@@ -107,18 +99,11 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
                                     </tr>
                                 `;
                             }).join('')}
-                            <tr>
-                                <td colspan="3" style="font-weight: bold; text-align: right;">Total Peso Aparejos</td>
-                                <td style="font-weight: bold;">${totalPesoAparejos.toFixed(1)} kg</td>
-                                <td colspan="5"></td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Nuevo contenedor para agrupar las tres tablas de datos -->
                 <div class="data-tables-layout">
-                    <!-- Cuadro de carga -->
                     <div class="section">
                         <h3>Cuadro de carga</h3>
                         <table>
@@ -132,14 +117,13 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
                                 ${cargaRows.map(row => `
                                     <tr>
                                         <td>${row.descripcion}</td>
-                                        <td>${row.cantidad !== undefined ? row.cantidad : row.valor}</td> <!-- Flexibilidad: usar 'cantidad' o 'valor' -->
+                                        <td>${row.cantidad !== undefined ? row.cantidad : row.valor}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Cuadro de grúa -->
                     <div class="section">
                         <h3>Cuadro de grúa</h3>
                         <table>
@@ -153,14 +137,13 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
                                 ${datosGruaRows.map(row => `
                                     <tr>
                                         <td>${row.descripcion}</td>
-                                        <td>${row.cantidad !== undefined ? row.cantidad : row.valor}</td> <!-- Flexibilidad: usar 'cantidad' o 'valor' -->
+                                        <td>${row.cantidad !== undefined ? row.cantidad : row.valor}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Cuadro de dimensiones -->
                     <div class="section">
                         <h3>Cuadro de dimensiones</h3>
                         <table>
@@ -220,20 +203,17 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
                         </table>
                     </div>
                 </div>
-                
-                <!-- Nuevo contenedor para las ilustraciones en la parte inferior, lado a lado -->
+
                 <div class="illustrations-layout">
                     <div class="illustration-section">
                         <h3>Ilustración de grúa</h3>
                         <div class="illustration-container">
-                            <!-- La ilustración de la grúa irá aquí -->
                             <span>[Ilustración de grúa]</span>
                         </div>
                     </div>
                     <div class="illustration-section">
                         <h3>Ilustración de carga</h3>
                         <div class="illustration-container">
-                            <!-- La ilustración de la carga irá aquí -->
                             <span>[Ilustración de carga]</span>
                         </div>
                     </div>

@@ -119,7 +119,7 @@ export const estilosPDF = `
     table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.6em;
+        font-size: 0.4em;
     }
 
     th, td {
