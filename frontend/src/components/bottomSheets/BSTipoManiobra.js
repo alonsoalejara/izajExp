@@ -28,8 +28,12 @@ const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra, cantidadMa
         'Tubulares trenzadas de poliester',
         'Tubulares para carga pesada',
       ];
-      if (cantidadManiobra !== 1000) { // Suspendido
-        opciones = opciones.filter(opcion => opcion !== 'Planas ojo-ojo de poliester');
+      if (cantidadManiobra !== 1000) {
+        opciones = opciones.filter(opcion => 
+          opcion !== 'Planas ojo-ojo de poliester' &&
+          opcion !== 'Tubulares trenzadas de poliester' &&
+          opcion !== 'Tubulares para carga pesada'
+        );
       }
       setOpcionesTipoAparejo(opciones);
       setTipoAparejoSeleccionado(null);
@@ -73,7 +77,7 @@ const BSTipoManiobra = ({ isVisible, onClose, onSelect, tipoManiobra, cantidadMa
     if (tipoAparejoSeleccionado) {
       onSelect(tipoAparejoSeleccionado);
       closeBottomSheet();
-    } else if (tipoManiobra === 'Eslinga') {
+    } else if (tipoManiobra === 'Eslinga' && opcionesTipoAparejo.length > 0) {
       Alert.alert("Selecciona un tipo", "Debes elegir un tipo de eslinga.");
     } else {
       closeBottomSheet();
