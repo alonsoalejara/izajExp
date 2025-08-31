@@ -18,32 +18,49 @@ async function createUser(user) {
   try {
     const { nombre, apellido, rut, phone, position, specialty, email, roles, password } = user;
 
+    // Validar que no exista ya un usuario con ese email
     const userFound = await User.findOne({ email });
     if (userFound) return [null, "El usuario ya existe"];
 
+    // Validar roles
     const validRoles = roles.filter(role => Object.values(ROLES).includes(role));
     if (validRoles.length === 0) return [null, "El rol no existe"];
 
+    // Validar password
     if (!password) return [null, "La contraseña es obligatoria"];
 
+    // Encriptar password
     const encryptedPassword = await User.encryptPassword(password);
 
+    // Crear nuevo usuario
     const newUser = new User({
-      nombre: user.nombre,
-      apellido: user.apellido,
-      rut: user.rut,
-      email: user.email,
-      phone: user.phone,
-      position: user.position,
-      specialty: user.specialty,
+      nombre,
+      apellido,
+      rut,
+      email,
+      phone,
+      position,
+      specialty,
       password: encryptedPassword,
       roles: validRoles, 
     });
 
     await newUser.save();
     return [newUser, null];
+
   } catch (error) {
+    // Capturar error de índice duplicado (Mongo code 11000)
+    if (error.code === 11000) {
+      if (error.keyPattern?.rut) {
+        return [null, `El RUT ya está registrado: ${error.keyValue.rut}`];
+      }
+      if (error.keyPattern?.email) {
+        return [null, `El email ya está registrado: ${error.keyValue.email}`];
+      }
+    }
+
     handleError(error, "user.service -> createUser");
+    return [null, "Error inesperado al crear usuario"];
   }
 }
 

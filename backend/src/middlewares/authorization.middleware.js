@@ -8,19 +8,21 @@ import { ROLES } from "../constants/roles.constants.js";
  */
 async function isAdmin(req, res, next) {
   try {
-    if (!req.email) {
+    if (!req.user?.email) {
       return respondError(req, res, 401, "No autorizado", "No se encontró el email del usuario en el token");
     }
 
-    const user = await User.findOne({ email: req.email });
+    const user = await User.findOne({ email: req.user.email });
 
     if (!user) {
       return respondError(req, res, 404, "Usuario no encontrado");
     }
 
+    console.log("Usuario logueado:", user.email);
+    console.log("Roles encontrados en DB:", user.roles);
 
-    // ✅ Cambiar validación para que 'jefe' sea el único rol con privilegios de admin
     if (user.roles.includes(ROLES.JEFE)) {
+      console.log("✅ El usuario es jefe, pasa el isAdmin");
       return next();
     }
 

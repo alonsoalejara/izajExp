@@ -22,25 +22,36 @@ async function getUsers(req, res) {
 async function createUser(req, res) {
   try {
     const { body } = req;
+
+    // Validación del body con Joi
     const { error: bodyError } = userBodySchema.validate(body);
-    if (bodyError) return respondError(req, res, 400, bodyError.message);
-
-    const roles = Array.isArray(body.roles) ? body.roles : [];
-
-    const [newUser, userError] = await UserService.createUser({
-      ...body,
-      roles: roles,
-    });
-
-    if (userError) return respondError(req, res, 400, userError);
-    if (!newUser) {
-      return respondError(req, res, 400, "No se creo el usuario");
+    if (bodyError) {
+      return respondError(req, res, 400, bodyError.message);
     }
 
-    respondSuccess(req, res, 201, newUser);
+    // Roles: asegurar que sea array
+    const roles = Array.isArray(body.roles) ? body.roles : [];
+
+    // Llamada al servicio
+    const [newUser, userError] = await UserService.createUser({
+      ...body,
+      roles,
+    });
+
+    if (userError) {
+      return respondError(req, res, 400, userError);
+    }
+
+    if (!newUser) {
+      return respondError(req, res, 400, "No se creó el usuario");
+    }
+
+    // Respuesta OK
+    respondSuccess(req, res, 201, "Usuario creado correctamente", newUser);
+
   } catch (error) {
     handleError(error, "user.controller -> createUser");
-    respondError(req, res, 500, "No se creo el usuario");
+    respondError(req, res, 500, "Error inesperado al crear usuario");
   }
 }
 
