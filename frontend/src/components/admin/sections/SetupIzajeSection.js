@@ -22,17 +22,16 @@ const SetupIzajeSection = ({
 }) => {
   const navigation = useNavigation();
   const [selectedSetup, setSelectedSetup] = useState(null);
-
   const userRole = currentUser?.roles?.[0];
 
   const filteredSetups = currentUser
     ? setupIzaje.filter((setup) => {
         if (userRole === 'capataz') {
-          return setup.capataz && setup.capataz._id === currentUser._id;
+          return setup.capataz?._id === currentUser._id;
         } else if (userRole === 'supervisor') {
-          return setup.supervisor && setup.supervisor._id === currentUser._id;
+          return setup.supervisor?._id === currentUser._id;
         } else if (userRole === 'jefe') {
-          return setup.jefeArea && setup.jefeArea._id === currentUser._id;
+          return setup.jefeArea?._id === currentUser._id;
         }
         return false;
       })
@@ -66,12 +65,14 @@ const SetupIzajeSection = ({
         alert('No autorizado. Por favor, inicie sesión nuevamente.');
         return;
       }
+
       const response = await fetch(getApiUrl(`setupIzaje/${_id}`), {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
+
       if (response.ok) {
         alert('Plan de izaje eliminado con éxito');
         setSetups((prevSetups) => prevSetups.filter((setup) => setup._id !== _id));
@@ -79,20 +80,23 @@ const SetupIzajeSection = ({
         alert('Error al eliminar el plan de izaje');
       }
     } catch (error) {
+      console.error(error);
     }
   };
 
   const handleEdit = (planData) => {
-    navigation.navigate('EditPlan', { planData: planData });
+    navigation.navigate('EditPlan', { planData });
   };
 
   return (
     <View style={styles.section}>
-      {filteredSetups && filteredSetups.length > 0 ? (
+      {filteredSetups.length > 0 ? (
         filteredSetups.map((setup) => (
           <View key={setup._id} style={styles.card}>
             <TouchableOpacity
-              onPress={() => setSelectedSetup(selectedSetup === setup._id ? null : setup._id)}
+              onPress={() =>
+                setSelectedSetup(selectedSetup === setup._id ? null : setup._id)
+              }
             >
               <Text style={[styles.cardTitle, { fontWeight: '700' }]}>
                 Proyecto:{' '}
@@ -100,22 +104,32 @@ const SetupIzajeSection = ({
                   {setup.nombreProyecto || 'Sin nombre'}
                 </Text>
               </Text>
+
               <Text style={[styles.cardDetail, { fontWeight: '700', color: '#777' }]}>
                 Fecha:{' '}
                 <Text style={{ fontWeight: '400' }}>
                   {setup.createdAt ? formatDate(setup.createdAt) : 'No disponible'}
                 </Text>
               </Text>
+
               <Text style={[styles.cardDetail, { fontWeight: '700', color: '#777' }]}>
                 Versión:{' '}
-                <Text style={{ fontWeight: '400' }}>
-                  {setup.version ?? 'No disponible'}
-                </Text>
+                <Text style={{ fontWeight: '400' }}>{setup.version ?? 'No disponible'}</Text>
               </Text>
             </TouchableOpacity>
 
             {selectedSetup === setup._id && (
-              <View style={[styles.cardExpandedDetails, { flexDirection: 'row', marginTop: 10, flexWrap: 'wrap', justifyContent: 'flex-start' }]}>
+              <View
+                style={[
+                  styles.cardExpandedDetails,
+                  {
+                    flexDirection: 'row',
+                    marginTop: 10,
+                    flexWrap: 'wrap',
+                    justifyContent: 'flex-start',
+                  },
+                ]}
+              >
                 <Components.Button
                   label="Ver"
                   onPress={() => onViewPress(setup)}
@@ -123,7 +137,7 @@ const SetupIzajeSection = ({
                   style={[styles.button, localStyles.buttonSpacing]}
                 />
 
-                {!isAdminPanel && userRole !== 'capataz' && setup.version !== 3 && (
+                {!isAdminPanel && userRole === 'supervisor' && setup.version !== 3 && (
                   <Components.Button
                     label="Editar"
                     onPress={() => handleEdit(setup)}
@@ -132,7 +146,7 @@ const SetupIzajeSection = ({
                   />
                 )}
 
-                {(!isAdminPanel && userRole !== 'capataz') || isAdminPanel ? (
+                {(!isAdminPanel && userRole === 'jefe') || isAdminPanel ? (
                   <Components.Button
                     label="Eliminar"
                     onPress={() => confirmDelete(setup._id)}
