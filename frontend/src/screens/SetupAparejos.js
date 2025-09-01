@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
@@ -159,9 +159,6 @@ const SetupAparejos = () => {
     !aparejoPorWLL ||
     (['2', '4'].includes(maniobraSeleccionada?.cantidad) && !anguloSeleccionado);
 
-  // Accede a la URI de la imagen de la grúa desde los datos de la grúa
-  const craneIllustrationUri = setupGruaData?.ilustracionGrua;
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -199,10 +196,6 @@ const SetupAparejos = () => {
                 </View>
                 <Components.RenderAngulos anguloSeleccionado={anguloSeleccionado} setAnguloSeleccionado={setAnguloSeleccionado} />
                 {errorAnguloSeleccionado && <Text style={[styles.errorText, { top: 3 }]}>{errorAnguloSeleccionado}</Text>}
-                <Image
-                  source={require('../../assets/esl-est-grade.png')}
-                  style={styles.eslingaImage}
-                />
               </View>
             )}
 
@@ -309,19 +302,6 @@ const SetupAparejos = () => {
               cantidadManiobra={cantidadNumero}
               pesoCarga={setupCargaData?.peso || null}
             />
-
-            {craneIllustrationUri && (
-              <View style={styles.illustrationContainer}>
-                <Text style={styles.illustrationTitle}>Visualización de la grúa</Text>
-                <View style={styles.imageWrapper}>
-                  <Image
-                    source={{ uri: craneIllustrationUri }}
-                    style={styles.craneImage}
-                    resizeMode="contain"
-                  />
-                </View>
-              </View>
-            )}
 
             <View style={[styles.buttonContainer, { marginBottom: -20, right: 40 }]}>
               <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={styles.volverButton} />

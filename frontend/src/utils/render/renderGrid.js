@@ -7,7 +7,6 @@ const RenderGrid = ({ boomLength }) => {
   const squareSize = 30;
   const initialYValues = [33.5, 26.9, 24.3, 19.8, 15.2, 10.5];
 
-  // Resto de la lógica para crear la cuadrícula y los ejes...
   const squares = [];
   for (let row = 0; row < totalRows; row++) {
     for (let col = 0; col < totalColumns; col++) {
@@ -70,36 +69,43 @@ const RenderGrid = ({ boomLength }) => {
     );
   });
 
-  
   let rightPosition = 105;
+  let topGridPosition = -2;
   const boomLengthNum = parseFloat(boomLength) || 0;
 
   switch (boomLengthNum) {
     case 10.5:
-      rightPosition = 188;
+      rightPosition = 50;
+      topGridPosition = -1;
       break;
     case 15.2:
-      rightPosition = 188;
+      rightPosition = 52;
+      topGridPosition = 6;
       break;
     case 19.8:
-      rightPosition = 188;
+      rightPosition = 56;
+      topGridPosition = -2; 
       break;
     case 24.3:
-      rightPosition = 190;
+      rightPosition = 64;
+      topGridPosition = -18;
       break;
     case 26.9:
-      rightPosition = 189;
+      rightPosition = 65;
+      topGridPosition = -23;  
       break;
     case 33.5:
-      rightPosition = 160;
+      rightPosition = 48;
+      topGridPosition = -25;
       break;
     default:
-      rightPosition = 105;
+      rightPosition = 50;
+      topGridPosition = -1;
       break;
   }
 
   return (
-    <View style={[styles.grid, { right: rightPosition }]}>
+    <View style={[styles.grid, { right: rightPosition, top: topGridPosition }]}>
       {squares}
       {axisX}
       {axisY}
@@ -110,7 +116,6 @@ const RenderGrid = ({ boomLength }) => {
 const styles = StyleSheet.create({
   grid: {
     position: 'relative',
-    top: -244,
     width: 200,
     height: 400,
     marginTop: 0,
