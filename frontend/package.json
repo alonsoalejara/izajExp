@@ -25,6 +25,7 @@
     "lucide-react": "^0.508.0",
     "react": "19.0.0",
     "react-native": "0.79.5",
+    "react-native-fs": "^2.20.0",
     "react-native-modal": "^13.0.1",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",

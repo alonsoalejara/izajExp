@@ -214,114 +214,97 @@ const CollabTablas = ({ route }) => {
         },
     ];
 
-    const handleFirmarPlan = async () => {
-        let signatureToUse = currentUser?.signature;
-        if (!signatureToUse) {
-            Alert.alert("Error de Firma", "No se encontró una firma para el usuario actual. Asegúrate de tener una firma registrada en tu perfil.");
+    const handleFirmarPlan = () => {
+        // Si el usuario es jefe, navegar directamente a ObsFirma
+        if (userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') {
+            navigation.navigate('ObsFirma', { planData: currentSetup, currentUser });
             return;
         }
 
-        // Accede a las firmas de forma segura desde currentSetup
-        const isSupervisorSigned = appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente';
-        const isJefeAreaSigned = appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente';
+        // --- Caso Supervisor: mostrar alert de confirmación ---
+        if (userRole === 'supervisor' && userId === supervisorId) {
+            const isSupervisorSigned = appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente';
+            if (isSupervisorSigned) {
+                Alert.alert("Ya Firmado", "El supervisor ya ha aplicado una firma a este plan.");
+                return;
+            }
 
-        if (userRole === 'supervisor' && userId === supervisorId && isSupervisorSigned) {
-            Alert.alert("Ya Firmado", "El supervisor ya ha aplicado una firma a este plan.");
-            return;
+            Alert.alert(
+                "Confirmar Firma",
+                "¿Deseas aplicar tu firma a este plan de izaje?",
+                [
+                    { text: "Cancelar", style: "cancel" },
+                    { text: "Firmar", onPress: () => firmarSupervisor() }
+                ]
+            );
         }
-        if ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId && isJefeAreaSigned) {
-            Alert.alert("Ya Firmado", "El jefe de área ya ha aplicado una firma a este plan.");
-            return;
-        }
-
-        Alert.alert(
-            "Confirmar Firma",
-            "¿Deseas aplicar tu firma a este plan de izaje?",
-            [
-                { text: "Cancelar", style: "cancel", onPress: () => { } },
-                {
-                    text: "Firmar",
-                    onPress: async () => {
-                        setShowSmallButtons(false);
-                        const payload = JSON.parse(JSON.stringify(currentSetup));
-                        if (payload.capataz && typeof payload.capataz === 'object') {
-                            payload.capataz = payload.capataz._id;
-                        }
-                        if (payload.supervisor && typeof payload.supervisor === 'object') {
-                            payload.supervisor = payload.supervisor._id;
-                        }
-                        if (payload.jefeArea && typeof payload.jefeArea === 'object') {
-                            payload.jefeArea = payload.jefeArea._id;
-                        }
-                        if (payload.grua && typeof payload.grua === 'object') {
-                            payload.grua = payload.grua._id;
-                        }
-
-                        if (Array.isArray(payload.aparejos)) {
-                            payload.aparejos = payload.aparejos.map(aparejo => {
-                                const { _id, ...rest } = aparejo;
-                                return rest;
-                            });
-                        }
-
-                        if (userRole === 'supervisor' && userId === supervisorId) {
-                            payload.firmaSupervisor = signatureToUse;
-                        } else if ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId) {
-                            payload.firmaJefeArea = signatureToUse;
-                        } else {
-                            Alert.alert("Error de Rol", "Tu rol o ID de usuario no coincide con los asignados para firmar este plan.");
-                            setShowSmallButtons(true);
-                            return;
-                        }
-
-                        try {
-                            const accessToken = await AsyncStorage.getItem('accessToken');
-                            if (!accessToken) {
-                                Alert.alert('Error de Autenticación', 'No autorizado. Por favor, inicie sesión nuevamente.');
-                                return;
-                            }
-
-                            const apiUrl = getApiUrl(`setupIzaje/${currentSetup._id}`);
-                            const response = await fetch(apiUrl, {
-                                method: 'PUT',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    Authorization: `Bearer ${accessToken}`,
-                                },
-                                body: JSON.stringify(payload),
-                            });
-
-                            if (!response.ok) {
-                                const errorResponseText = await response.text();
-                                let errorMessage = 'Error desconocido al firmar.';
-                                try {
-                                    const errorData = JSON.parse(errorResponseText);
-                                    errorMessage = errorData.message || errorMessage;
-                                } catch (e) {
-                                    errorMessage = `Error del servidor: ${errorResponseText.substring(0, 100)}...`;
-                                }
-                                Alert.alert('Error al firmar', errorMessage);
-                                setShowSmallButtons(true);
-                                return;
-                            }
-
-                            const data = await response.json();
-
-                            Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
-                            if (data && data.updatedSetupIzaje) {
-                                setCurrentSetup(data.updatedSetupIzaje);
-                                navigation.setParams({ planData: data.updatedSetupIzaje }); // Actualiza el parámetro con el nombre correcto
-                            }
-                            setShowSmallButtons(true);
-                        } catch (error) {
-                            Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor para firmar el plan.');
-                            setShowSmallButtons(true);
-                        }
-                    },
-                },
-            ]
-        );
     };
+
+    // Función exclusiva para firmar supervisor
+    const firmarSupervisor = async () => {
+        setShowSmallButtons(false);
+        const payload = JSON.parse(JSON.stringify(currentSetup));
+
+        if (payload.capataz && typeof payload.capataz === 'object') payload.capataz = payload.capataz._id;
+        if (payload.supervisor && typeof payload.supervisor === 'object') payload.supervisor = payload.supervisor._id;
+        if (payload.jefeArea && typeof payload.jefeArea === 'object') payload.jefeArea = payload.jefeArea._id;
+        if (payload.grua && typeof payload.grua === 'object') payload.grua = payload.grua._id;
+        if (Array.isArray(payload.aparejos)) {
+            payload.aparejos = payload.aparejos.map(a => {
+                const { _id, ...rest } = a;
+                return rest;
+            });
+        }
+
+        payload.firmaSupervisor = currentUser?.signature;
+
+        try {
+            const accessToken = await AsyncStorage.getItem('accessToken');
+            if (!accessToken) {
+                Alert.alert('Error de Autenticación', 'No autorizado. Por favor, inicie sesión nuevamente.');
+                setShowSmallButtons(true);
+                return;
+            }
+
+            const apiUrl = getApiUrl(`setupIzaje/${currentSetup._id}`);
+            const response = await fetch(apiUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                const errorResponseText = await response.text();
+                let errorMessage = 'Error desconocido al firmar.';
+                try {
+                    const errorData = JSON.parse(errorResponseText);
+                    errorMessage = errorData.message || errorMessage;
+                } catch (e) {
+                    errorMessage = `Error del servidor: ${errorResponseText.substring(0, 100)}...`;
+                }
+                Alert.alert('Error al firmar', errorMessage);
+                setShowSmallButtons(true);
+                return;
+            }
+
+            const data = await response.json();
+            Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
+            if (data && data.updatedSetupIzaje) {
+                setCurrentSetup(data.updatedSetupIzaje);
+                navigation.setParams({ planData: data.updatedSetupIzaje });
+            }
+
+            setShowSmallButtons(true);
+        } catch (error) {
+            Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor para firmar el plan.');
+            setShowSmallButtons(true);
+        }
+    };
+
+
 
     const handleEnviarPdf = async () => {
         if (isLoadingPdf) return;

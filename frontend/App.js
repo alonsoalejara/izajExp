@@ -95,6 +95,11 @@ const App = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="ObsFirma"
+            component={Screens.ObsFirma}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="CollabProfile"
             component={Screens.CollabProfile}
             options={{ headerShown: false }}

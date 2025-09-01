@@ -17,6 +17,7 @@ import EditGrua from './EditGrua';
 import EditAparejos from './EditAparejos';
 import Firma from './Firma';
 import PlanesFirmados from './PlanesFirmados';
+import ObsFirma from './ObsFirma'; 
 
 const Screens = {
   Home,
@@ -38,6 +39,7 @@ const Screens = {
   EditAparejos,
   Firma,
   PlanesFirmados,
+  ObsFirma,
 };
 
 export default Screens;
