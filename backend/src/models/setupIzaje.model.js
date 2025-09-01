@@ -56,7 +56,7 @@ const setupIzajeSchema = new Schema(
             yPR: { type: Number, required: true },
             zPR: { type: Number, required: true }
         },
-        ilustracionGrua: { type: String, required: false },
+        ilustracionGrua: { type: String, required: true },
         ilustracionForma: { type: String, required: false },
         estado: {
             type: String,

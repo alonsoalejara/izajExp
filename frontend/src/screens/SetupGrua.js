@@ -176,14 +176,17 @@ const SetupGrua = () => {
     };
 
     if (Object.keys(errors).length === 0 && !errIz && !errMont && !radioIzajeError && !radioMontajeError) {
-      if (viewShotRef.current) {
+      if (viewShotRef.current && grua?.nombre === 'Terex RT555') {
         try {
           const uri = await viewShotRef.current.capture();
           const base64 = await convertUriToBase64(uri);
           dataToSend.ilustracionGrua = base64;
         } catch (error) {
           console.error("Error al capturar la imagen:", error);
+          dataToSend.ilustracionGrua = "NoDisponible";
         }
+      } else {
+        dataToSend.ilustracionGrua = "NoDisponible";
       }
 
       await AsyncStorage.setItem('setupGruaData', JSON.stringify(dataToSend));

@@ -205,9 +205,14 @@ const setupIzajeBodySchema = Joi.object({
     "any.required": "La versión es obligatoria.",
     "number.allowOnly": "La versión solo puede ser 0, 1, 2 o 3.",
   }),
-  ilustracionGrua: Joi.string().optional().allow(null).messages({
-    "string.base": "La ilustración de la grúa debe ser un string.",
-  }),
+  ilustracionGrua: Joi.string()
+    .valid("NoDisponible")
+    .optional()
+    .allow(null, Joi.string())
+    .messages({
+      "string.base": "La ilustración de la grúa debe ser un string.",
+      "any.only": "La ilustración de la grúa debe ser un string en base64 o 'NoDisponible'.",
+    }),
   ilustracionForma: Joi.string().optional().allow(null).messages({
     "string.base": "La ilustración de la forma debe ser un string.",
   }),

@@ -20,6 +20,7 @@ const Tablas = ({ route, navigation }) => {
 
   const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData, existingPlanId } = route.params || {};
 
+  // Hook para cargar los datos iniciales del plan de izaje
   useEffect(() => {
     const fetchUserData = async () => {
       if (planData) {
@@ -41,6 +42,7 @@ const Tablas = ({ route, navigation }) => {
     fetchUserData();
   }, [planData, existingPlanId]);
 
+  // Se combinan todos los datos de las diferentes etapas en un solo objeto para facilitar el acceso
   const combinedData = {
     ...setupCargaData,
     ...setupGruaData,
@@ -52,6 +54,7 @@ const Tablas = ({ route, navigation }) => {
     diametro: setupCargaData?.diametro,
   };
 
+  // Se calcula la geometría del objeto para el centro de gravedad (CG)
   const geometry = calculateGeometry(
     combinedData.forma,
     combinedData.alto,
@@ -67,6 +70,7 @@ const Tablas = ({ route, navigation }) => {
     isCylinderVertical = true;
   }
 
+  // Se calculan las posiciones relativas del centro de gravedad
   const relX = geometry
     ? (combinedData.forma === 'Cilindro'
       ? (isCylinderVertical
@@ -91,6 +95,7 @@ const Tablas = ({ route, navigation }) => {
       : ((geometry.cg.cgZ / altNum) * 100).toFixed(0))
     : 'N/A';
 
+  // Se obtienen los datos de las tablas finales usando una función de utilidad
   const { datosTablaManiobra, datosTablaGrua, datosTablaAparejosIndividuales, datosTablaProyecto } = obtenerDatosTablas({
     ...combinedData,
     pesoGancho: 0.5,
@@ -106,6 +111,7 @@ const Tablas = ({ route, navigation }) => {
     forma: setupCargaData?.forma,
   });
 
+  // Se formatean los datos del centro de gravedad para la tabla de visualización
   const datosTablaXYZ = [
     {
       item: 1,
@@ -136,33 +142,29 @@ const Tablas = ({ route, navigation }) => {
     },
   ];
 
+  // Función para generar el PDF
   const handlePDF = async () => {
-    const rows = datosTablaAparejosIndividuales.flatMap((aparejo, index) => {
-      const mainRow = {
+    // Se mapean los datos de aparejos para el PDF
+    const aparejosRows = datosTablaAparejosIndividuales.map((aparejo) => {
+      const pesoUnitario = parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0);
+      const pesoGrillete = parseFloat(aparejo.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0);
+      return {
         item: aparejo.descripcionPrincipal.item,
         descripcion: aparejo.descripcionPrincipal.descripcion,
         cantidad: 1,
-        pesoUnitario: parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0),
-        pesoTotal: parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) + parseFloat(aparejo.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
+        pesoUnitario: pesoUnitario,
+        pesoTotal: pesoUnitario + pesoGrillete,
       };
-      return mainRow;
     });
 
-    const totalPesoAparejos = datosTablaAparejosIndividuales.reduce(
-      (total, aparejo) => total + (
-        parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) +
-        parseFloat(aparejo.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0)
-      ),
-      0
-    );
+    const totalPesoAparejos = aparejosRows.reduce((total, row) => total + row.pesoTotal, 0);
 
     const cargaRows = datosTablaManiobra.map((row, index) => ({
       item: index + 1,
       descripcion: row.descripcion,
-      cantidad:
-        typeof row.cantidad === 'object'
-          ? `${row.cantidad.valor} ${row.cantidad.unidad}`
-          : row.cantidad,
+      cantidad: typeof row.cantidad === 'object'
+        ? `${row.cantidad.valor} ${row.cantidad.unidad}`
+        : row.cantidad,
     }));
 
     const datosGruaRows = datosTablaGrua.map((row, index) => ({
@@ -171,11 +173,9 @@ const Tablas = ({ route, navigation }) => {
       cantidad: row.cantidad,
     }));
 
-    const selectedGrua = combinedData.grua;
-    
     const pdfData = {
-      selectedGrua,
-      aparejosRows: rows,
+      selectedGrua: combinedData.grua,
+      aparejosRows,
       totalPesoAparejos,
       maniobraRows: cargaRows,
       gruaRows: datosGruaRows,
@@ -185,117 +185,142 @@ const Tablas = ({ route, navigation }) => {
       aparejosDetailed: datosTablaAparejosIndividuales,
     };
 
-    await generarPDF(pdfData);
+    try {
+      await generarPDF(pdfData);
+    } catch (error) {
+      console.error('Error al generar el PDF:', error);
+      Alert.alert('Error', 'Hubo un error al generar el PDF. Por favor, inténtelo de nuevo.');
+    }
   };
 
+  // Función para guardar o actualizar el plan de izaje
   const handleGuardar = async () => {
     Alert.alert(
       'Confirmar',
       `¿Estás seguro de ${planId ? 'actualizar' : 'guardar'} este plan de izaje?`,
       [
-        { text: 'Cancelar', onPress: () => { }, style: 'cancel' },
+        { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Confirmar',
           onPress: async () => {
             try {
-              const distanciaGanchoElementoItem = datosTablaManiobra.find(
-                item => item.descripcion === 'Distancia gancho-elemento aprox.'
-              );
-              const distanciaGanchoElementoValue = distanciaGanchoElementoItem?.cantidad?.valor;
-
-              let alturaParaBackend = '0';
-              if (distanciaGanchoElementoValue !== 'N/A' && distanciaGanchoElementoValue !== undefined && distanciaGanchoElementoValue !== null) {
-                const parsedHeight = parseFloat(distanciaGanchoElementoValue);
-                if (!isNaN(parsedHeight)) {
-                  alturaParaBackend = parsedHeight.toFixed(1);
+              // Extraer valores de la tabla para el payload
+              const extractValue = (data, description, isNumber = true) => {
+                const item = data.find(i => i.descripcion === description);
+                if (!item || !item.cantidad) {
+                  return isNumber ? 0 : 'N/A';
                 }
-              }
+                const value = typeof item.cantidad === 'object' ? item.cantidad.valor : item.cantidad;
+                return isNumber ? parseFloat(value) || 0 : value;
+              };
 
+              const alturaParaBackend = String(extractValue(datosTablaManiobra, 'Distancia gancho-elemento aprox.'));
+
+              // Mapear los aparejos
               const aparejos = datosTablaAparejosIndividuales.map(item => {
-                let tensionParaBackend = '0';
                 const tensionValue = item.detalles.find(d => d.label === 'Tensión')?.valor;
-                if (tensionValue !== 'N/A' && tensionValue !== undefined && tensionValue !== null) {
-                  const parsedTension = parseFloat(tensionValue.replace(' ton', ''));
-                  if (!isNaN(parsedTension)) {
-                    tensionParaBackend = parsedTension.toFixed(1);
-                  }
-                }
+                const parsedTension = parseFloat(tensionValue?.replace(' ton', '') || 0) || 0;
+                const pesoValue = parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0);
+                const pesoGrilleteValue = parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0);
 
                 return {
                   descripcion: item.descripcionPrincipal.descripcion,
                   cantidad: 1,
-                  pesoUnitario: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0),
-                  pesoTotal: parseFloat(item.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0) + parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
+                  pesoUnitario: pesoValue,
+                  pesoTotal: pesoValue + pesoGrilleteValue,
                   largo: parseFloat(item.detalles.find(d => d.label === 'Largo')?.valor.replace(' m', '') || 0),
                   grillete: item.detalles.find(d => d.label === 'Grillete')?.valor,
-                  pesoGrillete: parseFloat(item.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0),
-                  tension: tensionParaBackend,
+                  pesoGrillete: pesoGrilleteValue,
+                  tension: String(parsedTension),
                   altura: alturaParaBackend,
                 };
               });
 
-              const datos = {
-                largoPluma:
-                  parseFloat(combinedData.largoPluma) ||
-                  parseFloat(datosTablaGrua.find(item => item.descripcion === 'Largo de pluma')?.cantidad) ||
-                  0,
-                contrapeso: parseFloat(combinedData.grua?.contrapeso) || 0,
-                gradoInclinacion: combinedData.gradoInclinacion || '0°',
-              };
+              const MAX_BASE64_LENGTH = 50000;
 
-              const cargas = {
-                pesoEquipo: datosTablaManiobra.find(item => item.descripcion === 'Peso elemento')?.cantidad.valor || 0,
-                pesoAparejos: datosTablaManiobra.find(item => item.descripcion === 'Peso aparejos')?.cantidad.valor || 0,
-                pesoGancho: datosTablaManiobra.find(item => item.descripcion === 'Peso gancho')?.cantidad.valor || 0,
-                pesoCable: datosTablaManiobra.find(item => item.descripcion === 'Peso cable')?.cantidad?.valor || 0,
-                pesoTotal: datosTablaManiobra.find(item => item.descripcion === 'Peso total')?.cantidad.valor || 0,
-                radioTrabajoMax: datosTablaManiobra.find(item => item.descripcion === 'Radio de trabajo máximo')?.cantidad.valor || 0,
-                anguloTrabajo: datosTablaManiobra.find(item => item.descripcion === 'Ángulo de trabajo')?.cantidad || '0°',
-                capacidadLevante: datosTablaManiobra.find(item => item.descripcion === 'Capacidad de levante')?.cantidad.valor || 0,
-                porcentajeUtilizacion: datosTablaManiobra.find(item => item.descripcion === '% Utilización')?.cantidad.valor || 0,
-              };
+              // Se elimina el prefijo de la URI de datos y se maneja el caso de que no haya imagen
+              let ilustracionGruaFinal = setupGruaData?.ilustracionGrua;
+              if (ilustracionGruaFinal && ilustracionGruaFinal.startsWith('data:image/')) {
+                ilustracionGruaFinal = ilustracionGruaFinal.split(',')[1];
+                if (ilustracionGruaFinal.length > MAX_BASE64_LENGTH) {
+                  ilustracionGruaFinal = 'NoDisponible';
+                  console.warn('La imagen de la grúa es demasiado grande. Se enviará "NoDisponible".');
+                }
+              } else if (!ilustracionGruaFinal) {
+                ilustracionGruaFinal = 'NoDisponible';
+              }
+              
+              // Se elimina el prefijo de la URI de datos y se maneja el caso de que no haya imagen
+              let ilustracionCargaFinal = setupCargaData?.ilustracionCarga;
+              if (ilustracionCargaFinal && ilustracionCargaFinal.startsWith('data:image/')) {
+                ilustracionCargaFinal = ilustracionCargaFinal.split(',')[1];
+                if (ilustracionCargaFinal.length > MAX_BASE64_LENGTH) {
+                  ilustracionCargaFinal = 'NoDisponible';
+                  console.warn('La imagen de la carga es demasiado grande. Se enviará "NoDisponible".');
+                }
+              } else if (!ilustracionCargaFinal) {
+                ilustracionCargaFinal = 'NoDisponible';
+              }
+              
+              // --- AGREGANDO LÍNEA PARA DEPURAR EL VALOR EN LA CONSOLA ---
+              console.log('Valor de ilustracionGrua que se enviará al backend:', ilustracionGruaFinal);
+              // --- FIN DE LA LÍNEA DE DEPURACIÓN ---
 
-              const centroGravedad = {
-                diametro: parseFloat(combinedData.diametro) || 0,
-                xAncho: parseFloat(combinedData.ancho) || 0,
-                yLargo: parseFloat(combinedData.largo) || 0,
-                zAlto: parseFloat(combinedData.alto) || 0,
-                xCG: geometry ? parseFloat(geometry.cg.cgX.toFixed(1)) : 0,
-                yCG: geometry ? parseFloat(geometry.cg.cgY.toFixed(1)) : 0,
-                zCG: geometry ? parseFloat(geometry.cg.cgZ.toFixed(1)) : 0,
-                xPR: relX !== null && relX !== 'N/A' ? parseFloat(relX) : 0,
-                yPR: relY !== null && relY !== 'N/A' ? parseFloat(relY) : 0,
-                zPR: relZ !== null && relZ !== 'N/A' ? parseFloat(relZ) : 0,
-              };
-
-              const gruaId = setupGruaData?.grua?._id;
-
+              // Construir el payload para el backend
               const finalData = {
                 nombreProyecto,
                 aparejos,
-                datos,
-                cargas,
-                centroGravedad,
+                datos: {
+                  largoPluma: parseFloat(combinedData.largoPluma) || 0,
+                  contrapeso: parseFloat(combinedData.grua?.contrapeso) || 0,
+                  gradoInclinacion: combinedData.gradoInclinacion || '0°',
+                },
+                cargas: {
+                  pesoEquipo: extractValue(datosTablaManiobra, 'Peso elemento'),
+                  pesoAparejos: extractValue(datosTablaManiobra, 'Peso aparejos'),
+                  pesoGancho: extractValue(datosTablaManiobra, 'Peso gancho'),
+                  pesoCable: extractValue(datosTablaManiobra, 'Peso cable'),
+                  pesoTotal: extractValue(datosTablaManiobra, 'Peso total'),
+                  radioTrabajoMax: extractValue(datosTablaManiobra, 'Radio de trabajo máximo'),
+                  anguloTrabajo: extractValue(datosTablaManiobra, 'Ángulo de trabajo', false),
+                  capacidadLevante: extractValue(datosTablaManiobra, 'Capacidad de levante'),
+                  porcentajeUtilizacion: extractValue(datosTablaManiobra, '% Utilización'),
+                },
+                centroGravedad: {
+                  diametro: parseFloat(combinedData.diametro) || 0,
+                  xAncho: parseFloat(combinedData.ancho) || 0,
+                  yLargo: parseFloat(combinedData.largo) || 0,
+                  zAlto: parseFloat(combinedData.alto) || 0,
+                  xCG: geometry ? parseFloat(geometry.cg.cgX.toFixed(1)) : 0,
+                  yCG: geometry ? parseFloat(geometry.cg.cgY.toFixed(1)) : 0,
+                  zCG: geometry ? parseFloat(geometry.cg.cgZ.toFixed(1)) : 0,
+                  xPR: relX !== null && relX !== 'N/A' ? parseFloat(relX) : 0,
+                  yPR: relY !== null && relY !== 'N/A' ? parseFloat(relY) : 0,
+                  zPR: relZ !== null && relZ !== 'N/A' ? parseFloat(relZ) : 0,
+                },
                 capataz: planData?.capataz?._id,
                 supervisor: planData?.supervisor?._id,
                 jefeArea: planData?.jefeArea?._id,
                 firmaSupervisor: 'Firma pendiente',
                 firmaJefeArea: 'Firma pendiente',
-                grua: gruaId,
-                version: planId ? currentVersion : 0,
+                grua: setupGruaData?.grua?._id,
+                version: planId ? currentVersion + 1 : 1,
+                estado: 'Pendiente',
+                observaciones: 'Observación pendiente',
+                ilustracionGrua: ilustracionGruaFinal, // Se usa la variable corregida
+                ilustracionForma: ilustracionCargaFinal, // Se usa la variable corregida
               };
 
-              const { firmaSupervisor, firmaJefeArea, ...dataToLog } = finalData;
-
+              // Obtener el token de acceso
               const accessToken = await AsyncStorage.getItem('accessToken');
               if (!accessToken) {
-                alert('No autorizado. Por favor, inicie sesión nuevamente.');
+                Alert.alert('No autorizado', 'Por favor, inicie sesión nuevamente.');
                 return;
               }
 
+              // Configurar la URL y el método HTTP (POST para nuevo, PUT para actualizar)
               let apiUrl = getApiUrl('setupIzaje/');
               let httpMethod = 'POST';
-
               if (planId) {
                 apiUrl = `${apiUrl}${planId}`;
                 httpMethod = 'PUT';
@@ -313,7 +338,7 @@ const Tablas = ({ route, navigation }) => {
               const data = await response.json();
 
               if (response.ok) {
-                alert(`Plan de izaje ${planId ? 'actualizado' : 'guardado'} exitosamente.`);
+                Alert.alert('Éxito', `Plan de izaje ${planId ? 'actualizado' : 'guardado'} exitosamente.`);
                 setIsSaved(true);
                 if (!planId && data._id) {
                   setPlanId(data._id);
@@ -322,10 +347,11 @@ const Tablas = ({ route, navigation }) => {
                   }
                 }
               } else {
-                alert(`Error al ${planId ? 'actualizar' : 'guardar'}: ${data.message || 'Error desconocido'}`);
+                Alert.alert('Error', `Error al ${planId ? 'actualizar' : 'guardar'}: ${data.message || 'Error desconocido'}`);
               }
             } catch (error) {
-              alert('Hubo un error al guardar/actualizar el plan de izaje.');
+              console.error('Error al guardar/actualizar el plan de izaje:', error);
+              Alert.alert('Error', 'Hubo un error al guardar/actualizar el plan de izaje.');
             }
           },
         },
