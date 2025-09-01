@@ -13,13 +13,41 @@ import Components from '../components/Components.index';
 import TablasStyles from '../styles/TablasStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getApiUrl from '../utils/apiUrl';
+import { decode as atob } from 'base-64';
 
-const ObsFirma = ({ currentUser, currentSetup, userRole, userId, supervisorId, jefeAreaId, appliedSupervisorSignature, appliedJefeAreaSignature }) => {
+const ObsFirma = ({ route }) => {
     const navigation = useNavigation();
+    
+    // Extraer todos los parámetros de la navegación
+    const { 
+        planData: currentSetup, 
+        currentUser, 
+        userRole, 
+        userId, 
+        supervisorId, 
+        jefeAreaId, 
+        appliedSupervisorSignature, 
+        appliedJefeAreaSignature, 
+        userSignature
+    } = route.params;
+
     const [estado, setEstado] = useState(null);
     const [observaciones, setObservaciones] = useState('');
     const [errorEstado, setErrorEstado] = useState('');
     const [showSmallButtons, setShowSmallButtons] = useState(true);
+
+    // Función para extraer userId del token
+    const extractUserIdFromToken = (token) => {
+        try {
+            const payload = token.split('.')[1];
+            const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+            const json = atob(base64);
+            return JSON.parse(json).id;
+        } catch (error) {
+            console.log('Error extrayendo userId:', error);
+            return null;
+        }
+    };
 
     const handleFirmar = async () => {
         if (!estado) {
@@ -29,11 +57,51 @@ const ObsFirma = ({ currentUser, currentSetup, userRole, userId, supervisorId, j
             setErrorEstado('');
         }
 
-        let signatureToUse = currentUser?.signature;
+        let signatureToUse = userSignature;
+
+        // Si no llegó por parámetros, obtenerla directamente del servidor
+        if (!signatureToUse) {
+            try {
+                const token = await AsyncStorage.getItem('accessToken');
+                if (!token) {
+                    Alert.alert('Error', 'No se pudo verificar la autenticación');
+                    return;
+                }
+
+                const userIdToFetch = currentUser?._id || extractUserIdFromToken(token);
+                
+                if (userIdToFetch) {
+                    const response = await fetch(getApiUrl(`user/${userIdToFetch}`), {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const userData = await response.json();
+                        signatureToUse = userData.data?.signature;
+                        console.log('Firma obtenida del servidor:', signatureToUse ? 'EXISTE' : 'NO EXISTE');
+                    } else {
+                        console.log('Error en respuesta del servidor:', response.status);
+                    }
+                }
+            } catch (error) {
+                console.log('Error obteniendo firma:', error);
+            }
+        }
+
+        // Si aún no tenemos firma, intentar de currentUser
+        if (!signatureToUse) {
+            signatureToUse = currentUser?.signature || 
+                            currentUser?.data?.signature;
+        }
+
+        console.log('Firma final a usar:', signatureToUse ? 'EXISTE' : 'NO EXISTE');
+
         if (!signatureToUse) {
             Alert.alert(
                 "Error de Firma",
-                "No se encontró una firma para el usuario actual. Asegúrate de tener una firma registrada en tu perfil."
+                "No se encontró una firma para el usuario actual. Por favor:\n\n1. Ve a tu perfil\n2. Registra tu firma\n3. Vuelve a intentar"
             );
             return;
         }
@@ -88,6 +156,10 @@ const ObsFirma = ({ currentUser, currentSetup, userRole, userId, supervisorId, j
                             return;
                         }
 
+                        // Agregar estado y observaciones al payload
+                        payload.estado = estado;
+                        payload.observaciones = observaciones;
+
                         try {
                             const accessToken = await AsyncStorage.getItem('accessToken');
                             if (!accessToken) {
@@ -123,11 +195,10 @@ const ObsFirma = ({ currentUser, currentSetup, userRole, userId, supervisorId, j
                             const data = await response.json();
 
                             Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
-                            if (data && data.updatedSetupIzaje) {
-                                setCurrentSetup(data.updatedSetupIzaje);
-                                navigation.setParams({ planData: data.updatedSetupIzaje });
-                            }
-                            setShowSmallButtons(true);
+                            
+                            // Navegar dos pantallas atrás (Profile)
+                            navigation.pop(2);
+                            
                         } catch (error) {
                             Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor para firmar el plan.');
                             setShowSmallButtons(true);

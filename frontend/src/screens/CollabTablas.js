@@ -56,6 +56,34 @@ const CollabTablas = ({ route }) => {
         }
     }, [route.params.planData]);
 
+    const [currentUserWithSignature, setCurrentUserWithSignature] = useState(null);
+
+    useEffect(() => {
+        const fetchUserWithSignature = async () => {
+            try {
+                const token = await AsyncStorage.getItem('accessToken');
+                if (!token || !currentUser?._id) return;
+
+                const response = await fetch(getApiUrl(`user/${currentUser._id}`), {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const userData = await response.json();
+                    setCurrentUserWithSignature(userData.data);
+                }
+            } catch (error) {
+                console.log('Error fetching user with signature:', error);
+            }
+        };
+
+        if (currentUser) {
+            fetchUserWithSignature();
+        }
+    }, [currentUser]);
+
     // Accede a currentUser de forma segura
     const { currentUser } = route.params || {};
     const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
@@ -80,8 +108,24 @@ const CollabTablas = ({ route }) => {
         return 'N/A';
     };
 
+    // Verificar si el usuario ya firmó según su rol
+    const hasUserSigned = () => {
+        if (userRole === 'supervisor' && userId === supervisorId) {
+            return appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente';
+        }
+        if ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId) {
+            return appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente';
+        }
+        return false;
+    };
+
+    const canSign = ((userRole === 'supervisor' && userId === supervisorId) ||
+                    ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId)) &&
+                    !hasUserSigned();
+
+    const isCapataz = userRole === 'capataz' && userId === capatazId;
+
     // Si currentSetup es nulo o indefinido, no hay datos para mostrar.
-    // Esto previene errores al intentar acceder a propiedades de un objeto indefinido.
     if (!currentSetup) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -188,7 +232,7 @@ const CollabTablas = ({ route }) => {
         {
             item: 1,
             descripcion: 'Medidas',
-            X: formaLower === 'cilindro' && diametroCarga > 0
+            X: formaLower === 'cilindro' && diametoCarga > 0
                 ? (isCylinderVertical ? `${formatNumber(diametroCarga, 'm')} (Diámetro)` : `${formatNumber(altoCarga, 'm')} (Largo)`)
                 : formatNumber(anchoCarga, 'm'),
             Y: formaLower === 'cilindro' && diametroCarga > 0
@@ -217,11 +261,21 @@ const CollabTablas = ({ route }) => {
     const handleFirmarPlan = () => {
         // Si el usuario es jefe, navegar directamente a ObsFirma
         if (userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') {
-            navigation.navigate('ObsFirma', { planData: currentSetup, currentUser });
+            navigation.navigate('ObsFirma', { 
+                planData: currentSetup, 
+                currentUser: currentUserWithSignature || currentUser,
+                userRole,
+                userId,
+                supervisorId,
+                jefeAreaId,
+                appliedSupervisorSignature,
+                appliedJefeAreaSignature,
+                userSignature: currentUserWithSignature?.signature || currentUser?.signature
+            });
             return;
         }
 
-        // --- Caso Supervisor: mostrar alert de confirmación ---
+        // Caso Supervisor: mostrar alert de confirmación
         if (userRole === 'supervisor' && userId === supervisorId) {
             const isSupervisorSigned = appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente';
             if (isSupervisorSigned) {
@@ -304,8 +358,6 @@ const CollabTablas = ({ route }) => {
         }
     };
 
-
-
     const handleEnviarPdf = async () => {
         if (isLoadingPdf) return;
 
@@ -363,11 +415,6 @@ const CollabTablas = ({ route }) => {
     const handleCloseElementoBottomSheet = () => {
         setIsElementoBottomSheetVisible(false);
     };
-
-    const canSign = (userRole === 'supervisor' && userId === supervisorId) ||
-        ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId);
-
-    const isCapataz = userRole === 'capataz' && userId === capatazId;
 
     return (
         <View style={[TablasStyles.container, { backgroundColor: '#fff' }]}>
@@ -434,6 +481,41 @@ const CollabTablas = ({ route }) => {
                     />
                 </View>
                 <Components.Tabla titulo="Cálculo de centro de gravedad:" data={datosTablaXYZ} />
+
+                {/* Sección de Estado y Observaciones */}
+                <View style={{ marginTop: 20, marginBottom: 20 }}>
+                    <Text style={[TablasStyles.sectionTitle, { left: 20, marginBottom: 10 }]}>Evaluación:</Text>
+                    
+                    {/* Estado */}
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 16, marginRight: 10 }}>Estado:</Text>
+                        <Text style={{
+                            fontSize: 16,
+                            color: currentSetup?.estado === 'Aprobado' ? 'green' : 
+                                  currentSetup?.estado === 'Rechazado' ? 'red' : 'gray',
+                            fontWeight: 'bold'
+                        }}>
+                            {currentSetup?.estado || 'Pendiente'}
+                        </Text>
+                    </View>
+
+                    {/* Observaciones */}
+                    <View style={{ paddingHorizontal: 20 }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 10 }}>Observaciones:</Text>
+                        <View style={{
+                            backgroundColor: '#f9f9f9',
+                            borderWidth: 1,
+                            borderColor: '#ddd',
+                            borderRadius: 5,
+                            padding: 15,
+                            minHeight: 80
+                        }}>
+                            <Text style={{ fontSize: 14, lineHeight: 20 }}>
+                                {currentSetup?.observaciones || 'No hay observaciones registradas.'}
+                            </Text>
+                        </View>
+                    </View>
+                </View>
 
                 <View style={{
                     flexDirection: 'row',
@@ -535,7 +617,7 @@ const CollabTablas = ({ route }) => {
                     <Components.Button
                         label={isLoadingPdf ? 'Generando...' : 'Enviar PDF'}
                         onPress={handleEnviarPdf}
-                        style={{ width: canSign ? '48%' : '90%' }}
+                        style={{ width: canSign ? '48%' : '100%', left: 20 }}
                         disabled={isLoadingPdf}
                     />
                 </View>
