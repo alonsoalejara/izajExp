@@ -33,6 +33,10 @@ async function createSetupIzaje(setupIzajeData) {
       firmaSupervisor,
       firmaJefeArea,
       grua,
+      ilustracionGrua,
+      ilustracionForma,
+      estado,
+      observaciones,
       version
     } = setupIzajeData;
 
@@ -48,6 +52,10 @@ async function createSetupIzaje(setupIzajeData) {
       firmaSupervisor,
       firmaJefeArea,
       grua,
+      ilustracionGrua,
+      ilustracionForma,
+      estado,
+      observaciones,
       version
     });
 

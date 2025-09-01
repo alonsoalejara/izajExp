@@ -205,6 +205,20 @@ const setupIzajeBodySchema = Joi.object({
     "any.required": "La versión es obligatoria.",
     "number.allowOnly": "La versión solo puede ser 0, 1, 2 o 3.",
   }),
+  ilustracionGrua: Joi.string().optional().allow(null).messages({
+    "string.base": "La ilustración de la grúa debe ser un string.",
+  }),
+  ilustracionForma: Joi.string().optional().allow(null).messages({
+    "string.base": "La ilustración de la forma debe ser un string.",
+  }),
+  estado: Joi.string().valid('Aprobado', 'Rechazado', 'Pendiente').required().messages({
+    "string.base": "El estado debe ser un string.",
+    "any.required": "El estado es obligatorio.",
+    "any.only": "El estado debe ser 'Aprobado', 'Rechazado' o 'Pendiente'."
+  }),
+  observaciones: Joi.string().optional().allow(null).messages({
+    "string.base": "Las observaciones deben ser un string.",
+  }),
 })
 .unknown(true)
 .messages({
