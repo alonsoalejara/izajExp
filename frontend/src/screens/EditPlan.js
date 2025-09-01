@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -247,10 +247,8 @@ const EditPlan = () => {
         };
 
         const alturaDespeje = 1; 
-        const alturaGanchoBloque = 1.6; 
         const anchoCarga = parseFloat(editablePlan.centroGravedad.xAncho) || 0;
         const largoCarga = parseFloat(editablePlan.centroGravedad.yLargo) || 0;
-        const altoCarga = parseFloat(editablePlan.centroGravedad.zAlto) || 0;
         const diametroCarga = parseFloat(editablePlan.centroGravedad.diametro) || 0;
         const formaCarga = editablePlan.forma || '';
         
@@ -264,15 +262,33 @@ const EditPlan = () => {
         const { distanciaGanchoElemento, largoAparejoCalculado } = calculateAparejoDimensions(editablePlan);
         const parsedDistanciaGanchoElemento = parseFloat(distanciaGanchoElemento);
 
+        // Lógica para determinar la nueva versión
+        const currentVersion = editablePlan.version || 0;
+        let newVersion = currentVersion;
+        
+        if (editablePlan.firmaJefeArea && editablePlan.firmaJefeArea !== "Firma pendiente") {
+            newVersion = Math.min(currentVersion + 1, 3);
+        }
 
         const finalPayload = {
             nombreProyecto: editablePlan.nombreProyecto,
             capataz: typeof editablePlan.capataz === 'object' && editablePlan.capataz._id ? editablePlan.capataz._id : editablePlan.capataz,
             supervisor: typeof editablePlan.supervisor === 'object' && editablePlan.supervisor._id ? editablePlan.supervisor._id : editablePlan.supervisor,
             jefeArea: typeof editablePlan.jefeArea === 'object' && editablePlan.jefeArea._id ? editablePlan.jefeArea._id : editablePlan.jefeArea,
-            firmaSupervisor: "Firma pendiente",
-            firmaJefeArea: "Firma pendiente",
+            firmaSupervisor: editablePlan.firmaSupervisor || "Firma pendiente",
+            firmaJefeArea: editablePlan.firmaJefeArea || "Firma pendiente",
             grua: typeof editablePlan.grua === 'object' && editablePlan.grua._id ? editablePlan.grua._id : editablePlan.grua,
+            
+            estado: 'Pendiente',
+            observaciones: 'Observación pendiente',
+            ilustracionGrua: 'NoDisponible',
+            ilustracionForma: 'NoDisponible',
+            
+            alturaPuntoIzaje: 0,
+            alturaPuntoRecepcion: 0,
+            alturaDespeje: alturaDespeje,
+            distanciaTotalRecorrido: 0,
+            
             aparejos: editablePlan.aparejos.map(ap => {
                 const pesoCarga = parseFloat(editablePlan.cargas.pesoEquipo) || 0;
                 const cantidadManiobra = parseInt(ap.cantidad, 10) || 0;
@@ -318,7 +334,7 @@ const EditPlan = () => {
                 porcentajeUtilizacion: porcentajeUtilizacion,
             },
             centroGravedad: centroGravedadConPR,
-            version: (editablePlan.version || 0) + 1,
+            version: newVersion,
         };
 
         try {
@@ -382,7 +398,6 @@ const EditPlan = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                {/* Este botón de la flecha usa la navegación estándar "volver" */}
                 <TouchableOpacity onPress={handleGoBack}>
                     <Icon name="keyboard-arrow-left" size={44} color="#000" />
                 </TouchableOpacity>
