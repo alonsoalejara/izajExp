@@ -159,6 +159,9 @@ const SetupAparejos = () => {
     !aparejoPorWLL ||
     (['2', '4'].includes(maniobraSeleccionada?.cantidad) && !anguloSeleccionado);
 
+  // Accede a la URI de la imagen de la grúa desde los datos de la grúa
+  const craneIllustrationUri = setupGruaData?.ilustracionGrua;
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -306,6 +309,19 @@ const SetupAparejos = () => {
               cantidadManiobra={cantidadNumero}
               pesoCarga={setupCargaData?.peso || null}
             />
+
+            {craneIllustrationUri && (
+              <View style={styles.illustrationContainer}>
+                <Text style={styles.illustrationTitle}>Visualización de la grúa</Text>
+                <View style={styles.imageWrapper}>
+                  <Image
+                    source={{ uri: craneIllustrationUri }}
+                    style={styles.craneImage}
+                    resizeMode="contain"
+                  />
+                </View>
+              </View>
+            )}
 
             <View style={[styles.buttonContainer, { marginBottom: -20, right: 40 }]}>
               <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={styles.volverButton} />

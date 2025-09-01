@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ViewShot from 'react-native-view-shot';
+
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
@@ -19,10 +21,12 @@ const SetupGrua = () => {
   const route = useRoute();
   const initialPlanData = route.params?.planData;
   const initialCargaData = route.params?.setupCargaData;
+
   const [planData, setPlanData] = useState(initialPlanData || {});
   const [setupCargaData, setSetupCargaData] = useState(initialCargaData || {});
   const [isGruaModalVisible, setGruaModalVisible] = useState(false);
   const [isLargoPlumaModalVisible, setLargoPlumaModalVisible] = useState(false);
+
   const [grua, setGrua] = useState('');
   const [errorGrua, setErrorGrua] = useState('');
   const [largoPluma, setLargoPluma] = useState('');
@@ -32,25 +36,29 @@ const SetupGrua = () => {
   const [errorRadioMontaje, setErrorRadioMontaje] = useState('');
   const [radioTrabajoMaximo, setRadioTrabajoMaximo] = useState('');
   const [gradoInclinacionVisual, setGradoInclinacionVisual] = useState(75);
+
   const [usuarioId, setUsuarioId] = useState(null);
   const [movementEval, setMovementEval] = useState(null);
   const [capacidadLevanteCalc, setCapacidadLevanteCalc] = useState(null);
   const [radioIzajeError, setRadioIzajeError] = useState(false);
   const [radioMontajeError, setRadioMontajeError] = useState(false);
 
+  const viewShotRef = useRef();
+
+  // Obtener usuarioId de AsyncStorage
   useEffect(() => {
     const fetchUserId = async () => {
       try {
         const storedUsuarioId = await AsyncStorage.getItem('usuarioId');
         if (storedUsuarioId) setUsuarioId(storedUsuarioId);
       } catch (error) {
-        // console.error("Error al obtener usuarioId:", error);
+        console.error("Error al obtener usuarioId:", error);
       }
     };
     fetchUserId();
-
   }, [initialPlanData, initialCargaData]);
 
+  // Evaluación de radios, inclinación y capacidad
   useEffect(() => {
     const izajeVal = parseFloat(radioIzaje) || 0;
     const montajeVal = parseFloat(radioMontaje) || 0;
@@ -86,7 +94,6 @@ const SetupGrua = () => {
         mensajeMovimiento = 'Verificar radios y capacidad';
       }
       setMovementEval({ optimum: movimientoOptimo, message: mensajeMovimiento });
-
     } else if (hasGrua && (!hasRadioIzaje || !hasRadioMontaje)) {
       mensajeMovimiento = 'Ingrese ambos radios de trabajo.';
       setMovementEval({ optimum: false, message: mensajeMovimiento });
@@ -97,8 +104,12 @@ const SetupGrua = () => {
       setMovementEval(null);
     }
 
-    const capInicial = esRadioIzajeEnRango && boomLengthNum ? evaluateMovement(izajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
-    const capFinal = esRadioMontajeEnRango && boomLengthNum ? evaluateMovement(montajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable : null;
+    const capInicial = esRadioIzajeEnRango && boomLengthNum
+      ? evaluateMovement(izajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable
+      : null;
+    const capFinal = esRadioMontajeEnRango && boomLengthNum
+      ? evaluateMovement(montajeVal, pesoCargaVal, boomLengthNum).details?.capacityAvailable
+      : null;
 
     const menorCapacidad = (capInicial != null && capFinal != null)
       ? Math.min(capInicial, capFinal)
@@ -106,35 +117,25 @@ const SetupGrua = () => {
 
     setCapacidadLevanteCalc(menorCapacidad);
 
-    let maxRadio = 0;
-    if (esRadioIzajeEnRango && esRadioMontajeEnRango) {
-      maxRadio = Math.max(izajeVal, montajeVal);
-      setRadioTrabajoMaximo(maxRadio.toString());
-    } else {
-      setRadioTrabajoMaximo('');
-    }
+    const maxRadio = esRadioIzajeEnRango && esRadioMontajeEnRango
+      ? Math.max(izajeVal, montajeVal)
+      : 0;
+    setRadioTrabajoMaximo(maxRadio ? maxRadio.toString() : '');
 
     if (grua?.nombre === "Terex RT555") {
       const alturaType = getAlturaType(largoPluma);
       const radioEntero = String(Math.floor(maxRadio));
       const mapAlturas = inclinacionMapAlturas[alturaType] || {};
-      setGradoInclinacionVisual(
-        mapAlturas[radioEntero] !== undefined ? mapAlturas[radioEntero] : 75
-      );
+      setGradoInclinacionVisual(mapAlturas[radioEntero] !== undefined ? mapAlturas[radioEntero] : 75);
     } else {
       setGradoInclinacionVisual(75);
     }
-
   }, [radioIzaje, radioMontaje, grua, largoPluma, setupCargaData]);
 
   const validateRadioEnRango = (boomLength, radio) => {
-    if (!boomLength || !capacityTables[boomLength] || !radio) {
-      return false;
-    }
-
+    if (!boomLength || !capacityTables[boomLength] || !radio) return false;
     const radios = Object.keys(capacityTables[boomLength]).map(Number).sort((a, b) => a - b);
     const radioVal = parseFloat(radio);
-
     return !isNaN(radioVal) && radioVal >= radios[0] && radioVal <= radios[radios.length - 1];
   };
 
@@ -144,12 +145,14 @@ const SetupGrua = () => {
     const errors = validateSetupGrua(grua);
     const errIz = !radioIzaje && !!grua;
     const errMont = !radioMontaje && !!grua;
+
     setErrorGrua(errors.grua || '');
     setErrorRadioIzaje(errIz ? 'Este campo es requerido' : '');
     setErrorRadioMontaje(errMont ? 'Este campo es requerido' : '');
 
     const dataToSend = {
-      grua: grua,
+      grua,
+      ilustracionGrua: null,
       nombreGrua: grua?.nombre || '',
       largoPluma,
       gradoInclinacion: `${gradoInclinacionVisual}°`,
@@ -167,12 +170,22 @@ const SetupGrua = () => {
     };
 
     const allDataToSend = {
-      planData: planData,
-      setupCargaData: setupCargaData,
+      planData,
+      setupCargaData,
       setupGruaData: dataToSend,
     };
 
     if (Object.keys(errors).length === 0 && !errIz && !errMont && !radioIzajeError && !radioMontajeError) {
+      if (viewShotRef.current) {
+        try {
+          const uri = await viewShotRef.current.capture();
+          const base64 = await convertUriToBase64(uri);
+          dataToSend.ilustracionGrua = base64;
+        } catch (error) {
+          console.error("Error al capturar la imagen:", error);
+        }
+      }
+
       await AsyncStorage.setItem('setupGruaData', JSON.stringify(dataToSend));
       navigation.navigate('SetupAparejos', allDataToSend);
     }
@@ -190,6 +203,7 @@ const SetupGrua = () => {
             <View style={styles.titleContainer}>
               <Text style={[styles.sectionTitle, { top: 5 }]}>Configurar grúa</Text>
             </View>
+
             <View style={styles.container}>
               <View style={styles.inputWrapper}>
                 <Text style={styles.labelText}>Seleccione grúa:</Text>
@@ -215,6 +229,7 @@ const SetupGrua = () => {
               <View style={styles.inputWrapper}>
                 <Text style={styles.labelText}>Ingrese los siguientes datos para la maniobra:</Text>
               </View>
+
               <View style={[styles.inputContainer, { flexDirection: 'row', marginTop: -3 }]}>
                 <Components.ConfigButton
                   label="Largo de pluma"
@@ -244,6 +259,7 @@ const SetupGrua = () => {
                   />
                   {errorRadioIzaje && <Text style={styles.errorText}>{errorRadioIzaje}</Text>}
                 </View>
+
                 <View style={{ flex: 1 }}>
                   <Text style={styles.labelText}>Radio de montaje (m):</Text>
                   <Components.NumericInput
@@ -269,44 +285,51 @@ const SetupGrua = () => {
                   Optimal: {movementEval.message}
                 </Text>
               )}
+
               <View style={styles.inputWrapper}>
                 <Text style={[styles.labelText, { left: 8 }]}>Visualización de la grúa:</Text>
               </View>
+
               {grua ? (
                 <View style={{ width: 150, height: 39, justifyContent: 'center' }}>
-                  <Text style={[styles.labelText, { textAlign: 'center' }]}>
-                    Grado de inclinación
-                  </Text>
+                  <Text style={[styles.labelText, { textAlign: 'center' }]}>Grado de inclinación</Text>
                   <View style={{ alignItems: 'center' }}>
-                    <Text style={{ fontSize: 18, color: '#333' }}>
-                      {gradoInclinacionVisual}°
-                    </Text>
+                    <Text style={{ fontSize: 18, color: '#333' }}>{gradoInclinacionVisual}°</Text>
                   </View>
                 </View>
               ) : (
                 <View style={{ width: 150 }} />
               )}
-              <View style={styles.visualizationGruaContainer}>
-                {!grua ? (
-                  <Text style={[styles.labelText, { color: '#ccc' }]}>
-                    Debe seleccionar una grúa para visualizar.
-                  </Text>
-                ) : grua.nombre === 'Terex RT555' ? (
-                  <View style={{ flex: 1, position: 'relative' }}>
+
+            <View style={styles.visualizationGruaContainer}>
+              {!grua ? (
+                <Text style={[styles.labelText, { color: '#ccc' }]}>
+                  Debe seleccionar una grúa para visualizar.
+                </Text>
+              ) : grua.nombre === 'Terex RT555' ? (
+                <ViewShot
+                  ref={viewShotRef}
+                  options={{ format: 'png', quality: 0.2 }}
+                  style={{ flex: 1, width: '100%' }} // Usa flex: 1 para que se ajuste al padre
+                >
+                  <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }}>
                     <View style={getGridContainerStyle(largoPluma)}>
-                      <RenderGrid />
+                      <RenderGrid boomLength={largoPluma} />
                     </View>
                     <GruaIllustration
                       alturaType={getAlturaType(largoPluma)}
+                      largoPluma={largoPluma}
                       inclinacion={gradoInclinacionVisual}
                       radioTrabajoMaximo={radioTrabajoMaximo}
                       style={getGruaIllustrationStyle(largoPluma)}
                     />
                   </View>
-                ) : (
-                  <Text style={styles.labelText}>No disponible</Text>
-                )}
-              </View>
+                </ViewShot>
+              ) : (
+                <Text style={styles.labelText}>No disponible</Text>
+              )}
+            </View>
+
             </View>
           </ScrollView>
 
@@ -332,6 +355,17 @@ const SetupGrua = () => {
       </View>
     </TouchableWithoutFeedback>
   );
+};
+
+const convertUriToBase64 = async (uri) => {
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
 };
 
 export default SetupGrua;

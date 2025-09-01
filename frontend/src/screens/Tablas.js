@@ -348,10 +348,7 @@ const Tablas = ({ route, navigation }) => {
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Tablas</Text>
       </View>
-      <View style={styles.labelContainer}>
-        <Text style={styles.labelText}>Datos:</Text>
-      </View>
-      <ScrollView style={styles.tableContainer}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <Components.Tabla titulo="Información del proyecto" data={datosTablaProyecto} />
         <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
         <Text style={[styles.sectionTitle, { top: 10, left: 20 }]}>Aparejos</Text>

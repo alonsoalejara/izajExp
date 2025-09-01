@@ -1,21 +1,34 @@
-import React from 'react'; 
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import RT555 from '../../cranes/RT555/RT555.index';
 
-export default function GruaIllustration({ style, alturaType, inclinacion = 75, radioTrabajoMaximo }) {
+// Mapa de posiciones basado en la longitud de la pluma
+const plumaPositionMap = {
+  '10.5 m': { left: 40, top: 0 },
+  '15.2 m': { left: 30, top: 34 },
+  '19.8 m': { left: 10, top: -10 },
+  '24.3 m': { left: -30, top: -80 },
+  '26.9 m': { left: -40, top: -110 },
+  '33.5 m': { left: 50, top: -120 },
+};
+
+export default function GruaIllustration({ style, alturaType, inclinacion = 75, radioTrabajoMaximo, largoPluma }) {
+  // Obtener los valores de posición del mapa, usando un objeto vacío como fallback
+  const gruaPositionStyle = plumaPositionMap[largoPluma] || {};
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <View style={[styles.box, style]}>
-          <View style={styles.gruaContainer}>
+          <View style={[styles.gruaContainer, gruaPositionStyle]}>
             <RT555.BaseGrua />
             <RT555.RuedasGrua />
             <RT555.Boom alturaType={alturaType} inclinacion={inclinacion} radioTrabajoMaximo={radioTrabajoMaximo} />
             <RT555.CabinaGrua />
             <RT555.CraneHook alturaType={alturaType} inclinacion={inclinacion} radioTrabajoMaximo={radioTrabajoMaximo} />
             <RT555.Rigging alturaType={alturaType} inclinacion={inclinacion} radioTrabajoMaximo={radioTrabajoMaximo} />
-            <RT555.CargaGrua alturaType={alturaType} inclinacion={inclinacion} radioTrabajoMaximo={radioTrabajoMaximo}/>
+            <RT555.CargaGrua alturaType={alturaType} inclinacion={inclinacion} radioTrabajoMaximo={radioTrabajoMaximo} />
           </View>
         </View>
       </SafeAreaView>

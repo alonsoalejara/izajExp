@@ -71,18 +71,19 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   visualizationGruaContainer: {
-    marginTop: 20,
-    flex: 0,
-    width: '100%',
-    height: 400,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: '#ddd',
-    overflow: 'hidden',
+      marginTop: 20,
+      flex: 0,
+      width: '100%',
+      height: 400,
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderRadius: 10,
+      borderColor: '#ddd',
+      overflow: 'hidden',
   },
+
   // Render de plano cartesiano
   gridContainer: {
     position: 'absolute',
@@ -210,6 +211,36 @@ const styles = StyleSheet.create({
     left: 0,
     right: 50,
     alignItems: 'center',
+  },
+  illustrationContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    backgroundColor: '#00aa00',
+  },
+  illustrationTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  imageWrapper: {
+    width: '100%', // O el ancho que desees para el contenedor
+    height: 250,  // Altura fija, puedes ajustarla
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#00ff00', // Ejemplo de color de fondo para visualizar
+  },
+  craneImage: {
+    top: 0,
+    right: 10,
+    width: '150%', // La imagen ocupa todo el ancho del contenedor padre (imageWrapper)
+    height: '150%',// La imagen ocupa toda la altura del contenedor padre
+    resizeMode: 'contain',
   },
 });
 
