@@ -18,6 +18,7 @@ const Profile = () => {
 
   const ROLES_CON_FIRMA = ['supervisor', 'jefe'];
   const CAPATAZ_ROLE = 'capataz';
+  const JEFE_ROLE = 'jefe';
 
   const extractUserId = (token) => {
     const payload = token.split('.')[1];
@@ -224,6 +225,16 @@ const Profile = () => {
   const userRoleLowerCase = currentUserRole ? currentUserRole.toLowerCase() : null;
   const rolesConFirmaLowerCase = ROLES_CON_FIRMA.map((role) => role.toLowerCase());
 
+  // Filtrar planes según el rol del usuario
+  const filteredSetups = setupIzaje.filter(plan => {
+    // Si el usuario es jefe, solo mostrar planes con firmaSupervisor diferente a "Firma pendiente"
+    if (userRoleLowerCase === JEFE_ROLE) {
+      return plan.firmaSupervisor && plan.firmaSupervisor !== "Firma pendiente";
+    }
+    // Para otros roles, mostrar todos los planes
+    return true;
+  });
+
   const visibleButtons = ['MisDatos', 'MisPlanes'];
   if (userRoleLowerCase && rolesConFirmaLowerCase.includes(userRoleLowerCase)) {
     visibleButtons.push('MiFirma');
@@ -298,7 +309,7 @@ const Profile = () => {
         <View style={{ top: 300, flex: 1 }}>
           <ScrollView contentContainerStyle={{ paddingBottom: 310, marginBottom: 20 }}>
             <Section.SetupIzajeSection
-              setupIzaje={setupIzaje}
+              setupIzaje={filteredSetups}
               setSetups={setSetups}
               currentUser={user}
               onViewPress={user ? handleNavigateToCollabTablas : () => Alert.alert("Cargando", "Espera a que se carguen tus datos antes de continuar.")}
