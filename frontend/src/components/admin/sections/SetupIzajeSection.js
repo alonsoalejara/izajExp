@@ -17,6 +17,7 @@ const SetupIzajeSection = ({
   setSetups,
   currentUser,
   isAdminPanel,
+  isCollabProfile,
   buttonContainerStyle,
   onViewPress = () => {},
 }) => {
@@ -104,14 +105,12 @@ const SetupIzajeSection = ({
                   {setup.nombreProyecto || 'Sin nombre'}
                 </Text>
               </Text>
-
               <Text style={[styles.cardDetail, { fontWeight: '700', color: '#777' }]}>
                 Fecha:{' '}
                 <Text style={{ fontWeight: '400' }}>
                   {setup.createdAt ? formatDate(setup.createdAt) : 'No disponible'}
                 </Text>
               </Text>
-
               <Text style={[styles.cardDetail, { fontWeight: '700', color: '#777' }]}>
                 Versión:{' '}
                 <Text style={{ fontWeight: '400' }}>{setup.version ?? 'No disponible'}</Text>
@@ -130,6 +129,7 @@ const SetupIzajeSection = ({
                   },
                 ]}
               >
+                {/* Botón "Ver" - siempre visible */}
                 <Components.Button
                   label="Ver"
                   onPress={() => onViewPress(setup)}
@@ -137,7 +137,8 @@ const SetupIzajeSection = ({
                   style={[styles.button, localStyles.buttonSpacing]}
                 />
 
-                {!isAdminPanel && userRole === 'supervisor' && setup.version !== 3 && (
+                {/* Botón "Editar" - visible solo para supervisores y no en CollabProfile */}
+                {!isCollabProfile && userRole === 'supervisor' && (
                   <Components.Button
                     label="Editar"
                     onPress={() => handleEdit(setup)}
@@ -146,14 +147,15 @@ const SetupIzajeSection = ({
                   />
                 )}
 
-                {(!isAdminPanel && userRole === 'jefe') || isAdminPanel ? (
+                {/* Botón "Eliminar" - visible solo para jefes y no en CollabProfile */}
+                {!isCollabProfile && userRole === 'jefe' && (
                   <Components.Button
                     label="Eliminar"
                     onPress={() => confirmDelete(setup._id)}
                     isCancel={true}
                     style={styles.button}
                   />
-                ) : null}
+                )}
               </View>
             )}
           </View>

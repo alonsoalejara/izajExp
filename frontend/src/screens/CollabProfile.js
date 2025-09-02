@@ -208,6 +208,7 @@ const CollabProfile = () => {
               setupIzaje={setupIzaje}
               setSetups={setSetups}
               currentUser={userData}
+              isCollabProfile={true}
               buttonContainerStyle={{
                 marginLeft: -110,
                 marginTop: 2,
