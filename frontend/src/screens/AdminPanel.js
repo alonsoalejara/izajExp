@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Animated } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { useFetchData } from '../hooks/useFetchData';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Logic from '../logic/logic.index';
@@ -11,26 +11,22 @@ import styles from '../styles/AdminPanelStyles';
 
 function AdminPanel() {
   const navigation = useNavigation();
+  const route = useRoute();
   const [activeSection, setActiveSection] = useState(null);
   const animations = useRef({});
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [colaboradorSeleccionado, setColaboradorSeleccionado] = useState(null);
-  // Definimos estados para los modales de edición de Grúas y Planes
   const [isModalEditarGruaVisible, setIsModalEditarGruaVisible] = useState(false);
   const [gruaSeleccionada, setGruaSeleccionada] = useState(null);
   const [isModalEditarSetupIzajeVisible, setIsModalEditarSetupIzajeVisible] = useState(false);
   const [setupIzajeSeleccionado, setSetupIzajeSeleccionado] = useState(null);
-
-  // Declaración de estado para el modal de edición de colaborador (¡está aquí!)
   const [isModalEditarColaboradorVisible, setIsModalEditarColaboradorVisible] = useState(false);
-
 
   const { data: colaboradores = [], refetch: refetchColaboradores } = useFetchData('user');
   const { data: gruas = [], refetch: refetchGruas } = useFetchData('grua');
   const { data: setupIzajes = [], refetch: refetchSetupIzajes } = useFetchData('setupIzaje');
 
-  // Inicializa los estados con los datos de los hooks
   const [colaboradoresState, setColaboradoresState] = useState(colaboradores);
   const [gruasState, setGruasState] = useState(gruas);
   const [setupsState, setSetupsState] = useState(setupIzajes);
@@ -61,6 +57,44 @@ function AdminPanel() {
     };
     checkUserRole();
   }, [navigation]);
+
+  // Usar useFocusEffect para recargar datos cuando la pantalla recibe foco
+  useFocusEffect(
+    React.useCallback(() => {
+      let isActive = true;
+
+      const refreshData = async () => {
+        try {
+          // Debounce para evitar múltiples llamadas rápidas
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
+          if (!isActive) return;
+
+          const [colaboradoresRes, gruasRes, setupsRes] = await Promise.all([
+            refetchColaboradores(),
+            refetchGruas(),
+            refetchSetupIzajes()
+          ]);
+
+          // Solo actualizar estados si el componente sigue montado
+          if (isActive) {
+            setColaboradoresState(colaboradoresRes.data || []);
+            setGruasState(gruasRes.data || []);
+            setSetupsState(setupsRes.data || []);
+          }
+        } catch (error) {
+          console.error('Error refreshing data:', error);
+        }
+      };
+
+      refreshData();
+
+      return () => {
+        isActive = false; // Cleanup para evitar updates en componente desmontado
+      };
+    }, [refetchColaboradores, refetchGruas, refetchSetupIzajes])
+  );
+
 
   useEffect(() => {
     setGruasState(gruas || []);
@@ -135,7 +169,6 @@ function AdminPanel() {
     setGruasState(originalGruasState.filter(grua =>
       grua?.nombre?.toLowerCase().includes(lowerText)
     ));
-    // Asegúrate de que plan.usuario exista antes de intentar acceder a sus propiedades
     setSetupsState(originalSetupsState.filter(setup =>
       setup?.nombreProyecto?.toLowerCase().includes(lowerText) ||
       setup?.capataz?.nombre?.toLowerCase().includes(lowerText) ||
@@ -156,7 +189,7 @@ function AdminPanel() {
       const updatedColaboradores = Logic.colaboradorLogic.editColaborador(colaboradoresState, colaborador);
       setColaboradoresState(updatedColaboradores);
       refetchColaboradores();
-      setIsModalEditarColaboradorVisible(false); // <-- Aquí se usa
+      setIsModalEditarColaboradorVisible(false);
     } catch (error) {
       console.error('Error al editar colaborador:', error);
     }
@@ -197,19 +230,15 @@ function AdminPanel() {
 
   return (
     <View style={styles.container}>
-      {/* Sección superior fija con la imagen, logo y gradiente */}
       <Components.Header />
 
-      {/* Sección fija con título, buscador y botones */}
       <View style={styles.fixedHeader}>
         <Text style={styles.sectionTitle}>Panel de Administrador</Text>
-        {/* Input de búsqueda con icono */}
         <Components.SearchInput
           value={searchQuery}
           onChangeText={handleSearch}
         />
 
-        {/* Botones fijos con animación */}
         <View style={styles.buttonContainer}>
           {['Personal', 'Gruas', 'Planes', 'Datos'].map((section) => {
             if (!animations.current[section]) {
@@ -247,7 +276,6 @@ function AdminPanel() {
         </View>
       </View>
 
-      {/* Contenedor para el botón "Crear" */}
       {(activeSection === 'Personal') && (
         <View style={styles.createButtonContainer}>
           <Components.Button
@@ -262,7 +290,6 @@ function AdminPanel() {
         </View>
       )}
 
-      {/* Modal para editar colaborador */}
       <ModalsAdmin.ModalEditCollab
         isVisible={isModalEditarColaboradorVisible}
         onClose={() => setIsModalEditarColaboradorVisible(false)}
@@ -270,7 +297,6 @@ function AdminPanel() {
         onUpdate={handleEditColaborador}
       />
 
-      {/* Contenido desplazable */}
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer}>
         {activeSection === 'Personal' && (
           <Section.CollabSection
@@ -311,9 +337,7 @@ function AdminPanel() {
         )}
 
         {activeSection === 'Datos' && <Section.DataSection />}
-
       </ScrollView>
-
     </View>
   );
 }

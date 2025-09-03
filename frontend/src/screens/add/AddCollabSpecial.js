@@ -74,7 +74,8 @@ const AddCollabSpecial = ({ navigation, route }) => {
       const data = await response.json();
       if (response.ok) {
         alert('Colaborador creado exitosamente.');
-        navigation.pop(3);
+        
+        navigation.replace('Tabs');
       } else {
         alert(`Error al guardar: ${data.message}`);
       }
@@ -82,6 +83,10 @@ const AddCollabSpecial = ({ navigation, route }) => {
       console.error('Error:', error);
       alert('Hubo un error al guardar el colaborador.');
     }
+  };
+
+  const handleCancel = () => {
+    navigation.replace('Tabs');
   };
 
   return (
@@ -134,7 +139,7 @@ const AddCollabSpecial = ({ navigation, route }) => {
       </TouchableOpacity>
 
       <Modal
-        animationType="slide"
+        animationType='slide'
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
@@ -166,10 +171,7 @@ const AddCollabSpecial = ({ navigation, route }) => {
 
       <Components.Button
         label="Cancelar inscripción"
-        onPress={() => {
-          navigation.pop(2);
-          navigation.goBack();
-        }}
+        onPress={handleCancel}
         isCancel={true}
         style={{ backgroundColor: 'transparent', marginTop: 395, left: -12 }}
       />
