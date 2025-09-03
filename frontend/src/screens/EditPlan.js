@@ -262,12 +262,15 @@ const EditPlan = () => {
         const { distanciaGanchoElemento, largoAparejoCalculado } = calculateAparejoDimensions(editablePlan);
         const parsedDistanciaGanchoElemento = parseFloat(distanciaGanchoElemento);
 
-        // Lógica para determinar la nueva versión
+        // Lógica para determinar la nueva versión y resetear firmas
         const currentVersion = editablePlan.version || 0;
         let newVersion = currentVersion;
-        
+        let resetFirmas = false;
+
+        // Si hay una firma de jefe de área existente y no es "Firma pendiente", incrementamos versión y reseteamos firmas
         if (editablePlan.firmaJefeArea && editablePlan.firmaJefeArea !== "Firma pendiente") {
             newVersion = Math.min(currentVersion + 1, 3);
+            resetFirmas = true;
         }
 
         const finalPayload = {
@@ -275,8 +278,9 @@ const EditPlan = () => {
             capataz: typeof editablePlan.capataz === 'object' && editablePlan.capataz._id ? editablePlan.capataz._id : editablePlan.capataz,
             supervisor: typeof editablePlan.supervisor === 'object' && editablePlan.supervisor._id ? editablePlan.supervisor._id : editablePlan.supervisor,
             jefeArea: typeof editablePlan.jefeArea === 'object' && editablePlan.jefeArea._id ? editablePlan.jefeArea._id : editablePlan.jefeArea,
-            firmaSupervisor: editablePlan.firmaSupervisor || "Firma pendiente",
-            firmaJefeArea: editablePlan.firmaJefeArea || "Firma pendiente",
+            // RESETEAR FIRMAS SI SE INCREMENTA LA VERSIÓN
+            firmaSupervisor: resetFirmas ? "Firma pendiente" : (editablePlan.firmaSupervisor || "Firma pendiente"),
+            firmaJefeArea: resetFirmas ? "Firma pendiente" : (editablePlan.firmaJefeArea || "Firma pendiente"),
             grua: typeof editablePlan.grua === 'object' && editablePlan.grua._id ? editablePlan.grua._id : editablePlan.grua,
             
             estado: 'Pendiente',
