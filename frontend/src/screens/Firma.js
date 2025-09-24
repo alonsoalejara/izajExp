@@ -26,7 +26,7 @@ const Firma = ({ navigation }) => {
 
   const handleClear = () => {
     if (sign.current) {
-      sign.current.clearFirma();
+      sign.current.clearSignature();
       setFirma(null);
     }
   };
