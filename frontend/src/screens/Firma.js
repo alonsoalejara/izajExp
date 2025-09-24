@@ -13,7 +13,7 @@ const Firma = ({ navigation }) => {
 
   const handleSave = () => {
     if (sign.current) {
-      sign.current.readFirma();
+      sign.current.readSignature();
     }
   };
 
