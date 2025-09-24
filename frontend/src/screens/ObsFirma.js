@@ -26,9 +26,9 @@ const ObsFirma = ({ route }) => {
         userId, 
         supervisorId, 
         jefeAreaId, 
-        appliedSupervisorSignature, 
-        appliedJefeAreaSignature, 
-        userSignature
+        appliedSupervisorFirma, 
+        appliedJefeAreaFirma, 
+        userFirma
     } = route.params;
 
     const [estado, setEstado] = useState(null);
@@ -57,10 +57,10 @@ const ObsFirma = ({ route }) => {
             setErrorEstado('');
         }
 
-        let signatureToUse = userSignature;
+        let firmaToUse = userFirma;
 
         // Si no llegó por parámetros, obtenerla directamente del servidor
-        if (!signatureToUse) {
+        if (!firmaToUse) {
             try {
                 const token = await AsyncStorage.getItem('accessToken');
                 if (!token) {
@@ -79,8 +79,8 @@ const ObsFirma = ({ route }) => {
                     
                     if (response.ok) {
                         const userData = await response.json();
-                        signatureToUse = userData.data?.signature;
-                        console.log('Firma obtenida del servidor:', signatureToUse ? 'EXISTE' : 'NO EXISTE');
+                        firmaToUse = userData.data?.firma;
+                        console.log('Firma obtenida del servidor:', firmaToUse ? 'EXISTE' : 'NO EXISTE');
                     } else {
                         console.log('Error en respuesta del servidor:', response.status);
                     }
@@ -91,14 +91,14 @@ const ObsFirma = ({ route }) => {
         }
 
         // Si aún no tenemos firma, intentar de currentUser
-        if (!signatureToUse) {
-            signatureToUse = currentUser?.signature || 
-                            currentUser?.data?.signature;
+        if (!firmaToUse) {
+            firmaToUse = currentUser?.firma || 
+                            currentUser?.data?.firma;
         }
 
-        console.log('Firma final a usar:', signatureToUse ? 'EXISTE' : 'NO EXISTE');
+        console.log('Firma final a usar:', firmaToUse ? 'EXISTE' : 'NO EXISTE');
 
-        if (!signatureToUse) {
+        if (!firmaToUse) {
             Alert.alert(
                 "Error de Firma",
                 "No se encontró una firma para el usuario actual. Por favor:\n\n1. Ve a tu perfil\n2. Registra tu firma\n3. Vuelve a intentar"
@@ -107,8 +107,8 @@ const ObsFirma = ({ route }) => {
         }
 
         // Comprueba si ya se firmó según el rol
-        const isSupervisorSigned = appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente';
-        const isJefeAreaSigned = appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente';
+        const isSupervisorSigned = appliedSupervisorFirma && appliedSupervisorFirma !== 'Firma pendiente';
+        const isJefeAreaSigned = appliedJefeAreaFirma && appliedJefeAreaFirma !== 'Firma pendiente';
 
         if (userRole === 'supervisor' && userId === supervisorId && isSupervisorSigned) {
             Alert.alert("Ya Firmado", "El supervisor ya ha aplicado una firma a este plan.");
@@ -147,9 +147,9 @@ const ObsFirma = ({ route }) => {
 
                         // Asigna la firma según el rol
                         if (userRole === 'supervisor' && userId === supervisorId) {
-                            payload.firmaSupervisor = signatureToUse;
+                            payload.firmaSupervisor = firmaToUse;
                         } else if ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId) {
-                            payload.firmaJefeArea = signatureToUse;
+                            payload.firmaJefeArea = firmaToUse;
                         } else {
                             Alert.alert("Error de Rol", "Tu rol o ID de usuario no coincide con los asignados para firmar este plan.");
                             setShowSmallButtons(true);

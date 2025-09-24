@@ -93,13 +93,13 @@ const PlanesFirmados = () => {
       Alert.alert("Cargando", "Espera a que se carguen tus datos antes de continuar.");
       return;
     }
-    if (!user.signature) {
+    if (!user.firma) {
       Alert.alert("Sin firma", "No se encontró una firma para el usuario actual.");
       return;
     }
     navigation.navigate('CollabTablas', {
       setup,
-      currentUserSignature: user.signature,
+      currentUserFirma: user.firma,
       currentUser: user,
     });
   };

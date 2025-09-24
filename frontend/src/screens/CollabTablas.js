@@ -32,10 +32,10 @@ const CollabTablas = ({ route }) => {
     const [isLoadingPdf, setIsLoadingPdf] = useState(false);
 
     // Inicializa las firmas de forma segura, usando planData o currentSetup
-    const [appliedSupervisorSignature, setAppliedSupervisorSignature] = useState(
+    const [appliedSupervisorFirma, setAppliedSupervisorFirma] = useState(
         planData?.firmaSupervisor && planData.firmaSupervisor !== 'Firma pendiente' ? planData.firmaSupervisor : null
     );
-    const [appliedJefeAreaSignature, setAppliedJefeAreaSignature] = useState(
+    const [appliedJefeAreaFirma, setAppliedJefeAreaFirma] = useState(
         planData?.firmaJefeArea && planData.firmaJefeArea !== 'Firma pendiente' ? planData.firmaJefeArea : null
     );
 
@@ -43,12 +43,12 @@ const CollabTablas = ({ route }) => {
         // Actualiza currentSetup y las firmas si planData cambia en los parámetros de la ruta
         if (route.params.planData) {
             setCurrentSetup(route.params.planData);
-            setAppliedSupervisorSignature(
+            setAppliedSupervisorFirma(
                 route.params.planData.firmaSupervisor && route.params.planData.firmaSupervisor !== 'Firma pendiente'
                     ? route.params.planData.firmaSupervisor
                     : null
             );
-            setAppliedJefeAreaSignature(
+            setAppliedJefeAreaFirma(
                 route.params.planData.firmaJefeArea && route.params.planData.firmaJefeArea !== 'Firma pendiente'
                     ? route.params.planData.firmaJefeArea
                     : null
@@ -56,10 +56,10 @@ const CollabTablas = ({ route }) => {
         }
     }, [route.params.planData]);
 
-    const [currentUserWithSignature, setCurrentUserWithSignature] = useState(null);
+    const [currentUserWithFirma, setCurrentUserWithFirma] = useState(null);
 
     useEffect(() => {
-        const fetchUserWithSignature = async () => {
+        const fetchUserWithFirma = async () => {
             try {
                 const token = await AsyncStorage.getItem('accessToken');
                 if (!token || !currentUser?._id) return;
@@ -72,7 +72,7 @@ const CollabTablas = ({ route }) => {
                 
                 if (response.ok) {
                     const userData = await response.json();
-                    setCurrentUserWithSignature(userData.data);
+                    setCurrentUserWithFirma(userData.data);
                 }
             } catch (error) {
                 console.log('Error fetching user with signature:', error);
@@ -80,7 +80,7 @@ const CollabTablas = ({ route }) => {
         };
 
         if (currentUser) {
-            fetchUserWithSignature();
+            fetchUserWithFirma();
         }
     }, [currentUser]);
 
@@ -109,12 +109,12 @@ const CollabTablas = ({ route }) => {
     };
 
     // Verificar si el usuario ya firmó según su rol
-    const hasUserSigned = () => {
+    const hasUserFirmado = () => {
         if (userRole === 'supervisor' && userId === supervisorId) {
-            return appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente';
+            return appliedSupervisorFirma && appliedSupervisorFirma !== 'Firma pendiente';
         }
         if ((userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') && userId === jefeAreaId) {
-            return appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente';
+            return appliedJefeAreaFirma && appliedJefeAreaFirma !== 'Firma pendiente';
         }
         return false;
     };
@@ -263,21 +263,21 @@ const CollabTablas = ({ route }) => {
         if (userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') {
             navigation.navigate('ObsFirma', { 
                 planData: currentSetup, 
-                currentUser: currentUserWithSignature || currentUser,
+                currentUser: currentUserWithFirma || currentUser,
                 userRole,
                 userId,
                 supervisorId,
                 jefeAreaId,
-                appliedSupervisorSignature,
-                appliedJefeAreaSignature,
-                userSignature: currentUserWithSignature?.signature || currentUser?.signature
+                appliedSupervisorFirma,
+                appliedJefeAreaFirma,
+                userFirma: currentUserWithFirma?.firma || currentUser?.firma
             });
             return;
         }
 
         // Caso Supervisor: mostrar alert de confirmación
         if (userRole === 'supervisor' && userId === supervisorId) {
-            const isSupervisorSigned = appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente';
+            const isSupervisorSigned = appliedSupervisorFirma && appliedSupervisorFirma !== 'Firma pendiente';
             if (isSupervisorSigned) {
                 Alert.alert("Ya Firmado", "El supervisor ya ha aplicado una firma a este plan.");
                 return;
@@ -310,7 +310,7 @@ const CollabTablas = ({ route }) => {
             });
         }
 
-        payload.firmaSupervisor = currentUser?.signature;
+        payload.firmaSupervisor = currentUser?.firma;
 
         try {
             const accessToken = await AsyncStorage.getItem('accessToken');
@@ -543,12 +543,12 @@ const CollabTablas = ({ route }) => {
                             alignItems: 'center',
                             overflow: 'hidden',
                         }}>
-                            {appliedSupervisorSignature && appliedSupervisorSignature !== 'Firma pendiente' ? (
+                            {appliedSupervisorFirma && appliedSupervisorFirma !== 'Firma pendiente' ? (
                                 <Image
                                     source={{
-                                        uri: appliedSupervisorSignature.startsWith('data:')
-                                            ? appliedSupervisorSignature
-                                            : `data:image/png;base64,${appliedSupervisorSignature}`,
+                                        uri: appliedSupervisorFirma.startsWith('data:')
+                                            ? appliedSupervisorFirma
+                                            : `data:image/png;base64,${appliedSupervisorFirma}`,
                                     }}
                                     style={{
                                         top: 32,
@@ -582,12 +582,12 @@ const CollabTablas = ({ route }) => {
                             alignItems: 'center',
                             overflow: 'hidden',
                         }}>
-                            {appliedJefeAreaSignature && appliedJefeAreaSignature !== 'Firma pendiente' ? (
+                            {appliedJefeAreaFirma && appliedJefeAreaFirma !== 'Firma pendiente' ? (
                                 <Image
                                     source={{
-                                        uri: appliedJefeAreaSignature.startsWith('data:')
-                                            ? appliedJefeAreaSignature
-                                            : `data:image/png;base64,${appliedJefeAreaSignature}`,
+                                        uri: appliedJefeAreaFirma.startsWith('data:')
+                                            ? appliedJefeAreaFirma
+                                            : `data:image/png;base64,${appliedJefeAreaFirma}`,
                                     }}
                                     style={{
                                         top: 23,

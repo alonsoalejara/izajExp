@@ -14,7 +14,7 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [selectedButton, setSelectedButton] = useState('MisDatos');
   const [setupIzaje, setSetups] = useState([]);
-  const [hasSignature, setHasSignature] = useState(false);
+  const [hasFirma, setHasFirma] = useState(false);
 
   const ROLES_CON_FIRMA = ['supervisor', 'jefe'];
   const CAPATAZ_ROLE = 'capataz';
@@ -80,7 +80,7 @@ const Profile = () => {
 
         if (json?.data) {
           setUser(json.data);
-          setHasSignature(!!json.data.signature);
+          setHasFirma(!!json.data.firma);
 
           const userRole = json.data.roles && json.data.roles.length > 0 ? json.data.roles[0] : null;
           const userRoleLowerCase = userRole ? userRole.toLowerCase() : null;
@@ -140,20 +140,20 @@ const Profile = () => {
     ]);
   };
 
-  const handleSaveSignature = async (signature) => {
+  const handleSaveFirma = async (firma) => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
       const userId = extractUserId(token);
-      const res = await fetch(getApiUrl(`user/${userId}/signature`), {
+      const res = await fetch(getApiUrl(`user/${userId}/firma`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ signature }),
+        body: JSON.stringify({ firma }),
       });
       if (res.ok) {
-        setHasSignature(true);
+        setHasFirma(true);
         const fresh = await fetch(getApiUrl(`user/${userId}`), {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -165,10 +165,10 @@ const Profile = () => {
     }
   };
 
-  const handleAddSignature = () => navigation.navigate('Firma', { onSave: handleSaveSignature });
-  const handleEditSignature = () => navigation.navigate('Firma', { onSave: handleSaveSignature, signature: user.signature });
+  const handleAddFirma = () => navigation.navigate('Firma', { onSave: handleSaveFirma });
+  const handleEditFirma = () => navigation.navigate('Firma', { onSave: handleSaveFirma, firma: user.firma });
 
-  const handleDeleteSignature = async () => {
+  const handleDeleteFirma = async () => {
     Alert.alert('Eliminar Firma', '¿Estás seguro de que deseas eliminar tu firma?', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -177,7 +177,7 @@ const Profile = () => {
           try {
             const token = await AsyncStorage.getItem('accessToken');
             const userId = extractUserId(token);
-            const res = await fetch(getApiUrl(`user/${userId}/signature`), {
+            const res = await fetch(getApiUrl(`user/${userId}/firma`), {
               method: 'DELETE',
               headers: {
                 'Content-Type': 'application/json',
@@ -185,7 +185,7 @@ const Profile = () => {
               },
             });
             if (res.ok) {
-              setHasSignature(false);
+              setHasFirma(false);
               const fresh = await fetch(getApiUrl(`user/${userId}`), {
                 headers: { Authorization: `Bearer ${token}` },
               });
@@ -210,7 +210,7 @@ const Profile = () => {
     const currentUserRole = user?.roles && user.roles.length > 0 ? user.roles[0].toLowerCase() : '';
     const rolesNecesitanFirma = ROLES_CON_FIRMA.map(role => role.toLowerCase());
 
-    if (rolesNecesitanFirma.includes(currentUserRole) && !user.signature) {
+    if (rolesNecesitanFirma.includes(currentUserRole) && !user.firma) {
       Alert.alert("Sin firma", "No se encontró una firma para el usuario actual. Por favor, registre su firma para ver los planes.");
       return;
     }
@@ -320,7 +320,7 @@ const Profile = () => {
 
       {selectedButton === 'MiFirma' && userRoleLowerCase && rolesConFirmaLowerCase.includes(userRoleLowerCase) && (
         <View style={[styles.userDataContainer, { top: 300, alignItems: 'center' }]}>
-          {hasSignature && user.signature ? (
+          {hasFirma && user.firma ? (
             <>
               <View style={{
                 width: 300,
@@ -336,9 +336,9 @@ const Profile = () => {
               }}>
                 <Image
                   source={{
-                    uri: user.signature.startsWith('data:')
-                      ? user.signature
-                      : `data:image/png;base64,${user.signature}`,
+                    uri: user.firma.startsWith('data:')
+                      ? user.firma
+                      : `data:image/png;base64,${user.firma}`,
                   }}
                   style={{
                     top: 50,
@@ -355,15 +355,15 @@ const Profile = () => {
                 width: 250,
                 left: -75,
               }}>
-                <Components.Button label="Cambiar" onPress={handleEditSignature} style={{ width: 140 }} />
-                <Components.Button label="Eliminar" onPress={handleDeleteSignature} style={{ width: 140, backgroundColor: '#990000', left: -40 }} />
+                <Components.Button label="Cambiar" onPress={handleEditFirma} style={{ width: 140 }} />
+                <Components.Button label="Eliminar" onPress={handleDeleteFirma} style={{ width: 140, backgroundColor: '#990000', left: -40 }} />
               </View>
             </>
           ) : (
             <>
               <Text style={styles.emptyText}>No has registrado tu firma</Text>
               <View style={{ marginTop: 30 }}>
-                <Components.Button label="Registrar Firma" onPress={handleAddSignature} style={{ width: 200, left: -25 }} />
+                <Components.Button label="Registrar Firma" onPress={handleAddFirma} style={{ width: 200, left: -25 }} />
               </View>
             </>
           )}

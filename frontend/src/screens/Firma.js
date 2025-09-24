@@ -7,18 +7,18 @@ import { useRoute } from '@react-navigation/native';
 
 const Firma = ({ navigation }) => {
   const route = useRoute();
-  const { onSave, signature: existingSignature } = route.params || {};
-  const [signature, setSignature] = useState(existingSignature || null);
+  const { onSave, firma: existingFirma } = route.params || {};
+  const [firma, setFirma] = useState(existingFirma || null);
   const sign = useRef(null);
 
   const handleSave = () => {
     if (sign.current) {
-      sign.current.readSignature();
+      sign.current.readFirma();
     }
   };
 
   const handleOK = (base64) => {
-    setSignature(base64);
+    setFirma(base64);
     onSave(base64);
     Alert.alert('Firma Guardada', 'Firma guardada exitosamente');
     navigation.goBack();
@@ -26,8 +26,8 @@ const Firma = ({ navigation }) => {
 
   const handleClear = () => {
     if (sign.current) {
-      sign.current.clearSignature();
-      setSignature(null);
+      sign.current.clearFirma();
+      setFirma(null);
     }
   };
 
@@ -48,11 +48,11 @@ const Firma = ({ navigation }) => {
           ref={sign}
           style={styles.signatureCanvas}
           penColor="#000"
-          dataURL={existingSignature ? `data:image/png;base64,${existingSignature}` : null}
+          dataURL={existingFirma ? `data:image/png;base64,${existingFirma}` : null}
           autoClear={false}
           onOK={handleOK}
           onEmpty={() => Alert.alert('Firma vacía', 'No se ha detectado ninguna firma.')}
-          onClear={() => setSignature(null)}
+          onClear={() => setFirma(null)}
         />
       </View>
 
