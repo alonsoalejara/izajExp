@@ -8,11 +8,6 @@ const gruaBodySchema = Joi.object({
     "any.required": "El nombre de la grúa es obligatorio.",
     "string.base": "El nombre de la grúa debe ser de tipo string.",
   }),
-  largoPluma: Joi.number().min(0).required().messages({
-    "number.base": "El largo de la pluma debe ser un número.",
-    "number.min": "El largo de la pluma no puede ser negativo.",
-    "any.required": "El largo de la pluma es obligatorio.",
-  }),
   contrapeso: Joi.number().min(0).required().messages({
     "number.base": "El contrapeso debe ser un número.",
     "number.min": "El contrapeso no puede ser negativo.",
