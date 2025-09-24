@@ -5,20 +5,20 @@ import { useFetchData } from '../../../hooks/useFetchData';
 const DataSection = () => {
   const { data: setupIzajes = [] } = useFetchData('setupIzaje');
   const { data: users = [] } = useFetchData('user');
-  const [stats, setStats] = useState({ totalPlans: 0, specialtyBreakdown: {} });
+  const [stats, setStats] = useState({ totalPlans: 0, especialidadBreakdown: {} });
 
   useEffect(() => {
     if (setupIzajes.length > 0 && users.length > 0) {
       const totalPlans = setupIzajes.length;
 
-      const userSpecialtyMap = new Map();
+      const userEspecialidadMap = new Map();
       users.forEach(user => {
-        if (user._id && user.specialty) {
-          userSpecialtyMap.set(user._id, user.specialty);
+        if (user._id && user.especialidad) {
+          userEspecialidadMap.set(user._id, user.especialidad);
         }
       });
 
-      const expectedSpecialties = {
+      const expectedEspecialidades = {
         'estructura': 'Estructura',
         'obras civiles': 'Obras Civiles',
         'piping': 'Piping',
@@ -28,7 +28,7 @@ const DataSection = () => {
         'eléctrica': 'Eléctrica',
       };
 
-      const specialtyBreakdown = {
+      const especialidadBreakdown = {
         Estructura: 0,
         'Obras Civiles': 0,
         Piping: 0,
@@ -38,7 +38,7 @@ const DataSection = () => {
       };
 
       setupIzajes.forEach(plan => {
-        let planSpecialty = 'Otros';
+        let planEspecialidad = 'Otros';
         let associatedUserId = null;
         if (plan.capataz?._id) {
           associatedUserId = plan.capataz._id;
@@ -49,20 +49,20 @@ const DataSection = () => {
         }
 
         if (associatedUserId) {
-          const rawSpecialty = userSpecialtyMap.get(associatedUserId);
-          if (rawSpecialty) {
-            const normalizedSpecialtyKey = rawSpecialty.toLowerCase().trim();
-            const mappedSpecialty = expectedSpecialties[normalizedSpecialtyKey];
-            if (mappedSpecialty) {
-              planSpecialty = mappedSpecialty;
+          const rawEspecialidad = userEspecialidadMap.get(associatedUserId);
+          if (rawEspecialidad) {
+            const normalizedEspecialidadKey = rawEspecialidad.toLowerCase().trim();
+            const mappedEspecialidad = expectedEspecialidades[normalizedEspecialidadKey];
+            if (mappedEspecialidad) {
+              planEspecialidad = mappedEspecialidad;
             }
           }
         }
 
-        specialtyBreakdown[planSpecialty] += 1;
+        especialidadBreakdown[planEspecialidad] += 1;
       });
 
-      setStats({ totalPlans, specialtyBreakdown });
+      setStats({ totalPlans, especialidadBreakdown });
     }
   }, [setupIzajes, users]);
   return (
@@ -70,7 +70,7 @@ const DataSection = () => {
       <Text style={styles.dataSectionTitle}>Especialidades</Text>
       <Text style={styles.statItem}><Text style={styles.boldText}>Total de planes:</Text> {stats.totalPlans}</Text>
       <Text style={[styles.statItem, styles.boldText, { marginTop: 10 }]}>Desglose por especialidad:</Text>
-      {Object.entries(stats.specialtyBreakdown)
+      {Object.entries(stats.especialidadBreakdown)
         .sort((a, b) => b[1] - a[1])
         .map(([key, value]) => (
           <Text key={key} style={styles.statItem}>
