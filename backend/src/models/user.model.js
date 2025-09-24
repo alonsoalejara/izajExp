@@ -39,12 +39,12 @@ const userSchema = new Schema(
       unique: true,
       match: [/^\d{7,8}-[0-9Kk]{1}$/, 'El RUT debe seguir el formato X-Y, donde X es un número entre 1.000.000 y 99.999.999, y Y es un número o "K" mayúscula.'],
     },
-    phone: {
+    telefono: {
       type: String,
       required: [true, 'El teléfono es obligatorio'],
       match: [/^\+569\d{8}$/, 'El teléfono debe seguir el formato +569 seguido de 8 dígitos'],
     },
-    position: {
+    cargo: {
       type: String,
       required: [true, 'El cargo es obligatorio'],
       enum: {
@@ -52,7 +52,7 @@ const userSchema = new Schema(
         message: 'El cargo debe ser una de las siguientes: Estructura, Obras Civiles, Piping, Mecánica, Eléctrica',
       },
     },
-    specialty: {
+    especialidad: {
       type: String,
       required: [true, 'La especialidad es obligatoria'],
       enum: {
@@ -66,7 +66,7 @@ const userSchema = new Schema(
       unique: true,
       match: [/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/, 'Por favor ingrese un correo electrónico válido'],
     },
-    signature: {
+    firma: {
       type: String,
       default: null,
     },

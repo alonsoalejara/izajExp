@@ -2,10 +2,11 @@ import { Schema, model } from 'mongoose';
 
 const setupIzajeSchema = new Schema(
     {
-        nombreProyecto: { type: String, required: true },
+        proyecto: { type: Schema.Types.ObjectId, ref: 'Proyecto', required: true },
         capataz: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         supervisor: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         jefeArea: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+
         firmaSupervisor: {
             type: String,
             required: [true, 'La firma del supervisor es obligatoria'],
@@ -16,6 +17,7 @@ const setupIzajeSchema = new Schema(
             required: [true, 'La firma del jefe de área es obligatoria'],
             default: null
         },
+        
         aparejos: [{
             descripcion: { type: String, required: true },
             cantidad: { type: Number, required: true },
@@ -27,12 +29,11 @@ const setupIzajeSchema = new Schema(
             tension: { type: String, required: true },
             altura: { type: String, required: true },
         }],
+
         grua: { type: Schema.Types.ObjectId, ref: 'Grua', required: true },
-        datos: {
-            largoPluma: { type: Number, required: true },
-            contrapeso: { type: Number, required: true },
-            gradoInclinacion: { type: String, required: true }
-        },
+        largoPluma: { type: Number, required: true },
+        gradoInclinacion: { type: String, required: true },
+        
         cargas: {
             pesoEquipo: { type: Number, required: true },
             pesoAparejos: { type: Number, required: true },

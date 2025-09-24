@@ -16,7 +16,7 @@ async function getUsers() {
 
 async function createUser(user) {
   try {
-    const { nombre, apellido, rut, phone, position, specialty, email, roles, password } = user;
+    const { nombre, apellido, rut, telefono, cargo, especialidad, email, roles, password } = user;
 
     // Validar que no exista ya un usuario con ese email
     const userFound = await User.findOne({ email });
@@ -38,9 +38,9 @@ async function createUser(user) {
       apellido,
       rut,
       email,
-      phone,
-      position,
-      specialty,
+      telefono,
+      cargo,
+      especialidad,
       password: encryptedPassword,
       roles: validRoles, 
     });
@@ -79,14 +79,14 @@ async function updateUser(id, user) {
     const userFound = await User.findById(id);
     if (!userFound) return [null, "El usuario no existe"];
 
-    const { nombre, apellido, rut, email, roles, phone, position, specialty } = user;
+    const { nombre, apellido, rut, email, roles, telefono, cargo, especialidad } = user;
 
     const validRoles = roles.filter(role => Object.values(ROLES).includes(role));
     if (validRoles.length === 0) return [null, "El rol no existe"];
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { nombre, apellido, rut, email, phone, position, specialty, roles: validRoles},
+      { nombre, apellido, rut, email, telefono, cargo, especialidad, roles: validRoles },
       { new: true }
     );
 
@@ -104,18 +104,18 @@ async function deleteUser(id) {
   }
 }
 
-async function updateSignature(id, signature) {
+async function updateFirma(id, firma) {
   try {
     const user = await User.findById(id);
     if (!user) return [null, 'Usuario no existe'];
 
-    user.signature = signature;          // puede ser string o null
+    user.firma = firma;          // puede ser string o null
     await user.save();
     // Excluimos password
     const { password, ...safe } = user.toObject();
     return [safe, null];
   } catch (error) {
-    handleError(error, 'user.service -> updateSignature');
+    handleError(error, 'user.service -> updateFirma');
     return [null, 'Error actualizando la firma'];
   }
 }
@@ -126,5 +126,5 @@ export const UserService = {
   getUserById,
   updateUser,
   deleteUser,
-  updateSignature,
+  updateFirma,
 };

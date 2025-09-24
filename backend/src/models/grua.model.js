@@ -8,12 +8,6 @@ const gruaSchema = new Schema(
       unique: true,
       trim: true,
     },
-
-    largoPluma: {
-      type: Number,
-      required: [true, 'El largo de la pluma es obligatorio'],
-      min: [0, 'El largo de la pluma no puede ser negativo'],
-    },
     contrapeso: {
       type: Number,
       required: [true, 'El contrapeso es obligatorio'],
