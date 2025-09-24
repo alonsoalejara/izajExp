@@ -8,22 +8,22 @@ import getApiUrl from '../../utils/apiUrl';
 import Components from '../../components/Components.index';
 
 const AddCollabSpecial = ({ navigation, route }) => {
-  const { nombre, apellido, rut, phone, email } = route.params;
-  const [position, setPosition] = useState('');
-  const [specialty, setSpecialty] = useState('');
+  const { nombre, apellido, rut, telefono, email } = route.params;
+  const [cargo, setCargo] = useState('');
+  const [especialidad, setEspecialidad] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalPositionVisible, setModalPositionVisible] = useState(false);
-  const [specialtyError, setSpecialtyError] = useState('');
-  const [positionError, setPositionError] = useState('');
-
+  const [modalCargoVisible, setModalCargoVisible] = useState(false);
+  const [especialidadError, setEspecialidadError] = useState('');
+  const [cargoError, setCargoError] = useState('');
+  
   const handlePickerChange = (itemValue) => {
-    setSpecialty(itemValue);
-    if (itemValue) setSpecialtyError('');
+    setEspecialidad(itemValue);
+    if (itemValue) setEspecialidadError('');
   };
 
-  const handlePositionChange = (itemValue) => {
-    setPosition(itemValue);
-    if (itemValue) setPositionError('');
+  const handleCargoChange = (itemValue) => {
+    setCargo(itemValue);
+    if (itemValue) setCargoError('');
   };
 
   const generarPassword = () => {
@@ -31,12 +31,12 @@ const AddCollabSpecial = ({ navigation, route }) => {
   };
 
   const handleFinalize = async () => {
-    if (!position) {
-      setPositionError('Por favor, seleccione un cargo.');
+    if (!cargo) {
+      setCargoError('Por favor, seleccione un cargo.');
       return;
     }
-    if (!specialty) {
-      setSpecialtyError('Por favor, seleccione una especialidad.');
+    if (!especialidad) {
+      setEspecialidadError('Por favor, seleccione una especialidad.');
       return;
     }
 
@@ -44,13 +44,13 @@ const AddCollabSpecial = ({ navigation, route }) => {
       nombre,
       apellido,
       rut,
-      phone,
-      position,
-      specialty,
+      telefono,
+      cargo,
+      especialidad,
       email,
       roles: 
-        position === "Jefe Área" ? ['jefe'] :
-        position === "Supervisor" ? ['supervisor'] :
+        cargo === "Jefe Área" ? ['jefe'] :
+        cargo === "Supervisor" ? ['supervisor'] :
         ['capataz'],
       password: generarPassword(),
     };
@@ -97,27 +97,27 @@ const AddCollabSpecial = ({ navigation, route }) => {
 
       <Text style={styles.title}>¿Cuál será su cargo y especialidad?</Text>
       <Text style={styles.subtitle}>Selecciona un cargo y especialidad.</Text>
-      {positionError ? <Text style={styles.errorText}>{positionError}</Text> : null}
+      {cargoError ? <Text style={styles.errorText}>{cargoError}</Text> : null}
       <TouchableOpacity 
-        style={[styles.specialityOutput, positionError ? styles.errorInput : {}]} 
-        onPress={() => setModalPositionVisible(true)}
+        style={[styles.specialityOutput, cargoError ? styles.errorInput : {}]} 
+        onPress={() => setModalCargoVisible(true)}
       >
         <Text style={styles.specialitySubtitle}>Cargo del colaborador:</Text>
-        <Text style={styles.specialityText}>{position ? position : "Seleccionar cargo"}</Text>
+        <Text style={styles.specialityText}>{cargo ? cargo : "Seleccionar cargo"}</Text>
       </TouchableOpacity>
 
       <Modal
         animationType="slide"
         transparent={true}
-        visible={modalPositionVisible}
-        onRequestClose={() => setModalPositionVisible(false)}
+        visible={modalCargoVisible}
+        onRequestClose={() => setModalCargoVisible(false)}
       >
-        <TouchableWithoutFeedback onPress={() => setModalPositionVisible(false)}>
+        <TouchableWithoutFeedback onPress={() => setModalCargoVisible(false)}>
           <View style={styles.modalBackground}>
             <View style={styles.pickerBackground}>
               <Picker
-                selectedValue={position}
-                onValueChange={handlePositionChange}
+                selectedValue={cargo}
+                onValueChange={handleCargoChange}
                 style={styles.picker}
               >
                 <Picker.Item label="Jefe Área" value="Jefe Área" />
@@ -129,13 +129,13 @@ const AddCollabSpecial = ({ navigation, route }) => {
         </TouchableWithoutFeedback>
       </Modal>
 
-      {specialtyError ? <Text style={styles.errorText}>{specialtyError}</Text> : null}
+      {especialidadError ? <Text style={styles.errorText}>{especialidadError}</Text> : null}
       <TouchableOpacity 
-        style={[styles.specialityOutput, specialtyError ? styles.errorInput : {}]} 
+        style={[styles.specialityOutput, especialidadError ? styles.errorInput : {}]} 
         onPress={() => setModalVisible(true)}
       >
         <Text style={styles.specialitySubtitle}>Especialidad del colaborador:</Text>
-        <Text style={styles.specialityText}>{specialty ? specialty : "Seleccionar especialidad"}</Text>
+        <Text style={styles.specialityText}>{especialidad ? especialidad : "Seleccionar especialidad"}</Text>
       </TouchableOpacity>
 
       <Modal
@@ -148,7 +148,7 @@ const AddCollabSpecial = ({ navigation, route }) => {
           <View style={styles.modalBackground}>
             <View style={styles.pickerBackground}>
               <Picker
-                selectedValue={specialty}
+                selectedValue={especialidad}
                 onValueChange={handlePickerChange}
                 style={styles.picker}
               >

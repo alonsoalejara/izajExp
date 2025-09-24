@@ -75,10 +75,10 @@ const CollabSection = ({ colaboradores, handleEdit, setColaboradores }) => {
               <Text style={styles.labelText}>RUT: </Text>{colaborador.rut}
             </Text>
             <Text style={styles.cardDetail}>
-              <Text style={styles.labelText}>Cargo: </Text>{colaborador.position}
+              <Text style={styles.labelText}>Cargo: </Text>{colaborador.cargo}
             </Text>
             <Text style={styles.cardDetail}>
-              <Text style={styles.labelText}>Especialidad: </Text>{colaborador.specialty}
+              <Text style={styles.labelText}>Especialidad: </Text>{colaborador.especialidad}
             </Text>
           </TouchableOpacity>
 

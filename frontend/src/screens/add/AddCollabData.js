@@ -8,12 +8,12 @@ const AddCollabData = ({ navigation, route }) => {
   const { nombre, apellido } = route.params;
 
   const [rut, setRut] = useState('');
-  const [phone, setPhone] = useState('');
+  const [telefono, setTelefono] = useState('');
   const [email, setEmail] = useState('');
 
   // Estados para los errores (se muestran solo al presionar "Siguiente")
   const [rutError, setRutError] = useState('');
-  const [phoneError, setPhoneError] = useState('');
+  const [telefonoError, setTelefonoError] = useState('');
   const [emailError, setEmailError] = useState('');
 
   const handleNext = () => {
@@ -28,11 +28,11 @@ const AddCollabData = ({ navigation, route }) => {
     }
 
     // Validación de teléfono: Formato +569XXXXXXXX
-    if (!/^\+569\d{8}$/.test(phone)) {
-      setPhoneError('Formato +569XXXXXXXX');
+    if (!/^\+569\d{8}$/.test(telefono)) {
+      setTelefonoError('Formato +569XXXXXXXX');
       hasError = true;
     } else {
-      setPhoneError('');
+      setTelefonoError('');
     }
 
     // Validación de email
@@ -46,7 +46,7 @@ const AddCollabData = ({ navigation, route }) => {
     if (hasError) return;
     
     // Si no hay errores, avanzar a la siguiente pantalla
-    const collabData = { nombre, apellido, rut, phone, email };
+    const collabData = { nombre, apellido, rut, telefono, email };
     navigation.navigate('AddCollabSpecial', collabData);
   };
 
@@ -77,13 +77,13 @@ const AddCollabData = ({ navigation, route }) => {
         </View>
 
         <View style={{ flex: 1, marginLeft: 8, left: -8 }}>
-          {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
+          {telefonoError ? <Text style={styles.errorText}>{telefonoError}</Text> : null}
           <TextInput
-            style={[styles.input, phoneError ? { ...styles.errorInput, marginTop: -4 } : {}]}
+            style={[styles.input, telefonoError ? { ...styles.errorInput, marginTop: -4 } : {}]}
             placeholder="Teléfono"
             placeholderTextColor="#888"
-            value={phone}
-            onChangeText={setPhone}
+            value={telefono}
+            onChangeText={setTelefono}
           />
         </View>
       </View>
