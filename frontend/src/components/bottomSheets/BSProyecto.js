@@ -9,9 +9,8 @@ import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const BSJefeArea = ({ isVisible, onClose, onSelect }) => {
-  const [jefesDeArea, setJefesDeArea] = useState([]);
-  const [selected, setSelected] = useState(null);
+const BSProyecto = ({ isVisible, onClose, onSelect }) => {
+  const [proyectos, setProyectos] = useState([]);
   const bottomSheetHeight = SCREEN_HEIGHT * 0.55;
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
@@ -35,13 +34,13 @@ const BSJefeArea = ({ isVisible, onClose, onSelect }) => {
   useEffect(() => {
     if (isVisible) {
       openBottomSheet();
-      fetchJefesDeArea();
+      fetchProyectos();
     } else {
       closeBottomSheet();
     }
   }, [isVisible]);
 
-  const fetchJefesDeArea = async () => {
+  const fetchProyectos = async () => {
     try {
       const accessToken = await AsyncStorage.getItem('accessToken');
       if (!accessToken) {
@@ -49,7 +48,7 @@ const BSJefeArea = ({ isVisible, onClose, onSelect }) => {
         return;
       }
 
-      const apiUrl = getApiUrl('user');
+      const apiUrl = getApiUrl('proyecto');
       const response = await axios.get(apiUrl, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -57,15 +56,12 @@ const BSJefeArea = ({ isVisible, onClose, onSelect }) => {
       });
 
       if (response.data.state === 'Success') {
-        const jefesAreaFiltrados = response.data.data.filter(user =>
-          user.cargo === 'Jefe Área'
-        );
-        setJefesDeArea(jefesAreaFiltrados);
+        setProyectos(response.data.data);
       } else {
-        console.error('No se pudieron obtener los Jefes de Área');
+        console.error('No se pudieron obtener los proyectos');
       }
     } catch (error) {
-      console.error('Error al obtener los Jefes de Área:', error);
+      console.error('Error al obtener proyectos:', error);
     }
   };
 
@@ -112,27 +108,27 @@ const BSJefeArea = ({ isVisible, onClose, onSelect }) => {
             style={styles.backIcon}
             onPress={closeBottomSheet}
           />
-          <Text style={styles.modalTitle}>Seleccionar Jefe de Área</Text>
+          <Text style={styles.modalTitle}>Seleccionar Proyecto</Text>
         </View>
 
         <View style={styles.separatorLine}></View>
 
-        {/* Lista de opciones */}
-        {jefesDeArea.length === 0 ? (
-          <Text>No se encontraron Jefes de Área disponibles.</Text>
+        {/* Lista de proyectos */}
+        {proyectos.length === 0 ? (
+          <Text>No se encontraron proyectos disponibles.</Text>
         ) : (
-          jefesDeArea.map((jefe) => (
+          proyectos.map((proyecto) => (
             <TouchableOpacity
-              key={jefe._id}
+              key={proyecto._id}
               style={styles.optionButton}
               onPress={() => {
                 closeBottomSheet();
-                setTimeout(() => onSelect(jefe), 150);
+                setTimeout(() => onSelect(proyecto), 150);
               }}
             >
               <View style={styles.optionContent}>
-                <IconMC name="account" size={30} color="#333" style={styles.icon} />
-                <Text style={styles.optionText}>{jefe.nombre} {jefe.apellido}</Text>
+                <IconMC name="briefcase" size={30} color="#333" style={styles.icon} />
+                <Text style={styles.optionText}>{proyecto.nombre}</Text>
               </View>
             </TouchableOpacity>
           ))
@@ -142,4 +138,4 @@ const BSJefeArea = ({ isVisible, onClose, onSelect }) => {
   );
 };
 
-export default BSJefeArea;
+export default BSProyecto;

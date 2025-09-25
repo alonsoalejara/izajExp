@@ -58,7 +58,7 @@ const BSSupervisor = ({ isVisible, onClose, onSelect }) => {
 
       if (response.data.state === 'Success') {
         const supervisoresFiltrados = response.data.data.filter(user =>
-          user.position === 'Supervisor'
+          user.cargo === 'Supervisor'
         );
         setSupervisores(supervisoresFiltrados);
       } else {

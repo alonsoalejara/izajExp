@@ -5,26 +5,32 @@ import styles from '../styles/SetupIzajeStyles';
 import { validatePlan } from '../utils/validation/validatePlan';
 import { useNavigation } from '@react-navigation/native';
 import BS from '../components/bottomSheets/BS.index';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Importar AsyncStorage
-import getApiUrl from '../utils/apiUrl'; // Importar getApiUrl
-import { decode as atob } from 'base-64'; // Importar atob para decodificar JWT
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import getApiUrl from '../utils/apiUrl';
+import { decode as atob } from 'base-64';
 
 const SetupPlan = () => {
-  const [nombreProyecto, setNombreProyecto] = useState('');
+  const [proyectoSeleccionado, setProyectoSeleccionado] = useState('');
+  const [proyectoObjeto, setProyectoObjeto] = useState(null);
+
   const [supervisorSeleccionado, setSupervisorSeleccionado] = useState('');
   const [supervisorObjeto, setSupervisorObjeto] = useState(null);
+
   const [jefeAreaSeleccionado, setJefeAreaSeleccionado] = useState('');
   const [jefeAreaObjeto, setJefeAreaObjeto] = useState(null);
+
   const [capatazId, setCapatazId] = useState(null);
   const [capatazNombre, setCapatazNombre] = useState('');
   const [capatazObjeto, setCapatazObjeto] = useState(null);
+
   const [errors, setErrors] = useState({});
+
+  const [isProyectoModalVisible, setIsProyectoModalVisible] = useState(false);
   const [isJefeAreaModalVisible, setIsJefeAreaModalVisible] = useState(false);
   const [isSupervisorModalVisible, setIsSupervisorModalVisible] = useState(false);
 
   const navigation = useNavigation();
 
-  // Función para extraer userId del JWT
   const extractUserId = (token) => {
     try {
       const payload = token.split('.')[1];
@@ -37,7 +43,6 @@ const SetupPlan = () => {
     }
   };
 
-  // Efecto para obtener los datos del usuario logueado (capataz)
   useEffect(() => {
     async function fetchCapatazData() {
       try {
@@ -78,10 +83,10 @@ const SetupPlan = () => {
       }
     }
     fetchCapatazData();
-  }, []); // Se ejecuta solo una vez al montar el componente
+  }, []);
 
-  const handleNombreProyectoChange = (text) => {
-    setNombreProyecto(text);
+  const handleSeleccionarProyecto = () => {
+    setIsProyectoModalVisible(true);
   };
 
   const handleSeleccionarSupervisor = () => {
@@ -94,7 +99,7 @@ const SetupPlan = () => {
 
   const handleContinuar = () => {
     const currentErrors = validatePlan(
-      nombreProyecto,
+      proyectoSeleccionado,
       supervisorSeleccionado,
       jefeAreaSeleccionado,
       []
@@ -102,7 +107,8 @@ const SetupPlan = () => {
 
     if (Object.keys(currentErrors).length === 0) {
       const dataToSend = {
-        nombreProyecto: nombreProyecto,
+        proyecto: proyectoObjeto,
+        nombreProyecto: proyectoObjeto?.nombre || '',
         supervisor: supervisorObjeto,
         jefeArea: jefeAreaObjeto,
         capataz: capatazObjeto,
@@ -112,6 +118,12 @@ const SetupPlan = () => {
     } else {
       setErrors(currentErrors);
     }
+  };
+
+  const handleProyectoSelect = (proyecto) => {
+    setProyectoSeleccionado(proyecto.nombre);
+    setProyectoObjeto(proyecto);
+    setIsProyectoModalVisible(false);
   };
 
   const handleJefeAreaSelect = (jefe) => {
@@ -134,28 +146,29 @@ const SetupPlan = () => {
         <Components.Header />
         <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
           <View style={styles.titleContainer}>
-            <Text style={[styles.sectionTitle, { top: 5, marginBottom: 20 }]}>Cálculo de maniobras menores</Text>
+            <Text style={[styles.sectionTitle, { top: 5, marginBottom: 20 }]}>
+              Cálculo de maniobras menores
+            </Text>
           </View>
+
           <View style={styles.container}>
-            <View style={{ marginBottom: 20 }}>
-              <Text style={[styles.labelText, { top: 5 }]}>Ingrese nombre del proyecto:</Text>
-              <Components.NumericInput
-                value={nombreProyecto}
-                onChangeText={handleNombreProyectoChange}
-                placeholder="Nombre del proyecto"
-                style={[
-                  { width: '100%', top: 25 },
-                  errors.nombreProyecto && { borderColor: 'red', borderWidth: 1 },
-                ]}
-                showControls={false}
-                showClearButton={true}
-                keyboardType="default"
+            {/* Proyecto */}
+            <View style={{ marginTop: 0, marginBottom: 0 }}>
+              <Text style={styles.labelText}>Seleccione el Proyecto:</Text>
+              <Components.ConfigButton
+                placeholder="Seleccionar Proyecto"
+                value={proyectoSeleccionado}
+                onPress={handleSeleccionarProyecto}
+                style={{ width: '100%' }}
               />
-              {errors.nombreProyecto && (
-                <Text style={[styles.errorText, { top: -55 }]}>{errors.nombreProyecto}</Text>
+              {errors.proyectoSeleccionado && (
+                <Text style={[styles.errorText, { top: -55 }]}>
+                  {errors.proyectoSeleccionado}
+                </Text>
               )}
             </View>
 
+            {/* Supervisor */}
             <View style={{ marginTop: 0 }}>
               <Text style={styles.labelText}>Seleccione al Supervisor:</Text>
               <Components.ConfigButton
@@ -165,10 +178,13 @@ const SetupPlan = () => {
                 style={{ width: '100%' }}
               />
               {errors.supervisorSeleccionado && (
-                <Text style={[styles.errorText, { top: -88 }]}>{errors.supervisorSeleccionado}</Text>
+                <Text style={[styles.errorText, { top: -88 }]}>
+                  {errors.supervisorSeleccionado}
+                </Text>
               )}
             </View>
 
+            {/* Jefe Área */}
             <View style={{ marginTop: 0 }}>
               <Text style={styles.labelText}>Seleccione al Jefe Área:</Text>
               <Components.ConfigButton
@@ -178,23 +194,38 @@ const SetupPlan = () => {
                 style={{ width: '100%' }}
               />
               {errors.jefeAreaSeleccionado && (
-                <Text style={[styles.errorText, { top: -89 }]}>{errors.jefeAreaSeleccionado}</Text>
+                <Text style={[styles.errorText, { top: -89 }]}>
+                  {errors.jefeAreaSeleccionado}
+                </Text>
               )}
             </View>
           </View>
+
           {/* Botón Continuar */}
           <View style={styles.continuarButtonContainer}>
-            <Components.Button label="Continuar" onPress={handleContinuar} style={styles.continuarButton}/>
+            <Components.Button
+              label="Continuar"
+              onPress={handleContinuar}
+              style={styles.continuarButton}
+            />
           </View>
         </ScrollView>
 
-        {/* Modal para seleccionar Jefe de Área */}
+        {/* Modal Proyecto */}
+        <BS.BSProyecto
+          isVisible={isProyectoModalVisible}
+          onClose={() => setIsProyectoModalVisible(false)}
+          onSelect={handleProyectoSelect}
+        />
+
+        {/* Modal Jefe de Área */}
         <BS.BSJefeArea
           isVisible={isJefeAreaModalVisible}
           onClose={() => setIsJefeAreaModalVisible(false)}
           onSelect={handleJefeAreaSelect}
         />
-        {/* Modal para seleccionar Supervisor */}
+
+        {/* Modal Supervisor */}
         <BS.BSSupervisor
           isVisible={isSupervisorModalVisible}
           onClose={() => setIsSupervisorModalVisible(false)}

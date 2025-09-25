@@ -11,6 +11,7 @@ import BSJefeArea from './BSJefeArea';
 import BSSupervisor from './BSSupervisor';
 import BSIlustracionGrua from './BSIlustracionGrua';
 import BSFormaElemento from './BSFormaElemento';
+import BSProyecto from './BSProyecto';
 
 const BS = {
   BSGrua,
@@ -26,6 +27,7 @@ const BS = {
   BSSupervisor,
   BSIlustracionGrua,
   BSFormaElemento,
+  BSProyecto,
 };
 
 export default BS;
