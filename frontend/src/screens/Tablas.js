@@ -268,13 +268,12 @@ const Tablas = ({ route, navigation }) => {
 
               // Construir el payload para el backend
               const finalData = {
-                nombreProyecto,
+                proyecto: planData?.proyecto?._id,  // 👈 antes tenías nombreProyecto
                 aparejos,
-                datos: {
-                  largoPluma: parseFloat(combinedData.largoPluma) || 0,
-                  contrapeso: parseFloat(combinedData.grua?.contrapeso) || 0,
-                  gradoInclinacion: combinedData.gradoInclinacion || '0°',
-                },
+                grua: setupGruaData?.grua?._id,
+                largoPluma: parseFloat(combinedData.largoPluma) || 0,
+                gradoInclinacion: combinedData.gradoInclinacion || '0°',
+
                 cargas: {
                   pesoEquipo: extractValue(datosTablaManiobra, 'Peso elemento'),
                   pesoAparejos: extractValue(datosTablaManiobra, 'Peso aparejos'),
@@ -286,6 +285,7 @@ const Tablas = ({ route, navigation }) => {
                   capacidadLevante: extractValue(datosTablaManiobra, 'Capacidad de levante'),
                   porcentajeUtilizacion: extractValue(datosTablaManiobra, '% Utilización'),
                 },
+
                 centroGravedad: {
                   diametro: parseFloat(combinedData.diametro) || 0,
                   xAncho: parseFloat(combinedData.ancho) || 0,
@@ -298,17 +298,17 @@ const Tablas = ({ route, navigation }) => {
                   yPR: relY !== null && relY !== 'N/A' ? parseFloat(relY) : 0,
                   zPR: relZ !== null && relZ !== 'N/A' ? parseFloat(relZ) : 0,
                 },
+
                 capataz: planData?.capataz?._id,
                 supervisor: planData?.supervisor?._id,
                 jefeArea: planData?.jefeArea?._id,
                 firmaSupervisor: 'Firma pendiente',
                 firmaJefeArea: 'Firma pendiente',
-                grua: setupGruaData?.grua?._id,
-                version: planId ? currentVersion + 1 : 1,
+                ilustracionGrua: ilustracionGruaFinal,
+                ilustracionForma: ilustracionCargaFinal,
                 estado: 'Pendiente',
                 observaciones: 'Observación pendiente',
-                ilustracionGrua: ilustracionGruaFinal, // Se usa la variable corregida
-                ilustracionForma: ilustracionCargaFinal, // Se usa la variable corregida
+                version: planId ? currentVersion + 1 : 1,
               };
 
               // Obtener el token de acceso

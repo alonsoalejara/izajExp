@@ -22,9 +22,8 @@ async function getSetupIzajes() {
 async function createSetupIzaje(setupIzajeData) {
   try {
     const {
-      nombreProyecto,
+      proyecto,
       aparejos,
-      datos,
       cargas,
       centroGravedad,
       capataz,
@@ -37,13 +36,14 @@ async function createSetupIzaje(setupIzajeData) {
       ilustracionForma,
       estado,
       observaciones,
-      version
+      version,
+      largoPluma,
+      gradoInclinacion
     } = setupIzajeData;
 
     const newSetupIzaje = new SetupIzaje({
-      nombreProyecto,
+      proyecto,
       aparejos,
-      datos,
       cargas,
       centroGravedad,
       capataz,
@@ -56,7 +56,9 @@ async function createSetupIzaje(setupIzajeData) {
       ilustracionForma,
       estado,
       observaciones,
-      version
+      version,
+      largoPluma,
+      gradoInclinacion
     });
 
     await newSetupIzaje.save();

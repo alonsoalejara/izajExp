@@ -50,22 +50,6 @@ const aparejoSchema = Joi.object({
   }),
 });
 
-const datosSchema = Joi.object({
-  largoPluma: Joi.number().required().messages({
-    "number.base": "El largo de la pluma debe ser un número.",
-    "any.required": "El largo de la pluma es obligatorio.",
-  }),
-  contrapeso: Joi.number().required().messages({
-    "number.base": "El contrapeso debe ser un número.",
-    "any.required": "El contrapeso es obligatorio.",
-  }),
-  gradoInclinacion: Joi.string().trim().required().messages({
-    "string.empty": "El grado de inclinación no puede estar vacío.",
-    "any.required": "El grado de inclinación es obligatorio.",
-    "string.base": "El grado de inclinación debe ser de tipo string.",
-  }),
-});
-
 const cargaSchema = Joi.object({
   pesoEquipo: Joi.number().required().messages({
     "number.base": "El peso del equipo debe ser un número.",
@@ -150,19 +134,15 @@ const centroGravedadSchema = Joi.object({
 });
 
 const setupIzajeBodySchema = Joi.object({
-  nombreProyecto: Joi.string().trim().required().messages({
-    "string.empty": "El nombre del proyecto no puede estar vacío.",
-    "any.required": "El nombre del proyecto es obligatorio.",
-    "string.base": "El nombre del proyecto debe ser de tipo string.",
+  proyecto: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).messages({
+    "string.empty": "El ID del proyecto no puede estar vacío.",
+    "any.required": "El ID del proyecto es obligatorio.",
+    "string.pattern.base": "El ID del proyecto debe ser un ObjectId válido.",
   }),
   aparejos: Joi.array().items(aparejoSchema).required().messages({
     "array.base": "Los aparejos deben ser un array.",
     "array.empty": "El array de aparejos no puede estar vacío.",
     "any.required": "Los aparejos son obligatorios.",
-  }),
-  datos: datosSchema.required().messages({
-    "object.base": "Los datos deben ser un objeto válido.",
-    "any.required": "Los datos del plan de izaje son obligatorios.",
   }),
   cargas: cargaSchema.required().messages({
     "object.base": "Las cargas deben ser un objeto válido.",
@@ -172,17 +152,17 @@ const setupIzajeBodySchema = Joi.object({
     "object.base": "El centro de gravedad debe ser un objeto válido.",
     "any.required": "El centro de gravedad es obligatorio.",
   }),
-  capataz: Joi.string().required().pattern(/^(?:[0-9a-fA-F]{24}|[0-9a-fA-F]{12})$/).messages({
+  capataz: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).messages({
     "string.empty": "El ID del capataz no puede estar vacío.",
     "any.required": "El ID del capataz es obligatorio.",
     "string.pattern.base": "El ID del capataz debe ser un ObjectId válido.",
   }),
-  supervisor: Joi.string().required().pattern(/^(?:[0-9a-fA-F]{24}|[0-9a-fA-F]{12})$/).messages({
+  supervisor: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).messages({
     "string.empty": "El ID del supervisor no puede estar vacío.",
     "any.required": "El ID del supervisor es obligatorio.",
     "string.pattern.base": "El ID del supervisor debe ser un ObjectId válido.",
   }),
-  jefeArea: Joi.string().required().pattern(/^(?:[0-9a-fA-F]{24}|[0-9a-fA-F]{12})$/).messages({
+  jefeArea: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).messages({
     "string.empty": "El ID del jefe de área no puede estar vacío.",
     "any.required": "El ID del jefe de área es obligatorio.",
     "string.pattern.base": "El ID del jefe de área debe ser un ObjectId válido.",
@@ -195,7 +175,7 @@ const setupIzajeBodySchema = Joi.object({
     "string.empty": "La firma del jefe de área no puede estar vacía.",
     "string.base": "La firma del jefe de área debe ser de tipo string.",
   }),
-  grua: Joi.string().required().pattern(/^(?:[0-9a-fA-F]{24}|[0-9a-fA-F]{12})$/).messages({
+  grua: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).messages({
     "string.empty": "El ID de la grúa no puede estar vacío.",
     "any.required": "El ID de la grúa es obligatorio.",
     "string.pattern.base": "El ID de la grúa debe ser un ObjectId válido.",
@@ -233,7 +213,7 @@ const setupIzajeBodySchema = Joi.object({
 const setupIzajeIdSchema = Joi.object({
   id: Joi.string()
     .required()
-    .pattern(/^(?:[0-9a-fA-F]{24}|[0-9a-fA-F]{12})$/)
+    .pattern(/^[0-9a-fA-F]{24}$/)
     .messages({
       "string.empty": "El ID del plan de izaje no puede estar vacío.",
       "any.required": "El ID del plan de izaje es obligatorio.",
