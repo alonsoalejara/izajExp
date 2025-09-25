@@ -33,15 +33,16 @@ const EditPlan = () => {
     };
 
     const calculateAparejoDimensions = (plan) => {
-        const { centroGravedad, aparejos } = plan;
+        if (!plan) return { distanciaGanchoElemento: 0, largoAparejoCalculado: 0 };
+        const { centroGravedad = {}, aparejos = [] } = plan;
         const anchoCarga = parseFloat(centroGravedad?.xAncho) || 0;
         const largoCarga = parseFloat(centroGravedad?.yLargo) || 0;
         const altoCarga = parseFloat(centroGravedad?.zAlto) || 0;
         const formaCarga = plan.forma || '';
-        const diametroCarga = parseFloat(plan.diametro) || 0;
+        const diametroCarga = parseFloat(centroGravedad?.diametro) || 0;
 
-        const anguloEslingaStr = aparejos && aparejos.length > 0 ? aparejos[0].tension : '0°';
-        const anguloEnGrados = parseFloat(anguloEslingaStr.replace('°', '')) || 0;
+        const anguloEslingaStr = (aparejos[0]?.tension) || '0°';
+        const anguloEnGrados = parseFloat(anguloEslingaStr.replace('°','')) || 0;
         const anguloEnRadianes = (anguloEnGrados * Math.PI) / 180;
 
         let dimensionMayorCarga = 0;
@@ -51,25 +52,22 @@ const EditPlan = () => {
             dimensionMayorCarga = diametroCarga;
         }
 
-        // Altura vertical entre gancho y carga
         let distanciaGanchoElemento = altoCarga;
 
-        // Si ángulo > 0, ajustamos la distancia horizontal para la geometría del triángulo
         if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
             const ladoAdyacente = dimensionMayorCarga / 2;
             distanciaGanchoElemento = (Math.tan(anguloEnRadianes) * ladoAdyacente + altoCarga);
         }
 
-        // Largo del aparejo (hipotenusa)
-        let largoAparejoCalculado = distanciaGanchoElemento; // default si ángulo = 0
+        let largoAparejoCalculado = distanciaGanchoElemento;
         if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
             const ladoAdyacente = dimensionMayorCarga / 2;
-            largoAparejoCalculado = Math.sqrt(Math.pow(ladoAdyacente, 2) + Math.pow(distanciaGanchoElemento, 2));
+            largoAparejoCalculado = Math.sqrt(Math.pow(ladoAdyacente,2) + Math.pow(distanciaGanchoElemento,2));
         }
 
         return {
-            distanciaGanchoElemento: distanciaGanchoElemento.toFixed(1),
-            largoAparejoCalculado: largoAparejoCalculado.toFixed(1),
+            distanciaGanchoElemento: parseFloat(distanciaGanchoElemento.toFixed(1)),
+            largoAparejoCalculado: parseFloat(largoAparejoCalculado.toFixed(1)),
         };
     };
 
@@ -228,14 +226,26 @@ const EditPlan = () => {
     }, [editablePlan.centroGravedad.xAncho, editablePlan.centroGravedad.yLargo, editablePlan.centroGravedad.zAlto]);
 
     const handleSaveChanges = async () => {
-        if (!editablePlan._id) {
-            Alert.alert("Error", "No se puede guardar un plan sin ID.");
+        if (!editablePlan || !editablePlan._id) {
+            Alert.alert("Error", "No hay un plan válido cargado. Inicie edición antes de guardar.");
+            return;
+        }
+        if (!editablePlan.aparejos || editablePlan.aparejos.length === 0) {
+            Alert.alert("Error", "No hay aparejos definidos. Inicie edición antes de guardar.");
             return;
         }
 
-        const token = await AsyncStorage.getItem('accessToken');
-        if (!token) {
-            Alert.alert("Error de autenticación", "No autorizado. Por favor, inicie sesión nuevamente.");
+        // Obtener token correctamente
+        let token;
+        try {
+            token = await AsyncStorage.getItem('accessToken'); // <--- clave correcta
+            if (!token) {
+                Alert.alert("Error", "No se encontró token de usuario. Por favor, inicia sesión nuevamente.");
+                return;
+            }
+        } catch (e) {
+            console.error("Error al obtener token:", e);
+            Alert.alert("Error", "No se pudo obtener el token de usuario.");
             return;
         }
 
@@ -266,14 +276,11 @@ const EditPlan = () => {
         }
 
         const { distanciaGanchoElemento, largoAparejoCalculado } = calculateAparejoDimensions(editablePlan);
-        const parsedDistanciaGanchoElemento = parseFloat(distanciaGanchoElemento);
 
-        // Lógica para determinar la nueva versión y resetear firmas
         const currentVersion = editablePlan.version || 0;
         let newVersion = currentVersion;
         let resetFirmas = false;
 
-        // Si hay una firma de jefe de área existente y no es "Firma pendiente", incrementamos versión y reseteamos firmas
         if (editablePlan.firmaJefeArea && editablePlan.firmaJefeArea !== "Firma pendiente") {
             newVersion = Math.min(currentVersion + 1, 3);
             resetFirmas = true;
@@ -330,15 +337,14 @@ const EditPlan = () => {
                 try {
                     const errorJson = JSON.parse(errorText);
                     errorMessage = errorJson.message || errorMessage;
-                } catch (e) {
-                }
+                } catch (e) {}
                 Alert.alert("Error", errorMessage);
                 return;
             }
 
-            const result = await response.json();
+            await response.json();
             Alert.alert("Éxito", "Plan de izaje actualizado correctamente.");
-            navigation.navigate('Tabs', { screen: 'Perfil' }); 
+            navigation.navigate('Tabs', { screen: 'Perfil' });
 
         } catch (error) {
             console.error("Error al guardar cambios:", error);
@@ -421,11 +427,13 @@ const EditPlan = () => {
                     isCancel={true}
                     style={[styles.bottomButton, { backgroundColor: 'transparent', right: 50 }]}
                 />
-                <Components.Button
-                    label="Guardar cambios"
-                    onPress={handleSaveChanges}
-                    style={[styles.bottomButton, { right: 120 }]}
-                />
+                {route.params?.aparejosCompletos && (
+                    <Components.Button
+                        label="Guardar cambios"
+                        onPress={handleSaveChanges}
+                        style={[styles.bottomButton, { right: 120 }]}
+                    />
+                )}
             </View>
         </View>
     );

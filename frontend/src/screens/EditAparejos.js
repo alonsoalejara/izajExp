@@ -205,7 +205,10 @@ const EditAparejos = () => {
             };
 
             Alert.alert("Éxito", "Datos actualizados correctamente.");
-            navigation.navigate('EditPlan', { planData: finalUpdatedPlanData });
+            navigation.navigate('EditPlan', { 
+                planData: finalUpdatedPlanData,
+                aparejosCompletos: true
+            });
         } else {
             Alert.alert("Error de validación", "Por favor, complete todos los campos requeridos.");
         }
