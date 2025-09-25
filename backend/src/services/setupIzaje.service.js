@@ -9,7 +9,8 @@ async function getSetupIzajes() {
       .populate('capataz', 'username nombre apellido')
       .populate('supervisor', 'username nombre apellido')
       .populate('jefeArea', 'username nombre apellido')
-      .populate('grua', 'nombre modelo')
+      .populate('grua', 'nombre contrapeso')
+      .populate('proyecto', 'nombre')
       .exec();
     if (!setups) return [null, "No se encontraron configuraciones de izaje"];
     return [setups, null];

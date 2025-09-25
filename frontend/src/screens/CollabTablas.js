@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-    View,
-    Text,
-    ScrollView,
-    Pressable,
-    Alert,
-    Image,
-    ActivityIndicator
-} from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert, Image, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import Components from '../components/Components.index';
@@ -109,7 +101,7 @@ const CollabTablas = ({ route }) => {
     };
 
     // Verificar si el usuario ya firmó según su rol
-    const hasUserFirmado = () => {
+    const hasUserSigned = () => {
         if (userRole === 'supervisor' && userId === supervisorId) {
             return appliedSupervisorFirma && appliedSupervisorFirma !== 'Firma pendiente';
         }
@@ -136,7 +128,7 @@ const CollabTablas = ({ route }) => {
     }
 
     const datosTablaProyecto = [
-        { item: 1, descripcion: 'Nombre Proyecto', nombre: currentSetup?.nombreProyecto || 'N/A' },
+        { item: 1, descripcion: 'Nombre Proyecto', nombre: currentSetup?.proyecto?.nombre || 'N/A' },
         { item: 2, descripcion: 'Capataz', nombre: getFullName(currentSetup?.capataz) },
         { item: 3, descripcion: 'Supervisor', nombre: getFullName(currentSetup?.supervisor) },
         { item: 4, descripcion: 'Jefe Área', nombre: getFullName(currentSetup?.jefeArea) },
@@ -145,9 +137,9 @@ const CollabTablas = ({ route }) => {
 
     const datosTablaGrua = [
         { descripcion: 'Grúa', cantidad: currentSetup?.grua?.nombre || 'N/A' },
-        { descripcion: 'Largo de pluma', cantidad: currentSetup?.datos?.largoPluma || 'N/A' },
-        { descripcion: 'Grado de inclinación', cantidad: currentSetup?.datos?.gradoInclinacion || 'N/A' },
-        { descripcion: 'Contrapeso', cantidad: `${currentSetup?.datos?.contrapeso || 0} ton` },
+        { descripcion: 'Largo de pluma', cantidad: currentSetup?.largoPluma || 'N/A' },
+        { descripcion: 'Grado de inclinación', cantidad: currentSetup?.gradoInclinacion || 'N/A' },
+        { descripcion: 'Contrapeso', cantidad: `${currentSetup?.grua?.contrapeso || 0} ton` },
     ];
 
     const datosTablaAparejosIndividuales = currentSetup?.aparejos?.map((aparejo, index) => ({
