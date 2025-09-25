@@ -51,21 +51,26 @@ const EditPlan = () => {
             dimensionMayorCarga = diametroCarga;
         }
 
-        let distanciaGanchoElemento = 'N/A';
+        // Altura vertical entre gancho y carga
+        let distanciaGanchoElemento = altoCarga;
+
+        // Si ángulo > 0, ajustamos la distancia horizontal para la geometría del triángulo
         if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
-            const ladoAdyacenteParaAltura = dimensionMayorCarga / 2;
-            distanciaGanchoElemento = (Math.tan(anguloEnRadianes) * ladoAdyacenteParaAltura).toFixed(1);
-        } else if (dimensionMayorCarga > 0 && anguloEnGrados === 0) {
-            distanciaGanchoElemento = altoCarga.toFixed(1);
+            const ladoAdyacente = dimensionMayorCarga / 2;
+            distanciaGanchoElemento = (Math.tan(anguloEnRadianes) * ladoAdyacente + altoCarga);
         }
 
-        let largoAparejoCalculado = 'N/A';
+        // Largo del aparejo (hipotenusa)
+        let largoAparejoCalculado = distanciaGanchoElemento; // default si ángulo = 0
         if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
-            const ladoAdyacenteParaLargo = dimensionMayorCarga / 2;
-            largoAparejoCalculado = (ladoAdyacenteParaLargo / Math.cos(anguloEnRadianes)).toFixed(1);
+            const ladoAdyacente = dimensionMayorCarga / 2;
+            largoAparejoCalculado = Math.sqrt(Math.pow(ladoAdyacente, 2) + Math.pow(distanciaGanchoElemento, 2));
         }
 
-        return { distanciaGanchoElemento, largoAparejoCalculado };
+        return {
+            distanciaGanchoElemento: distanciaGanchoElemento.toFixed(1),
+            largoAparejoCalculado: largoAparejoCalculado.toFixed(1),
+        };
     };
 
     const calculateTotalAparejosWeight = (aparejos) => {
@@ -129,6 +134,7 @@ const EditPlan = () => {
                 let updatedPlanData = {
                     ...prevPlan,
                     ...incomingPlanData,
+                    _id: incomingPlanData._id || prevPlan._id,
                     cargas: { ...prevPlan.cargas, ...incomingPlanData.cargas },
                     datos: { ...prevPlan.datos, ...incomingPlanData.datos },
                     centroGravedad: { ...prevPlan.centroGravedad, ...incomingPlanData.centroGravedad },
@@ -274,70 +280,37 @@ const EditPlan = () => {
         }
 
         const finalPayload = {
-            nombreProyecto: editablePlan.nombreProyecto,
-            capataz: typeof editablePlan.capataz === 'object' && editablePlan.capataz._id ? editablePlan.capataz._id : editablePlan.capataz,
-            supervisor: typeof editablePlan.supervisor === 'object' && editablePlan.supervisor._id ? editablePlan.supervisor._id : editablePlan.supervisor,
-            jefeArea: typeof editablePlan.jefeArea === 'object' && editablePlan.jefeArea._id ? editablePlan.jefeArea._id : editablePlan.jefeArea,
-            // RESETEAR FIRMAS SI SE INCREMENTA LA VERSIÓN
+            _id: editablePlan._id,
+            proyecto: editablePlan.proyecto?._id || editablePlan.proyecto,
+            capataz: typeof editablePlan.capataz === 'object' ? editablePlan.capataz._id : editablePlan.capataz,
+            supervisor: typeof editablePlan.supervisor === 'object' ? editablePlan.supervisor._id : editablePlan.supervisor,
+            jefeArea: typeof editablePlan.jefeArea === 'object' ? editablePlan.jefeArea._id : editablePlan.jefeArea,
             firmaSupervisor: resetFirmas ? "Firma pendiente" : (editablePlan.firmaSupervisor || "Firma pendiente"),
             firmaJefeArea: resetFirmas ? "Firma pendiente" : (editablePlan.firmaJefeArea || "Firma pendiente"),
-            grua: typeof editablePlan.grua === 'object' && editablePlan.grua._id ? editablePlan.grua._id : editablePlan.grua,
-            
+            grua: typeof editablePlan.grua === 'object' ? editablePlan.grua._id : editablePlan.grua,
+            largoPluma: editablePlan.datos.largoPluma,
+            gradoInclinacion: editablePlan.datos.gradoInclinacion,
+
+            cargas: {
+                ...editablePlan.cargas,
+                porcentajeUtilizacion,
+            },
+            centroGravedad: centroGravedadConPR,
+            aparejos: editablePlan.aparejos.map(ap => ({
+                descripcion: ap.descripcion,
+                cantidad: ap.cantidad,
+                pesoUnitario: ap.pesoUnitario,
+                pesoTotal: ap.pesoTotal,
+                largo: ap.largo,
+                grillete: ap.grillete,
+                pesoGrillete: ap.pesoGrillete,
+                tension: ap.tension,
+                altura: ap.altura,
+            })),
             estado: 'Pendiente',
             observaciones: 'Observación pendiente',
             ilustracionGrua: 'NoDisponible',
             ilustracionForma: 'NoDisponible',
-            
-            alturaPuntoIzaje: 0,
-            alturaPuntoRecepcion: 0,
-            alturaDespeje: alturaDespeje,
-            distanciaTotalRecorrido: 0,
-            
-            aparejos: editablePlan.aparejos.map(ap => {
-                const pesoCarga = parseFloat(editablePlan.cargas.pesoEquipo) || 0;
-                const cantidadManiobra = parseInt(ap.cantidad, 10) || 0;
-                const anguloEslingaStr = ap.tension || '0°';
-                const anguloEnGrados = parseFloat(anguloEslingaStr.replace('°', '')) || 0;
-                const anguloEnRadianes = (anguloEnGrados * Math.PI) / 180;
-                
-                let largoAparejoFinal;
-                if (cantidadManiobra === 1) {
-                    largoAparejoFinal = !isNaN(parsedDistanciaGanchoElemento) ? parsedDistanciaGanchoElemento : 0;
-                } else if (dimensionMayorCarga > 0 && anguloEnGrados > 0 && anguloEnGrados < 90) {
-                    const ladoAdyacenteParaLargo = dimensionMayorCarga / 2;
-                    largoAparejoFinal = parseFloat((ladoAdyacenteParaLargo / Math.cos(anguloEnRadianes)).toFixed(1)) || 0;
-                } else {
-                    largoAparejoFinal = parseFloat(largoAparejoCalculado) || 0;
-                }
-                
-                let calculatedTension = 0;
-                if (cantidadManiobra === 1) {
-                    calculatedTension = pesoCarga;
-                } else if (cantidadManiobra === 2) {
-                    calculatedTension = pesoCarga / 2;
-                } else if (cantidadManiobra === 4) {
-                    calculatedTension = pesoCarga / 3;
-                }
-                calculatedTension = Number.isFinite(calculatedTension) ? parseFloat(calculatedTension.toFixed(1)) : 0;
-
-                return {
-                    descripcion: ap.descripcion,
-                    cantidad: ap.cantidad,
-                    pesoUnitario: ap.pesoUnitario,
-                    largo: largoAparejoFinal,
-                    grillete: ap.grillete,
-                    pesoGrillete: ap.pesoGrillete,
-                    tension: String(calculatedTension),
-                    altura: ap.altura,
-                    pesoTotal: ap.pesoTotal,
-                };
-            }),
-            datos: editablePlan.datos,
-            cargas: {
-                ...editablePlan.cargas,
-                porcentajeUtilizacion: porcentajeUtilizacion,
-            },
-            centroGravedad: centroGravedadConPR,
             version: newVersion,
         };
 
