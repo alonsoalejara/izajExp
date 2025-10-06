@@ -224,7 +224,7 @@ const CollabTablas = ({ route }) => {
         {
             item: 1,
             descripcion: 'Medidas',
-            X: formaLower === 'cilindro' && diametoCarga > 0
+            X: formaLower === 'cilindro' && diametroCarga > 0
                 ? (isCylinderVertical ? `${formatNumber(diametroCarga, 'm')} (Diámetro)` : `${formatNumber(altoCarga, 'm')} (Largo)`)
                 : formatNumber(anchoCarga, 'm'),
             Y: formaLower === 'cilindro' && diametroCarga > 0
