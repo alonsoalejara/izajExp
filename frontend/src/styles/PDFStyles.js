@@ -116,6 +116,14 @@ export const estilosPDF = `
         border-radius: 8px;
     }
 
+    /* Ajuste del tamaño y comportamiento de las imágenes dentro del contenedor */
+    .illustration-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* evita que se deforme y se salga del marco */
+        border-radius: 6px;
+    }
+
     table {
         width: 100%;
         border-collapse: collapse;

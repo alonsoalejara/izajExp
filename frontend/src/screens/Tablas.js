@@ -183,6 +183,8 @@ const Tablas = ({ route, navigation }) => {
       datosTablaProyecto,
       datosTablaXYZ,
       aparejosDetailed: datosTablaAparejosIndividuales,
+      ilustracionGrua: setupGruaData?.ilustracionGrua || null,
+      ilustracionCarga: setupCargaData?.ilustracionCarga || null,
     };
 
     try {

@@ -1,9 +1,7 @@
-
 import { View, TouchableOpacity, Text, Alert } from 'react-native';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import TablasStyles from '../../styles/TablasStyles';
-import { convertirImagenABase64 } from './pdfUtils';
 import { generarHTML } from './pdfTemplate';
 
 export const generarPDF = async ({
@@ -15,19 +13,27 @@ export const generarPDF = async ({
   datosTablaProyecto,
   datosTablaXYZ,
   aparejosDetailed,
+  ilustracionGrua,
+  ilustracionCarga,
 }) => {
   try {
-    const base64Imagen = await convertirImagenABase64(require('../../../assets/EI-Montajes.png'));
-    const imagenBase64 = `data:image/png;base64,${base64Imagen}`;
-    const findValue = (dataArray, descripcion) => dataArray.find(d => d.descripcion === descripcion)?.nombre;
+    // Usa el logo directamente
+    const logoURI = require('../../../assets/EI-Montajes.png');
+
+    const findValue = (dataArray, descripcion) =>
+      dataArray.find(d => d.descripcion === descripcion)?.nombre;
+
     const planDataForHtml = {
       nombreProyecto: findValue(datosTablaProyecto, "Nombre Proyecto"),
       capataz: { nombreCompleto: findValue(datosTablaProyecto, "Capataz") },
       supervisor: { nombreCompleto: findValue(datosTablaProyecto, "Supervisor") },
       jefeArea: { nombreCompleto: findValue(datosTablaProyecto, "Jefe Área") },
       version: datosTablaProyecto.find(d => d.descripcion === "Versión")?.nombre || "0",
+      ilustracionGrua,
+      ilustracionCarga,
     };
 
+    // ✅ Genera el HTML del PDF con las ilustraciones incluidas
     const htmlContent = generarHTML(
       planDataForHtml,
       maniobraRows,
@@ -35,14 +41,18 @@ export const generarPDF = async ({
       aparejosDetailed,
       totalPesoAparejos,
       datosTablaXYZ,
-      imagenBase64
+      logoURI
     );
 
+    // ✅ Crea el PDF
     const { uri } = await printToFileAsync({ html: htmlContent });
     await shareAsync(uri);
   } catch (error) {
     console.error('Error generando el PDF:', error);
-    Alert.alert("Error", "Ocurrió un error al intentar generar el PDF. Por favor, inténtalo de nuevo.");
+    Alert.alert(
+      "Error",
+      "Ocurrió un error al intentar generar el PDF. Por favor, inténtalo de nuevo."
+    );
   }
 };
 
@@ -56,6 +66,8 @@ const PDFGenerator = ({
   datosTablaProyecto,
   datosTablaXYZ,
   aparejosDetailed,
+  ilustracionGrua,
+  ilustracionCarga,
 }) => {
   const handleGeneratePdfPress = () => {
     const pdfData = {
@@ -64,9 +76,11 @@ const PDFGenerator = ({
       totalPesoAparejos,
       maniobraRows: cargaRows,
       gruaRows: datosGruaRows,
-      datosTablaProyecto: datosTablaProyecto,
+      datosTablaProyecto,
       datosTablaXYZ,
       aparejosDetailed,
+      ilustracionGrua,
+      ilustracionCarga,
     };
     generarPDF(pdfData);
   };

@@ -3,7 +3,7 @@ import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView } from 'reac
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ViewShot from 'react-native-view-shot';
-
+import * as ImageManipulator from 'expo-image-manipulator';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
@@ -178,11 +178,29 @@ const SetupGrua = () => {
     if (Object.keys(errors).length === 0 && !errIz && !errMont && !radioIzajeError && !radioMontajeError) {
       if (viewShotRef.current && grua?.nombre === 'Terex RT555') {
         try {
-          const uri = await viewShotRef.current.capture();
-          const base64 = await convertUriToBase64(uri);
-          dataToSend.ilustracionGrua = base64;
+          const uri = await viewShotRef.current.capture({ format: 'jpg', quality: 0.9 });
+
+          // 📸 Reducimos el tamaño y calidad usando expo-image-manipulator
+          const manipulatedImage = await ImageManipulator.manipulateAsync(
+            uri,
+            [{ resize: { width: 1200 } }], // ajusta el ancho, mantiene proporción
+            {
+              compress: 0.8, // 0.8 mantiene buena calidad visual
+              format: ImageManipulator.SaveFormat.JPEG,
+              base64: true, // devuelve directamente el string Base64
+            }
+          );
+
+          // El resultado ya trae el Base64 comprimido
+          dataToSend.ilustracionGrua = `data:image/jpeg;base64,${manipulatedImage.base64}`;
+
+          // Límite de seguridad (opcional, evita saturar la base de datos)
+          if (dataToSend.ilustracionGrua.length > 1200000) {
+            console.warn('Imagen aún demasiado grande. Se usará "NoDisponible".');
+            dataToSend.ilustracionGrua = "NoDisponible";
+          }
         } catch (error) {
-          console.error("Error al capturar la imagen:", error);
+          console.error("Error al capturar/comprimir la imagen:", error);
           dataToSend.ilustracionGrua = "NoDisponible";
         }
       } else {

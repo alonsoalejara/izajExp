@@ -207,9 +207,11 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
                 <div class="illustrations-layout">
                     <div class="illustration-section">
                         <h3>Ilustración de grúa</h3>
-                        <div class="illustration-container">
-                            <span>[Ilustración de grúa]</span>
-                        </div>
+                            <div class="illustration-container">
+                                ${planData.ilustracionGrua
+                                ? `<img src="${planData.ilustracionGrua}" alt="Ilustración de grúa" />`
+                                : `<span>[Ilustración de grúa no disponible]</span>`}
+                            </div>
                     </div>
                     <div class="illustration-section">
                         <h3>Ilustración de carga</h3>
