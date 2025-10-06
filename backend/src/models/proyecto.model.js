@@ -18,15 +18,15 @@ const proyectoSchema = new Schema(
         },
         descripcion: {
             type: String,
-            required: false,
+            required: true,
         },
         fechaInicio: {
             type: Date,
-            required: false,
+            required: true,
         },
         fechaFin: {
             type: Date,
-            required: false,
+            required: true,
         },
         estado: {
             type: String,
