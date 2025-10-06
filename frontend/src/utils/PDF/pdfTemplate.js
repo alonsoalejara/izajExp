@@ -205,20 +205,23 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
                 </div>
 
                 <div class="illustrations-layout">
-                    <div class="illustration-section">
-                        <h3>Ilustración de grúa</h3>
-                            <div class="illustration-container">
-                                ${planData.ilustracionGrua
-                                ? `<img src="${planData.ilustracionGrua}" alt="Ilustración de grúa" />`
-                                : `<span>[Ilustración de grúa no disponible]</span>`}
-                            </div>
+                <div class="illustration-section">
+                    <h3>Ilustración de grúa</h3>
+                    <div class="illustration-container">
+                    ${planData.ilustracionGrua
+                        ? `<img src="${planData.ilustracionGrua}" alt="Ilustración de grúa" />`
+                        : `<span>[Ilustración de grúa no disponible]</span>`}
                     </div>
-                    <div class="illustration-section">
-                        <h3>Ilustración de carga</h3>
-                        <div class="illustration-container">
-                            <span>[Ilustración de carga]</span>
-                        </div>
+                </div>
+
+                <div class="illustration-section">
+                    <h3>Ilustración de carga</h3>
+                    <div class="illustration-container">
+                    ${planData.ilustracionCarga
+                    ? `<img src="${planData.ilustracionCarga}" alt="Ilustración de carga" class="img-carga" />`
+                    : `<span>[Ilustración de carga no disponible]</span>`}
                     </div>
+                </div>
                 </div>
 
                 <div class="person-info">

@@ -19,24 +19,26 @@ export const estilosPDF = `
     }
 
     .header {
-        text-align: center;
+        text-align: left;
         margin-bottom: 20px;
         border-bottom: 2px solid #d9d9d9;
         padding-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* ✅ todo hacia la izquierda */
     }
 
     .logo-container {
-        margin: 0 auto 10px auto;
+        margin-bottom: 10px;
         width: 160px;
         height: 80px;
-        border: 1px solid #ccc;
+        border: none; /* elimina el borde gris */
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         font-size: 0.8em;
-        color: #777;
-        text-align: center;
     }
+
 
     .header h1 {
         color: #ee0000;
@@ -122,6 +124,14 @@ export const estilosPDF = `
         height: 100%;
         object-fit: contain; /* evita que se deforme y se salga del marco */
         border-radius: 6px;
+    }
+
+    .img-carga {
+        width: 130%;        /* aumenta el tamaño en el PDF */
+        height: auto;
+        object-fit: contain;
+        transform: scale(1.3);  /* escala el contenido dentro del marco */
+        transform-origin: center;
     }
 
     table {

@@ -1,6 +1,8 @@
 import { View, TouchableOpacity, Text, Alert } from 'react-native';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
+import { Asset } from 'expo-asset';
 import TablasStyles from '../../styles/TablasStyles';
 import { generarHTML } from './pdfTemplate';
 
@@ -17,23 +19,33 @@ export const generarPDF = async ({
   ilustracionCarga,
 }) => {
   try {
-    // Usa el logo directamente
-    const logoURI = require('../../../assets/EI-Montajes.png');
+    // ✅ Carga el logo desde los assets locales y lo convierte a Base64
+    const logoAsset = Asset.fromModule(require('../../../assets/EI-Montajes.png'));
+    await logoAsset.downloadAsync(); // asegura que esté disponible localmente
 
+    const base64Logo = await FileSystem.readAsStringAsync(logoAsset.localUri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
+    const imagenBase64 = `data:image/png;base64,${base64Logo}`;
+
+    // 🔍 Extrae los valores necesarios del arreglo de datos
     const findValue = (dataArray, descripcion) =>
-      dataArray.find(d => d.descripcion === descripcion)?.nombre;
+      dataArray.find((d) => d.descripcion === descripcion)?.nombre;
 
+    // 🧩 Arma el objeto con los datos del plan
     const planDataForHtml = {
-      nombreProyecto: findValue(datosTablaProyecto, "Nombre Proyecto"),
-      capataz: { nombreCompleto: findValue(datosTablaProyecto, "Capataz") },
-      supervisor: { nombreCompleto: findValue(datosTablaProyecto, "Supervisor") },
-      jefeArea: { nombreCompleto: findValue(datosTablaProyecto, "Jefe Área") },
-      version: datosTablaProyecto.find(d => d.descripcion === "Versión")?.nombre || "0",
+      nombreProyecto: findValue(datosTablaProyecto, 'Nombre Proyecto'),
+      capataz: { nombreCompleto: findValue(datosTablaProyecto, 'Capataz') },
+      supervisor: { nombreCompleto: findValue(datosTablaProyecto, 'Supervisor') },
+      jefeArea: { nombreCompleto: findValue(datosTablaProyecto, 'Jefe Área') },
+      version:
+        datosTablaProyecto.find((d) => d.descripcion === 'Versión')?.nombre || '0',
       ilustracionGrua,
       ilustracionCarga,
     };
 
-    // ✅ Genera el HTML del PDF con las ilustraciones incluidas
+    // 🧾 Genera el contenido HTML completo del PDF
     const htmlContent = generarHTML(
       planDataForHtml,
       maniobraRows,
@@ -41,21 +53,24 @@ export const generarPDF = async ({
       aparejosDetailed,
       totalPesoAparejos,
       datosTablaXYZ,
-      logoURI
+      imagenBase64 // <-- el logo en Base64
     );
 
-    // ✅ Crea el PDF
+    // 📄 Genera el PDF
     const { uri } = await printToFileAsync({ html: htmlContent });
+
+    // 📤 Abre la interfaz para compartir el archivo
     await shareAsync(uri);
   } catch (error) {
     console.error('Error generando el PDF:', error);
     Alert.alert(
-      "Error",
-      "Ocurrió un error al intentar generar el PDF. Por favor, inténtalo de nuevo."
+      'Error',
+      'Ocurrió un error al intentar generar el PDF. Por favor, inténtalo de nuevo.'
     );
   }
 };
 
+// 🔘 Componente que muestra el botón para generar el PDF
 const PDFGenerator = ({
   selectedGrua,
   rows,
@@ -82,6 +97,7 @@ const PDFGenerator = ({
       ilustracionGrua,
       ilustracionCarga,
     };
+
     generarPDF(pdfData);
   };
 

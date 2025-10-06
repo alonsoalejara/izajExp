@@ -8,6 +8,8 @@ import RenderForma from '../utils/render/renderForma';
 import RenderCG from '../utils/render/renderCG';
 import { validateCarga } from '../utils/validation/validateCarga';
 import { calculateGeometry } from '../utils/calculateGeometry';
+import ViewShot from 'react-native-view-shot';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 const SetupCarga = () => {
   const navigation = useNavigation();
@@ -21,8 +23,8 @@ const SetupCarga = () => {
   const [isFormaVisible, setIsFormaVisible] = useState(false);
   const [carga, setCarga] = useState({ peso: '', largo: '', ancho: '', alto: '', forma: '', diametro: '' });
   const [errors, setErrors] = useState({});
-
   const [planData, setPlanData] = useState(null);
+  const viewShotRef = React.useRef();
 
   useEffect(() => {
     if (route.params) {
@@ -45,7 +47,7 @@ const SetupCarga = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleContinuar = () => {
+  const handleContinuar = async () => {
     const pesoNum = parseFloat(peso);
     const alturaNum = parseFloat(altura);
     const largoNum = parseFloat(largo);
@@ -61,16 +63,47 @@ const SetupCarga = () => {
       forma: forma,
     };
 
-    const navigateToNextScreen = () => {
+    // 🚀 función que captura la ilustración y navega
+    const navigateToNextScreen = async () => {
       if (validateInputs()) {
+        try {
+          if (viewShotRef.current) {
+            const uri = await viewShotRef.current.capture({
+              format: 'jpg',
+              quality: 0.8,
+              result: 'tmpfile',
+            });
+
+            const manipulated = await ImageManipulator.manipulateAsync(
+              uri,
+              [{ resize: { width: 600 } }],
+              {
+                compress: 0.6, // ligera compresión
+                format: ImageManipulator.SaveFormat.JPEG,
+                base64: true,
+              }
+            );
+
+            // Guardamos la imagen resultante
+            cargaData.ilustracionCarga = `data:image/jpeg;base64,${manipulated.base64}`;
+          } else {
+            cargaData.ilustracionCarga = "NoDisponible";
+          }
+        } catch (error) {
+          console.error("Error al capturar ilustración de carga:", error);
+          cargaData.ilustracionCarga = "NoDisponible";
+        }
+
         const allDataToSend = {
           planData: planData,
           setupCargaData: cargaData,
         };
+
         navigation.navigate('SetupGrua', allDataToSend);
       }
     };
 
+    // ⚠️ Detección de forma cúbica
     if (forma !== 'Cilindro' && largo === ancho && ancho === altura && largo !== '') {
       Alert.alert(
         "Dimensiones de un cubo detectadas",
@@ -78,12 +111,14 @@ const SetupCarga = () => {
         [
           {
             text: "No",
-            onPress: navigateToNextScreen,
-            style: "cancel"
+            onPress: async () => {
+              await navigateToNextScreen();
+            },
+            style: "cancel",
           },
           {
             text: "Sí",
-            onPress: () => {
+            onPress: async () => {
               setForma("Cuadrado");
               handleInputChange('forma', "Cuadrado");
               cargaData = {
@@ -93,13 +128,13 @@ const SetupCarga = () => {
                 ancho: alturaNum,
                 diametro: 0,
               };
-              navigateToNextScreen();
-            }
-          }
+              await navigateToNextScreen();
+            },
+          },
         ]
       );
     } else {
-      navigateToNextScreen();
+      await navigateToNextScreen();
     }
   };
 
@@ -292,17 +327,31 @@ const SetupCarga = () => {
                 </View>
               </View>
             )}
-            <View style={[styles.visualizationCargaContainer, { marginBottom: 40, marginTop: 20 }]}>
-              <RenderForma
-                forma={carga.forma}
-                dimensiones={{
-                  largo: isCylinderVertical ? parseFloat(diametro) : parseFloat(altura),
-                  ancho: isCylinderVertical ? parseFloat(diametro) : parseFloat(diametro),
-                  profundidad: isCylinderVertical ? parseFloat(altura) : parseFloat(diametro),
-                  isCylinderVertical: isCylinderVertical
-                }}
-              />
-            </View>
+            <ViewShot
+              ref={viewShotRef}
+              options={{
+                format: 'jpg',
+                quality: 0.9,
+                result: 'tmpfile',
+              }}
+            >
+              <View
+                style={[
+                  styles.visualizationCargaContainer,
+                  { marginBottom: 40, marginTop: 20, borderWidth: 0 },
+                ]}
+              >
+                <RenderForma
+                  forma={carga.forma}
+                  dimensiones={{
+                    largo: isCylinderVertical ? parseFloat(diametro) : parseFloat(altura),
+                    ancho: isCylinderVertical ? parseFloat(diametro) : parseFloat(diametro),
+                    profundidad: isCylinderVertical ? parseFloat(altura) : parseFloat(diametro),
+                    isCylinderVertical: isCylinderVertical,
+                  }}
+                />
+              </View>
+            </ViewShot>
             {forma !== '' && (
                 <Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'left', top: -30 }}>
                     Visualización de la carga de lado y de frente:
