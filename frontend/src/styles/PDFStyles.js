@@ -19,13 +19,10 @@ export const estilosPDF = `
     }
 
     .header {
-        text-align: left;
+        text-align: center;
         margin-bottom: 20px;
         border-bottom: 2px solid #d9d9d9;
         padding-bottom: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start; /* ✅ todo hacia la izquierda */
     }
 
     .logo-container {
@@ -38,7 +35,6 @@ export const estilosPDF = `
         justify-content: flex-start;
         font-size: 0.8em;
     }
-
 
     .header h1 {
         color: #ee0000;

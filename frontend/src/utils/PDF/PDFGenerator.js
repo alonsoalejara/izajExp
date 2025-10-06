@@ -1,11 +1,36 @@
 import { View, TouchableOpacity, Text, Alert } from 'react-native';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy'; // ✅ Importa la API legacy
 import { Asset } from 'expo-asset';
 import TablasStyles from '../../styles/TablasStyles';
 import { generarHTML } from './pdfTemplate';
 
+/**
+ * Convierte una imagen local (por require) a Base64 usando la API legacy de FileSystem.
+ */
+export const convertirImagenABase64 = async (imageModule) => {
+  try {
+    // ✅ Carga el asset (imagen local)
+    const asset = Asset.fromModule(imageModule);
+    await asset.downloadAsync();
+
+    // ✅ Convierte el archivo a base64
+    const base64 = await FileSystem.readAsStringAsync(asset.localUri || asset.uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
+    // ✅ Devuelve el string en formato data:image/png
+    return `data:image/png;base64,${base64}`;
+  } catch (error) {
+    console.error('Error al convertir el logo a Base64:', error);
+    return null;
+  }
+};
+
+/**
+ * Genera el PDF con logo e ilustraciones.
+ */
 export const generarPDF = async ({
   selectedGrua,
   aparejosRows,
@@ -19,33 +44,23 @@ export const generarPDF = async ({
   ilustracionCarga,
 }) => {
   try {
-    // ✅ Carga el logo desde los assets locales y lo convierte a Base64
-    const logoAsset = Asset.fromModule(require('../../../assets/EI-Montajes.png'));
-    await logoAsset.downloadAsync(); // asegura que esté disponible localmente
+    // ✅ Convierte el logo a Base64
+    const base64Logo = await convertirImagenABase64(require('../../../assets/EI-Montajes.png'));
 
-    const base64Logo = await FileSystem.readAsStringAsync(logoAsset.localUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-
-    const imagenBase64 = `data:image/png;base64,${base64Logo}`;
-
-    // 🔍 Extrae los valores necesarios del arreglo de datos
     const findValue = (dataArray, descripcion) =>
       dataArray.find((d) => d.descripcion === descripcion)?.nombre;
 
-    // 🧩 Arma el objeto con los datos del plan
     const planDataForHtml = {
       nombreProyecto: findValue(datosTablaProyecto, 'Nombre Proyecto'),
       capataz: { nombreCompleto: findValue(datosTablaProyecto, 'Capataz') },
       supervisor: { nombreCompleto: findValue(datosTablaProyecto, 'Supervisor') },
       jefeArea: { nombreCompleto: findValue(datosTablaProyecto, 'Jefe Área') },
-      version:
-        datosTablaProyecto.find((d) => d.descripcion === 'Versión')?.nombre || '0',
+      version: datosTablaProyecto.find((d) => d.descripcion === 'Versión')?.nombre || '0',
       ilustracionGrua,
       ilustracionCarga,
     };
 
-    // 🧾 Genera el contenido HTML completo del PDF
+    // ✅ Genera el HTML con todo incluido
     const htmlContent = generarHTML(
       planDataForHtml,
       maniobraRows,
@@ -53,13 +68,13 @@ export const generarPDF = async ({
       aparejosDetailed,
       totalPesoAparejos,
       datosTablaXYZ,
-      imagenBase64 // <-- el logo en Base64
+      base64Logo
     );
 
-    // 📄 Genera el PDF
+    // ✅ Genera el PDF
     const { uri } = await printToFileAsync({ html: htmlContent });
 
-    // 📤 Abre la interfaz para compartir el archivo
+    // ✅ Lo comparte o guarda
     await shareAsync(uri);
   } catch (error) {
     console.error('Error generando el PDF:', error);
@@ -70,7 +85,9 @@ export const generarPDF = async ({
   }
 };
 
-// 🔘 Componente que muestra el botón para generar el PDF
+/**
+ * Componente del botón que genera el PDF.
+ */
 const PDFGenerator = ({
   selectedGrua,
   rows,
@@ -97,7 +114,6 @@ const PDFGenerator = ({
       ilustracionGrua,
       ilustracionCarga,
     };
-
     generarPDF(pdfData);
   };
 
