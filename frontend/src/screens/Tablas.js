@@ -283,7 +283,7 @@ const Tablas = ({ route, navigation }) => {
                   pesoCable: extractValue(datosTablaManiobra, 'Peso cable'),
                   pesoTotal: extractValue(datosTablaManiobra, 'Peso total'),
                   radioTrabajoMax: extractValue(datosTablaManiobra, 'Radio de trabajo máximo'),
-                  anguloTrabajo: extractValue(datosTablaManiobra, 'Ángulo de trabajo', false),
+                  anguloTrabajo: extractValue(datosTablaManiobra, 'Ángulo de trabajo maniobra', false),
                   capacidadLevante: extractValue(datosTablaManiobra, 'Capacidad de levante'),
                   porcentajeUtilizacion: extractValue(datosTablaManiobra, '% Utilización'),
                 },

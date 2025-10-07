@@ -143,7 +143,7 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
     { descripcion: 'Peso total', cantidad: { valor: pesoTotal.toFixed(2), unidad: 'ton' } },
     { descripcion: 'Radio de trabajo máximo', cantidad: { valor: radioMaximo, unidad: 'm' } },
     { descripcion: 'Distancia gancho-elemento aprox.', cantidad: { valor: distanciaGanchoElemento, unidad: 'm' } },
-    { descripcion: 'Ángulo de trabajo', cantidad: anguloTrabajo },
+    { descripcion: 'Ángulo de trabajo maniobra', cantidad: anguloTrabajo },
     { descripcion: 'Capacidad de levante', cantidad: { valor: capacidadLevante, unidad: 'ton' } },
     { descripcion: '% Utilización', cantidad: { valor: porcentajeUtilizacion, unidad: '%' } },
   ];

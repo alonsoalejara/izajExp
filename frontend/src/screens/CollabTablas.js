@@ -147,7 +147,7 @@ const CollabTablas = ({ route }) => {
     { descripcion: 'Peso cable', cantidad: `${currentSetup?.cargas?.pesoCable || 0} ton` },
     { descripcion: 'Peso total', cantidad: `${currentSetup?.cargas?.pesoTotal || 0} ton` },
     { descripcion: 'Radio de trabajo máximo', cantidad: `${currentSetup?.cargas?.radioTrabajoMax || 0} m` },
-    { descripcion: 'Ángulo de trabajo', cantidad: `${currentSetup?.cargas?.anguloTrabajo || 0}` },
+    { descripcion: 'Ángulo de trabajo maniobra', cantidad: `${currentSetup?.cargas?.anguloTrabajo || 0}` },
     { descripcion: 'Capacidad de levante', cantidad: `${currentSetup?.cargas?.capacidadLevante || 0} ton` },
     { descripcion: '% Utilización', cantidad: `${currentSetup?.cargas?.porcentajeUtilizacion || 0} %` },
   ];
