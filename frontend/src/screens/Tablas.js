@@ -370,48 +370,48 @@ const Tablas = ({ route, navigation }) => {
     }
   };
 
-  return (
-    <View style={{ backgroundColor: '#fff', flex: 1 }}>
+return (
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <Components.Header />
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Tablas</Text>
       </View>
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+      <ScrollView contentContainerStyle={{ paddingTop: 190, paddingBottom: 30 }}>
         <Components.Tabla titulo="Información del proyecto" data={datosTablaProyecto} />
         <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
-        <Text style={[styles.sectionTitle, { top: 10, left: 20 }]}>Aparejos</Text>
+        <Text style={[styles.sectionTitle, { marginLeft: 20 }]}>Aparejos</Text>
         {datosTablaAparejosIndividuales.map((aparejo, index) => (
           <View key={`aparejo-${index}`}>
-            <View style={styles.tableSection}>
-              <View style={styles.tableHeader}>
-                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Ítem</Text>
-                <Text style={[styles.headerText, { flex: 2, textAlign: 'left' }]}>Descripción</Text>
+              <View style={styles.tableSection}>
+                <View style={styles.tableHeader}>
+                  <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Ítem</Text>
+                  <Text style={[styles.headerText, { flex: 2, textAlign: 'left' }]}>Descripción</Text>
+                </View>
+                <View style={[styles.row, { borderBottomWidth: 0 }]}>
+                  <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 10 }]}>{aparejo.descripcionPrincipal.item}</Text>
+                  <Text style={[styles.cell, { flex: 2, textAlign: 'left' }]}>{aparejo.descripcionPrincipal.descripcion}</Text>
+                </View>
               </View>
-              <View style={[styles.row, { borderBottomWidth: 0 }]}>
-                <Text style={[styles.cell, { flex: 1, textAlign: 'left', left: 10 }]}>{aparejo.descripcionPrincipal.item}</Text>
-                <Text style={[styles.cell, { flex: 2, textAlign: 'left' }]}>{aparejo.descripcionPrincipal.descripcion}</Text>
-              </View>
-            </View>
 
-            <View style={[styles.tableSection, { marginTop: -10 }]}>
-              <View style={[styles.tableHeader, { backgroundColor: '#ffeeee' }]}>
-                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10, color: '#dd0000' }]}>Largo</Text>
-                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10, color: '#dd0000' }]}>Peso</Text>
-                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 20, color: '#dd0000' }]}>Tensión</Text>
-                <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 28, color: '#dd0000' }]}>Grillete</Text>
-                <Text style={[styles.headerText, { flex: 2, textAlign: 'right', right: 10, color: '#dd0000' }]}>Peso Grillete</Text>
+              <View style={[styles.tableSection, { marginTop: -10 }]}>
+                <View style={[styles.tableHeader, { backgroundColor: '#ffeeee' }]}>
+                  <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10, color: '#dd0000' }]}>Largo</Text>
+                  <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 10, color: '#dd0000' }]}>Peso</Text>
+                  <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 20, color: '#dd0000' }]}>Tensión</Text>
+                  <Text style={[styles.headerText, { flex: 1, textAlign: 'left', left: 28, color: '#dd0000' }]}>Grillete</Text>
+                  <Text style={[styles.headerText, { flex: 2, textAlign: 'right', right: 10, color: '#dd0000' }]}>Peso Grillete</Text>
+                </View>
+                <View style={[styles.row, { borderBottomWidth: 0 }]}>
+                  {aparejo.detalles.map((detail, detailIndex) => (
+                    <Text key={`detail-${index}-${detailIndex}`} style={[styles.cell, { flex: 1, right: 12 }]}>
+                      {detail.valor}
+                    </Text>
+                  ))}
+                </View>
               </View>
-              <View style={[styles.row, { borderBottomWidth: 0 }]}>
-                {aparejo.detalles.map((detail, detailIndex) => (
-                  <Text key={`detail-${index}-${detailIndex}`} style={[styles.cell, { flex: 1, right: 12 }]}>
-                    {detail.valor}
-                  </Text>
-                ))}
-              </View>
+              <View style={{ marginTop: -10 }} />
             </View>
-            <View style={{ marginTop: -10 }} />
-          </View>
-        ))}
+          ))}
         <Components.Tabla titulo="Datos de la maniobra" data={datosTablaManiobra} />
         <Components.Tabla titulo="Cálculo de centro de gravedad:" data={datosTablaXYZ} />
       </ScrollView>

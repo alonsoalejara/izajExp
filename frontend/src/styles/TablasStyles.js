@@ -2,9 +2,14 @@ import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   titleContainer: {
+    position: 'absolute',
+    top: 140,
+    left: 0,
+    right: 0,
     alignItems: 'center',
-    top: 133,
-    marginVertical: 10,
+    backgroundColor: '#fff',
+    zIndex: 10,
+    paddingVertical: 20,
   },
   title: {
     fontSize: 24,
@@ -69,10 +74,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    bottom: 20,
+    bottom: 5,
     right: 30,
     marginHorizontal: 30,
-    marginVertical: 10,
+    marginVertical: 20,
     gap: -35,
   },
   button: {
