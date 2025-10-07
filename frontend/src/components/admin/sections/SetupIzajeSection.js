@@ -102,7 +102,7 @@ const SetupIzajeSection = ({
               <Text style={[styles.cardTitle, { fontWeight: '700' }]}>
                 Proyecto:{' '}
                 <Text style={{ fontWeight: '400' }}>
-                  {setup.nombreProyecto || 'Sin nombre'}
+                  {setup.proyecto?.nombre || 'Sin nombre'}
                 </Text>
               </Text>
               <Text style={[styles.cardDetail, { fontWeight: '700', color: '#777' }]}>
