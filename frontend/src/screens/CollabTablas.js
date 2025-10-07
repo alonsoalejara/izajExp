@@ -235,15 +235,18 @@ const CollabTablas = ({ route }) => {
 
   return (
     <View style={[TablasStyles.container, { backgroundColor: '#fff' }]}>
-      <Pressable onPress={() => navigation.goBack()} style={{ position: 'absolute', top: 50, left: 20, zIndex: 10 }}>
+      <Pressable onPress={() => navigation.goBack()} style={{ position: 'absolute', top: 56, left: 20, zIndex: 20 }}>
         <Icon name="keyboard-arrow-left" size={40} color="#000" />
       </Pressable>
 
-      <View style={[TablasStyles.titleContainer, { top: 50 }]}>
+      <View style={[TablasStyles.titleContainer, { top: 50, left: 10, paddingTop: 20 }]}>
         <Text style={TablasStyles.title}>Detalles del plan de izaje</Text>
       </View>
 
-      <ScrollView style={[TablasStyles.tableContainer, { top: -40, paddingHorizontal: 5 }]}>
+      <ScrollView
+        style={[TablasStyles.tableContainer, { top: 0, paddingHorizontal: 5 }]}
+        contentContainerStyle={{ paddingBottom: 0 }}
+      >
         <Components.Tabla titulo="Información del proyecto" data={datosTablaProyecto} />
         <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
         <Components.Tabla titulo="Datos de la maniobra" data={datosTablaManiobra} />
@@ -251,7 +254,7 @@ const CollabTablas = ({ route }) => {
       </ScrollView>
 
       {showSmallButtons && !isCapataz ? (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '75%', position: 'absolute', bottom: 60, left: -26 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '75%', position: 'absolute', bottom: 30, left: -26 }}>
           {canSign && (
             <Components.Button label="Firmar Plan" onPress={() => handleFirmarPlan()} style={{ width: '48%' }} />
           )}
@@ -266,7 +269,7 @@ const CollabTablas = ({ route }) => {
         <Components.Button
           label={isLoadingPdf ? 'Generando...' : 'Enviar PDF'}
           onPress={handleEnviarPdf}
-          style={[TablasStyles.button, { width: '90%', position: 'absolute', bottom: 60, left: -33 }]}
+          style={[TablasStyles.button, { width: '90%', position: 'absolute', bottom: 30, left: -33 }]}
           disabled={isLoadingPdf}
         />
       )}
