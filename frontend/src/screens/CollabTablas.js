@@ -8,10 +8,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import getApiUrl from '../utils/apiUrl';
 import BS from '../components/bottomSheets/BS.index';
 import { generarPDF } from '../utils/PDF/PDFGenerator';
+import { cleanSetupPayload } from '../utils/cleanSetupPayload';
 
 const CollabTablas = ({ route }) => {
   const { planData } = route.params || {};
-
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
   const [isElementoBottomSheetVisible, setIsElementoBottomSheetVisible] = useState(false);
   const [currentSetup, setCurrentSetup] = useState(planData);
@@ -55,11 +55,9 @@ const CollabTablas = ({ route }) => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
       if (!token || !currentUser?._id) return;
-
       const response = await fetch(getApiUrl(`user/${currentUser._id}`), {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       if (response.ok) {
         const userData = await response.json();
         setCurrentUserWithFirma(userData.data);
@@ -110,7 +108,7 @@ const CollabTablas = ({ route }) => {
     );
   }
 
-  // --- Tablas de datos (idénticas a tu versión)
+  // Tablas
   const datosTablaProyecto = [
     { item: 1, descripcion: 'Nombre Proyecto', nombre: currentSetup?.proyecto?.nombre || 'N/A' },
     { item: 2, descripcion: 'Capataz', nombre: getFullName(currentSetup?.capataz) },
@@ -125,20 +123,6 @@ const CollabTablas = ({ route }) => {
     { descripcion: 'Grado de inclinación', cantidad: currentSetup?.gradoInclinacion || 'N/A' },
     { descripcion: 'Contrapeso', cantidad: `${currentSetup?.grua?.contrapeso || 0} ton` },
   ];
-
-  const datosTablaAparejosIndividuales = currentSetup?.aparejos?.map((aparejo, index) => ({
-    descripcionPrincipal: {
-      item: index + 1,
-      descripcion: aparejo.descripcion,
-    },
-    detalles: [
-      { label: 'Largo', valor: `${aparejo.largo || 'N/A'} m` },
-      { label: 'Peso', valor: `${aparejo.pesoUnitario || 'N/A'} ton` },
-      { label: 'Tensión', valor: aparejo.tension || 'N/A' },
-      { label: 'Grillete', valor: aparejo.grillete || 'N/A' },
-      { label: 'Peso Grillete', valor: `${aparejo.pesoGrillete || 'N/A'} ton` },
-    ],
-  })) || [];
 
   const datosTablaManiobra = [
     { descripcion: 'Peso elemento', cantidad: `${currentSetup?.cargas?.pesoEquipo || 0} ton` },
@@ -178,55 +162,109 @@ const CollabTablas = ({ route }) => {
       ]
     : [];
 
-  const handleEnviarPdf = async () => {
-    if (isLoadingPdf) return;
+  const handleFirmarPlan = () => {
+    if (userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') {
+      navigation.navigate('ObsFirma', {
+        planData: currentSetup,
+        currentUser: currentUserWithFirma || currentUser,
+        userRole,
+        userId,
+        supervisorId,
+        jefeAreaId,
+        appliedSupervisorFirma,
+        appliedJefeAreaFirma,
+        userFirma: currentUserWithFirma?.firma || currentUser?.firma,
+      });
+      return;
+    }
 
-    setIsLoadingPdf(true);
+    if (userRole === 'supervisor' && userId === supervisorId) {
+      const isSupervisorSigned =
+        appliedSupervisorFirma && appliedSupervisorFirma !== 'Firma pendiente';
+      if (isSupervisorSigned) {
+        Alert.alert('Ya Firmado', 'El supervisor ya ha aplicado una firma a este plan.');
+        return;
+      }
+
+      Alert.alert(
+        'Confirmar Firma',
+        '¿Deseas aplicar tu firma a este plan de izaje?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Firmar', onPress: () => firmarSupervisor() },
+        ]
+      );
+    }
+  };
+
+  const firmarSupervisor = async () => {
+    setShowSmallButtons(false);
+
+    // Limpieza automática del setup antes de enviar
+    const payload = cleanSetupPayload(currentSetup);
+    payload.firmaSupervisor = currentUser?.firma;
+
     try {
-      const aparejosRows = datosTablaAparejosIndividuales.map((aparejo, index) => {
-        const pesoUnitario = parseFloat(aparejo.detalles.find(d => d.label === 'Peso')?.valor.replace(' ton', '') || 0);
-        const pesoGrillete = parseFloat(aparejo.detalles.find(d => d.label === 'Peso Grillete')?.valor.replace(' ton', '') || 0);
-        return {
-          item: index + 1,
-          descripcion: aparejo.descripcionPrincipal.descripcion,
-          cantidad: 1,
-          pesoUnitario,
-          pesoTotal: pesoUnitario + pesoGrillete,
-        };
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      if (!accessToken) {
+        Alert.alert('Error de Autenticación', 'No autorizado. Por favor, inicia sesión nuevamente.');
+        setShowSmallButtons(true);
+        return;
+      }
+
+      const apiUrl = getApiUrl(`setupIzaje/${currentSetup._id}`);
+      const response = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
       });
 
-      const totalPesoAparejos = aparejosRows.reduce((total, a) => total + a.pesoTotal, 0);
+      if (!response.ok) {
+        const errorResponseText = await response.text();
+        let errorMessage = 'Error desconocido al firmar.';
+        try {
+          const errorData = JSON.parse(errorResponseText);
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          errorMessage = `Error del servidor: ${errorResponseText.substring(0, 100)}...`;
+        }
+        Alert.alert('Error al firmar', errorMessage);
+        setShowSmallButtons(true);
+        return;
+      }
 
-      const ilustracionGruaBase64 =
-        currentSetup?.ilustracionGrua && currentSetup.ilustracionGrua !== 'NoDisponible'
-          ? (currentSetup.ilustracionGrua.startsWith('data:image')
-              ? currentSetup.ilustracionGrua
-              : `data:image/png;base64,${currentSetup.ilustracionGrua}`)
-          : null;
+      const data = await response.json();
+      Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
+      if (data && data.updatedSetupIzaje) {
+        setCurrentSetup(data.updatedSetupIzaje);
+        navigation.setParams({ planData: data.updatedSetupIzaje });
+      }
+    } catch (error) {
+      console.log('Error al firmar:', error);
+      Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor.');
+    } finally {
+      setShowSmallButtons(true);
+    }
+  };
 
-      const ilustracionCargaBase64 =
-        currentSetup?.ilustracionForma && currentSetup.ilustracionForma !== 'NoDisponible'
-          ? (currentSetup.ilustracionForma.startsWith('data:image')
-              ? currentSetup.ilustracionForma
-              : `data:image/png;base64,${currentSetup.ilustracionForma}`)
-          : null;
-
+  const handleEnviarPdf = async () => {
+    if (isLoadingPdf) return;
+    setIsLoadingPdf(true);
+    try {
       const pdfData = {
         selectedGrua: currentSetup?.grua,
-        aparejosRows,
-        totalPesoAparejos,
         maniobraRows: datosTablaManiobra,
         gruaRows: datosTablaGrua,
         datosTablaProyecto,
         datosTablaXYZ,
-        aparejosDetailed: datosTablaAparejosIndividuales,
-        ilustracionGrua: ilustracionGruaBase64,
-        ilustracionCarga: ilustracionCargaBase64,
+        ilustracionGrua: currentSetup?.ilustracionGrua,
+        ilustracionCarga: currentSetup?.ilustracionForma,
       };
-
       await generarPDF(pdfData);
     } catch (error) {
-      console.error('Error al generar PDF:', error);
       Alert.alert('Error', 'Ocurrió un error al generar el PDF.');
     } finally {
       setIsLoadingPdf(false);
@@ -243,21 +281,147 @@ const CollabTablas = ({ route }) => {
         <Text style={TablasStyles.title}>Detalles del plan de izaje</Text>
       </View>
 
-      <ScrollView
-        style={[TablasStyles.tableContainer, { top: 0, paddingHorizontal: 5 }]}
-        contentContainerStyle={{ paddingBottom: 0 }}
-      >
+      <ScrollView style={[TablasStyles.tableContainer, { top: 0, paddingHorizontal: 5 }]} contentContainerStyle={{ paddingBottom: 20 }}>
         <Components.Tabla titulo="Información del proyecto" data={datosTablaProyecto} />
         <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
+        <View style={{ marginBottom: 10, alignItems: 'left', right: 35 }}>
+          <Components.Button label="Ver grúa" onPress={() => setIsBottomSheetVisible(true)} style={{ width: 150, height: 47 }} />
+        </View>
+
         <Components.Tabla titulo="Datos de la maniobra" data={datosTablaManiobra} />
+        <View style={{ marginBottom: 10, alignItems: 'left', right: 35 }}>
+          <Components.Button label="Ver elemento" onPress={() => setIsElementoBottomSheetVisible(true)} style={{ width: 150, height: 47 }} />
+        </View>
+
         <Components.Tabla titulo="Cálculo de centro de gravedad:" data={datosTablaXYZ} />
+
+        {/* Estado y observaciones */}
+        <View style={{ marginTop: 20, marginBottom: 20 }}>
+          <Text style={[TablasStyles.sectionTitle, { left: 20, marginBottom: 10 }]}>Evaluación:</Text>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 16, marginRight: 10 }}>Estado:</Text>
+            <Text
+              style={{
+                fontSize: 16,
+                color:
+                  currentSetup?.estado === 'Aprobado'
+                    ? 'green'
+                    : currentSetup?.estado === 'Rechazado'
+                    ? 'red'
+                    : 'gray',
+                fontWeight: 'bold',
+              }}
+            >
+              {currentSetup?.estado || 'Pendiente'}
+            </Text>
+          </View>
+
+          <View style={{ paddingHorizontal: 20 }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 10 }}>Observaciones:</Text>
+            <View
+              style={{
+                backgroundColor: '#f9f9f9',
+                borderWidth: 1,
+                borderColor: '#ddd',
+                borderRadius: 5,
+                padding: 15,
+                minHeight: 80,
+              }}
+            >
+              <Text style={{ fontSize: 14, lineHeight: 20 }}>
+                {currentSetup?.observaciones || 'No hay observaciones registradas.'}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Firmas */}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            width: '100%',
+            marginTop: 20,
+            paddingHorizontal: 10,
+            marginBottom: 20,
+          }}
+        >
+          <View style={{ alignItems: 'center' }}>
+            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 5, color: '#555' }}>Firma Supervisor</Text>
+            <View
+              style={{
+                width: 150,
+                height: 80,
+                borderWidth: 1,
+                borderColor: '#ccc',
+                borderRadius: 5,
+                backgroundColor: '#f9f9f9',
+                justifyContent: 'center',
+                alignItems: 'center',
+                overflow: 'hidden',
+              }}
+            >
+              {appliedSupervisorFirma && appliedSupervisorFirma !== 'Firma pendiente' ? (
+                <Image
+                  source={{
+                    uri: appliedSupervisorFirma.startsWith('data:')
+                      ? appliedSupervisorFirma
+                      : `data:image/png;base64,${appliedSupervisorFirma}`,
+                  }}
+                  style={{ width: '150%', height: '150%', resizeMode: 'contain' }}
+                />
+              ) : (
+                <Text style={{ fontSize: 12, color: '#888' }}>[Firma pendiente]</Text>
+              )}
+            </View>
+          </View>
+
+          <View style={{ alignItems: 'center' }}>
+            <Text style={{ fontSize: 14, fontWeight: 'bold', marginBottom: 5, color: '#555' }}>Firma Jefe de Área</Text>
+            <View
+              style={{
+                width: 150,
+                height: 80,
+                borderWidth: 1,
+                borderColor: '#ccc',
+                borderRadius: 5,
+                backgroundColor: '#f9f9f9',
+                justifyContent: 'center',
+                alignItems: 'center',
+                overflow: 'hidden',
+              }}
+            >
+              {appliedJefeAreaFirma && appliedJefeAreaFirma !== 'Firma pendiente' ? (
+                <Image
+                  source={{
+                    uri: appliedJefeAreaFirma.startsWith('data:')
+                      ? appliedJefeAreaFirma
+                      : `data:image/png;base64,${appliedJefeAreaFirma}`,
+                  }}
+                  style={{ width: '150%', height: '150%', resizeMode: 'contain' }}
+                />
+              ) : (
+                <Text style={{ fontSize: 12, color: '#888' }}>[Firma pendiente]</Text>
+              )}
+            </View>
+          </View>
+        </View>
       </ScrollView>
 
+      {/* Botones inferiores */}
       {showSmallButtons && !isCapataz ? (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '75%', position: 'absolute', bottom: 30, left: -26 }}>
-          {canSign && (
-            <Components.Button label="Firmar Plan" onPress={() => handleFirmarPlan()} style={{ width: '48%' }} />
-          )}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            width: '75%',
+            position: 'absolute',
+            bottom: 30,
+            left: -26,
+          }}
+        >
+          {canSign && <Components.Button label="Firmar Plan" onPress={() => handleFirmarPlan()} style={{ width: '48%' }} />}
           <Components.Button
             label={isLoadingPdf ? 'Generando...' : 'Enviar PDF'}
             onPress={handleEnviarPdf}
@@ -274,6 +438,7 @@ const CollabTablas = ({ route }) => {
         />
       )}
 
+      {/* Bottom Sheets */}
       <BS.BSIlustracionGrua
         isVisible={isBottomSheetVisible}
         onClose={() => setIsBottomSheetVisible(false)}
