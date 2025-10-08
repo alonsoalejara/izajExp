@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TextInput,
-  Pressable,
-  Alert
-} from 'react-native';
+import { View, Text, ScrollView, TextInput, Pressable, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Components from '../components/Components.index';
@@ -181,8 +174,26 @@ const ObsFirma = ({ route }) => {
                 return;
               }
 
+              // ✅ Actualiza CollabTablas en tiempo real
+              const data = await response.json();
               Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
-              navigation.pop(2);
+
+              if (data && data.updatedSetupIzaje) {
+                navigation.navigate('CollabTablas', {
+                  planData: data.updatedSetupIzaje,
+                  currentUser,
+                  userRole,
+                  userId,
+                  supervisorId,
+                  jefeAreaId,
+                  appliedSupervisorFirma: data.updatedSetupIzaje.firmaSupervisor,
+                  appliedJefeAreaFirma: data.updatedSetupIzaje.firmaJefeArea,
+                  userFirma: firmaToUse,
+                });
+              } else {
+                navigation.pop(2);
+              }
+
             } catch (error) {
               Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor para firmar el plan.');
               setShowSmallButtons(true);
@@ -197,16 +208,16 @@ const ObsFirma = ({ route }) => {
     <View style={[TablasStyles.container, { backgroundColor: '#fff', paddingBottom: 300, paddingHorizontal: 20 }]}>
       <Pressable
         onPress={() => navigation.goBack()}
-        style={{ position: 'absolute', top: 60, left: 20, zIndex: 10 }}
+        style={{ position: 'absolute', top: 66, left: 20, zIndex: 20 }}
       >
         <Icon name="keyboard-arrow-left" size={40} color="#000" />
       </Pressable>
 
-      <View style={[TablasStyles.titleContainer, { top: 65 }]}>
+      <View style={[TablasStyles.titleContainer, { top: 60 }]}>
         <Text style={TablasStyles.title}>Observaciones y Firma</Text>
       </View>
 
-      <ScrollView style={[TablasStyles.tableContainer, { top: -30, paddingHorizontal: 10 }]}>
+      <ScrollView style={[TablasStyles.tableContainer, { top: 0, paddingHorizontal: 10 }]}>
         <Text style={[TablasStyles.sectionTitle, { marginBottom: 10 }]}>Estado</Text>
         <View style={{ flexDirection: 'row', marginBottom: 5 }}>
           <Pressable

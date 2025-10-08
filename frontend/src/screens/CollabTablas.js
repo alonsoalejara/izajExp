@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, Alert, Image, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Components from '../components/Components.index';
 import TablasStyles from '../styles/TablasStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,11 +12,11 @@ import { cleanSetupPayload } from '../utils/cleanSetupPayload';
 
 const CollabTablas = ({ route }) => {
   const { planData } = route.params || {};
+  const navigation = useNavigation();
+
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
   const [isElementoBottomSheetVisible, setIsElementoBottomSheetVisible] = useState(false);
   const [currentSetup, setCurrentSetup] = useState(planData);
-  const navigation = useNavigation();
-  const [showSmallButtons, setShowSmallButtons] = useState(true);
   const [isLoadingPdf, setIsLoadingPdf] = useState(false);
 
   const [appliedSupervisorFirma, setAppliedSupervisorFirma] = useState(
@@ -28,6 +28,54 @@ const CollabTablas = ({ route }) => {
     planData?.firmaJefeArea && planData.firmaJefeArea !== 'Firma pendiente'
       ? planData.firmaJefeArea
       : null
+  );
+
+  const [currentUserWithFirma, setCurrentUserWithFirma] = useState(null);
+  const { currentUser } = route.params || {};
+  const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
+  const userId = currentUser?._id;
+
+  // 🔄 Refrescar plan automáticamente al volver
+  useFocusEffect(
+    useCallback(() => {
+      const fetchUpdatedPlan = async () => {
+        try {
+          if (!currentSetup?._id) return;
+          const token = await AsyncStorage.getItem('accessToken');
+          if (!token) return;
+
+          const response = await fetch(getApiUrl(`setupIzaje/${currentSetup._id}`), {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data?.data) {
+              setCurrentSetup(data.data);
+              setAppliedSupervisorFirma(
+                data.data.firmaSupervisor && data.data.firmaSupervisor !== 'Firma pendiente'
+                  ? data.data.firmaSupervisor
+                  : null
+              );
+              setAppliedJefeAreaFirma(
+                data.data.firmaJefeArea && data.data.firmaJefeArea !== 'Firma pendiente'
+                  ? data.data.firmaJefeArea
+                  : null
+              );
+            }
+          }
+        } catch (error) {
+          console.log('Error actualizando plan:', error);
+        }
+      };
+
+      fetchUpdatedPlan();
+
+      if (route.params?.refresh) {
+        navigation.setParams({ refresh: false });
+        fetchUpdatedPlan();
+      }
+    }, [route.params?.refresh])
   );
 
   useEffect(() => {
@@ -45,11 +93,6 @@ const CollabTablas = ({ route }) => {
       );
     }
   }, [route.params.planData]);
-
-  const [currentUserWithFirma, setCurrentUserWithFirma] = useState(null);
-  const { currentUser } = route.params || {};
-  const userRole = currentUser?.roles?.[0]?.toLowerCase() || currentUser?.position?.toLowerCase();
-  const userId = currentUser?._id;
 
   const fetchUserWithFirma = async () => {
     try {
@@ -162,6 +205,7 @@ const CollabTablas = ({ route }) => {
       ]
     : [];
 
+  // ✍️ Firmar plan
   const handleFirmarPlan = () => {
     if (userRole === 'jefe' || userRole === 'jefe_area' || userRole === 'jefe de área') {
       navigation.navigate('ObsFirma', {
@@ -179,9 +223,7 @@ const CollabTablas = ({ route }) => {
     }
 
     if (userRole === 'supervisor' && userId === supervisorId) {
-      const isSupervisorSigned =
-        appliedSupervisorFirma && appliedSupervisorFirma !== 'Firma pendiente';
-      if (isSupervisorSigned) {
+      if (hasUserSigned()) {
         Alert.alert('Ya Firmado', 'El supervisor ya ha aplicado una firma a este plan.');
         return;
       }
@@ -198,9 +240,6 @@ const CollabTablas = ({ route }) => {
   };
 
   const firmarSupervisor = async () => {
-    setShowSmallButtons(false);
-
-    // Limpieza automática del setup antes de enviar
     const payload = cleanSetupPayload(currentSetup);
     payload.firmaSupervisor = currentUser?.firma;
 
@@ -208,12 +247,10 @@ const CollabTablas = ({ route }) => {
       const accessToken = await AsyncStorage.getItem('accessToken');
       if (!accessToken) {
         Alert.alert('Error de Autenticación', 'No autorizado. Por favor, inicia sesión nuevamente.');
-        setShowSmallButtons(true);
         return;
       }
 
-      const apiUrl = getApiUrl(`setupIzaje/${currentSetup._id}`);
-      const response = await fetch(apiUrl, {
+      const response = await fetch(getApiUrl(`setupIzaje/${currentSetup._id}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -223,48 +260,85 @@ const CollabTablas = ({ route }) => {
       });
 
       if (!response.ok) {
-        const errorResponseText = await response.text();
-        let errorMessage = 'Error desconocido al firmar.';
-        try {
-          const errorData = JSON.parse(errorResponseText);
-          errorMessage = errorData.message || errorMessage;
-        } catch {
-          errorMessage = `Error del servidor: ${errorResponseText.substring(0, 100)}...`;
-        }
-        Alert.alert('Error al firmar', errorMessage);
-        setShowSmallButtons(true);
+        const errorText = await response.text();
+        Alert.alert('Error al firmar', errorText.substring(0, 100));
         return;
       }
 
       const data = await response.json();
-      Alert.alert('Firma Exitosa', 'Tu firma ha sido aplicada al plan de izaje.');
-      if (data && data.updatedSetupIzaje) {
-        setCurrentSetup(data.updatedSetupIzaje);
-        navigation.setParams({ planData: data.updatedSetupIzaje });
+
+      if (data?.updatedSetupIzaje) {
+        const updated = data.updatedSetupIzaje;
+        setCurrentSetup(updated);
+        setAppliedSupervisorFirma(updated.firmaSupervisor || null);
+        setAppliedJefeAreaFirma(updated.firmaJefeArea || null);
+
+        Alert.alert(
+          'Firma aplicada',
+          'Tu firma fue registrada exitosamente.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                navigation.navigate({
+                  name: 'CollabTablas',
+                  params: { refresh: true },
+                  merge: true,
+                });
+
+                setTimeout(() => {
+                  navigation.goBack();
+                }, 150);
+              },
+            },
+          ],
+          { cancelable: false }
+        );
       }
     } catch (error) {
       console.log('Error al firmar:', error);
       Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor.');
-    } finally {
-      setShowSmallButtons(true);
     }
   };
 
+
+  // 📄 Generar PDF
   const handleEnviarPdf = async () => {
     if (isLoadingPdf) return;
+    if (!currentSetup) {
+      Alert.alert('Error', 'No hay datos del plan cargados para generar el PDF.');
+      return;
+    }
+
     setIsLoadingPdf(true);
     try {
       const pdfData = {
-        selectedGrua: currentSetup?.grua,
-        maniobraRows: datosTablaManiobra,
-        gruaRows: datosTablaGrua,
-        datosTablaProyecto,
-        datosTablaXYZ,
-        ilustracionGrua: currentSetup?.ilustracionGrua,
-        ilustracionCarga: currentSetup?.ilustracionForma,
+        selectedGrua: currentSetup?.grua || {},
+        maniobraRows: Array.isArray(datosTablaManiobra) ? datosTablaManiobra : [],
+        gruaRows: Array.isArray(datosTablaGrua) ? datosTablaGrua : [],
+        datosTablaProyecto: Array.isArray(datosTablaProyecto) ? datosTablaProyecto : [],
+        datosTablaXYZ: Array.isArray(datosTablaXYZ) ? datosTablaXYZ : [],
+        ilustracionGrua: currentSetup?.ilustracionGrua || null,
+        ilustracionCarga: currentSetup?.ilustracionForma || null,
       };
+
+      // 🚨 Validación: si algo viene vacío, detenemos la ejecución
+      if (
+        !pdfData.maniobraRows.length ||
+        !pdfData.gruaRows.length ||
+        !pdfData.datosTablaProyecto.length
+      ) {
+        Alert.alert(
+          'Datos incompletos',
+          'No se puede generar el PDF porque faltan datos del plan. Revisa que todo esté completado.'
+        );
+        setIsLoadingPdf(false);
+        return;
+      }
+
       await generarPDF(pdfData);
     } catch (error) {
+      console.log('Error generando el PDF:', error);
       Alert.alert('Error', 'Ocurrió un error al generar el PDF.');
     } finally {
       setIsLoadingPdf(false);
@@ -281,7 +355,10 @@ const CollabTablas = ({ route }) => {
         <Text style={TablasStyles.title}>Detalles del plan de izaje</Text>
       </View>
 
-      <ScrollView style={[TablasStyles.tableContainer, { top: 0, paddingHorizontal: 5 }]} contentContainerStyle={{ paddingBottom: 20 }}>
+      <ScrollView
+        style={[TablasStyles.tableContainer, { top: 0, paddingHorizontal: 5 }]}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
         <Components.Tabla titulo="Información del proyecto" data={datosTablaProyecto} />
         <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
         <View style={{ marginBottom: 10, alignItems: 'left', right: 35 }}>
@@ -410,7 +487,7 @@ const CollabTablas = ({ route }) => {
       </ScrollView>
 
       {/* Botones inferiores */}
-      {showSmallButtons && !isCapataz ? (
+      {!isCapataz && (
         <View
           style={{
             flexDirection: 'row',
@@ -421,7 +498,7 @@ const CollabTablas = ({ route }) => {
             left: -26,
           }}
         >
-          {canSign && <Components.Button label="Firmar Plan" onPress={() => handleFirmarPlan()} style={{ width: '48%' }} />}
+          {canSign && <Components.Button label="Firmar Plan" onPress={handleFirmarPlan} style={{ width: '48%' }} />}
           <Components.Button
             label={isLoadingPdf ? 'Generando...' : 'Enviar PDF'}
             onPress={handleEnviarPdf}
@@ -429,13 +506,6 @@ const CollabTablas = ({ route }) => {
             disabled={isLoadingPdf}
           />
         </View>
-      ) : (
-        <Components.Button
-          label={isLoadingPdf ? 'Generando...' : 'Enviar PDF'}
-          onPress={handleEnviarPdf}
-          style={[TablasStyles.button, { width: '90%', position: 'absolute', bottom: 30, left: -33 }]}
-          disabled={isLoadingPdf}
-        />
       )}
 
       {/* Bottom Sheets */}
