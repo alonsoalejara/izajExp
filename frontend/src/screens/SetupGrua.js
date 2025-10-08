@@ -178,27 +178,25 @@ const SetupGrua = () => {
     if (Object.keys(errors).length === 0 && !errIz && !errMont && !radioIzajeError && !radioMontajeError) {
       if (viewShotRef.current && grua?.nombre === 'Terex RT555') {
         try {
-          const uri = await viewShotRef.current.capture({ format: 'jpg', quality: 0.9 });
+          const uri = await viewShotRef.current.capture({
+            format: 'jpg',
+            quality: 0.4, // compresión moderada
+            result: 'tmpfile',
+          });
 
-          // 📸 Reducimos el tamaño y calidad usando expo-image-manipulator
           const manipulatedImage = await ImageManipulator.manipulateAsync(
             uri,
-            [{ resize: { width: 1200 } }], // ajusta el ancho, mantiene proporción
+            [{ resize: { width: 400 } }],
             {
-              compress: 0.8, // 0.8 mantiene buena calidad visual
+              compress: 0.4,
               format: ImageManipulator.SaveFormat.JPEG,
-              base64: true, // devuelve directamente el string Base64
+              base64: true,
             }
           );
 
-          // El resultado ya trae el Base64 comprimido
+          // ✅ Prefijo MIME obligatorio
           dataToSend.ilustracionGrua = `data:image/jpeg;base64,${manipulatedImage.base64}`;
 
-          // Límite de seguridad (opcional, evita saturar la base de datos)
-          if (dataToSend.ilustracionGrua.length > 1200000) {
-            console.warn('Imagen aún demasiado grande. Se usará "NoDisponible".');
-            dataToSend.ilustracionGrua = "NoDisponible";
-          }
         } catch (error) {
           console.error("Error al capturar/comprimir la imagen:", error);
           dataToSend.ilustracionGrua = "NoDisponible";
@@ -207,8 +205,20 @@ const SetupGrua = () => {
         dataToSend.ilustracionGrua = "NoDisponible";
       }
 
-      await AsyncStorage.setItem('setupGruaData', JSON.stringify(dataToSend));
-      navigation.navigate('SetupAparejos', allDataToSend);
+      await AsyncStorage.setItem(
+        'setupGruaData',
+        JSON.stringify({
+          ...dataToSend,
+          ilustracionGrua: dataToSend.ilustracionGrua.startsWith('data:image')
+            ? dataToSend.ilustracionGrua
+            : `data:image/jpeg;base64,${dataToSend.ilustracionGrua}`,
+        })
+      );
+      navigation.navigate('SetupAparejos', {
+        planData,
+        setupCargaData,
+        setupGruaData: { ...dataToSend, ilustracionGrua: 'GuardadaEnAsyncStorage' },
+      });
     }
   };
 
@@ -322,34 +332,34 @@ const SetupGrua = () => {
                 <View style={{ width: 150 }} />
               )}
 
-            <View style={styles.visualizationGruaContainer}>
-              {!grua ? (
-                <Text style={[styles.labelText, { color: '#ccc' }]}>
-                  Debe seleccionar una grúa para visualizar.
-                </Text>
-              ) : grua.nombre === 'Terex RT555' ? (
-                <ViewShot
-                  ref={viewShotRef}
-                  options={{ format: 'png', quality: 0.2 }}
-                  style={{ flex: 1, width: '100%' }} // Usa flex: 1 para que se ajuste al padre
-                >
-                  <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }}>
-                    <View style={getGridContainerStyle(largoPluma)}>
-                      <RenderGrid boomLength={largoPluma} />
+              <View style={styles.visualizationGruaContainer}>
+                {!grua ? (
+                  <Text style={[styles.labelText, { color: '#ccc' }]}>
+                    Debe seleccionar una grúa para visualizar.
+                  </Text>
+                ) : grua.nombre === 'Terex RT555' ? (
+                  <ViewShot
+                    ref={viewShotRef}
+                    options={{ format: 'jpg', quality: 0.8 }}
+                    style={{ flex: 1, width: '100%' }}
+                  >
+                    <View style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }}>
+                      <View style={getGridContainerStyle(largoPluma)}>
+                        <RenderGrid boomLength={largoPluma} />
+                      </View>
+                      <GruaIllustration
+                        alturaType={getAlturaType(largoPluma)}
+                        largoPluma={largoPluma}
+                        inclinacion={gradoInclinacionVisual}
+                        radioTrabajoMaximo={radioTrabajoMaximo}
+                        style={getGruaIllustrationStyle(largoPluma)}
+                      />
                     </View>
-                    <GruaIllustration
-                      alturaType={getAlturaType(largoPluma)}
-                      largoPluma={largoPluma}
-                      inclinacion={gradoInclinacionVisual}
-                      radioTrabajoMaximo={radioTrabajoMaximo}
-                      style={getGruaIllustrationStyle(largoPluma)}
-                    />
-                  </View>
-                </ViewShot>
-              ) : (
-                <Text style={styles.labelText}>No disponible</Text>
-              )}
-            </View>
+                  </ViewShot>
+                ) : (
+                  <Text style={styles.labelText}>No disponible</Text>
+                )}
+              </View>
 
             </View>
           </ScrollView>
@@ -376,17 +386,6 @@ const SetupGrua = () => {
       </View>
     </TouchableWithoutFeedback>
   );
-};
-
-const convertUriToBase64 = async (uri) => {
-  const response = await fetch(uri);
-  const blob = await response.blob();
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
 };
 
 export default SetupGrua;

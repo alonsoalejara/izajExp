@@ -185,17 +185,26 @@ const setupIzajeBodySchema = Joi.object({
     "any.required": "La versión es obligatoria.",
     "number.allowOnly": "La versión solo puede ser 0, 1, 2 o 3.",
   }),
-  ilustracionGrua: Joi.string()
-    .valid("NoDisponible")
-    .optional()
-    .allow(null, Joi.string())
+  ilustracionGrua: Joi.alternatives()
+    .try(
+      Joi.string().pattern(/^[A-Za-z0-9+/=]+$/),
+      Joi.string().pattern(/^data:image\/[a-zA-Z]+;base64,[A-Za-z0-9+/=]+$/),
+      Joi.string().valid("NoDisponible")
+    )
+    .required()
     .messages({
-      "string.base": "La ilustración de la grúa debe ser un string.",
-      "any.only": "La ilustración de la grúa debe ser un string en base64 o 'NoDisponible'.",
+      "alternatives.match": "La ilustración de la grúa debe ser un string en base64 o 'NoDisponible'.",
     }),
-  ilustracionForma: Joi.string().optional().allow(null).messages({
-    "string.base": "La ilustración de la forma debe ser un string.",
-  }),
+  ilustracionForma: Joi.alternatives()
+    .try(
+      Joi.string().pattern(/^[A-Za-z0-9+/=]+$/),
+      Joi.string().pattern(/^data:image\/[a-zA-Z]+;base64,[A-Za-z0-9+/=]+$/),
+      Joi.string().valid("NoDisponible"),
+      Joi.allow(null)
+    )
+    .messages({
+      "alternatives.match": "La ilustración de la forma debe ser un string en base64 o 'NoDisponible'.",
+    }),
   estado: Joi.string().valid('Aprobado', 'Rechazado', 'Pendiente').required().messages({
     "string.base": "El estado debe ser un string.",
     "any.required": "El estado es obligatorio.",

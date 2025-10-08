@@ -206,7 +206,18 @@ const Tablas = ({ route, navigation }) => {
           text: 'Confirmar',
           onPress: async () => {
             try {
-              // Extraer valores de la tabla para el payload
+              // ✅ Recuperar ilustración real desde AsyncStorage si viene guardada
+              if (setupGruaData?.ilustracionGrua === 'GuardadaEnAsyncStorage') {
+                const storedGruaData = await AsyncStorage.getItem('setupGruaData');
+                if (storedGruaData) {
+                  const parsed = JSON.parse(storedGruaData);
+                  setupGruaData.ilustracionGrua = parsed.ilustracionGrua;
+                } else {
+                  setupGruaData.ilustracionGrua = 'NoDisponible';
+                }
+              }
+
+              // --- Extraer valores de la tabla para el payload ---
               const extractValue = (data, description, isNumber = true) => {
                 const item = data.find(i => i.descripcion === description);
                 if (!item || !item.cantidad) {
@@ -218,7 +229,7 @@ const Tablas = ({ route, navigation }) => {
 
               const alturaParaBackend = String(extractValue(datosTablaManiobra, 'Distancia gancho-elemento aprox.'));
 
-              // Mapear los aparejos
+              // --- Mapear los aparejos ---
               const aparejos = datosTablaAparejosIndividuales.map(item => {
                 const tensionValue = item.detalles.find(d => d.label === 'Tensión')?.valor;
                 const parsedTension = parseFloat(tensionValue?.replace(' ton', '') || 0) || 0;
@@ -240,37 +251,35 @@ const Tablas = ({ route, navigation }) => {
 
               const MAX_BASE64_LENGTH = 50000;
 
-              // Se elimina el prefijo de la URI de datos y se maneja el caso de que no haya imagen
+              // --- Procesar ilustración de la grúa ---
               let ilustracionGruaFinal = setupGruaData?.ilustracionGrua;
               if (ilustracionGruaFinal && ilustracionGruaFinal.startsWith('data:image/')) {
+                // 🧩 El backend solo acepta base64 puro
                 ilustracionGruaFinal = ilustracionGruaFinal.split(',')[1];
                 if (ilustracionGruaFinal.length > MAX_BASE64_LENGTH) {
                   ilustracionGruaFinal = 'NoDisponible';
-                  console.warn('La imagen de la grúa es demasiado grande. Se enviará "NoDisponible".');
+                  console.warn('⚠️ La imagen de la grúa es demasiado grande. Se enviará "NoDisponible".');
                 }
               } else if (!ilustracionGruaFinal) {
                 ilustracionGruaFinal = 'NoDisponible';
               }
-              
-              // Se elimina el prefijo de la URI de datos y se maneja el caso de que no haya imagen
+
+              // --- Procesar ilustración de la carga ---
               let ilustracionCargaFinal = setupCargaData?.ilustracionCarga;
               if (ilustracionCargaFinal && ilustracionCargaFinal.startsWith('data:image/')) {
+                // 🧩 El backend solo acepta base64 puro
                 ilustracionCargaFinal = ilustracionCargaFinal.split(',')[1];
                 if (ilustracionCargaFinal.length > MAX_BASE64_LENGTH) {
                   ilustracionCargaFinal = 'NoDisponible';
-                  console.warn('La imagen de la carga es demasiado grande. Se enviará "NoDisponible".');
+                  console.warn('⚠️ La imagen de la carga es demasiado grande. Se enviará "NoDisponible".');
                 }
               } else if (!ilustracionCargaFinal) {
                 ilustracionCargaFinal = 'NoDisponible';
               }
-              
-              // --- AGREGANDO LÍNEA PARA DEPURAR EL VALOR EN LA CONSOLA ---
-              console.log('Valor de ilustracionGrua que se enviará al backend:', ilustracionGruaFinal);
-              // --- FIN DE LA LÍNEA DE DEPURACIÓN ---
 
-              // Construir el payload para el backend
+              // --- Construir el payload para el backend ---
               const finalData = {
-                proyecto: planData?.proyecto?._id,  // 👈 antes tenías nombreProyecto
+                proyecto: planData?.proyecto?._id,
                 aparejos,
                 grua: setupGruaData?.grua?._id,
                 largoPluma: parseFloat(combinedData.largoPluma) || 0,
@@ -313,14 +322,13 @@ const Tablas = ({ route, navigation }) => {
                 version: planId ? currentVersion + 1 : 1,
               };
 
-              // Obtener el token de acceso
+              // --- Enviar al backend ---
               const accessToken = await AsyncStorage.getItem('accessToken');
               if (!accessToken) {
                 Alert.alert('No autorizado', 'Por favor, inicie sesión nuevamente.');
                 return;
               }
 
-              // Configurar la URL y el método HTTP (POST para nuevo, PUT para actualizar)
               let apiUrl = getApiUrl('setupIzaje/');
               let httpMethod = 'POST';
               if (planId) {
@@ -370,7 +378,7 @@ const Tablas = ({ route, navigation }) => {
     }
   };
 
-return (
+  return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <Components.Header />
       <View style={styles.titleContainer}>
