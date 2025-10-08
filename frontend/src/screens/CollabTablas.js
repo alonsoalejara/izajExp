@@ -356,15 +356,37 @@ const CollabTablas = ({ route }) => {
 
     setIsLoadingPdf(true);
     try {
+      const aparejosDetailed = Array.isArray(currentSetup?.aparejos)
+        ? currentSetup.aparejos.map((a, index) => ({
+            descripcionPrincipal: {
+              item: index + 1,
+              descripcion: a.descripcion || 'N/A',
+            },
+            detalles: [
+              { label: 'Largo', valor: a.largo ? `${a.largo} m` : 'N/A' },
+              { label: 'Peso', valor: a.pesoUnitario ? `${a.pesoUnitario} ton` : 'N/A' },
+              { label: 'Tensión', valor: a.tension ? `${a.tension} ton` : 'N/A' },
+              { label: 'Grillete', valor: a.grillete || 'N/A' },
+              { label: 'Peso Grillete', valor: a.pesoGrillete ? `${a.pesoGrillete} ton` : 'N/A' },
+            ],
+          }))
+        : [];
+
+      const totalPesoAparejos = Array.isArray(currentSetup?.aparejos)
+        ? currentSetup.aparejos.reduce(
+            (total, a) => total + (parseFloat(a.pesoUnitario || 0) + parseFloat(a.pesoGrillete || 0)),
+            0
+          )
+        : 0;
+
       const pdfData = {
         selectedGrua: currentSetup?.grua || {},
         maniobraRows: Array.isArray(datosTablaManiobra) ? datosTablaManiobra : [],
         gruaRows: Array.isArray(datosTablaGrua) ? datosTablaGrua : [],
         datosTablaProyecto: Array.isArray(datosTablaProyecto) ? datosTablaProyecto : [],
         datosTablaXYZ: Array.isArray(datosTablaXYZ) ? datosTablaXYZ : [],
-        aparejosRows: [], // <--- ✅ Evita error .map undefined
-        aparejosDetailed: [], // <--- ✅ Evita error .map undefined
-        totalPesoAparejos: 0, // <--- opcional, algunos PDF lo usan
+        aparejosDetailed,
+        totalPesoAparejos,
         ilustracionGrua: currentSetup?.ilustracionGrua
           ? `data:image/png;base64,${currentSetup.ilustracionGrua}`
           : null,
