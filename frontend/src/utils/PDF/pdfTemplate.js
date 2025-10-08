@@ -15,7 +15,6 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
     const distanciaGanchoElementoItem = cargaRows.find(
         item => item.descripcion === 'Distancia gancho-elemento aprox.'
     );
-    const altura = distanciaGanchoElementoItem?.cantidad || distanciaGanchoElementoItem?.valor || 'N/A';
 
     return `
         <!DOCTYPE html>
@@ -74,7 +73,6 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
                                 <th>Largo (m)</th>
                                 <th>Grillete</th>
                                 <th>Peso Grillete (ton)</th>
-                                <th>Altura (m)</th>
                                 <th>Tensión</th>
                             </tr>
                         </thead>
@@ -94,7 +92,6 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
                                         <td>${largo}</td>
                                         <td>${grillete}</td>
                                         <td>${pesoGrillete}</td>
-                                        <td>${altura}</td>
                                         <td>${tension}</td>
                                     </tr>
                                 `;
