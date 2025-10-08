@@ -225,20 +225,41 @@ export const generarHTML = (planData, cargaRows, datosGruaRows, aparejosDetailed
                 </div>
 
                 <div class="person-info">
-                    <div class="person-block">
-                        <span class="signature-status" id="supervisorSignature"></span>
-                        <div class="signature-line">
-                            <span id="supervisorFullName">${planData.supervisor?.nombreCompleto || 'Firma del Supervisor'}</span>
-                        </div>
-                        <p class="person-role">Supervisor</p>
+                <div class="person-block" style="page-break-inside: avoid;">
+                    <!-- Firma del Supervisor -->
+                    ${
+                    planData.firmaSupervisor
+                        ? `<img
+                            src="${planData.firmaSupervisor}"
+                            alt="Firma Supervisor"
+                            style="width:150px;height:80px;object-fit:contain;border:1px solid #ccc;border-radius:6px;display:block;margin:0 auto 8px;"
+                            />`
+                        : `<span class="signature-status" id="supervisorSignature">[Firma del supervisor pendiente]</span>`
+                    }
+
+                    <div class="signature-line">
+                    <span id="supervisorFullName">${planData.supervisor?.nombreCompleto || 'Firma del Supervisor'}</span>
                     </div>
-                    <div class="person-block">
-                        <span class="signature-status" id="jefeAreaSignature"></span>
-                        <div class="signature-line">
-                            <span id="jefeAreaFullName">${planData.jefeArea?.nombreCompleto || 'Firma del Jefe de Área'}</span>
-                        </div>
-                        <p class="person-role">Jefe de Área</p>
+                    <p class="person-role">Supervisor</p>
+                </div>
+
+                <div class="person-block" style="page-break-inside: avoid;">
+                    <!-- Firma del Jefe de Área -->
+                    ${
+                    planData.firmaJefeArea
+                        ? `<img
+                            src="${planData.firmaJefeArea}"
+                            alt="Firma Jefe de Área"
+                            style="width:150px;height:80px;object-fit:contain;border:1px solid #ccc;border-radius:6px;display:block;margin:0 auto 8px;"
+                            />`
+                        : `<span class="signature-status" id="jefeAreaSignature">[Firma del jefe de área pendiente]</span>`
+                    }
+
+                    <div class="signature-line">
+                    <span id="jefeAreaFullName">${planData.jefeArea?.nombreCompleto || 'Firma del Jefe de Área'}</span>
                     </div>
+                    <p class="person-role">Jefe de Área</p>
+                </div>
                 </div>
 
                 <div class="date-info">

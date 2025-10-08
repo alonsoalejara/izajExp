@@ -42,34 +42,48 @@ export const generarPDF = async ({
   aparejosDetailed,
   ilustracionGrua,
   ilustracionCarga,
+  firmaSupervisor,
+  firmaJefeArea,
 }) => {
   try {
-    // ✅ Convierte el logo a Base64
-    const base64Logo = await convertirImagenABase64(require('../../../assets/EI-Montajes.png'));
+  // ✅ Convierte el logo a Base64
+  const base64Logo = await convertirImagenABase64(require('../../../assets/EI-Montajes.png'));
 
-    const findValue = (dataArray, descripcion) =>
-      dataArray.find((d) => d.descripcion === descripcion)?.nombre;
+  const findValue = (dataArray, descripcion) =>
+    dataArray.find((d) => d.descripcion === descripcion)?.nombre;
 
-    const planDataForHtml = {
-      nombreProyecto: findValue(datosTablaProyecto, 'Nombre Proyecto'),
-      capataz: { nombreCompleto: findValue(datosTablaProyecto, 'Capataz') },
-      supervisor: { nombreCompleto: findValue(datosTablaProyecto, 'Supervisor') },
-      jefeArea: { nombreCompleto: findValue(datosTablaProyecto, 'Jefe Área') },
-      version: datosTablaProyecto.find((d) => d.descripcion === 'Versión')?.nombre || '0',
-      ilustracionGrua,
-      ilustracionCarga,
-    };
+  const planDataForHtml = {
+    nombreProyecto: findValue(datosTablaProyecto, 'Nombre Proyecto'),
+    capataz: { nombreCompleto: findValue(datosTablaProyecto, 'Capataz') },
+    supervisor: { nombreCompleto: findValue(datosTablaProyecto, 'Supervisor') },
+    jefeArea: { nombreCompleto: findValue(datosTablaProyecto, 'Jefe Área') },
+    version: datosTablaProyecto.find((d) => d.descripcion === 'Versión')?.nombre || '0',
+    ilustracionGrua,
+    ilustracionCarga,
+    firmaSupervisor,
+    firmaJefeArea,
+  };
 
-    // ✅ Genera el HTML con todo incluido
-    const htmlContent = generarHTML(
-      planDataForHtml,
-      maniobraRows,
-      gruaRows,
-      aparejosDetailed,
-      totalPesoAparejos,
-      datosTablaXYZ,
-      base64Logo
-    );
+  // ✅ Debug: verificar si las firmas están presentes y son base64
+  console.log(
+    planDataForHtml.firmaSupervisor?.startsWith('data:image')
+      ? '✅ OK firmaSupervisor'
+      : '⚠️ Falta firmaSupervisor',
+    planDataForHtml.firmaJefeArea?.startsWith('data:image')
+      ? '✅ OK firmaJefeArea'
+      : '⚠️ Falta firmaJefeArea'
+  );
+
+  // ✅ Genera el HTML con todo incluido
+  const htmlContent = generarHTML(
+    planDataForHtml,
+    maniobraRows,
+    gruaRows,
+    aparejosDetailed,
+    totalPesoAparejos,
+    datosTablaXYZ,
+    base64Logo
+  );
 
     // ✅ Genera el PDF
     const { uri } = await printToFileAsync({ html: htmlContent });

@@ -393,6 +393,19 @@ const CollabTablas = ({ route }) => {
         ilustracionCarga: currentSetup?.ilustracionForma
           ? `data:image/png;base64,${currentSetup.ilustracionForma}`
           : null,
+
+        // 🖋️ Agrega las firmas en formato Base64
+        firmaSupervisor: appliedSupervisorFirma
+          ? (appliedSupervisorFirma.startsWith('data:')
+              ? appliedSupervisorFirma
+              : `data:image/png;base64,${appliedSupervisorFirma}`)
+          : null,
+
+        firmaJefeArea: appliedJefeAreaFirma
+          ? (appliedJefeAreaFirma.startsWith('data:')
+              ? appliedJefeAreaFirma
+              : `data:image/png;base64,${appliedJefeAreaFirma}`)
+          : null,
       };
 
       // 🚨 Validación: si algo viene vacío, detenemos la ejecución
