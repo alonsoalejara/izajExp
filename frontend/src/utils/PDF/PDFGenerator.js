@@ -64,16 +64,6 @@ export const generarPDF = async ({
     firmaJefeArea,
   };
 
-  // ✅ Debug: verificar si las firmas están presentes y son base64
-  console.log(
-    planDataForHtml.firmaSupervisor?.startsWith('data:image')
-      ? '✅ OK firmaSupervisor'
-      : '⚠️ Falta firmaSupervisor',
-    planDataForHtml.firmaJefeArea?.startsWith('data:image')
-      ? '✅ OK firmaJefeArea'
-      : '⚠️ Falta firmaJefeArea'
-  );
-
   // ✅ Genera el HTML con todo incluido
   const htmlContent = generarHTML(
     planDataForHtml,
