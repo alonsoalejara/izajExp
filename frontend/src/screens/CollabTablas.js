@@ -51,15 +51,33 @@ const CollabTablas = ({ route }) => {
           if (response.ok) {
             const data = await response.json();
             if (data?.data) {
-              setCurrentSetup(data.data);
+              const updated = data.data;
+
+              // ✅ Mantener valores originales del proyecto si el backend no los envía poblados
+              if (typeof updated.proyecto === 'string' && currentSetup?.proyecto?.nombre) {
+                updated.proyecto = currentSetup.proyecto;
+              }
+
+              // ✅ Mantener datos completos de la grúa si vienen solo como ID
+              if (typeof updated.grua === 'string' && currentSetup?.grua?.nombre) {
+                updated.grua = currentSetup.grua;
+              } else if (
+                typeof updated.grua === 'object' &&
+                !updated.grua?.contrapeso &&
+                currentSetup?.grua?.contrapeso
+              ) {
+                updated.grua.contrapeso = currentSetup.grua.contrapeso;
+              }
+
+              setCurrentSetup(updated);
               setAppliedSupervisorFirma(
-                data.data.firmaSupervisor && data.data.firmaSupervisor !== 'Firma pendiente'
-                  ? data.data.firmaSupervisor
+                updated.firmaSupervisor && updated.firmaSupervisor !== 'Firma pendiente'
+                  ? updated.firmaSupervisor
                   : null
               );
               setAppliedJefeAreaFirma(
-                data.data.firmaJefeArea && data.data.firmaJefeArea !== 'Firma pendiente'
-                  ? data.data.firmaJefeArea
+                updated.firmaJefeArea && updated.firmaJefeArea !== 'Firma pendiente'
+                  ? updated.firmaJefeArea
                   : null
               );
             }
@@ -125,6 +143,32 @@ const CollabTablas = ({ route }) => {
     return 'N/A';
   };
 
+  // 🔧 Validaciones extra para proyecto y grúa (maneja objeto o ID)
+  let nombreProyecto = 'N/A';
+  if (currentSetup?.proyecto) {
+    if (typeof currentSetup.proyecto === 'object') {
+      nombreProyecto = currentSetup.proyecto?.nombre || 'N/A';
+    } else if (typeof currentSetup.proyecto === 'string' && currentSetup?.proyectoNombre) {
+      nombreProyecto = currentSetup.proyectoNombre;
+    }
+  }
+
+  let nombreGrua = 'N/A';
+  let contrapesoGrua = 'N/A';
+  if (currentSetup?.grua) {
+    if (typeof currentSetup.grua === 'object') {
+      nombreGrua = currentSetup.grua?.nombre || 'N/A';
+      contrapesoGrua = currentSetup.grua?.contrapeso
+        ? `${currentSetup.grua.contrapeso} ton`
+        : 'N/A';
+    } else if (typeof currentSetup.grua === 'string' && currentSetup?.gruaNombre) {
+      nombreGrua = currentSetup.gruaNombre;
+      contrapesoGrua = currentSetup.gruaContrapeso
+        ? `${currentSetup.gruaContrapeso} ton`
+        : 'N/A';
+    }
+  }
+
   const hasUserSigned = () => {
     if (userRole === 'supervisor' && userId === supervisorId) {
       return appliedSupervisorFirma && appliedSupervisorFirma !== 'Firma pendiente';
@@ -153,7 +197,7 @@ const CollabTablas = ({ route }) => {
 
   // Tablas
   const datosTablaProyecto = [
-    { item: 1, descripcion: 'Nombre Proyecto', nombre: currentSetup?.proyecto?.nombre || 'N/A' },
+    { item: 1, descripcion: 'Nombre Proyecto', nombre: nombreProyecto },
     { item: 2, descripcion: 'Capataz', nombre: getFullName(currentSetup?.capataz) },
     { item: 3, descripcion: 'Supervisor', nombre: getFullName(currentSetup?.supervisor) },
     { item: 4, descripcion: 'Jefe Área', nombre: getFullName(currentSetup?.jefeArea) },
@@ -161,10 +205,10 @@ const CollabTablas = ({ route }) => {
   ];
 
   const datosTablaGrua = [
-    { descripcion: 'Grúa', cantidad: currentSetup?.grua?.nombre || 'N/A' },
+    { descripcion: 'Grúa', cantidad: nombreGrua },
     { descripcion: 'Largo de pluma', cantidad: currentSetup?.largoPluma || 'N/A' },
     { descripcion: 'Grado de inclinación', cantidad: currentSetup?.gradoInclinacion || 'N/A' },
-    { descripcion: 'Contrapeso', cantidad: `${currentSetup?.grua?.contrapeso || 0} ton` },
+    { descripcion: 'Contrapeso', cantidad: contrapesoGrua },
   ];
 
   const datosTablaManiobra = [
@@ -318,8 +362,15 @@ const CollabTablas = ({ route }) => {
         gruaRows: Array.isArray(datosTablaGrua) ? datosTablaGrua : [],
         datosTablaProyecto: Array.isArray(datosTablaProyecto) ? datosTablaProyecto : [],
         datosTablaXYZ: Array.isArray(datosTablaXYZ) ? datosTablaXYZ : [],
-        ilustracionGrua: currentSetup?.ilustracionGrua || null,
-        ilustracionCarga: currentSetup?.ilustracionForma || null,
+        aparejosRows: [], // <--- ✅ Evita error .map undefined
+        aparejosDetailed: [], // <--- ✅ Evita error .map undefined
+        totalPesoAparejos: 0, // <--- opcional, algunos PDF lo usan
+        ilustracionGrua: currentSetup?.ilustracionGrua
+          ? `data:image/png;base64,${currentSetup.ilustracionGrua}`
+          : null,
+        ilustracionCarga: currentSetup?.ilustracionForma
+          ? `data:image/png;base64,${currentSetup.ilustracionForma}`
+          : null,
       };
 
       // 🚨 Validación: si algo viene vacío, detenemos la ejecución
@@ -355,21 +406,51 @@ const CollabTablas = ({ route }) => {
         <Text style={TablasStyles.title}>Detalles del plan de izaje</Text>
       </View>
 
-      <ScrollView
-        style={[TablasStyles.tableContainer, { top: 0, paddingHorizontal: 5 }]}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      >
+      <ScrollView style={[TablasStyles.tableContainer, { top: 0, paddingHorizontal: 5 }]} contentContainerStyle={{ paddingBottom: 20 }}>
         <Components.Tabla titulo="Información del proyecto" data={datosTablaProyecto} />
         <Components.Tabla titulo="Información de la grúa" data={datosTablaGrua} />
-        <View style={{ marginBottom: 10, alignItems: 'left', right: 35 }}>
-          <Components.Button label="Ver grúa" onPress={() => setIsBottomSheetVisible(true)} style={{ width: 150, height: 47 }} />
-        </View>
+
+        {/* ✅ Tabla de Aparejos */}
+        {Array.isArray(currentSetup?.aparejos) && currentSetup.aparejos.length > 0 && (
+          <>
+            <Text style={[TablasStyles.sectionTitle, { marginLeft: 20 }]}>Aparejos</Text>
+            {currentSetup.aparejos.map((a, index) => (
+              <View key={`aparejo-${index}`}>
+                <View style={TablasStyles.tableSection}>
+                  <View style={TablasStyles.tableHeader}>
+                    <Text style={[TablasStyles.headerText, { flex: 1, textAlign: 'left', left: 10 }]}>Ítem</Text>
+                    <Text style={[TablasStyles.headerText, { flex: 2, textAlign: 'left' }]}>Descripción</Text>
+                  </View>
+                  <View style={[TablasStyles.row, { borderBottomWidth: 0 }]}>
+                    <Text style={[TablasStyles.cell, { flex: 1, textAlign: 'left', left: 10 }]}>{index + 1}</Text>
+                    <Text style={[TablasStyles.cell, { flex: 2, textAlign: 'left' }]}>{a.descripcion}</Text>
+                  </View>
+                </View>
+
+                <View style={[TablasStyles.tableSection, { marginTop: -10 }]}>
+                  <View style={[TablasStyles.tableHeader, { backgroundColor: '#ffeeee' }]}>
+                    <Text style={[TablasStyles.headerText, { flex: 1, textAlign: 'left', left: 10, color: '#dd0000' }]}>Largo</Text>
+                    <Text style={[TablasStyles.headerText, { flex: 1, textAlign: 'left', left: 10, color: '#dd0000' }]}>Peso</Text>
+                    <Text style={[TablasStyles.headerText, { flex: 1, textAlign: 'left', left: 20, color: '#dd0000' }]}>Tensión</Text>
+                    <Text style={[TablasStyles.headerText, { flex: 1, textAlign: 'left', left: 28, color: '#dd0000' }]}>Grillete</Text>
+                    <Text style={[TablasStyles.headerText, { flex: 2, textAlign: 'right', right: 10, color: '#dd0000' }]}>Peso Grillete</Text>
+                  </View>
+
+                  <View style={[TablasStyles.row, { borderBottomWidth: 0 }]}>
+                    <Text style={[TablasStyles.cell, { flex: 1, right: 12 }]}>{a.largo ? `${a.largo} m` : 'N/A'}</Text>
+                    <Text style={[TablasStyles.cell, { flex: 1, right: 12 }]}>{a.pesoUnitario ? `${a.pesoUnitario} ton` : 'N/A'}</Text>
+                    <Text style={[TablasStyles.cell, { flex: 1, right: 12 }]}>{a.tension ? `${a.tension} ton` : 'N/A'}</Text>
+                    <Text style={[TablasStyles.cell, { flex: 1, right: 12 }]}>{a.grillete || 'N/A'}</Text>
+                    <Text style={[TablasStyles.cell, { flex: 1, right: 12 }]}>{a.pesoGrillete ? `${a.pesoGrillete} ton` : 'N/A'}</Text>
+                  </View>
+                </View>
+                <View style={{ marginTop: -10 }} />
+              </View>
+            ))}
+          </>
+        )}
 
         <Components.Tabla titulo="Datos de la maniobra" data={datosTablaManiobra} />
-        <View style={{ marginBottom: 10, alignItems: 'left', right: 35 }}>
-          <Components.Button label="Ver elemento" onPress={() => setIsElementoBottomSheetVisible(true)} style={{ width: 150, height: 47 }} />
-        </View>
-
         <Components.Tabla titulo="Cálculo de centro de gravedad:" data={datosTablaXYZ} />
 
         {/* Estado y observaciones */}
