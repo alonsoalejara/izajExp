@@ -283,68 +283,61 @@ const CollabTablas = ({ route }) => {
     }
   };
 
-  const firmarSupervisor = async () => {
-    const payload = cleanSetupPayload(currentSetup);
-    payload.firmaSupervisor = currentUser?.firma;
+const firmarSupervisor = async () => {
+  const payload = cleanSetupPayload(currentSetup);
+  payload.firmaSupervisor = currentUser?.firma;
 
-    try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
-      if (!accessToken) {
-        Alert.alert('Error de Autenticación', 'No autorizado. Por favor, inicia sesión nuevamente.');
-        return;
-      }
-
-      const response = await fetch(getApiUrl(`setupIzaje/${currentSetup._id}`), {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        Alert.alert('Error al firmar', errorText.substring(0, 100));
-        return;
-      }
-
-      const data = await response.json();
-
-      if (data?.updatedSetupIzaje) {
-        const updated = data.updatedSetupIzaje;
-        setCurrentSetup(updated);
-        setAppliedSupervisorFirma(updated.firmaSupervisor || null);
-        setAppliedJefeAreaFirma(updated.firmaJefeArea || null);
-
-        Alert.alert(
-          'Firma aplicada',
-          'Tu firma fue registrada exitosamente.',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                navigation.navigate({
-                  name: 'CollabTablas',
-                  params: { refresh: true },
-                  merge: true,
-                });
-
-                setTimeout(() => {
-                  navigation.goBack();
-                }, 150);
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-      }
-    } catch (error) {
-      console.log('Error al firmar:', error);
-      Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor.');
+  try {
+    const accessToken = await AsyncStorage.getItem('accessToken');
+    if (!accessToken) {
+      Alert.alert('Error de Autenticación', 'No autorizado. Por favor, inicia sesión nuevamente.');
+      return;
     }
-  };
 
+    const response = await fetch(getApiUrl(`setupIzaje/${currentSetup._id}`), {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      const message = data?.message || 'Error al firmar el plan.';
+      Alert.alert('Error al firmar', message);
+      return;
+    }
+
+    const updatedPlan = data.updatedSetupIzaje || data.data || data;
+
+    if (updatedPlan) {
+      setCurrentSetup(updatedPlan);
+      setAppliedSupervisorFirma(updatedPlan.firmaSupervisor || null);
+      setAppliedJefeAreaFirma(updatedPlan.firmaJefeArea || null);
+
+      Alert.alert(
+        'Firma aplicada',
+        'Tu firma fue registrada exitosamente.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.navigate('Tabs', { screen: 'Perfil' });
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    } else {
+      Alert.alert('Error', 'La respuesta del servidor no contiene datos actualizados.');
+    }
+  } catch (error) {
+    console.log('Error al firmar:', error);
+    Alert.alert('Error de Conexión', 'No se pudo conectar con el servidor.');
+  }
+};
 
   // 📄 Generar PDF
   const handleEnviarPdf = async () => {
