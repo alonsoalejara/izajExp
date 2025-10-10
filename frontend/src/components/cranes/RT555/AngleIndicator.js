@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   text: {
     color: 'red',
     fontWeight: 'bold',
-    fontSize: 40,
+    fontSize: 52,
     left: 20,
   },
 });

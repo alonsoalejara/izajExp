@@ -6,6 +6,7 @@ import BaseGrua from './BaseGrua';
 import Rigging from './rigging/rigging.index';
 import CargaGrua from './CargaGrua';
 import AngleIndicator from './AngleIndicator';
+import PlumaIndicator from './PlumaIndicator';
 
 const RT555 = {
   RuedasGrua,
@@ -16,6 +17,7 @@ const RT555 = {
   Rigging,
   CargaGrua,
   AngleIndicator,
+  PlumaIndicator,
 };
 
 export default RT555;

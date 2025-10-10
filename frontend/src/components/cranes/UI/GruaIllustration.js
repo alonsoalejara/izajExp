@@ -55,6 +55,7 @@ export default function GruaIllustration({
               alturaType={alturaType}
               inclinacion={inclinacion}
             />
+            <RT555.PlumaIndicator largoPluma={largoPluma} inclinacion={inclinacion} />
           </View>
         </View>
       </SafeAreaView>

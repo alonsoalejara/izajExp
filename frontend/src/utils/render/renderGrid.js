@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     height: 30,
     backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#f5f5f5ff',
   },
   axisLabelX: {
     position: 'absolute',
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   axisLabelY: {
     position: 'absolute',
-    color: 'black',
+    color: 'white',
     fontSize: 14,
     fontWeight: 'bold',
     transform: [{ translateY: -15 }],
