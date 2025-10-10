@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { BarChart, PieChart } from 'react-native-chart-kit';
+import { captureRef } from 'react-native-view-shot';
 import { useFetchData } from '../../../hooks/useFetchData';
+import Components from '../../Components.index';
+import { generarPDFEstadisticas } from '../../../utils/PDF/StatsPDFGenerator';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -19,6 +22,11 @@ export default function DataSection() {
     duracionPromedio: [],
     estadoBreakdown: {},
   });
+
+  // 🔹 Referencias a los gráficos para captura de imagen
+  const especialidadRef = useRef();
+  const duracionRef = useRef();
+  const estadoRef = useRef();
 
   useEffect(() => {
     if (setupIzajes.length > 0 && users.length > 0) {
@@ -79,80 +87,114 @@ export default function DataSection() {
 
   const chartWidth = screenWidth * 0.85;
 
+  // 🔹 Función para capturar las imágenes y generar el PDF
+  const handleExportPDF = async () => {
+    try {
+      const [imgEspecialidad, imgDuracion, imgEstado] = await Promise.all([
+        captureRef(especialidadRef, { format: 'png', quality: 0.95, result: 'base64' }),
+        captureRef(duracionRef, { format: 'png', quality: 0.95, result: 'base64' }),
+        captureRef(estadoRef, { format: 'png', quality: 0.95, result: 'base64' }),
+      ]);
+
+      await generarPDFEstadisticas(stats, {
+        imgEspecialidad: `data:image/png;base64,${imgEspecialidad}`,
+        imgDuracion: `data:image/png;base64,${imgDuracion}`,
+        imgEstado: `data:image/png;base64,${imgEstado}`,
+      });
+    } catch (err) {
+      console.error('Error capturando gráficos para PDF:', err);
+    }
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ alignItems: 'center' }}>
       {/* CARD 1 - Uso por especialidad */}
-      <Card>
-        <Text style={styles.title}>👷‍♂️ Uso de la App por Especialidad</Text>
-        {Object.keys(stats.especialidadBreakdown).length > 0 ? (
-          <PieChart
-            data={Object.entries(stats.especialidadBreakdown).map(([name, value], i) => ({
-              name,
-              population: Number(value) || 0,
-              color: ['#ff4d4d', '#ff9933', '#ffcc00', '#66cc66', '#3399ff', '#999999'][i % 6],
-              legendFontColor: '#333',
-              legendFontSize: 13,
-            }))}
-            width={chartWidth}
-            height={220}
-            accessor="population"
-            backgroundColor="transparent"
-            paddingLeft="15"
-            chartConfig={chartConfig}
-            absolute
-          />
-        ) : (
-          <Text style={styles.noData}>No hay datos suficientes</Text>
-        )}
-      </Card>
+      <View ref={especialidadRef} collapsable={false}>
+        <Card>
+          <Text style={styles.title}>👷‍♂️ Uso de la App por Especialidad</Text>
+          {Object.keys(stats.especialidadBreakdown).length > 0 ? (
+            <PieChart
+              data={Object.entries(stats.especialidadBreakdown).map(([name, value], i) => ({
+                name,
+                population: Number(value) || 0,
+                color: ['#ff4d4d', '#ff9933', '#ffcc00', '#66cc66', '#3399ff', '#999999'][i % 6],
+                legendFontColor: '#333',
+                legendFontSize: 13,
+              }))}
+              width={chartWidth}
+              height={220}
+              accessor="population"
+              backgroundColor="transparent"
+              paddingLeft="15"
+              chartConfig={chartConfig}
+              absolute
+            />
+          ) : (
+            <Text style={styles.noData}>No hay datos suficientes</Text>
+          )}
+        </Card>
+      </View>
 
       {/* CARD 2 - Tiempo promedio de duración */}
-      <Card>
-        <Text style={styles.title}>⏱️ Duración Promedio de Planes (Horas)</Text>
-        {stats.duracionPromedio.length > 0 ? (
-          <BarChart
-            data={{
-              labels: stats.duracionPromedio.map(d => d.name),
-              datasets: [{ data: stats.duracionPromedio.map(d => Number(d.value)) }],
-            }}
-            width={chartWidth}
-            height={220}
-            fromZero
-            yAxisSuffix="h"
-            chartConfig={{
-              ...chartConfig,
-              decimalPlaces: 2,
-            }}
-          />
-        ) : (
-          <Text style={styles.noData}>No hay datos suficientes</Text>
-        )}
-      </Card>
+      <View ref={duracionRef} collapsable={false}>
+        <Card>
+          <Text style={styles.title}>⏱️ Duración Promedio de Planes (Horas)</Text>
+          {stats.duracionPromedio.length > 0 ? (
+            <BarChart
+              data={{
+                labels: stats.duracionPromedio.map(d => d.name),
+                datasets: [{ data: stats.duracionPromedio.map(d => Number(d.value)) }],
+              }}
+              width={chartWidth}
+              height={220}
+              fromZero
+              yAxisSuffix="h"
+              chartConfig={{
+                ...chartConfig,
+                decimalPlaces: 2,
+              }}
+            />
+          ) : (
+            <Text style={styles.noData}>No hay datos suficientes</Text>
+          )}
+        </Card>
+      </View>
 
       {/* CARD 3 - Métrica de éxito/aprobación */}
-      <Card>
-        <Text style={styles.title}>✅ Métrica de Aprobación de Planes</Text>
-        {Object.keys(stats.estadoBreakdown).length > 0 ? (
-          <PieChart
-            data={Object.entries(stats.estadoBreakdown).map(([name, value], i) => ({
-              name,
-              population: Number(value) || 0,
-              color: ['#4CAF50', '#FFC107', '#F44336'][i % 3],
-              legendFontColor: '#333',
-              legendFontSize: 13,
-            }))}
-            width={chartWidth}
-            height={220}
-            accessor="population"
-            backgroundColor="transparent"
-            paddingLeft="15"
-            chartConfig={chartConfig}
-            absolute
-          />
-        ) : (
-          <Text style={styles.noData}>No hay datos suficientes</Text>
-        )}
-      </Card>
+      <View ref={estadoRef} collapsable={false}>
+        <Card>
+          <Text style={styles.title}>✅ Métrica de Aprobación de Planes</Text>
+          {Object.keys(stats.estadoBreakdown).length > 0 ? (
+            <PieChart
+              data={Object.entries(stats.estadoBreakdown).map(([name, value], i) => ({
+                name,
+                population: Number(value) || 0,
+                color: ['#4CAF50', '#FFC107', '#F44336'][i % 3],
+                legendFontColor: '#333',
+                legendFontSize: 13,
+              }))}
+              width={chartWidth}
+              height={220}
+              accessor="population"
+              backgroundColor="transparent"
+              paddingLeft="15"
+              chartConfig={chartConfig}
+              absolute
+            />
+          ) : (
+            <Text style={styles.noData}>No hay datos suficientes</Text>
+          )}
+        </Card>
+      </View>
+
+      {/* BOTÓN EXPORTAR PDF */}
+      <View style={styles.exportButtonContainer}>
+        <Components.Button
+          label="📄 Exportar en PDF"
+          onPress={handleExportPDF}
+          style={styles.exportButton}
+        />
+      </View>
     </ScrollView>
   );
 }
@@ -185,5 +227,15 @@ const styles = StyleSheet.create({
     color: '#888',
     marginTop: 40,
     fontSize: 15,
+  },
+  exportButtonContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  exportButton: {
+    left: -25,
+    backgroundColor: '#ee0000',
+    width: 350,
+    alignSelf: 'center',
   },
 });
