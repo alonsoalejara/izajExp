@@ -119,21 +119,6 @@ const App = () => {
             component={Screens.EditPlan}
             options={{ headerShown: false }}
           />
-          <Stack.Screen
-            name="EditCarga"
-            component={Screens.EditCarga}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="EditGrua"
-            component={Screens.EditGrua}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="EditAparejos"
-            component={Screens.EditAparejos}
-            options={{ headerShown: false }}
-          />
         </Stack.Navigator>
       </NavigationContainer>
       <Toast config={toastConfig} />

@@ -12,9 +12,6 @@ import CollabProfile from './CollabProfile';
 import CollabTablas from './CollabTablas';
 import EditCollab from './EditCollab';
 import EditPlan from './EditPlan';
-import EditCarga from './EditCarga';
-import EditGrua from './EditGrua';
-import EditAparejos from './EditAparejos';
 import Firma from './Firma';
 import PlanesFirmados from './PlanesFirmados';
 import ObsFirma from './ObsFirma'; 
@@ -34,9 +31,6 @@ const Screens = {
   CollabTablas,
   EditCollab,
   EditPlan,
-  EditCarga,
-  EditGrua,
-  EditAparejos,
   Firma,
   PlanesFirmados,
   ObsFirma,

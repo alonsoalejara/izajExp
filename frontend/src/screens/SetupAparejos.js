@@ -1,22 +1,32 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Image, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/SetupIzajeStyles';
 import BS from '../components/bottomSheets/BS.index';
 import Components from '../components/Components.index';
 import { validateSetupAparejos } from '../utils/validation/validateAparejos';
+import { grilleteOptions } from '../data/grilleteData';
+import { maniobraOptions } from '../data/maniobraData';
 
 const SetupAparejos = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const [planData, setPlanData] = useState({});
-  const [setupGruaData, setSetupGruaData] = useState({});
-  const [setupCargaData, setSetupCargaData] = useState({});
-  const [setupRadioData, setSetupRadioData] = useState({});
+  const {
+    mode = 'create',
+    planData: initialPlanData,
+    setupCargaData: initialCargaData,
+    setupGruaData: initialGruaData,
+    setupRadioData: initialRadioData,
+  } = route.params || {};
 
-  const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null, cantidades: {} });
+  const [planData, setPlanData] = useState(initialPlanData || {});
+  const [setupGruaData, setSetupGruaData] = useState(initialGruaData || {});
+  const [setupCargaData, setSetupCargaData] = useState(initialCargaData || {});
+  const [setupRadioData, setSetupRadioData] = useState(initialRadioData || {});
+
+  const [maniobraSeleccionada, setManiobraSeleccionada] = useState({ cantidad: '', tipo: null });
   const [cantidadGrilletes, setCantidadGrilletes] = useState('');
   const [tipoGrillete, setTipoGrillete] = useState('');
   const [isCantidadModalVisible, setCantidadModalVisible] = useState(false);
@@ -30,8 +40,8 @@ const SetupAparejos = () => {
   const [tipoWllLabel, setTipoWllLabel] = useState('Selección del aparejo según WLL:');
   const [aparejoPorWLL, setAparejoPorWLL] = useState('');
   const [isAparejoWLLModalVisible, setAparejoWLLModalVisible] = useState(false);
+
   const cantidadNumero = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
-  const [tableData, setTableData] = useState([]);
   const grilleteSummary = tipoGrillete ? `${tipoGrillete}"` : '';
   const openModal = setter => setter(true);
 
@@ -43,35 +53,36 @@ const SetupAparejos = () => {
   const [errorAparejoPorWLL, setErrorAparejoPorWLL] = useState('');
   const [errorAnguloSeleccionado, setErrorAnguloSeleccionado] = useState('');
 
+  // 🔹 Precarga de datos si está en modo edición
   useEffect(() => {
-    if (route.params?.planData) {
-      setPlanData(route.params.planData);
-    }
-    if (route.params?.setupCargaData) {
-      setSetupCargaData(route.params.setupCargaData);
-    }
-    if (route.params?.setupGruaData) {
-      setSetupGruaData(route.params.setupGruaData);
-    }
-    if (route.params?.setupRadioData) {
-      setSetupRadioData(route.params.setupRadioData);
-    }
+    if (mode === 'edit' && initialPlanData && initialPlanData.aparejos?.length > 0) {
+      const primerAparejo = initialPlanData.aparejos[0];
+      const [maniobraType, aparejoType, ...wllParts] = primerAparejo.descripcion.split(' ').filter(Boolean);
+      const wll = wllParts.join(' ');
 
+      setManiobraSeleccionada({ cantidad: String(initialPlanData.aparejos.length), tipo: { type: maniobraType, cantidades: {} } });
+      setCantidadGrilletes(String(primerAparejo.cantidad));
+      setTipoGrillete(primerAparejo.grillete || '');
+      setTipoManiobraSeleccionadoSolo(maniobraType || '');
+      setTipoAparejoSeleccionado(aparejoType || '');
+      setAparejoPorWLL(wll || '');
+      setAnguloSeleccionado(initialPlanData.cargas?.anguloTrabajo?.replace('°', '') || '0');
+    }
+  }, [mode, initialPlanData]);
+
+  useEffect(() => {
     const fetchDataFromAsyncStorage = async () => {
       try {
         const data = await AsyncStorage.getItem('setupGruaData');
-        if (data) {
-          if (!route.params?.setupGruaData) {
-            setSetupGruaData(JSON.parse(data));
-          }
+        if (data && !route.params?.setupGruaData) {
+          setSetupGruaData(JSON.parse(data));
         }
       } catch (e) {
-        // Error fetching setupGruaData from AsyncStorage
+        console.error('Error al cargar setupGruaData:', e);
       }
     };
     fetchDataFromAsyncStorage();
-
-  }, [route.params]);
+  }, [route.params?.setupGruaData]);
 
   useEffect(() => {
     if (tipoManiobraSeleccionadoSolo === 'Eslinga') {
@@ -92,26 +103,14 @@ const SetupAparejos = () => {
     setAparejoPorWLL('');
   }, [tipoAparejoSeleccionado]);
 
-  useEffect(() => {
-    if (!maniobraSeleccionada?.cantidad) {
-      setTableData([]);
-      return;
-    }
-    const nuevaTabla = Array.from({ length: maniobraSeleccionada.cantidad }, (_, index) => ({ key: index + 1 }));
-    setTableData(nuevaTabla);
-  }, [maniobraSeleccionada?.cantidad]);
-
-  useEffect(() => {
-    setCantidadGrilletes(maniobraSeleccionada.cantidad || '');
-  }, [maniobraSeleccionada.cantidad]);
-
   const handleManiobraSeleccionada = useCallback((maniobra) => {
-    setManiobraSeleccionada(prev => ({ cantidad: prev?.cantidad || '', tipo: { type: maniobra.type, cantidades: maniobra.cantidades } }));
+    setManiobraSeleccionada(prev => ({ ...prev, tipo: { type: maniobra.type, cantidades: maniobra.cantidades } }));
     setTipoManiobraSeleccionadoSolo(maniobra.type);
     setErrorTipoManiobra('');
   }, []);
 
-  const handleNavigate = () => {
+  // 🔸 Guardar y continuar
+  const handleSave = () => {
     const errors = validateSetupAparejos(
       maniobraSeleccionada,
       cantidadGrilletes,
@@ -130,28 +129,59 @@ const SetupAparejos = () => {
     setErrorAnguloSeleccionado(errors.anguloSeleccionado || '');
 
     if (Object.keys(errors).length === 0) {
-      const setupAparejosData = {
-        cantidadManiobra: maniobraSeleccionada.cantidad,
-        eslingaOEstrobo: maniobraSeleccionada.tipo?.type || '',
-        cantidadGrilletes,
-        tipoGrillete: tipoGrillete || '',
-        anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
-        tipoAparejo: tipoAparejoSeleccionado,
-        aparejoPorWLL: aparejoPorWLL,
+      const selectedGrillete = grilleteOptions.find(opt => opt.pulgada === tipoGrillete);
+      const pesoGrilleteCalculado = selectedGrillete ? selectedGrillete.peso : 0;
+      const selectedManiobraType = maniobraOptions.find(opt => opt.label === tipoManiobraSeleccionadoSolo);
+      const pesoUnitarioAparejo = selectedManiobraType ? selectedManiobraType.peso : 0;
+      const cantidad = parseInt(maniobraSeleccionada.cantidad, 10) || 0;
+
+      const aparejosList = [];
+      for (let i = 0; i < cantidad; i++) {
+        aparejosList.push({
+          descripcion: `${tipoManiobraSeleccionadoSolo} ${tipoAparejoSeleccionado} ${aparejoPorWLL}`,
+          cantidad: 1,
+          pesoUnitario: pesoUnitarioAparejo,
+          largo: 0,
+          grillete: tipoGrillete,
+          pesoGrillete: pesoGrilleteCalculado,
+          tension: '0',
+          altura: '',
+        });
+      }
+
+      const updatedCargaData = {
+        ...setupCargaData,
+        anguloTrabajo: anguloSeleccionado ? `${anguloSeleccionado}°` : '',
       };
 
-      const allDataToSend = {
-        planData,
-        setupCargaData,
-        setupGruaData,
-        setupAparejosData
+      const finalPlanData = {
+        ...planData,
+        aparejos: aparejosList,
+        cargas: updatedCargaData,
+        gruaData: setupGruaData,
+        radioData: setupRadioData,
       };
 
-      navigation.navigate('Tablas', allDataToSend);
+      if (mode === 'edit') {
+        Alert.alert('Éxito', 'Datos actualizados correctamente.');
+        navigation.navigate('EditPlan', {
+          planData: finalPlanData,
+          aparejosCompletos: true,
+        });
+      } else {
+        navigation.navigate('Tablas', {
+          planData,
+          setupCargaData,
+          setupGruaData,
+          setupAparejosData: { aparejosList, anguloSeleccionado },
+        });
+      }
+    } else {
+      Alert.alert('Error de validación', 'Por favor, complete todos los campos requeridos.');
     }
   };
 
-  const isContinuarDisabled =
+  const isDisabled =
     !maniobraSeleccionada?.cantidad ||
     !maniobraSeleccionada?.tipo?.type ||
     !tipoGrillete ||
@@ -164,9 +194,16 @@ const SetupAparejos = () => {
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Components.Header />
         <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
-          <View style={styles.titleContainer}><Text style={[styles.sectionTitle, { top: 5, marginBottom: 20 }]}>Configuración de aparejos</Text></View>
+          <View style={styles.titleContainer}>
+            <Text style={[styles.sectionTitle, { top: 5, marginBottom: 20 }]}>
+              {mode === 'edit' ? 'Editar aparejos' : 'Configuración de aparejos'}
+            </Text>
+          </View>
           <View style={styles.container}>
-            <View style={styles.inputWrapper}><Text style={styles.labelText}>Maniobra (cantidad y tipo de aparejos):</Text></View>
+            {/* --- Maniobra --- */}
+            <View style={styles.inputWrapper}>
+              <Text style={styles.labelText}>Maniobra (cantidad y tipo de aparejos):</Text>
+            </View>
             <View style={styles.inputContainer}>
               <Components.ConfigButton
                 label="Cantidad"
@@ -189,16 +226,22 @@ const SetupAparejos = () => {
             {errorCantidadManiobra && <Text style={[styles.errorText, { top: 5 }]}>{errorCantidadManiobra}</Text>}
             {errorTipoManiobra && <Text style={[styles.errorText, { top: 5 }]}>{errorTipoManiobra}</Text>}
 
+            {/* --- Ángulo --- */}
             {maniobraSeleccionada.tipo?.type && ['2', '4'].includes(maniobraSeleccionada.cantidad) && (
               <View>
                 <View style={[styles.inputWrapper, { top: -5 }]}>
                   <Text style={styles.labelText}>Ángulos de trabajo (°):</Text>
                 </View>
-                <Components.RenderAngulos anguloSeleccionado={anguloSeleccionado} setAnguloSeleccionado={setAnguloSeleccionado} />
+                <Components.RenderAngulos
+                  anguloSeleccionado={anguloSeleccionado}
+                  setAnguloSeleccionado={setAnguloSeleccionado}
+                />
                 {errorAnguloSeleccionado && <Text style={[styles.errorText, { top: 3 }]}>{errorAnguloSeleccionado}</Text>}
+                <Image source={require('../../assets/esl-est-grade.png')} style={styles.eslingaImage} />
               </View>
             )}
 
+            {/* --- Tipo de Aparejo --- */}
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>{tipoAparejoLabel}</Text>
             </View>
@@ -214,6 +257,7 @@ const SetupAparejos = () => {
             />
             {errorTipoAparejo && <Text style={[styles.errorText, { top: 3 }]}>{errorTipoAparejo}</Text>}
 
+            {/* --- WLL --- */}
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>{tipoWllLabel}</Text>
             </View>
@@ -229,6 +273,7 @@ const SetupAparejos = () => {
             />
             {errorAparejoPorWLL && <Text style={[styles.errorText, { top: 3 }]}>{errorAparejoPorWLL}</Text>}
 
+            {/* --- Grilletes --- */}
             <View style={[styles.inputWrapper, { top: 25 }]}>
               <Text style={styles.labelText}>Grillete: (cantidad y tipo)</Text>
             </View>
@@ -256,10 +301,13 @@ const SetupAparejos = () => {
 
             {tipoGrillete && (
               <View style={styles.selectedManiobraContainer}>
-                <Text style={styles.selectedManiobraText}>{`${cantidadGrilletes} grillete(s) de ${tipoGrillete}"`}</Text>
+                <Text style={styles.selectedManiobraText}>
+                  {`${cantidadGrilletes} grillete(s) de ${tipoGrillete}"`}
+                </Text>
               </View>
             )}
 
+            {/* --- Bottom Sheets --- */}
             <BS.BSGrillete
               isVisible={isGrilleteModalVisible}
               onClose={() => setGrilleteModalVisible(false)}
@@ -299,16 +347,22 @@ const SetupAparejos = () => {
               }}
               tipoAparejo={tipoAparejoSeleccionado}
               anguloSeleccionado={anguloSeleccionado}
-              cantidadManiobra={cantidadNumero}
               pesoCarga={setupCargaData?.peso || null}
+              cantidadManiobra={cantidadNumero}
             />
 
+            {/* --- Botones --- */}
             <View style={[styles.buttonContainer, { marginBottom: -20, right: 40 }]}>
-              <Components.Button label="Volver" onPress={() => navigation.goBack()} isCancel style={styles.volverButton} />
               <Components.Button
-                label="Continuar"
-                onPress={handleNavigate}
-                disabled={isContinuarDisabled}
+                label="Volver"
+                onPress={() => navigation.goBack()}
+                isCancel
+                style={styles.volverButton}
+              />
+              <Components.Button
+                label={mode === 'edit' ? 'Guardar' : 'Continuar'}
+                onPress={handleSave}
+                disabled={isDisabled}
                 style={[styles.continuarButton, { width: '60%', left: -38 }]}
               />
             </View>

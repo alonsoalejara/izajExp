@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableWithoutFeedback, Keyboard, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Components from '../components/Components.index';
@@ -14,6 +14,8 @@ import * as ImageManipulator from 'expo-image-manipulator';
 const SetupCarga = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const { mode = 'create', planData = {} } = route.params || {};
+
   const [peso, setPeso] = useState('');
   const [ancho, setAncho] = useState('');
   const [largo, setLargo] = useState('');
@@ -21,19 +23,42 @@ const SetupCarga = () => {
   const [diametro, setDiametro] = useState('');
   const [forma, setForma] = useState('');
   const [isFormaVisible, setIsFormaVisible] = useState(false);
-  const [carga, setCarga] = useState({ peso: '', largo: '', ancho: '', alto: '', forma: '', diametro: '' });
   const [errors, setErrors] = useState({});
-  const [planData, setPlanData] = useState(null);
-  const viewShotRef = React.useRef();
+  const [planDataState, setPlanDataState] = useState(planData);
 
+  const viewShotRef = useRef();
+
+  // 🔹 Precarga de datos si está en modo edición
   useEffect(() => {
-    if (route.params) {
-      setPlanData(route.params);
+    if (mode === 'edit' && planData) {
+      const cargas = planData?.cargas || {};
+      const cg = planData?.centroGravedad || {};
+
+      setPeso(String(cargas.pesoEquipo || ''));
+      setAltura(String(cg.zAlto || ''));
+      setAncho(String(cg.xAncho || ''));
+      setLargo(String(cg.yLargo || ''));
+      setDiametro(String(cg.diametro || ''));
+
+      // Detección automática de forma
+      if (cg.xAncho === cg.yLargo && cg.yLargo === cg.zAlto && cg.xAncho !== 0) {
+        setForma('Cuadrado');
+      } else if (cg.xAncho === cg.yLargo && cg.zAlto !== cg.xAncho) {
+        setForma('Cilindro');
+      } else if (cg.xAncho !== cg.yLargo && cg.zAlto !== 0) {
+        setForma('Rectangular');
+      }
     }
-  }, [route.params]);
+  }, [mode, planData]);
 
   const handleInputChange = (field, value) => {
-    setCarga((prev) => ({ ...prev, [field]: value }));
+    if (field === 'peso') setPeso(value);
+    if (field === 'ancho') setAncho(value);
+    if (field === 'largo') setLargo(value);
+    if (field === 'alto') setAltura(value);
+    if (field === 'diametro') setDiametro(value);
+    if (field === 'forma') setForma(value);
+
     setErrors((prevErrors) => {
       const newErrors = { ...prevErrors };
       delete newErrors[field];
@@ -47,83 +72,111 @@ const SetupCarga = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const pesoNum = parseFloat(peso) || 0;
+  const alturaNum = parseFloat(altura) || 0;
+  const largoNum = parseFloat(largo) || 0;
+  const anchoNum = parseFloat(ancho) || 0;
+  const diametroNum = parseFloat(diametro) || 0;
+
+  const largoParaCalculo = forma === 'Cuadrado' ? alturaNum : largoNum;
+  const anchoParaCalculo = forma === 'Cuadrado' ? alturaNum : anchoNum;
+
+  const geometry = calculateGeometry(forma, alturaNum, largoParaCalculo, anchoParaCalculo, diametroNum);
+  const cg = geometry?.cg;
+  const isCylinderVertical = forma === 'Cilindro' && alturaNum > diametroNum;
+
   const handleContinuar = async () => {
-    const pesoNum = parseFloat(peso);
-    const alturaNum = parseFloat(altura);
-    const largoNum = parseFloat(largo);
-    const anchoNum = parseFloat(ancho);
-    const diametroNum = parseFloat(diametro);
+    if (!validateInputs()) {
+      Alert.alert('Error de validación', 'Por favor, complete todos los campos de forma correcta.');
+      return;
+    }
 
     let cargaData = {
       peso: pesoNum,
       alto: alturaNum,
-      largo: forma === 'Cuadrado' ? alturaNum : largoNum,
-      ancho: forma === 'Cuadrado' ? alturaNum : anchoNum,
+      largo: largoParaCalculo,
+      ancho: anchoParaCalculo,
       diametro: diametroNum,
-      forma: forma,
+      forma,
     };
 
-    // 🚀 función que captura la ilustración y navega
     const navigateToNextScreen = async () => {
-      if (validateInputs()) {
-        try {
-          if (viewShotRef.current) {
-            const uri = await viewShotRef.current.capture({
-              format: 'jpg',
-              quality: 0.8,
-              result: 'tmpfile',
-            });
+      try {
+        if (viewShotRef.current) {
+          const uri = await viewShotRef.current.capture({
+            format: 'jpg',
+            quality: 0.8,
+            result: 'tmpfile',
+          });
 
-            const manipulated = await ImageManipulator.manipulateAsync(
-              uri,
-              [{ resize: { width: 600 } }],
-              {
-                compress: 0.6, // ligera compresión
-                format: ImageManipulator.SaveFormat.JPEG,
-                base64: true,
-              }
-            );
+          const manipulated = await ImageManipulator.manipulateAsync(
+            uri,
+            [{ resize: { width: 600 } }],
+            {
+              compress: 0.6,
+              format: ImageManipulator.SaveFormat.JPEG,
+              base64: true,
+            }
+          );
 
-            // Guardamos la imagen resultante
-            cargaData.ilustracionCarga = `data:image/jpeg;base64,${manipulated.base64}`;
-          } else {
-            cargaData.ilustracionCarga = "NoDisponible";
-          }
-        } catch (error) {
-          console.error("Error al capturar ilustración de carga:", error);
-          cargaData.ilustracionCarga = "NoDisponible";
+          cargaData.ilustracionCarga = `data:image/jpeg;base64,${manipulated.base64}`;
+        } else {
+          cargaData.ilustracionCarga = 'NoDisponible';
         }
-
-        const allDataToSend = {
-          planData: planData,
-          setupCargaData: cargaData,
-        };
-
-        navigation.navigate('SetupGrua', allDataToSend);
+      } catch (error) {
+        console.error('Error al capturar ilustración de carga:', error);
+        cargaData.ilustracionCarga = 'NoDisponible';
       }
+
+      const updatedCargas = {
+        ...planDataState.cargas,
+        pesoEquipo: pesoNum,
+        pesoTotal:
+          pesoNum +
+          (planDataState.cargas?.pesoAparejos || 0) +
+          (planDataState.cargas?.pesoGancho || 0) +
+          (planDataState.cargas?.pesoCable || 0),
+      };
+
+      const updatedCG = {
+        ...planDataState.centroGravedad,
+        xAncho: forma === 'Cilindro' ? diametroNum : anchoParaCalculo,
+        yLargo: forma === 'Cilindro' ? diametroNum : largoParaCalculo,
+        zAlto: alturaNum,
+        xCG: cg?.cgX || 0,
+        yCG: cg?.cgY || 0,
+        zCG: cg?.cgZ || 0,
+      };
+
+      const finalData = {
+        ...planDataState,
+        cargas: updatedCargas,
+        centroGravedad: updatedCG,
+        forma,
+        diametro: diametroNum,
+      };
+
+      navigation.navigate('SetupGrua', { mode, planData: finalData });
     };
 
-    // ⚠️ Detección de forma cúbica
     if (forma !== 'Cilindro' && largo === ancho && ancho === altura && largo !== '') {
       Alert.alert(
-        "Dimensiones de un cubo detectadas",
+        'Dimensiones de un cubo detectadas',
         "Las dimensiones ingresadas corresponden a un cubo. ¿Desea cambiar la forma a 'Cuadrado'?",
         [
           {
-            text: "No",
-            onPress: async () => {
-              await navigateToNextScreen();
-            },
-            style: "cancel",
+            text: 'No',
+            onPress: async () => await navigateToNextScreen(),
+            style: 'cancel',
           },
           {
-            text: "Sí",
+            text: 'Sí',
             onPress: async () => {
-              setForma("Cuadrado");
-              handleInputChange('forma', "Cuadrado");
+              setForma('Cuadrado');
+              handleInputChange('forma', 'Cuadrado');
               cargaData = {
                 ...cargaData,
-                forma: "Cuadrado",
+                forma: 'Cuadrado',
                 largo: alturaNum,
                 ancho: alturaNum,
                 diametro: 0,
@@ -140,39 +193,17 @@ const SetupCarga = () => {
 
   const altoLabel = forma === 'Cilindro' ? 'altura' : forma === 'Cuadrado' ? 'lado' : 'alto';
 
-  const alturaNum = parseFloat(altura) || 0;
-  const largoNum = parseFloat(largo) || 0;
-  const anchoNum = parseFloat(ancho) || 0;
-  const diametroNum = parseFloat(diametro) || 0;
-
-  // Para cuadrado, las dimensiones largo y ancho deben ser iguales a altura
-  const largoParaCalculo = forma === 'Cuadrado' ? alturaNum : largoNum;
-  const anchoParaCalculo = forma === 'Cuadrado' ? alturaNum : anchoNum;
-
-  const geometry = calculateGeometry(
-    forma,
-    alturaNum,
-    largoParaCalculo,
-    anchoParaCalculo,
-    diametroNum
-  );
-
-  const cg = geometry?.cg;
-  const { d1x, d2x, d1y, d2y, d1z, d2z } = geometry?.dimensions || { d1x: 0, d2x: 0, d1y: 0, d2y: 0, d1z: 0, d2z: 0 };
-  
-  let isCylinderVertical = false;
-  if (forma === 'Cilindro' && parseFloat(altura) > parseFloat(diametro)) {
-      isCylinderVertical = true;
-  }
-
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Components.Header />
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}>
           <View style={styles.titleContainer}>
-            <Text style={[styles.sectionTitle, { top: 5 }]}>Carga</Text>
+            <Text style={[styles.sectionTitle, { top: 5 }]}>
+              {mode === 'edit' ? 'Editar carga' : 'Carga'}
+            </Text>
           </View>
+
           <View style={[styles.container, { flexGrow: 1 }]}>
             <View style={styles.inputWrapper}>
               <Text style={styles.labelText}>Seleccione forma:</Text>
@@ -186,32 +217,16 @@ const SetupCarga = () => {
               onPress={() => setIsFormaVisible(true)}
               style={[{ width: 315 }, errors.forma && { borderColor: 'red', borderWidth: 3, borderRadius: 10 }]}
             />
-            {forma === 'Cilindro' && (
-              <Text style={styles.labelText}>
-                Ingrese el peso (ton) y el {altoLabel} (m) de la carga:
-              </Text>
-            )}
-            {forma !== 'Cilindro' && (
-              <Text style={styles.labelText}>
-                Ingrese el peso (ton) y el {altoLabel} (m) de la carga:
-              </Text>
-            )}
-
+            <Text style={styles.labelText}>
+              Ingrese el peso (ton) y el {altoLabel} (m) de la carga:
+            </Text>
             <View style={[styles.inputContainer, { flexDirection: 'row' }]}>
               <View style={styles.inputField}>
                 {errors.peso && <Text style={styles.errorText}>{errors.peso}</Text>}
                 <Components.NumericInput
                   value={peso}
-                  onChangeText={(value) => {
-                    setPeso(value);
-                    handleInputChange('peso', value);
-                  }}
+                  onChangeText={(value) => handleInputChange('peso', value)}
                   placeholder="Peso de carga"
-                  onEndEditing={() => {
-                    const cleanedValue = peso.trim();
-                    setPeso(cleanedValue);
-                    handleInputChange('peso', cleanedValue);
-                  }}
                   editable={!!forma}
                   style={[{ width: 150 }, errors.peso && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 }]}
                 />
@@ -220,16 +235,8 @@ const SetupCarga = () => {
                 {errors.alto && <Text style={styles.errorText}>{errors.alto}</Text>}
                 <Components.NumericInput
                   value={altura}
-                  onChangeText={(value) => {
-                    setAltura(value);
-                    handleInputChange('alto', value);
-                  }}
-                  placeholder={forma === 'Cilindro' ? 'Altura' : altoLabel.charAt(0).toUpperCase() + altoLabel.slice(1)}
-                  onEndEditing={() => {
-                    const cleanedValue = altura.trim();
-                    setAltura(cleanedValue);
-                    handleInputChange('alto', cleanedValue);
-                  }}
+                  onChangeText={(value) => handleInputChange('alto', value)}
+                  placeholder={altoLabel.charAt(0).toUpperCase() + altoLabel.slice(1)}
                   editable={!!forma}
                   style={[{ width: 150 }, errors.alto && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 }]}
                 />
@@ -244,16 +251,8 @@ const SetupCarga = () => {
                     {errors.largo && <Text style={styles.errorText}>{errors.largo}</Text>}
                     <Components.NumericInput
                       value={largo}
-                      onChangeText={(value) => {
-                        setLargo(value);
-                        handleInputChange('largo', value);
-                      }}
+                      onChangeText={(value) => handleInputChange('largo', value)}
                       placeholder="Largo"
-                      onEndEditing={() => {
-                        const cleanedValue = largo.trim();
-                        setLargo(cleanedValue);
-                        handleInputChange('largo', cleanedValue);
-                      }}
                       editable={!!forma}
                       style={[{ width: 150 }, errors.largo && { borderColor: 'red', top: -10, borderWidth: 3, borderRadius: 13 }]}
                     />
@@ -262,16 +261,8 @@ const SetupCarga = () => {
                     {errors.ancho && <Text style={styles.errorText}>{errors.ancho}</Text>}
                     <Components.NumericInput
                       value={ancho}
-                      onChangeText={(value) => {
-                        setAncho(value);
-                        handleInputChange('ancho', value);
-                      }}
+                      onChangeText={(value) => handleInputChange('ancho', value)}
                       placeholder="Ancho"
-                      onEndEditing={() => {
-                        const cleanedValue = ancho.trim();
-                        setAncho(cleanedValue);
-                        handleInputChange('ancho', cleanedValue);
-                      }}
                       editable={!!forma}
                       style={[{ width: 150 }, errors.ancho && { borderColor: 'red', top: -10, borderWidth: 3, borderRadius: 13 }]}
                     />
@@ -279,28 +270,22 @@ const SetupCarga = () => {
                 </View>
               </>
             )}
+
             {forma === 'Cilindro' && (
               <View style={styles.inputWrapper}>
                 <Text style={[styles.labelText, { top: -8 }]}>Ingrese el diámetro (m):</Text>
                 {errors.diametro && <Text style={styles.errorText}>{errors.diametro}</Text>}
                 <Components.NumericInput
                   value={diametro}
-                  onChangeText={(value) => {
-                    setDiametro(value);
-                    handleInputChange('diametro', value);
-                  }}
+                  onChangeText={(value) => handleInputChange('diametro', value)}
                   placeholder="Diámetro del cilindro"
-                  onEndEditing={() => {
-                    const cleanedValue = diametro.trim();
-                    setDiametro(cleanedValue);
-                    handleInputChange('diametro', cleanedValue);
-                  }}
                   editable={!!forma}
                   style={[{ width: 320 }, errors.diametro && { borderColor: 'red', top: -8, borderWidth: 3, borderRadius: 13 }]}
                 />
               </View>
             )}
-            {geometry && (
+
+            {geometry && cg && (
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5, marginBottom: 10 }}>
                 <View style={{ flex: 1 }}>
                   <View style={{ alignItems: 'flex-start' }}>
@@ -314,19 +299,20 @@ const SetupCarga = () => {
                   <Text style={{ fontWeight: 'bold' }}>Dimensiones:</Text>
                   {forma === 'Cilindro' ? (
                     <>
-                      <Text>{isCylinderVertical ? `Altura: ${parseFloat(altura).toFixed(1)} m` : `Largo: ${parseFloat(altura).toFixed(1)} m`}</Text>
-                      <Text>Diámetro: {parseFloat(diametro).toFixed(1)} m</Text>
+                      <Text>{isCylinderVertical ? `Altura: ${alturaNum.toFixed(1)} m` : `Largo: ${alturaNum.toFixed(1)} m`}</Text>
+                      <Text>Diámetro: {diametroNum.toFixed(1)} m</Text>
                     </>
                   ) : (
                     <>
-                      <Text>Largo: {forma === 'Cuadrado' ? Number(altura).toFixed(1) : Number(largo).toFixed(1)} m</Text>
-                      <Text>Ancho: {forma === 'Cuadrado' ? Number(altura).toFixed(1) : Number(ancho).toFixed(1)} m</Text>
-                      <Text>Altura: {Number(altura).toFixed(1)} m</Text>
+                      <Text>Largo: {forma === 'Cuadrado' ? alturaNum.toFixed(1) : largoNum.toFixed(1)} m</Text>
+                      <Text>Ancho: {forma === 'Cuadrado' ? alturaNum.toFixed(1) : anchoNum.toFixed(1)} m</Text>
+                      <Text>Altura: {alturaNum.toFixed(1)} m</Text>
                     </>
                   )}
                 </View>
               </View>
             )}
+
             <ViewShot
               ref={viewShotRef}
               options={{
@@ -342,22 +328,24 @@ const SetupCarga = () => {
                 ]}
               >
                 <RenderForma
-                  forma={carga.forma}
+                  forma={forma}
                   dimensiones={{
                     largo: isCylinderVertical ? parseFloat(diametro) : parseFloat(altura),
                     ancho: isCylinderVertical ? parseFloat(diametro) : parseFloat(diametro),
                     profundidad: isCylinderVertical ? parseFloat(altura) : parseFloat(diametro),
-                    isCylinderVertical: isCylinderVertical,
                   }}
                 />
               </View>
             </ViewShot>
+
             {forma !== '' && (
-                <Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'left', top: -30 }}>
-                    Visualización de la carga de lado y de frente:
-                </Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold', textAlign: 'left', top: -30 }}>
+                Visualización de la carga de lado y de frente:
+              </Text>
             )}
+
             <RenderCG forma={forma} isCylinderVertical={isCylinderVertical} />
+
             <View style={[styles.buttonContainer, { right: 40, marginTop: 15 }]}>
               <Components.Button
                 label="Volver"
@@ -366,14 +354,12 @@ const SetupCarga = () => {
                 style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
               />
               <Components.Button
-                label="Continuar"
+                label={mode === 'edit' ? 'Guardar y continuar' : 'Continuar'}
                 onPress={handleContinuar}
-                style={[
-                  styles.button,
-                  { width: '50%', right: 45 },
-                ]}
+                style={[styles.button, { width: '50%', right: 45 }]}
               />
             </View>
+
             <BS.BSForma
               isVisible={isFormaVisible}
               onClose={() => setIsFormaVisible(false)}
@@ -381,13 +367,13 @@ const SetupCarga = () => {
                 setForma(selectedForma);
                 handleInputChange('forma', selectedForma);
                 if (selectedForma !== 'Cilindro') {
-                    setDiametro('');
-                    handleInputChange('diametro', '');
+                  setDiametro('');
+                  handleInputChange('diametro', '');
                 } else {
-                    setLargo('');
-                    setAncho('');
-                    handleInputChange('largo', '');
-                    handleInputChange('ancho', '');
+                  setLargo('');
+                  setAncho('');
+                  handleInputChange('largo', '');
+                  handleInputChange('ancho', '');
                 }
               }}
             />

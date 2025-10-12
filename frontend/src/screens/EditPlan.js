@@ -360,24 +360,12 @@ const EditPlan = () => {
         navigation.navigate('Tabs', { screen: 'Perfil' });
     };
 
-    const goToEditCarga = () => {
-        navigation.navigate('EditCarga', {
+    const goToSetupCarga = () => {
+        navigation.navigate('SetupCarga', {
             planData: editablePlan
         });
     };
-
-    const goToEditGrua = () => {
-        navigation.navigate('EditGrua', {
-            planData: editablePlan
-        });
-    };
-
-    const goToEditAparejos = () => {
-        navigation.navigate('EditAparejos', {
-            planData: editablePlan
-        });
-    };
-
+    
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -412,7 +400,7 @@ const EditPlan = () => {
                 <View style={styles.actionButtonsContainer}>
                     <Components.Button
                         label="Iniciar edición"
-                        onPress={goToEditCarga}
+                        onPress={goToSetupCarga}
                         style={styles.actionButton}
                     />
                 </View>
