@@ -160,9 +160,12 @@ const SetupCarga = () => {
         jefeArea: planDataState?.jefeArea || planData?.jefeArea,
       };
 
-      navigation.navigate('SetupGrua', { 
-        mode, 
-        planData: finalData,
+      navigation.navigate('SetupGrua', {
+        mode,
+        planData: {
+          ...finalData,
+          ilustracionForma: cargaData.ilustracionCarga,
+        },
         setupCargaData: {
           ...finalData.cargas,
           peso: pesoNum,
@@ -172,7 +175,7 @@ const SetupCarga = () => {
           diametro: diametroNum,
           forma,
           ilustracionCarga: cargaData.ilustracionCarga,
-        }
+        },
       });
     };
 
@@ -371,7 +374,7 @@ const SetupCarga = () => {
                 style={[styles.button, { backgroundColor: 'transparent', marginRight: -50 }]}
               />
               <Components.Button
-                label={mode === 'edit' ? 'Guardar y continuar' : 'Continuar'}
+                label={mode === 'edit' ? 'Guardar' : 'Continuar'}
                 onPress={handleContinuar}
                 style={[styles.button, { width: '50%', right: 45 }]}
               />

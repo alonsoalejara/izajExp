@@ -129,7 +129,9 @@ const SetupAparejos = () => {
     setErrorAnguloSeleccionado(errors.anguloSeleccionado || '');
 
     if (Object.keys(errors).length === 0) {
-      const selectedGrillete = grilleteOptions.find(opt => opt.pulgada === tipoGrillete);
+      const selectedGrillete = grilleteOptions.find(opt =>
+        opt.pulgada.replace(/["']/g, '').trim() === String(tipoGrillete).replace(/["']/g, '').trim()
+      );
       const pesoGrilleteCalculado = selectedGrillete ? selectedGrillete.peso : 0;
       const selectedManiobraType = maniobraOptions.find(opt => opt.label === tipoManiobraSeleccionadoSolo);
       const pesoUnitarioAparejo = selectedManiobraType ? selectedManiobraType.peso : 0;
@@ -144,7 +146,7 @@ const SetupAparejos = () => {
           largo: 0,
           grillete: tipoGrillete,
           pesoGrillete: pesoGrilleteCalculado,
-          tension: '0',
+          tension: "N/A",
           altura: '',
         });
       }
@@ -162,10 +164,15 @@ const SetupAparejos = () => {
         radioData: setupRadioData,
       };
 
-      if (mode === 'edit') {
+      // Si viene de edición o el plan tiene un _id existente, vuelve a EditPlan
+      if (mode === 'edit' || planData?._id) {
         Alert.alert('Éxito', 'Datos actualizados correctamente.');
         navigation.navigate('EditPlan', {
-          planData: finalPlanData,
+          planData: {
+            ...finalPlanData,
+            ilustracionGrua: setupGruaData?.ilustracionGrua,
+            ilustracionForma: setupCargaData?.ilustracionCarga,
+          },
           aparejosCompletos: true,
         });
       } else {
@@ -173,7 +180,6 @@ const SetupAparejos = () => {
           planData: {
             ...planData,
             proyecto: planData?.proyecto,
-            nombreProyecto: planData?.nombreProyecto || planData?.proyecto?.nombre || '',
             capataz: planData?.capataz,
             supervisor: planData?.supervisor,
             jefeArea: planData?.jefeArea,
@@ -191,7 +197,6 @@ const SetupAparejos = () => {
             anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '0°',
           },
         });
-
       }
     } else {
       Alert.alert('Error de validación', 'Por favor, complete todos los campos requeridos.');

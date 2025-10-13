@@ -358,7 +358,7 @@ const firmarSupervisor = async () => {
             detalles: [
               { label: 'Largo', valor: a.largo ? `${a.largo} m` : 'N/A' },
               { label: 'Peso', valor: a.pesoUnitario ? `${a.pesoUnitario} ton` : 'N/A' },
-              { label: 'Tensión', valor: a.tension ? `${a.tension} ton` : 'N/A' },
+              { label: 'Tensión', valor: a.tension || 'N/A' },
               { label: 'Grillete', valor: a.grillete || 'N/A' },
               { label: 'Peso Grillete', valor: a.pesoGrillete ? `${a.pesoGrillete} ton` : 'N/A' },
             ],

@@ -228,9 +228,19 @@ const SetupGrua = () => {
 
     navigation.navigate('SetupAparejos', {
       mode,
-      planData: currentPlanData, // ✅ usa el plan completo que viene desde SetupCarga con proyecto y usuarios
-      setupCargaData: currentCargaData || setupCargaData,
-      setupGruaData: dataToSend,
+      planData: {
+        ...currentPlanData,
+        ilustracionGrua: dataToSend.ilustracionGrua,
+        ilustracionForma: currentCargaData?.ilustracionCarga || currentPlanData?.ilustracionForma,
+      },
+      setupCargaData: {
+        ...currentCargaData,
+        ilustracionCarga: currentCargaData?.ilustracionCarga || currentPlanData?.ilustracionForma,
+      },
+      setupGruaData: {
+        ...dataToSend,
+        ilustracionGrua: dataToSend.ilustracionGrua,
+      },
     });
   };
 
