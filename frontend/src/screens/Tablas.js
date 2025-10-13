@@ -11,7 +11,7 @@ import { calculateGeometry } from '../utils/calculateGeometry';
 const Tablas = ({ route, navigation }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [nombreProyecto, setNombreProyecto] = useState('');
-  const [capatazNombre, setCapataazNombre] = useState('N/A');
+  const [capatazNombre, setCapatazNombre] = useState('N/A');
   const [supervisorNombre, setSupervisorNombre] = useState('');
   const [jefeAreaNombre, setJefeAreaNombre] = useState('');
   const [userId, setUserId] = useState(null);
@@ -20,20 +20,27 @@ const Tablas = ({ route, navigation }) => {
 
   const { planData, setupCargaData, setupGruaData, setupAparejosData, setupRadioData, existingPlanId } = route.params || {};
 
-  // Hook para cargar los datos iniciales del plan de izaje
   useEffect(() => {
     const fetchUserData = async () => {
       if (planData) {
-        setNombreProyecto(planData.nombreProyecto || '');
-        setCapataazNombre(planData.capataz?.nombreCompleto || '');
-        setSupervisorNombre(planData.supervisor?.nombreCompleto || '');
-        setJefeAreaNombre(planData.jefeArea?.nombreCompleto || '');
+        const nombreProyectoFinal = 
+          planData.nombreProyecto || 
+          planData.proyecto?.nombre || 
+          'N/A';
+
+        setNombreProyecto(nombreProyectoFinal);
+
+        setCapatazNombre(`${planData.capataz?.nombre || ''} ${planData.capataz?.apellido || ''}`);
+        setSupervisorNombre(`${planData.supervisor?.nombre || ''} ${planData.supervisor?.apellido || ''}`);
+        setJefeAreaNombre(`${planData.jefeArea?.nombre || ''} ${planData.jefeArea?.apellido || ''}`);
+
         if (planData.version !== undefined) {
           setCurrentVersion(planData.version);
         }
         const storedUserId = await AsyncStorage.getItem('usuarioId');
         setUserId(storedUserId);
       }
+
       if (existingPlanId) {
         setPlanId(existingPlanId);
         setIsSaved(true);

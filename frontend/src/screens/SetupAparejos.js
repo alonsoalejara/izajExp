@@ -170,11 +170,28 @@ const SetupAparejos = () => {
         });
       } else {
         navigation.navigate('Tablas', {
-          planData,
+          planData: {
+            ...planData,
+            proyecto: planData?.proyecto,
+            nombreProyecto: planData?.nombreProyecto || planData?.proyecto?.nombre || '',
+            capataz: planData?.capataz,
+            supervisor: planData?.supervisor,
+            jefeArea: planData?.jefeArea,
+          },
           setupCargaData,
           setupGruaData,
-          setupAparejosData: { aparejosList, anguloSeleccionado },
+          setupAparejosData: {
+            aparejosList,
+            tipoGrillete,
+            cantidadGrilletes,
+            tipoAparejo: tipoAparejoSeleccionado,
+            aparejoPorWLL,
+            cantidadManiobra: maniobraSeleccionada.cantidad,
+            eslingaOEstrobo: tipoManiobraSeleccionadoSolo,
+            anguloEslinga: anguloSeleccionado ? `${anguloSeleccionado}°` : '0°',
+          },
         });
+
       }
     } else {
       Alert.alert('Error de validación', 'Por favor, complete todos los campos requeridos.');

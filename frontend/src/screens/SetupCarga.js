@@ -154,12 +154,25 @@ const SetupCarga = () => {
         centroGravedad: updatedCG,
         forma,
         diametro: diametroNum,
+        proyecto: planDataState?.proyecto || planData?.proyecto,
+        capataz: planDataState?.capataz || planData?.capataz,
+        supervisor: planDataState?.supervisor || planData?.supervisor,
+        jefeArea: planDataState?.jefeArea || planData?.jefeArea,
       };
 
       navigation.navigate('SetupGrua', { 
         mode, 
         planData: finalData,
-        setupCargaData: finalData.cargas
+        setupCargaData: {
+          ...finalData.cargas,
+          peso: pesoNum,
+          alto: alturaNum,
+          largo: largoParaCalculo,
+          ancho: anchoParaCalculo,
+          diametro: diametroNum,
+          forma,
+          ilustracionCarga: cargaData.ilustracionCarga,
+        }
       });
     };
 

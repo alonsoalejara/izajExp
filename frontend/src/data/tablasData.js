@@ -157,19 +157,20 @@ export const obtenerDatosTablas = (datosRecibidos = {}) => {
 
   const getFullName = (person) => {
     if (!person) return 'N/A';
-    const tieneNombre = person.nombre && person.nombre.trim() !== '';
-    const tieneApellido = person.apellido && person.apellido.trim() !== '';
-    if (tieneNombre && tieneApellido) {
-      return `${person.nombre} ${person.apellido}`;
-    }
-    if (person.username && person.username.trim() !== '') {
-      return person.username;
-    }
+    if (typeof person === 'string') return 'Sin datos (ID)';
+    
+    const nombre = person.nombre || person.name || '';
+    const apellido = person.apellido || person.lastName || '';
+    const username = person.username || '';
+    
+    const fullName = `${nombre} ${apellido}`.trim();
+    if (fullName !== '') return fullName;
+    if (username !== '') return username;
     return 'N/A';
   };
 
   const datosTablaProyecto = [
-    { item: 1, descripcion: 'Nombre Proyecto', nombre: datosRecibidos.nombreProyecto || 'N/A' },
+    { item: 1, descripcion: 'Nombre Proyecto', nombre: datosRecibidos.proyecto?.nombre || 'N/A' },
     { item: 2, descripcion: 'Capataz', nombre: getFullName(datosRecibidos.capataz) },
     { item: 3, descripcion: 'Supervisor', nombre: getFullName(datosRecibidos.supervisor) },
     { item: 4, descripcion: 'Jefe Área', nombre: getFullName(datosRecibidos.jefeArea) },

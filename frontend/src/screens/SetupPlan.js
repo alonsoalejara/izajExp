@@ -114,7 +114,7 @@ const SetupPlan = () => {
         capataz: capatazObjeto,
       };
 
-      navigation.navigate('SetupCarga', dataToSend);
+      navigation.navigate('SetupCarga', { planData: dataToSend });
     } else {
       setErrors(currentErrors);
     }
