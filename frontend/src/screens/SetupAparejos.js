@@ -170,8 +170,8 @@ const SetupAparejos = () => {
         navigation.navigate('EditPlan', {
           planData: {
             ...finalPlanData,
-            ilustracionGrua: setupGruaData?.ilustracionGrua,
-            ilustracionForma: setupCargaData?.ilustracionCarga,
+            ilustracionGrua: setupGruaData?.ilustracionGrua || planData?.ilustracionGrua,
+            ilustracionForma: setupCargaData?.ilustracionCarga || planData?.ilustracionForma,
           },
           aparejosCompletos: true,
         });

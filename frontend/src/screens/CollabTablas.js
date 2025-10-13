@@ -414,7 +414,6 @@ const firmarSupervisor = async () => {
         setIsLoadingPdf(false);
         return;
       }
-
       await generarPDF(pdfData);
     } catch (error) {
       console.log('Error generando el PDF:', error);
