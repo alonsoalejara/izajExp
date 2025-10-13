@@ -347,10 +347,10 @@ const SetupAparejos = () => {
               }}
               tipoAparejo={tipoAparejoSeleccionado}
               anguloSeleccionado={anguloSeleccionado}
-              pesoCarga={setupCargaData?.peso || null}
+              pesoCarga={setupCargaData?.pesoTotal || setupCargaData?.peso || 0}
               cantidadManiobra={cantidadNumero}
+              pesoEquipo={setupGruaData?.pesoEquipo || 0}
             />
-
             {/* --- Botones --- */}
             <View style={[styles.buttonContainer, { marginBottom: -20, right: 40 }]}>
               <Components.Button

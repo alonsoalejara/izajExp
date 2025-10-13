@@ -226,12 +226,12 @@ const SetupGrua = () => {
       }
     }
 
-      navigation.navigate('SetupAparejos', {
-        mode,
-        planData,
-        setupCargaData,
-        setupGruaData,
-      });
+    navigation.navigate('SetupAparejos', {
+      mode,
+      planData,
+      setupCargaData: currentCargaData || setupCargaData,
+      setupGruaData: dataToSend,
+    });
   };
 
   const isInputsDisabled = !grua;

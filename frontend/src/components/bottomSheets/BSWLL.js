@@ -62,22 +62,30 @@ const BSWLL = ({
   const positionY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
   useEffect(() => {
-    const pesoTotalParaWLL = (pesoEquipo !== undefined && pesoEquipo !== null) ? pesoEquipo : (pesoCarga !== undefined && pesoCarga !== null ? pesoCarga : 0);
+    // ⚖️ Determinar el peso total real a levantar
+    let pesoTotalParaWLL = 0;
+    if (pesoCarga && pesoCarga > 0) {
+      pesoTotalParaWLL = parseFloat(pesoCarga);
+    } else if (pesoEquipo && pesoEquipo > 0) {
+      pesoTotalParaWLL = parseFloat(pesoEquipo);
+    }
 
-    const ang = anguloSeleccionado ? parseInt(anguloSeleccionado, 10) : 0;
+    // ⚙️ Distribuir el peso entre la cantidad de maniobras si aplica
+    const pesoPorAparejo = cantidadManiobra > 0 ? pesoTotalParaWLL / cantidadManiobra : pesoTotalParaWLL;
+    const ang = Number(anguloSeleccionado) || 0;
     let opciones = [];
 
     if (tipoAparejo === 'Tubulares de poliester') {
       opciones = tubularPoliesterData.map(item => {
-        const ton = item.toneladas[ang] !== undefined ? item.toneladas[ang] : item.toneladas[0];
-        const capacidadEfectiva = ton * cantidadManiobra;
-        const isDisabled = pesoTotalParaWLL !== null && capacidadEfectiva < pesoTotalParaWLL;
+        const ang = Number(anguloSeleccionado) || 0;
+        const ton = item.toneladas[ang] ?? item.toneladas[0] ?? 0;
+        const pesoPorAparejo = cantidadManiobra > 0 ? pesoCarga / cantidadManiobra : pesoCarga;
+        const isDisabled = ton < pesoPorAparejo;
         const base = item.nombre.split('(')[0].trim();
         return {
           label: `${base} (${ton} ton)`,
           value: `${base} (${ton} ton)`,
-          isDisabled: isDisabled,
-          capacidad: capacidadEfectiva
+          isDisabled,
         };
       });
     } else if (tipoAparejo === 'Tubulares trenzadas de poliester') {

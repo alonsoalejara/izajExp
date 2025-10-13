@@ -156,7 +156,11 @@ const SetupCarga = () => {
         diametro: diametroNum,
       };
 
-      navigation.navigate('SetupGrua', { mode, planData: finalData });
+      navigation.navigate('SetupGrua', { 
+        mode, 
+        planData: finalData,
+        setupCargaData: finalData.cargas
+      });
     };
 
     if (forma !== 'Cilindro' && largo === ancho && ancho === altura && largo !== '') {
