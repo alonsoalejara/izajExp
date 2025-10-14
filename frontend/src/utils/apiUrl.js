@@ -1,4 +1,4 @@
-const baseUrl = 'http://192.168.1.9:3000/api/';
+const baseUrl = 'http://146.83.194.142:1746/api/';
 
 const getApiUrl = (endpoint) => `${baseUrl}${endpoint}`;
 
