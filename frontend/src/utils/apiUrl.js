@@ -1,4 +1,4 @@
-const baseUrl = 'http://146.83.194.142:1746/api/';
+const baseUrl = 'https://unambitiously-nontechnologic-blanch.ngrok-free.dev/api/';
 
 const getApiUrl = (endpoint) => `${baseUrl}${endpoint}`;
 
